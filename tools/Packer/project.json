@@ -1,0 +1,15 @@
+﻿{
+  "dependencies": {
+    "ilmerge": "2.14.1208",
+    "Microsoft.CodeAnalysis.CSharp.Workspaces": "1.1.0-rc1-*",
+    "Microsoft.Net.Compilers": "1.1.0-rc1",
+  },
+
+  "frameworks": {
+    "dnx451": {
+      "frameworkAssemblies": {
+        "System.Runtime": "4.0.10.0"
+      }
+    }
+  }
+}

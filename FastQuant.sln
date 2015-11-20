@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "FastQuant.Core", "src\FastQuant.Core\FastQuant.Core.xproj", "{83326B7B-0F87-4CDD-A9C5-E56896D62AF4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B2152F9C-2C8F-4C01-88BD-3B9449064A0B}"
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4557E8C2-3EDA-47A0-BA33-D7ADBE163192}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "FastQuant.Providers", "src\FastQuant.Providers\FastQuant.Providers.xproj", "{DE18405B-195E-48D3-AD1E-49384DC72CC9}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "FastQuant.Statistics", "src\FastQuant.Statistics\FastQuant.Statistics.xproj", "{D1CEA0B8-D123-4578-85B3-86DF5A11DAB8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{62243352-748F-474A-9FFE-A3065CBFB56A}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Packer", "tools\Packer\Packer.xproj", "{49C8F320-CC8F-4003-AAF2-C17CFD589C52}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{83326B7B-0F87-4CDD-A9C5-E56896D62AF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83326B7B-0F87-4CDD-A9C5-E56896D62AF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83326B7B-0F87-4CDD-A9C5-E56896D62AF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83326B7B-0F87-4CDD-A9C5-E56896D62AF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE18405B-195E-48D3-AD1E-49384DC72CC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE18405B-195E-48D3-AD1E-49384DC72CC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE18405B-195E-48D3-AD1E-49384DC72CC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE18405B-195E-48D3-AD1E-49384DC72CC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1CEA0B8-D123-4578-85B3-86DF5A11DAB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1CEA0B8-D123-4578-85B3-86DF5A11DAB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1CEA0B8-D123-4578-85B3-86DF5A11DAB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1CEA0B8-D123-4578-85B3-86DF5A11DAB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49C8F320-CC8F-4003-AAF2-C17CFD589C52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49C8F320-CC8F-4003-AAF2-C17CFD589C52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49C8F320-CC8F-4003-AAF2-C17CFD589C52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49C8F320-CC8F-4003-AAF2-C17CFD589C52}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{83326B7B-0F87-4CDD-A9C5-E56896D62AF4} = {4557E8C2-3EDA-47A0-BA33-D7ADBE163192}
+		{DE18405B-195E-48D3-AD1E-49384DC72CC9} = {4557E8C2-3EDA-47A0-BA33-D7ADBE163192}
+		{D1CEA0B8-D123-4578-85B3-86DF5A11DAB8} = {4557E8C2-3EDA-47A0-BA33-D7ADBE163192}
+		{49C8F320-CC8F-4003-AAF2-C17CFD589C52} = {62243352-748F-474A-9FFE-A3065CBFB56A}
+	EndGlobalSection
+EndGlobal
