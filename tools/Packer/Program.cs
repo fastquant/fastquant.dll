@@ -1,18 +1,21 @@
 ﻿using System;
-using System.Linq;
-using System.Reflection;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Rename;
-using System.Collections.Generic;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.MSBuild;
 using System.IO;
+using Microsoft.CodeAnalysis.Workspaces.Dnx;
+using Microsoft.Framework.Runtime;
 
 namespace Packer
 {
     public class Program
     {
+        private readonly IApplicationEnvironment env;
+
+        public Program(IApplicationEnvironment env)
+        {
+            this.env = env;
+        }
+
         public void Main(string[] args)
         {
             var mscorlib = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
@@ -23,7 +26,14 @@ namespace Packer
                 Console.WriteLine(p.Name);
             }
             Console.WriteLine(solution.FilePath);
-            Console.WriteLine(solution.ProjectIds);
+           
+            var basePath = Path.GetFullPath(Path.Combine("..", "..", "src", "FastQuant.Core"));
+            Console.WriteLine(basePath);
+            var workspace = new ProjectJsonWorkspace(basePath);
+            foreach (var p in workspace.CurrentSolution.Projects)
+            {
+                Console.WriteLine(p.Name);
+            }
         }
     }
 }

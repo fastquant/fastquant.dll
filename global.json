@@ -1,5 +1,5 @@
 {
-    "projects": [ "src/FastQuant.Core", "src/FastQuant.Providers", "src/FastQuant.Statistics" ],
+    "projects": [ "src/FastQuant.Core", "src/FastQuant.Providers", "src/FastQuant.Statistics", "src" ],
     "sdk": {
         "version": "1.0.0-rc1-final",
         "runtime": "coreclr"

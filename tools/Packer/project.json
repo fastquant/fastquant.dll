@@ -1,8 +1,12 @@
-﻿{
+{
   "dependencies": {
-    "ilmerge": "2.14.1208",
+    "ILMerge.Tools.MSBuildToolTask": "2.14.1208.49",
     "Microsoft.CodeAnalysis.CSharp.Workspaces": "1.1.0-rc1-*",
     "Microsoft.Net.Compilers": "1.1.0-rc1",
+    "Microsoft.CodeAnalysis.Workspaces.Dnx": "1.0.0",
+    "FastQuant.Core": "",
+    "FastQuant.Providers": "",
+    "FastQuant.Statistics": ""
   },
 
   "frameworks": {

@@ -3,12 +3,26 @@
   "version": 2,
   "targets": {
     "DNX,Version=v4.5.1": {
-      "ilmerge/2.14.1208": {
-        "type": "package",
-        "frameworkAssemblies": [
-          "System",
-          "System.Xml"
-        ]
+      "FastQuant.Core/1.0.0": {
+        "type": "project",
+        "framework": "DNX,Version=v4.5.1"
+      },
+      "FastQuant.Providers/1.0.0": {
+        "type": "project",
+        "framework": "DNX,Version=v4.5.1",
+        "dependencies": {
+          "FastQuant.Core": null
+        }
+      },
+      "FastQuant.Statistics/1.0.0": {
+        "type": "project",
+        "framework": "DNX,Version=v4.5.1",
+        "dependencies": {
+          "FastQuant.Core": null
+        }
+      },
+      "ILMerge.Tools.MSBuildToolTask/2.14.1208.49": {
+        "type": "package"
       },
       "Microsoft.CodeAnalysis.Analyzers/1.0.0": {
         "type": "package",
@@ -70,6 +84,29 @@
           "lib/net45/Microsoft.CodeAnalysis.Workspaces.dll": {}
         }
       },
+      "Microsoft.CodeAnalysis.Workspaces.Dnx/1.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.CodeAnalysis.CSharp.Workspaces": "1.1.0",
+          "Microsoft.Composition": "1.0.27",
+          "Microsoft.Framework.Runtime": "1.0.0-beta6",
+          "Microsoft.Framework.Runtime.Roslyn.Common": "1.0.0-beta6"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/dnx451/docfx.dll": {},
+          "lib/dnx451/Microsoft.CodeAnalysis.Workspaces.Dnx.dll": {}
+        },
+        "runtime": {
+          "lib/dnx451/docfx.dll": {},
+          "lib/dnx451/Microsoft.CodeAnalysis.Workspaces.Dnx.dll": {}
+        }
+      },
       "Microsoft.Composition/1.0.27": {
         "type": "package",
         "compile": {
@@ -85,6 +122,106 @@
           "lib/portable-net45+win8+wp8+wpa81/System.Composition.Hosting.dll": {},
           "lib/portable-net45+win8+wp8+wpa81/System.Composition.Runtime.dll": {},
           "lib/portable-net45+win8+wp8+wpa81/System.Composition.TypedParts.dll": {}
+        }
+      },
+      "Microsoft.Framework.Runtime/1.0.0-beta6": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Framework.Runtime.Abstractions": "1.0.0-beta6",
+          "Microsoft.Framework.Runtime.Caching": "1.0.0-beta6",
+          "Microsoft.Framework.Runtime.Loader": "1.0.0-beta6"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Collections",
+          "System.Core",
+          "System.IO",
+          "System.IO.Compression",
+          "System.IO.Compression.FileSystem",
+          "System.Runtime",
+          "System.Text.Encoding",
+          "System.Threading.Tasks",
+          "System.Xml",
+          "System.Xml.Linq"
+        ],
+        "compile": {
+          "lib/dnx451/Microsoft.Framework.Runtime.dll": {}
+        },
+        "runtime": {
+          "lib/dnx451/Microsoft.Framework.Runtime.dll": {}
+        }
+      },
+      "Microsoft.Framework.Runtime.Abstractions/1.0.0-beta6": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/dnx451/Microsoft.Framework.Runtime.Abstractions.dll": {}
+        },
+        "runtime": {
+          "lib/dnx451/Microsoft.Framework.Runtime.Abstractions.dll": {}
+        }
+      },
+      "Microsoft.Framework.Runtime.Caching/1.0.0-beta6": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Framework.Runtime.Abstractions": "1.0.0-beta6"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/dnx451/Microsoft.Framework.Runtime.Caching.dll": {}
+        },
+        "runtime": {
+          "lib/dnx451/Microsoft.Framework.Runtime.Caching.dll": {}
+        }
+      },
+      "Microsoft.Framework.Runtime.Loader/1.0.0-beta6": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Framework.Runtime.Abstractions": "1.0.0-beta6"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/dnx451/Microsoft.Framework.Runtime.Loader.dll": {}
+        },
+        "runtime": {
+          "lib/dnx451/Microsoft.Framework.Runtime.Loader.dll": {}
+        }
+      },
+      "Microsoft.Framework.Runtime.Roslyn.Common/1.0.0-beta6": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.CodeAnalysis.CSharp": "1.0.0",
+          "Microsoft.Framework.Runtime.Abstractions": "1.0.0-beta6"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core",
+          "System.Runtime"
+        ],
+        "compile": {
+          "lib/dnx451/Microsoft.Framework.Runtime.Roslyn.Common.dll": {}
+        },
+        "runtime": {
+          "lib/dnx451/Microsoft.Framework.Runtime.Roslyn.Common.dll": {}
         }
       },
       "Microsoft.Net.Compilers/1.1.0-rc1": {
@@ -271,12 +408,26 @@
       }
     },
     "DNX,Version=v4.5.1/win7-x86": {
-      "ilmerge/2.14.1208": {
-        "type": "package",
-        "frameworkAssemblies": [
-          "System",
-          "System.Xml"
-        ]
+      "FastQuant.Core/1.0.0": {
+        "type": "project",
+        "framework": "DNX,Version=v4.5.1"
+      },
+      "FastQuant.Providers/1.0.0": {
+        "type": "project",
+        "framework": "DNX,Version=v4.5.1",
+        "dependencies": {
+          "FastQuant.Core": null
+        }
+      },
+      "FastQuant.Statistics/1.0.0": {
+        "type": "project",
+        "framework": "DNX,Version=v4.5.1",
+        "dependencies": {
+          "FastQuant.Core": null
+        }
+      },
+      "ILMerge.Tools.MSBuildToolTask/2.14.1208.49": {
+        "type": "package"
       },
       "Microsoft.CodeAnalysis.Analyzers/1.0.0": {
         "type": "package",
@@ -338,6 +489,29 @@
           "lib/net45/Microsoft.CodeAnalysis.Workspaces.dll": {}
         }
       },
+      "Microsoft.CodeAnalysis.Workspaces.Dnx/1.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.CodeAnalysis.CSharp.Workspaces": "1.1.0",
+          "Microsoft.Composition": "1.0.27",
+          "Microsoft.Framework.Runtime": "1.0.0-beta6",
+          "Microsoft.Framework.Runtime.Roslyn.Common": "1.0.0-beta6"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/dnx451/docfx.dll": {},
+          "lib/dnx451/Microsoft.CodeAnalysis.Workspaces.Dnx.dll": {}
+        },
+        "runtime": {
+          "lib/dnx451/docfx.dll": {},
+          "lib/dnx451/Microsoft.CodeAnalysis.Workspaces.Dnx.dll": {}
+        }
+      },
       "Microsoft.Composition/1.0.27": {
         "type": "package",
         "compile": {
@@ -353,6 +527,106 @@
           "lib/portable-net45+win8+wp8+wpa81/System.Composition.Hosting.dll": {},
           "lib/portable-net45+win8+wp8+wpa81/System.Composition.Runtime.dll": {},
           "lib/portable-net45+win8+wp8+wpa81/System.Composition.TypedParts.dll": {}
+        }
+      },
+      "Microsoft.Framework.Runtime/1.0.0-beta6": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Framework.Runtime.Abstractions": "1.0.0-beta6",
+          "Microsoft.Framework.Runtime.Caching": "1.0.0-beta6",
+          "Microsoft.Framework.Runtime.Loader": "1.0.0-beta6"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Collections",
+          "System.Core",
+          "System.IO",
+          "System.IO.Compression",
+          "System.IO.Compression.FileSystem",
+          "System.Runtime",
+          "System.Text.Encoding",
+          "System.Threading.Tasks",
+          "System.Xml",
+          "System.Xml.Linq"
+        ],
+        "compile": {
+          "lib/dnx451/Microsoft.Framework.Runtime.dll": {}
+        },
+        "runtime": {
+          "lib/dnx451/Microsoft.Framework.Runtime.dll": {}
+        }
+      },
+      "Microsoft.Framework.Runtime.Abstractions/1.0.0-beta6": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/dnx451/Microsoft.Framework.Runtime.Abstractions.dll": {}
+        },
+        "runtime": {
+          "lib/dnx451/Microsoft.Framework.Runtime.Abstractions.dll": {}
+        }
+      },
+      "Microsoft.Framework.Runtime.Caching/1.0.0-beta6": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Framework.Runtime.Abstractions": "1.0.0-beta6"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/dnx451/Microsoft.Framework.Runtime.Caching.dll": {}
+        },
+        "runtime": {
+          "lib/dnx451/Microsoft.Framework.Runtime.Caching.dll": {}
+        }
+      },
+      "Microsoft.Framework.Runtime.Loader/1.0.0-beta6": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Framework.Runtime.Abstractions": "1.0.0-beta6"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/dnx451/Microsoft.Framework.Runtime.Loader.dll": {}
+        },
+        "runtime": {
+          "lib/dnx451/Microsoft.Framework.Runtime.Loader.dll": {}
+        }
+      },
+      "Microsoft.Framework.Runtime.Roslyn.Common/1.0.0-beta6": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.CodeAnalysis.CSharp": "1.0.0",
+          "Microsoft.Framework.Runtime.Abstractions": "1.0.0-beta6"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core",
+          "System.Runtime"
+        ],
+        "compile": {
+          "lib/dnx451/Microsoft.Framework.Runtime.Roslyn.Common.dll": {}
+        },
+        "runtime": {
+          "lib/dnx451/Microsoft.Framework.Runtime.Roslyn.Common.dll": {}
         }
       },
       "Microsoft.Net.Compilers/1.1.0-rc1": {
@@ -539,12 +813,26 @@
       }
     },
     "DNX,Version=v4.5.1/win7-x64": {
-      "ilmerge/2.14.1208": {
-        "type": "package",
-        "frameworkAssemblies": [
-          "System",
-          "System.Xml"
-        ]
+      "FastQuant.Core/1.0.0": {
+        "type": "project",
+        "framework": "DNX,Version=v4.5.1"
+      },
+      "FastQuant.Providers/1.0.0": {
+        "type": "project",
+        "framework": "DNX,Version=v4.5.1",
+        "dependencies": {
+          "FastQuant.Core": null
+        }
+      },
+      "FastQuant.Statistics/1.0.0": {
+        "type": "project",
+        "framework": "DNX,Version=v4.5.1",
+        "dependencies": {
+          "FastQuant.Core": null
+        }
+      },
+      "ILMerge.Tools.MSBuildToolTask/2.14.1208.49": {
+        "type": "package"
       },
       "Microsoft.CodeAnalysis.Analyzers/1.0.0": {
         "type": "package",
@@ -606,6 +894,29 @@
           "lib/net45/Microsoft.CodeAnalysis.Workspaces.dll": {}
         }
       },
+      "Microsoft.CodeAnalysis.Workspaces.Dnx/1.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.CodeAnalysis.CSharp.Workspaces": "1.1.0",
+          "Microsoft.Composition": "1.0.27",
+          "Microsoft.Framework.Runtime": "1.0.0-beta6",
+          "Microsoft.Framework.Runtime.Roslyn.Common": "1.0.0-beta6"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/dnx451/docfx.dll": {},
+          "lib/dnx451/Microsoft.CodeAnalysis.Workspaces.Dnx.dll": {}
+        },
+        "runtime": {
+          "lib/dnx451/docfx.dll": {},
+          "lib/dnx451/Microsoft.CodeAnalysis.Workspaces.Dnx.dll": {}
+        }
+      },
       "Microsoft.Composition/1.0.27": {
         "type": "package",
         "compile": {
@@ -621,6 +932,106 @@
           "lib/portable-net45+win8+wp8+wpa81/System.Composition.Hosting.dll": {},
           "lib/portable-net45+win8+wp8+wpa81/System.Composition.Runtime.dll": {},
           "lib/portable-net45+win8+wp8+wpa81/System.Composition.TypedParts.dll": {}
+        }
+      },
+      "Microsoft.Framework.Runtime/1.0.0-beta6": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Framework.Runtime.Abstractions": "1.0.0-beta6",
+          "Microsoft.Framework.Runtime.Caching": "1.0.0-beta6",
+          "Microsoft.Framework.Runtime.Loader": "1.0.0-beta6"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Collections",
+          "System.Core",
+          "System.IO",
+          "System.IO.Compression",
+          "System.IO.Compression.FileSystem",
+          "System.Runtime",
+          "System.Text.Encoding",
+          "System.Threading.Tasks",
+          "System.Xml",
+          "System.Xml.Linq"
+        ],
+        "compile": {
+          "lib/dnx451/Microsoft.Framework.Runtime.dll": {}
+        },
+        "runtime": {
+          "lib/dnx451/Microsoft.Framework.Runtime.dll": {}
+        }
+      },
+      "Microsoft.Framework.Runtime.Abstractions/1.0.0-beta6": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/dnx451/Microsoft.Framework.Runtime.Abstractions.dll": {}
+        },
+        "runtime": {
+          "lib/dnx451/Microsoft.Framework.Runtime.Abstractions.dll": {}
+        }
+      },
+      "Microsoft.Framework.Runtime.Caching/1.0.0-beta6": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Framework.Runtime.Abstractions": "1.0.0-beta6"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/dnx451/Microsoft.Framework.Runtime.Caching.dll": {}
+        },
+        "runtime": {
+          "lib/dnx451/Microsoft.Framework.Runtime.Caching.dll": {}
+        }
+      },
+      "Microsoft.Framework.Runtime.Loader/1.0.0-beta6": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Framework.Runtime.Abstractions": "1.0.0-beta6"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/dnx451/Microsoft.Framework.Runtime.Loader.dll": {}
+        },
+        "runtime": {
+          "lib/dnx451/Microsoft.Framework.Runtime.Loader.dll": {}
+        }
+      },
+      "Microsoft.Framework.Runtime.Roslyn.Common/1.0.0-beta6": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.CodeAnalysis.CSharp": "1.0.0",
+          "Microsoft.Framework.Runtime.Abstractions": "1.0.0-beta6"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core",
+          "System.Runtime"
+        ],
+        "compile": {
+          "lib/dnx451/Microsoft.Framework.Runtime.Roslyn.Common.dll": {}
+        },
+        "runtime": {
+          "lib/dnx451/Microsoft.Framework.Runtime.Roslyn.Common.dll": {}
         }
       },
       "Microsoft.Net.Compilers/1.1.0-rc1": {
@@ -808,15 +1219,31 @@
     }
   },
   "libraries": {
-    "ilmerge/2.14.1208": {
+    "FastQuant.Core/1.0.0": {
+      "type": "project",
+      "path": "../../src/FastQuant.Core/project.json"
+    },
+    "FastQuant.Providers/1.0.0": {
+      "type": "project",
+      "path": "../../src/FastQuant.Providers/project.json"
+    },
+    "FastQuant.Statistics/1.0.0": {
+      "type": "project",
+      "path": "../../src/FastQuant.Statistics/project.json"
+    },
+    "ILMerge.Tools.MSBuildToolTask/2.14.1208.49": {
       "type": "package",
-      "sha512": "xj548t7ozB2rBXXACv0mxiWAWtzuwu29gbuFr14p3TGAZfNVWHdvkcYbjr5YV3tckfOUeuTjD/rKVdk1U0LSZw==",
+      "sha512": "erSn1dnbD2SdfbFrUm+5xcbiyQq1dPeLJPdWo0W8QrPAz0tbcDt5V8v/SHzCrp+TLlhdACuQmfoQKpgkqRhQaQ==",
       "files": [
-        "ilmerge.2.14.1208.nupkg",
-        "ilmerge.2.14.1208.nupkg.sha512",
-        "ilmerge.nuspec",
-        "tools/ILMerge.doc",
-        "tools/ILMerge.exe"
+        "ILMerge.Tools.MSBuildToolTask.2.14.1208.49.nupkg",
+        "ILMerge.Tools.MSBuildToolTask.2.14.1208.49.nupkg.sha512",
+        "ILMerge.Tools.MSBuildToolTask.nuspec",
+        "LICENSE",
+        "ReadMe.md",
+        "ReleaseNotes.txt",
+        "tools/ILMerge.Tools.MSBuildToolTask.dll",
+        "tools/ILMerge.Tools.MSBuildToolTask.pdb",
+        "tools/ILMerge.Tools.MSBuildToolTask.xml"
       ]
     },
     "Microsoft.CodeAnalysis.Analyzers/1.0.0": {
@@ -893,6 +1320,19 @@
         "ThirdPartyNotices.rtf"
       ]
     },
+    "Microsoft.CodeAnalysis.Workspaces.Dnx/1.0.0": {
+      "type": "package",
+      "sha512": "jEl81N3E4HMovthN+fnrXjy/tEP/YupAzPpW4IJjXLgIr5vOLshbQRKJl+gu4coVcWdkxodOvlKH7rq4OdIVzA==",
+      "files": [
+        "lib/dnx451/docfx.dll",
+        "lib/dnx451/docfx.xml",
+        "lib/dnx451/Microsoft.CodeAnalysis.Workspaces.Dnx.dll",
+        "lib/dnx451/Microsoft.CodeAnalysis.Workspaces.Dnx.xml",
+        "Microsoft.CodeAnalysis.Workspaces.Dnx.1.0.0.nupkg",
+        "Microsoft.CodeAnalysis.Workspaces.Dnx.1.0.0.nupkg.sha512",
+        "Microsoft.CodeAnalysis.Workspaces.Dnx.nuspec"
+      ]
+    },
     "Microsoft.Composition/1.0.27": {
       "type": "package",
       "serviceable": true,
@@ -912,6 +1352,75 @@
         "Microsoft.Composition.1.0.27.nupkg",
         "Microsoft.Composition.1.0.27.nupkg.sha512",
         "Microsoft.Composition.nuspec"
+      ]
+    },
+    "Microsoft.Framework.Runtime/1.0.0-beta6": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "mFE984JJush0TlSoLzDNwwHl18aEWons1JuPDTpMYVBOIbNmlQdBFhhKYGQbGWDruadjcaHm7YJL0b546CKwvA==",
+      "files": [
+        "lib/dnx451/Microsoft.Framework.Runtime.dll",
+        "lib/dnx451/Microsoft.Framework.Runtime.xml",
+        "lib/dnxcore50/Microsoft.Framework.Runtime.dll",
+        "lib/dnxcore50/Microsoft.Framework.Runtime.xml",
+        "Microsoft.Framework.Runtime.1.0.0-beta6.nupkg",
+        "Microsoft.Framework.Runtime.1.0.0-beta6.nupkg.sha512",
+        "Microsoft.Framework.Runtime.nuspec"
+      ]
+    },
+    "Microsoft.Framework.Runtime.Abstractions/1.0.0-beta6": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "w4Cwg6jgPd3XFGOgBGU3GVGVAwUcMglSDTlI23M8uI7yhDRSDbxZ2HPbjTEBMoj+IYdkfunZWFdA67tdk8L8Tg==",
+      "files": [
+        "lib/dnx451/Microsoft.Framework.Runtime.Abstractions.dll",
+        "lib/dnx451/Microsoft.Framework.Runtime.Abstractions.xml",
+        "lib/dnxcore50/Microsoft.Framework.Runtime.Abstractions.dll",
+        "lib/dnxcore50/Microsoft.Framework.Runtime.Abstractions.xml",
+        "Microsoft.Framework.Runtime.Abstractions.1.0.0-beta6.nupkg",
+        "Microsoft.Framework.Runtime.Abstractions.1.0.0-beta6.nupkg.sha512",
+        "Microsoft.Framework.Runtime.Abstractions.nuspec"
+      ]
+    },
+    "Microsoft.Framework.Runtime.Caching/1.0.0-beta6": {
+      "type": "package",
+      "sha512": "+y/7JAz5lC3cmxeNe88Bi80jw6gA2f092y7vk8J6GXOWcUV+I3QoBl0p2Hne5T2YDfZALtzuyVGqsXIaM1X93A==",
+      "files": [
+        "lib/dnx451/Microsoft.Framework.Runtime.Caching.dll",
+        "lib/dnx451/Microsoft.Framework.Runtime.Caching.xml",
+        "lib/dnxcore50/Microsoft.Framework.Runtime.Caching.dll",
+        "lib/dnxcore50/Microsoft.Framework.Runtime.Caching.xml",
+        "Microsoft.Framework.Runtime.Caching.1.0.0-beta6.nupkg",
+        "Microsoft.Framework.Runtime.Caching.1.0.0-beta6.nupkg.sha512",
+        "Microsoft.Framework.Runtime.Caching.nuspec"
+      ]
+    },
+    "Microsoft.Framework.Runtime.Loader/1.0.0-beta6": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "g7YYfc144kPoo9y+tiKgiavtAcgPOdfxYpyyGhrtxeOvgjmbSCtbM+QJN4KwGUZ3cX3Lq3mcFAPoD4YbSxHYIA==",
+      "files": [
+        "lib/dnx451/Microsoft.Framework.Runtime.Loader.dll",
+        "lib/dnx451/Microsoft.Framework.Runtime.Loader.xml",
+        "lib/dnxcore50/Microsoft.Framework.Runtime.Loader.dll",
+        "lib/dnxcore50/Microsoft.Framework.Runtime.Loader.xml",
+        "Microsoft.Framework.Runtime.Loader.1.0.0-beta6.nupkg",
+        "Microsoft.Framework.Runtime.Loader.1.0.0-beta6.nupkg.sha512",
+        "Microsoft.Framework.Runtime.Loader.nuspec"
+      ]
+    },
+    "Microsoft.Framework.Runtime.Roslyn.Common/1.0.0-beta6": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "fJtvoMs5RF2+icbr5epe3bjcIpBNgQXd3PPZNdlA3Kx7luOYqU4ghQKYjNDrAm48N8SGjaY1a0XWxV922z4aqw==",
+      "files": [
+        "lib/dnx451/Microsoft.Framework.Runtime.Roslyn.Common.dll",
+        "lib/dnx451/Microsoft.Framework.Runtime.Roslyn.Common.xml",
+        "lib/dnxcore50/Microsoft.Framework.Runtime.Roslyn.Common.dll",
+        "lib/dnxcore50/Microsoft.Framework.Runtime.Roslyn.Common.xml",
+        "Microsoft.Framework.Runtime.Roslyn.Common.1.0.0-beta6.nupkg",
+        "Microsoft.Framework.Runtime.Roslyn.Common.1.0.0-beta6.nupkg.sha512",
+        "Microsoft.Framework.Runtime.Roslyn.Common.nuspec"
       ]
     },
     "Microsoft.Net.Compilers/1.1.0-rc1": {
@@ -1645,9 +2154,13 @@
   },
   "projectFileDependencyGroups": {
     "": [
-      "ilmerge >= 2.14.1208",
+      "ILMerge.Tools.MSBuildToolTask >= 2.14.1208.49",
       "Microsoft.CodeAnalysis.CSharp.Workspaces >= 1.1.0-rc1-*",
-      "Microsoft.Net.Compilers >= 1.1.0-rc1"
+      "Microsoft.Net.Compilers >= 1.1.0-rc1",
+      "Microsoft.CodeAnalysis.Workspaces.Dnx >= 1.0.0",
+      "FastQuant.Core ",
+      "FastQuant.Providers ",
+      "FastQuant.Statistics "
     ],
     "DNX,Version=v4.5.1": [
       "fx/System.Runtime >= 4.0.10"
