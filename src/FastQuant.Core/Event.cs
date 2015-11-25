@@ -122,6 +122,8 @@ namespace SmartQuant
     {
         protected internal DateTime dateTime;
 
+        public virtual byte TypeId => EventType.Event;
+
         public DateTime DateTime
         {
             get
@@ -133,8 +135,6 @@ namespace SmartQuant
                 this.dateTime = value;
             }
         }
-
-        public virtual byte TypeId => EventType.Event;
 
         public Event()
         {

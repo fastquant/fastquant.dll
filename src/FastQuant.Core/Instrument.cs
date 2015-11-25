@@ -21,8 +21,16 @@ namespace SmartQuant
         Synthetic
     }
 
+    public enum PutCall : byte
+    {
+        Put,
+        Call
+    }
+
     public class Instrument
     {
+        public int Factor { get; internal set; }
+
         public string Symbol { get; internal set; }
     }
 

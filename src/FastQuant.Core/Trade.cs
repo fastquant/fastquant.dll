@@ -33,4 +33,6 @@ namespace SmartQuant
             return $"Trade {DateTime} {ProviderId} {InstrumentId} {Price} {Size}";
         }
     }
+
+    public delegate void TradeEventHandler(object sender, Trade trade);
 }

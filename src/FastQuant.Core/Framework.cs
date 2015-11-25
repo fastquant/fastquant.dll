@@ -25,7 +25,25 @@ namespace SmartQuant
 
     public class Framework : IDisposable
     {
+        public AccountDataManager AccountDataManager { get; internal set; }
+        public Clock Clock { get; internal set; }
+        public DataFileManager DataFileManager { get; internal set; }
+        public DataManager DataManager { get; internal set; }
+        public EventManager EventManager { get; internal set; }
+        public GroupManager GroupManager { get; internal set; }
+        public InstrumentManager InstrumentManager { get; internal set; }
+        public FrameworkMode Mode { get; internal set; }
+        public OrderManager OrderManager { get; internal set; }
+        public ProviderManager ProviderManager { get; internal set; }
+        public StatisticsManager StatisticsManager { get; internal set; }
+        public StrategyManager StrategyManager { get; internal set; }
+
         public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void Clear()
         {
             throw new NotImplementedException();
         }

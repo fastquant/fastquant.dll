@@ -9,6 +9,7 @@
     "dnx451": { },
     "dnxcore50": {
       "dependencies": {
+        "netcoreshim": "",
         "System.Console": "4.0.0-beta-*",
         "System.Collections": "4.0.11-beta-*"
       }

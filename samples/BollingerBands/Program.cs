@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 using SmartQuant;
 using SmartQuant.Indicators;
 using System.Linq;
@@ -224,7 +225,7 @@ namespace Samples.BollingerBands
     {
         static void Main(string[] args)
         {
-            Scenario scenario = args.Contains("--live") ?  new Realtime(Framework.Current) : new Backtest(Framework.Current);
+            var scenario = args.Contains("--realtime") ?  (Scenario)new Realtime(Framework.Current) : (Scenario)new Backtest(Framework.Current);
             scenario.Run();
         }
     }
