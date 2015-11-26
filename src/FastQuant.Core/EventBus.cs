@@ -32,7 +32,7 @@ namespace SmartQuant
         public EventBus(Framework framework)
         {
             this.framework = framework;
-            Mode = framework.Mode == FrameworkMode.Realtime ? EventBusMode.Realtime : EventBusMode.Simulation；
+            Mode = framework.Mode == FrameworkMode.Realtime ? EventBusMode.Realtime : EventBusMode.Simulation;
             this.inputEventPipe = new EventPipe(framework, false);
             DataPipe = new EventPipe(framework, false);
             ExecutionPipe = new EventPipe(framework, false);

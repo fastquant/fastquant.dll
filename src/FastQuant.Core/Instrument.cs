@@ -52,6 +52,11 @@ namespace SmartQuant
         {
             throw new NotImplementedException();
         }
+
+        public void Add(Instrument instrument)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class InstrumentEventArgs : EventArgs

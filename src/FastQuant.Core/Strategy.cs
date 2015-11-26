@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.ComponentModel;
 
 namespace SmartQuant
 {
@@ -42,7 +43,8 @@ namespace SmartQuant
 
     public class Strategy
     {
-        private Framework framework;
+        protected internal Framework framework;
+
         protected internal bool raiseEvents;
 
         public int Id { get; }
@@ -73,6 +75,12 @@ namespace SmartQuant
         public IDataProvider DataProvider { get; set; }
         public IExecutionProvider ExecutionProvider { get; set; }
 
+        public Strategy(Framework framework, string name)
+        {
+            this.framework = framework;
+            Name = name;
+        }
+
         public virtual void Init()
         {
             
@@ -82,6 +90,12 @@ namespace SmartQuant
         {
             throw new NotImplementedException();
         }
+
+        public void AddStop(Stop stop)
+        {
+            throw new NotImplementedException();
+        }
+
 
         public Order BuyLimitOrder(Instrument instrument, double qty, double price, string text = "")
         {
@@ -93,7 +107,22 @@ namespace SmartQuant
             throw new NotImplementedException();
         }
 
+        public Order Buy(Instrument instrument, double qty, string text = "")
+        {
+            throw new NotImplementedException();
+        }
+
         public Order BuyOrder(Instrument instrument, double qty, string text = "")
+        {
+            throw new NotImplementedException();
+        }
+
+        public Order BuyStopOrder(Instrument instrument, double qty, double stopPx, string text = "")
+        {
+            throw new NotImplementedException();
+        }
+
+        public Order Sell(Instrument instrument, double qty, string text = "")
         {
             throw new NotImplementedException();
         }
@@ -118,12 +147,26 @@ namespace SmartQuant
             throw new NotImplementedException();
         }
 
+        public Order SellStopOrder(Instrument instrument, double qty, double stopPx, string text = "")
+        {
+            throw new NotImplementedException();
+        }
         public void Log(DataObject data, Group group)
         {
             throw new NotImplementedException();
         }
 
         public void Log(double value, Group group)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Log(DateTime dateTime, double value, Group group)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Log(DateTime dateTime, string text, Group group)
         {
             throw new NotImplementedException();
         }
@@ -184,6 +227,49 @@ namespace SmartQuant
         {
         }
 
+        protected internal virtual void OnNewOrder(Order order)
+        {
+        }
+
+        protected internal virtual void OnOrderCancelled(Order order)
+        {
+        }
+
+        protected internal virtual void OnOrderCancelRejected(Order order)
+        {
+        }
+
+        protected internal virtual void OnOrderDone(Order order)
+        {
+        }
+
+        protected internal virtual void OnOrderExpired(Order order)
+        {
+        }
+
+        protected internal virtual void OnOrderFilled(Order order)
+        {
+        }
+
+        protected internal virtual void OnOrderPartiallyFilled(Order order)
+        {
+        }
+
+        protected internal virtual void OnOrderRejected(Order order)
+        {
+        }
+
+        protected internal virtual void OnOrderReplaced(Order order)
+        {
+        }
+
+        protected internal virtual void OnOrderReplaceRejected(Order order)
+        {
+        }
+
+        protected internal virtual void OnOrderStatusChanged(Order order)
+        {
+        }
     }
 
     public class MetaStrategy : Strategy
@@ -204,11 +290,88 @@ namespace SmartQuant
         public bool IsInstance { get; }
         public Position Position => Portfolio.GetPosition(Instrument);
 
-        public InstrumentStrategy(Framework framework, string name):base(framework, name)
+        public InstrumentStrategy(Framework framework, string name) : base(framework, name)
         {
             this.raiseEvents = false;
         }
+
         public override void Init()
         {
         }
+    }
+
+    public class SellSideStrategy : Strategy, IDataProvider, IExecutionProvider
+    {
+        [ReadOnly(true)]
+        public virtual int AlgoId => -1;
+
+
+        public bool IsConnected => true;
+        public bool IsDisconnected => false;
+
+        public new ProviderStatus Status { get; set; }
+        public bool IsInstance { get; }
+
+        public SellSideStrategy(Framework framework, string name): base(framework, name)
+        {
+        }
+
+        public virtual void Connect()
+        {
+            Console.WriteLine("SellSideStrategy::Connect");
+        }
+
+        public virtual bool Connect(int timeout)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual void Disconnect()
+        {
+            Console.WriteLine("SellSideStrategy::Disconnect");
+        }
+
+        public virtual void EmitExecutionReport(ExecutionReport report)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual void OnCancelCommand(ExecutionCommand command)
+        {
+        }
+
+        public virtual void OnReplaceCommand(ExecutionCommand command)
+        {
+        }
+
+        public virtual void OnSendCommand(ExecutionCommand command)
+        {
+        }
+
+        protected virtual void OnSubscribe(InstrumentList instruments)
+        {
+        }
+
+        protected virtual void OnSubscribe(Instrument instrument)
+        {
+        }
+
+        protected virtual void OnUnsubscribe(InstrumentList instruments)
+        {
+        }
+
+        protected virtual void OnUnsubscribe(Instrument instrument)
+        {
+        }
+    }
+
+    public class SellSideInstrumentStrategy : SellSideStrategy
+    {
+        public Instrument Instrument { get; set; }
+
+        public SellSideInstrumentStrategy(Framework framework, string name) : base(framework, name)
+        {
+            this.raiseEvents = false;
+        }
+    }
 }

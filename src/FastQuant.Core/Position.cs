@@ -24,6 +24,9 @@ namespace SmartQuant
     public class Position
     {
         public double Amount { get; }
+        public double EntryPrice { get; set; }
+        public int Price { get; set; }
+        public double Qty { get; set; }
 
         public PositionSide Side => Amount < 0 ? PositionSide.Short : PositionSide.Long;
     }

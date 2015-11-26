@@ -25,6 +25,7 @@ namespace SmartQuant
 
     public class Framework : IDisposable
     {
+        public static Framework Current { get; set; }
         public AccountDataManager AccountDataManager { get; internal set; }
         public Clock Clock { get; internal set; }
         public DataFileManager DataFileManager { get; internal set; }

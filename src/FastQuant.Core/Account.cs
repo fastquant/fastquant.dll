@@ -4,7 +4,25 @@ namespace SmartQuant
 {
     public class Account
     {
-         
+        public void Add(DateTime dateTime, double value, byte currencyId = 148, string text = null, bool updateParent = true)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Add(double value, byte currencyId = 148, string text = null, bool updateParent = true)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Deposit(DateTime dateTime, double value, byte currencyId = 148, string text = null, bool updateParent = true)
+        {
+            Add(dateTime, value, currencyId, text, updateParent);
+        }
+
+        public void Deposit(double value, byte currencyId = 148, string text = null, bool updateParent = true)
+        {
+            Add(value, currencyId, text, updateParent);
+        }
     }
 
     public class AccountPosition

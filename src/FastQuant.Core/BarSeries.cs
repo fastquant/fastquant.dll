@@ -6,7 +6,7 @@ namespace SmartQuant
 {
     public class BarSeries : IEnumerable<Bar>, IIdNamedItem, IDataSeries, ISeries
     {
-        public double this[int index]
+        public Bar this[int index]
         {
             get
             {
@@ -14,7 +14,15 @@ namespace SmartQuant
             }
         }
 
-        public DataObject this[long index]
+        double this[int index]
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        DataObject this[long index]
         {
             get
             {
@@ -30,8 +38,9 @@ namespace SmartQuant
             }
         }
 
-        public long Count
+        public int Count
         {
+            // Token: 0x060002DC RID: 732 RVA: 0x00004490 File Offset: 0x00002690
             get
             {
                 throw new NotImplementedException();
@@ -147,6 +156,16 @@ namespace SmartQuant
         }
 
         public IEnumerator<Bar> GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
+
+        public double HighestHigh(int nBars)
+        {
+            throw new NotImplementedException();
+        }
+
+        public double LowestLow(int nBars)
         {
             throw new NotImplementedException();
         }
