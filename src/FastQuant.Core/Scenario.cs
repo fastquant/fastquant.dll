@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 
 namespace SmartQuant
 {
@@ -20,13 +21,8 @@ namespace SmartQuant
             }
         }
 
-        public Strategy Strategy
-        {
-            get
-            {
-                return this.strategy;
-            }
-        }
+        public Strategy Strategy => this.strategy;
+
         public Clock Clock => this.framework.Clock;
 
         public AccountDataManager AccountDataManager => this.framework.AccountDataManager;
@@ -62,6 +58,12 @@ namespace SmartQuant
         public virtual void Run()
         {
         }
+
+        public void RunWithLogger(string solutionName)
+        {
+            throw new NotImplementedException("We don't have QuantControllerLogger");   
+        }
+
         public void StartBacktest()
         {
             StartStrategy(StrategyMode.Backtest);
@@ -79,19 +81,22 @@ namespace SmartQuant
 
         public void StartStrategy(StrategyMode mode)
         {
+            StartStrategy(Strategy, mode);
         }
 
         public void StartStrategy()
         {
-            StartStrategy(Strategy, Mode)
+            StartStrategy(Strategy, Strategy.Mode);
         }
 
         public void StartStrategy(Strategy strategy)
         {
+            StartStrategy(strategy, strategy.Mode);
         }
 
         private void StartStrategy(Strategy strategy, StrategyMode mode)
         {
+            throw new NotImplementedException();
         }
 
     }
@@ -99,6 +104,7 @@ namespace SmartQuant
     public class ScenarioManager
     {
         private Framework framework;
+
         private Thread thread;
 
         public Scenario Scenario { get; set; }

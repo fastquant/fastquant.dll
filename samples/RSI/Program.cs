@@ -4,7 +4,7 @@ using SmartQuant;
 using SmartQuant.Indicators;
 using System.Linq;
 
-namespace Samples.RSI
+namespace Samples.RSIDemo
 {
     public class MyStrategy : InstrumentStrategy
     {
