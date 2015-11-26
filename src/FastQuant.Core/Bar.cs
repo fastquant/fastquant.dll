@@ -32,6 +32,6 @@ namespace SmartQuant
 
     public class Bar : DataObject
     {
-        
+        public double Close { get; set; }
     }
 }

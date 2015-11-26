@@ -5,8 +5,7 @@ namespace SmartQuant
     public class Scenario
     {
         protected string name;
-
-        private Framework framework;
+        protected Framework framework;
         protected Strategy strategy;
 
         public string Name

@@ -36,6 +36,13 @@ namespace SmartQuant
 
     public class InstrumentList : IEnumerable<Instrument>
     {
+        public Instrument this[string symbol] => Get(symbol);
+
+        public Instrument Get(string symbol)
+        {
+            throw new NotImplementedException();
+        }
+
         public IEnumerator<Instrument> GetEnumerator()
         {
             throw new NotImplementedException();
