@@ -1,21 +1,23 @@
 {
-    "frameworks": {
-        "dnx451": {
-            "frameworkAssemblies": {
-              "System.Drawing": "4.0.0.0",
-              "System.Xml": "4.0.0.0" 
-            }
-        },
-        "dnxcore50": {
-            "dependencies": {
-                "System.Console": "4.0.0-beta-*",
-                "System.IO.FileSystem": "4.0.1-beta-*",
-                "System.Runtime.Extensions": "4.0.11-beta-*",
-                "System.Collections": "4.0.11-beta-*",
-                "System.Threading.Tasks.Parallel": "4.0.1-beta-*",
-                "netcoreshim": "",
-                "System.Xml.XmlSerializer": "4.0.10-beta-*"
-            }
-        }
+  "frameworks": {
+    "dnx451": {
+      "frameworkAssemblies": {
+        "System.Drawing": "4.0.0.0",
+        "System.Xml": "4.0.0.0"
+      }
+    },
+    "dnxcore50": {
+      "dependencies": {
+        "netcoreshim": "",
+        "System.Console": "4.0.0-beta-*",
+        "System.IO.FileSystem": "4.0.1-beta-*",
+        "System.Runtime.Extensions": "4.0.11-beta-*",
+        "System.Collections": "4.0.11-beta-*",
+        "System.Threading.Tasks.Parallel": "4.0.1-beta-*",
+        "System.Threading.Thread": "4.0.0-beta-*",
+        "System.Xml.XmlSerializer": "4.0.10-beta-*",
+        "System.Net.Sockets": "4.0.10-beta-*"
+      }
     }
+  }
 }

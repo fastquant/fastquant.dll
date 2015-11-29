@@ -66,8 +66,8 @@ namespace SmartQuant
             Event @event = eventTreeItem_2.ieventQueue_0.Read();
             if ((int)@event.TypeId == 206)
             {
-                if (this.eventTreeItem_0 == null)
-                    @event = (Event)new OnSimulatorStop();
+               // if (this.eventTreeItem_0 == null)
+               //     @event = (Event)new OnSimulationStop();
             }
             else if (eventTreeItem_2.ieventQueue_0.IsEmpty())
                 this.eventTreeItem_1 = eventTreeItem_2;

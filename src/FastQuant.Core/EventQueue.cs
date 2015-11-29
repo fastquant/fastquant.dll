@@ -142,9 +142,9 @@ namespace SmartQuant
             this.events[this.writePosition] = obj;
             this.writePosition = (this.writePosition + 1) % Size;
             ++EnqueueCount;
-            if (Count == 1 && this.bus != null && this.bus.IdleMode == EventBusIdleMode.Wait)
+            if (Count == 1 && this.bus?.IdleMode == EventBusIdleMode.Wait)
             {
-                this.bus.manualResetEventSlim_0.Set();
+                //this.bus.manualResetEventSlim_0.Set();
             }
         }
 
@@ -217,11 +217,9 @@ namespace SmartQuant
             this.events.Clear();
         }
 
-        internal Event Pop()
+        internal void RemoveAt(int index)
         {
-            var e = this[0];
             this.events.RemoveAt(0);
-            return e;
         }
 
         public IEnumerator GetEnumerator()
@@ -232,26 +230,20 @@ namespace SmartQuant
 
     public class SortedEventQueue : IComparable<IEventQueue>, IEventQueue
     {
-        internal EventSortedSet events;
-        internal DateTime dateTime;
+        protected internal EventSortedSet events = new EventSortedSet();
+        protected internal DateTime dateTime;
 
-        public byte Id { get; private set; }
+        public byte Id { get; }
 
-        public byte Type { get; private set; }
+        public byte Type { get; }
 
         public bool IsSynched { get; set; }
 
-        public string Name { get; private set; }
+        public string Name { get; }
 
-        public byte Priority { get; private set; }
+        public byte Priority { get; }
 
-        public long Count
-        {
-            get
-            {
-                return this.events.Count;
-            }
-        }
+        public long Count => this.events.Count;
 
         public long EmptyCount
         {
@@ -274,7 +266,11 @@ namespace SmartQuant
             Id = id;
             Type = type;
             Priority = priority;
-            this.events = new EventSortedSet();
+        }
+
+        public void Clear()
+        {
+            this.events.Clear();
         }
 
         public Event Peek()
@@ -283,17 +279,14 @@ namespace SmartQuant
                 return this.events[0];
         }
 
-        public DateTime PeekDateTime()
-        {
-            return this.dateTime;
-        }
+        public DateTime PeekDateTime() => this.dateTime;
 
         public Event Read()
         {
             Event e;
             lock (this)
             {
-                e = this.events.Pop();
+                e = this.events[0];
                 if (this.events.Count > 0)
                     this.dateTime = this.events[0].DateTime;
             }
@@ -319,20 +312,9 @@ namespace SmartQuant
             }
         }
 
-        public bool IsEmpty()
-        {
-            return this.events.Count == 0;
-        }
+        public bool IsEmpty() => this.events.Count == 0;
 
-        public bool IsFull()
-        {
-            return false;
-        }
-
-        public void Clear()
-        {
-            this.events.Clear();
-        }
+        public bool IsFull() => false;
 
         public void ResetCounts()
         {

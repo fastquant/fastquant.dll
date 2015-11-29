@@ -109,6 +109,21 @@ namespace SmartQuant
         {
             throw new NotImplementedException();
         }
+
+        public virtual void Refresh()
+        {
+        }
+
+        public virtual DataObject Get(long index)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual DataObject Get(DateTime dateTime)
+        {
+            throw new NotImplementedException();
+        }
+
     }
 
     public class DataSeriesIterator

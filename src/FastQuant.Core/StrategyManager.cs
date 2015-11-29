@@ -6,8 +6,37 @@ namespace SmartQuant
     {
         private Framework framework;
         private int counter;
+        private StrategyMode mode;
+
         public Global Global { get; private set; }
-        public StrategyMode Mode { get; private set; }
+        public StrategyMode Mode
+        {
+            get
+            {
+                return this.mode;
+            }
+            set
+            {
+                if (this.mode != value)
+                {
+                    this.mode = value;
+                    switch (this.mode)
+                    {
+                        case StrategyMode.Backtest:
+                            this.framework.Mode = FrameworkMode.Simulation;
+                            return;
+                        case StrategyMode.Paper:
+                            this.framework.Mode = FrameworkMode.Realtime;
+                            return;
+                        case StrategyMode.Live:
+                            this.framework.Mode = FrameworkMode.Realtime;
+                            break;
+                        default:
+                            return;
+                    }
+                }
+            }
+        }
         public StrategyStatus Status { get; private set; }
         public Strategy Strategy { get; private set; }
 
@@ -25,6 +54,17 @@ namespace SmartQuant
         }
 
         public void Stop()
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public void StartStrategy(Strategy strategy)
+        {
+            StartStrategy(strategy, Mode);
+        }
+
+        public void StartStrategy(Strategy strategy, StrategyMode mode)
         {
             throw new NotImplementedException();
         }

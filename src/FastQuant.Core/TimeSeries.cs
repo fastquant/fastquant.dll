@@ -17,6 +17,22 @@ namespace SmartQuant
     {
         protected string name;
         protected internal string description;
+        private string v;
+
+        public TimeSeries()
+        {
+            throw new NotImplementedException();
+        }
+
+        public TimeSeries(IDataSeries series)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TimeSeries(string name, string description = "", int id = -1)
+        {
+            throw new NotImplementedException();
+        }
 
         public double this[int index]
         {

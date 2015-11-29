@@ -1,7 +1,37 @@
-﻿namespace System.Drawing
+﻿using System.Runtime.InteropServices;
+
+namespace System
+{
+    // FIXME: will be removed.
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Enum | AttributeTargets.Delegate, Inherited = false)]
+    [ComVisible(true)]
+    public sealed class SerializableAttribute : Attribute
+    { }
+
+    // FIXME: will be removed.
+    [Serializable]
+    [ComVisible(true)]
+    public class ApplicationException : Exception
+    {
+        public ApplicationException(string message)
+        { }
+    }
+}
+
+namespace System.Drawing
 {
     public struct Color
     {
+        static public Color Blue
+        {
+            get { return FromArgb(0); }
+        }
+
+        static public Color Yellow
+        {
+            get { return FromArgb(0); }
+        }
+
         public int ToArgb()
         {
             return 0;

@@ -352,7 +352,7 @@ namespace SmartQuant
         {
             this.status = status;
             this.completionTime = this.strategy.framework.Clock.DateTime;
-            this.strategy.OnStopStatusChanged_(this);
+           // this.strategy.OnStopStatusChanged_(this);
         }
 
         private void OnConnect(DateTime dateTime, object obj)

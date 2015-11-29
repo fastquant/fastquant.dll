@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
+using System.Threading;
 
 namespace SmartQuant
 {
@@ -250,10 +251,23 @@ namespace SmartQuant
 
     public class Provider : IProvider
     {
+        protected const string CATEGORY_INFO = "Information";
+        protected const string CATEGORY_STATUS = "Status";
+        protected const string CATEGORY_MARKET_DATA_DEFAULTS = "Market Data (defaults)";
+        protected const string CATEGORY_EXECUTION_DEFAULTS = "Execution (defaults)";
+
         protected internal byte id;
         protected internal string name;
         protected internal string description;
         protected internal string url;
+
+        protected internal Framework framework;
+        private ProviderStatus status;
+
+        protected EventQueue dataQueue;
+        protected EventQueue executionQueue;
+        protected EventQueue historicalQueue;
+        protected EventQueue instrumentQueue;
 
         [Category("Information")]
         public byte Id => this.id;
@@ -267,47 +281,157 @@ namespace SmartQuant
         [Category("Information")]
         public string Url => this.url;
 
-        public bool IsConnected
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        [Category("Status")]
+        public bool IsConnected => Status == ProviderStatus.Connected;
 
-        public bool IsDisconnected
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        [Category("Status")]
+        public bool IsDisconnected => Status == ProviderStatus.Disconnected;
 
         public ProviderStatus Status
         {
             get
             {
-                throw new NotImplementedException();
+                return this.status;
+            }
+            protected set
+            {
+                if (this.status != value)
+                {
+                    WriteDebugInfo($"Status: {this.status} -> {value}");
+                    this.status = value;
+
+                    if (this.status == ProviderStatus.Connected)
+                        this.OnConnected();
+
+                    if (this.status == ProviderStatus.Disconnected)
+                        this.OnDisconnected();
+
+                    this.framework.EventServer.OnProviderStatusChanged(this);
+                }
+            }
+
+        }
+
+        public Provider(Framework framework)
+        {
+            this.framework = framework;
+            this.status = ProviderStatus.Disconnected;
+        }
+
+        public virtual void Clear()
+        {
+        }
+
+        public virtual void Connect()
+        {
+            Status = ProviderStatus.Connecting;
+            Status = ProviderStatus.Connected;
+        }
+
+        public virtual bool Connect(int timeout)
+        {
+            long ticks = DateTime.Now.Ticks;
+            Connect();
+            while (!IsConnected)
+            {
+                Thread.Sleep(1);
+                if (TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds >= timeout)
+                {
+                    Console.WriteLine($"Provider::Connect timed out : {Name}");
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public virtual void Disconnect()
+        {
+            Status = ProviderStatus.Disconnecting;
+            Status = ProviderStatus.Disconnected;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+        }
+
+        public override string ToString() => $"provider id = {Id} {Name} ({Description}) {Url}";
+
+        public virtual void Subscribe(Instrument instrument)
+        {
+        }
+
+        public virtual void Subscribe(InstrumentList instruments)
+        {
+            foreach (Instrument instrument in instruments)
+                Subscribe(instrument);
+        }
+
+        public virtual void Unsubscribe(Instrument instrument)
+        {
+        }
+
+        public virtual void Unsubscribe(InstrumentList instruments)
+        {
+            foreach (Instrument instrument in instruments)
+                Unsubscribe(instrument);
+        }
+
+        public virtual void Process(Event e)
+        {
+            switch (e.TypeId)
+            {
+                case EventType.OnConnect:
+                    Connect();
+                    break;
+                case EventType.OnDisconnect:
+                    Disconnect();
+                    break;
+                case EventType.OnSubscribe:
+                    Subscribe((e as OnSubscribe).Instrument);
+                    break;
+                case EventType.OnUnsubscribe:
+                    Unsubscribe((e as OnUnsubscribe).Instrument);
+                    break;
             }
         }
 
-        public void Connect()
+        public virtual void Send(ExecutionCommand command)
+        {
+            Console.WriteLine("Provider::Send is not implemented in the base class");
+        }
+
+        protected void WriteDebugInfo(string format, params object[] args)
+        {
+        }
+
+        protected internal virtual void SetProperties(ProviderPropertyList properties)
         {
             throw new NotImplementedException();
         }
 
-        public bool Connect(int timeout)
+        protected internal virtual ProviderPropertyList GetProperties()
         {
             throw new NotImplementedException();
         }
 
-        public void Disconnect()
+        protected virtual void OnConnected()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected virtual void OnDisconnected()
         {
             throw new NotImplementedException();
         }
     }
 
-    public class ProviderInfo
+        public class ProviderInfo
     {
         public byte Id { get; internal set; }
 

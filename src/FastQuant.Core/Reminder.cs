@@ -18,7 +18,7 @@ namespace SmartQuant
 
         public override byte TypeId => DataObjectType.Reminder;
 
-        public ReminderCallback Callback { get; private set; }
+        public ReminderCallback Callback { get; }
 
         public Clock Clock { get; internal set; }
 
@@ -31,11 +31,11 @@ namespace SmartQuant
             Data = data;
         }
 
-        public void Execute()
+        internal void Execute()
         {
             Callback(DateTime, Data);
         }
 
-        public override string ToString() => $"{GetType().Name} {DateTime}";
+        public override string ToString() => $"{nameof(Reminder)} {DateTime}";
     }
 }

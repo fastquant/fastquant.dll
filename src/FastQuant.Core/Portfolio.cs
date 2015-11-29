@@ -63,21 +63,9 @@ namespace SmartQuant
 
         internal IdArray<Position> PositionsByInstrumentId { get; private set; }
 
-        public double Value
-        {
-            get
-            {
-                return AccountValue + PositionValue;
-            }
-        }
+        public double Value=> AccountValue + PositionValue;
 
-        public double AccountValue
-        {
-            get
-            {
-                return Account.Value;
-            }
-        }
+        public double AccountValue=> Account.Value;
 
         public double PositionValue
         {
@@ -107,7 +95,7 @@ namespace SmartQuant
             Positions = new List<Position>();
             Account = new Account(framework);
             Fills = new FillSeries(name);
-            Pricer = framework.PortfolioManager.Pricer;
+            Pricer = this.framework.PortfolioManager.Pricer;
             Performance = new PortfolioPerformance(this);
             Statistics = new PortfolioStatistics(this);
         }
@@ -264,7 +252,7 @@ namespace SmartQuant
             if (position.Qty == 0)
                 flag = true;
             position.Add(fill);
-            Account.Add(fill, false);
+            //Account.Add(fill, false);
             if (flag)
             {
                 Statistics.OnPositionChanged(position);

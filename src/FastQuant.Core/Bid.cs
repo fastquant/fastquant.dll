@@ -28,9 +28,6 @@ namespace SmartQuant
         {
         }
 
-        public override string ToString()
-        {
-            return $"Bid {DateTime} {ProviderId} {InstrumentId} {Price} {Size}";
-        }
+        public override string ToString() => $"Bid {DateTime} {ProviderId} {InstrumentId} {Price} {Size}";
     }
 }

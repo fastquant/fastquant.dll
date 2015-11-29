@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Linq;
 
 namespace SmartQuant
 {
@@ -7,6 +8,8 @@ namespace SmartQuant
 
     public class ProviderManager
     {
+        public ProviderList Providers { get; } = new ProviderList();
+
         public IDataSimulator DataSimulator { get; internal set; }
         public IExecutionSimulator ExecutionSimulator { get; internal set; }
 
@@ -19,5 +22,7 @@ namespace SmartQuant
         {
             throw new NotImplementedException();
         }
+
+        public void DisconnectAll() => Providers.TakeWhile(provider => provider.IsConnected).ToList().ForEach(provider=>provider.Disconnect());
     }
 }

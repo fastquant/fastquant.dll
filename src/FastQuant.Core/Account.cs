@@ -2,8 +2,33 @@
 
 namespace SmartQuant
 {
+    public class AccountReport : ExecutionMessage
+    {
+    }
+
     public class Account
     {
+        private Framework framework;
+
+        public Account(Framework framework)
+        {
+            this.framework = framework;
+        }
+
+        public double Value { get; internal set; }
+
+        public Account Parent { get; internal set; }
+
+        public void Add(AccountReport report)
+        {
+            Add(new AccountTransaction(report), true);
+        }
+
+        public void Add(AccountTransaction transaction, bool updateParent = true)
+        {
+            throw new NotImplementedException();
+        }
+
         public void Add(DateTime dateTime, double value, byte currencyId = 148, string text = null, bool updateParent = true)
         {
             throw new NotImplementedException();
@@ -68,6 +93,10 @@ namespace SmartQuant
 
         public AccountTransaction(Fill fill)
             : this(fill.DateTime, fill.CashFlow, fill.CurrencyId, fill.Text)
+        {
+        }
+
+        public AccountTransaction(AccountReport report)
         {
         }
     }

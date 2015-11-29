@@ -26,5 +26,6 @@
     public class EventManager
     {
         public BarFactory BarFactory { get; internal set; }
+        public int EventCount { get; internal set; }
     }
 }

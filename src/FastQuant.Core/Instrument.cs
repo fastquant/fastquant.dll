@@ -4,6 +4,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace SmartQuant
 {
@@ -29,6 +31,21 @@ namespace SmartQuant
 
     public class Instrument
     {
+        [Category("Appearance"), Description("Unique instrument id in the framework")]
+        public int Id { get; set; }
+
+        [Browsable(false)]
+        public Bid Bid { get; }
+
+        [Browsable(false)]
+        public Ask Ask { get; }
+
+        [Browsable(false)]
+        public Bar Bar { get; }
+
+        [Browsable(false)]
+        public Trade Trade { get; }
+
         public int Factor { get; internal set; }
 
         public string Symbol { get; internal set; }
@@ -37,6 +54,11 @@ namespace SmartQuant
     public class InstrumentList : IEnumerable<Instrument>
     {
         public Instrument this[string symbol] => Get(symbol);
+
+        public bool Contains(string symbol)
+        {
+            throw new NotImplementedException();
+        }
 
         public Instrument Get(string symbol)
         {

@@ -86,7 +86,7 @@ namespace SmartQuant
 
         public void StartStrategy()
         {
-            StartStrategy(Strategy, Strategy.Mode);
+            StartStrategy(Strategy, this.framework.StrategyManager.Mode);
         }
 
         public void StartStrategy(Strategy strategy)
@@ -96,9 +96,14 @@ namespace SmartQuant
 
         private void StartStrategy(Strategy strategy, StrategyMode mode)
         {
-            throw new NotImplementedException();
+            Console.WriteLine($"{DateTime.Now} Scenario::StartStrategy {mode}");
+            this.framework.StrategyManager.StartStrategy(strategy, mode);
+            while (strategy.Status != StrategyStatus.Stopped)
+            {
+                Thread.Sleep(10);
+            }
+            Console.WriteLine($"{DateTime.Now} Scenario::StartStrategy Done");
         }
-
     }
 
     public class ScenarioManager

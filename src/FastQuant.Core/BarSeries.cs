@@ -6,28 +6,25 @@ namespace SmartQuant
 {
     public class BarSeries : IEnumerable<Bar>, IIdNamedItem, IDataSeries, ISeries
     {
-        public Bar this[int index]
+        protected string name;
+        protected string description;
+        private int maxLength;
+
+        public int Id { get; }
+        public string Name { get { return this.name; } }
+
+        public List<Indicator> Indicators { get; } = new List<Indicator>();
+ 
+        public BarSeries(int maxLength)
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
         }
 
-        double this[int index]
+        public BarSeries(string name = "", string description = "", int maxLength = -1, int id = -1)
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        DataObject this[long index]
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            this.name = name;
+            this.description = description;
+            this.maxLength = maxLength;
+            Id = id;
         }
 
         public double this[int index, BarData barData]
@@ -40,7 +37,6 @@ namespace SmartQuant
 
         public int Count
         {
-            // Token: 0x060002DC RID: 732 RVA: 0x00004490 File Offset: 0x00002690
             get
             {
                 throw new NotImplementedException();
@@ -87,22 +83,6 @@ namespace SmartQuant
             }
         }
 
-        public int Id
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public List<Indicator> Indicators
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
         public double Last
         {
             get
@@ -119,7 +99,7 @@ namespace SmartQuant
             }
         }
 
-        public string Name
+        int ISeries.Count
         {
             get
             {
@@ -127,7 +107,23 @@ namespace SmartQuant
             }
         }
 
-        int ISeries.Count
+        long IDataSeries.Count
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public double this[int index]
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public DataObject this[long index]
         {
             get
             {

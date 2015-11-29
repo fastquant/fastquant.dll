@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Collections.Generic;
 
 namespace SmartQuant
 {
@@ -86,6 +87,11 @@ namespace SmartQuant
             
         }
 
+        public void AddInstruments(InstrumentList instruments)
+        {
+            throw new NotImplementedException();
+        }
+
         public void AddInstrument(Instrument instrument1)
         {
             throw new NotImplementedException();
@@ -140,6 +146,31 @@ namespace SmartQuant
         public bool HasPosition(Instrument instrument)
         {
             return Portfolio.HasPosition(instrument);
+        }
+
+        public bool HasPosition(Instrument instrument, PositionSide side, double qty)
+        {
+            return Portfolio.HasPosition(instrument, side, qty);
+        }
+
+        public bool HasLongPosition(Instrument instrument)
+        {
+            return Portfolio.HasLongPosition(instrument);
+        }
+
+        public bool HasLongPosition(Instrument instrument, double qty)
+        {
+            return Portfolio.HasLongPosition(instrument, qty);
+        }
+
+        public bool HasShortPosition(Instrument instrument)
+        {
+            return Portfolio.HasShortPosition(instrument);
+        }
+
+        public bool HasShortPosition(Instrument instrument, double qty)
+        {
+            return Portfolio.HasShortPosition(instrument, qty);
         }
 
         public Order SellOrder(Instrument instrument, double qty, string text = "")
@@ -263,6 +294,11 @@ namespace SmartQuant
         {
         }
 
+        internal double Objective()
+        {
+            throw new NotImplementedException();
+        }
+
         protected internal virtual void OnOrderReplaceRejected(Order order)
         {
         }
@@ -305,12 +341,19 @@ namespace SmartQuant
         [ReadOnly(true)]
         public virtual int AlgoId => -1;
 
-
         public bool IsConnected => true;
         public bool IsDisconnected => false;
 
         public new ProviderStatus Status { get; set; }
         public bool IsInstance { get; }
+
+        byte IProvider.Id
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
 
         public SellSideStrategy(Framework framework, string name): base(framework, name)
         {
@@ -362,6 +405,31 @@ namespace SmartQuant
 
         protected virtual void OnUnsubscribe(Instrument instrument)
         {
+        }
+
+        public void Subscribe(Instrument instrument)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Subscribe(InstrumentList instrument)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Unsubscribe(Instrument instrument)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Unsubscribe(InstrumentList instrument)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Send(ExecutionCommand command)
+        {
+            throw new NotImplementedException();
         }
     }
 
