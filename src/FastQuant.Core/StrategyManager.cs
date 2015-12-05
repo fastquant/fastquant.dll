@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) FastQuant Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
+using System;
 
 namespace SmartQuant
 {
@@ -8,7 +11,8 @@ namespace SmartQuant
         private int counter;
         private StrategyMode mode;
 
-        public Global Global { get; private set; }
+        public Global Global { get; } = new Global();
+
         public StrategyMode Mode
         {
             get
@@ -37,7 +41,9 @@ namespace SmartQuant
                 }
             }
         }
+
         public StrategyStatus Status { get; private set; }
+
         public Strategy Strategy { get; private set; }
 
         public StrategyPersistence Persistence { get; set; }
@@ -45,6 +51,16 @@ namespace SmartQuant
         public StrategyManager(Framework framework)
         {
             this.framework = framework;
+            Clear();
+        }
+
+        public void Clear()
+        {
+            lock (this)
+            {
+                this.counter = 101;
+                Global.Clear();
+            }
         }
 
         public int GetNextId()
@@ -65,6 +81,11 @@ namespace SmartQuant
         }
 
         public void StartStrategy(Strategy strategy, StrategyMode mode)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RegisterMarketDataRequest(IDataProvider dataProvider, InstrumentList instrumentList)
         {
             throw new NotImplementedException();
         }

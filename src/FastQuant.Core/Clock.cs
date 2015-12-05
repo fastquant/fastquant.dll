@@ -57,7 +57,6 @@ namespace SmartQuant
     {
         private DateTime dateTime;
         private ClockMode mode;
-        private ReminderEventQueue remindersQueue = new ReminderEventQueue();
 
         private Framework framework;
         private ClockType type;
@@ -65,6 +64,8 @@ namespace SmartQuant
         private long initTicks;
         private Stopwatch stopwatch;
         private Thread thread;
+
+        internal IEventQueue ReminderEventQueue { get; } = new ReminderEventQueue();
 
         public ClockResolution Resolution { get; set; }
 
@@ -123,9 +124,9 @@ namespace SmartQuant
                         }
                         if (this.isStandalone)
                         {
-                            while (!this.remindersQueue.IsEmpty() && this.remindersQueue.PeekDateTime() < value)
+                            while (!ReminderEventQueue.IsEmpty() && ReminderEventQueue.PeekDateTime() < value)
                             {
-                                var reminder = (Reminder)this.remindersQueue.Read();
+                                var reminder = (Reminder)ReminderEventQueue.Read();
                                 this.dateTime = reminder.dateTime;
                                 reminder.Execute();
                             }
@@ -187,13 +188,13 @@ namespace SmartQuant
                 return false;
             }
             reminder.Clock = this;
-            this.remindersQueue.Enqueue(reminder);
+            ReminderEventQueue.Enqueue(reminder);
             return true;
         }
 
         public void RemoveReminder(ReminderCallback callback, DateTime dateTime)
         {
-            remindersQueue.Remove(callback, dateTime);
+            ((ReminderEventQueue)ReminderEventQueue).Remove(callback, dateTime);
         }
 
         public void Clear()
@@ -211,13 +212,13 @@ namespace SmartQuant
             {
                 if (Mode == ClockMode.Realtime)
                 {
-                    if (!this.remindersQueue.IsEmpty())
+                    if (!ReminderEventQueue.IsEmpty())
                     {
-                        long ticks1 = this.remindersQueue.PeekDateTime().Ticks;
+                        long ticks1 = ReminderEventQueue.PeekDateTime().Ticks;
                         long ticks2 = this.framework.Clock.Ticks;
                         if (ticks1 <= ticks2)
                         {
-                            ((Reminder)this.remindersQueue.Read()).Execute();
+                            ((Reminder)ReminderEventQueue.Read()).Execute();
                         }
                         else if (ticks1 - ticks2 < 15000)
                         {

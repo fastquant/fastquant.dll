@@ -6,28 +6,16 @@ namespace SmartQuant
     public class EventPipe
     {
         private Framework framework;
-        private bool threaded;
-        private Thread thread;
         private LinkedList<IEventQueue> queues = new LinkedList<IEventQueue>();
         private EventTree tree = new EventTree();
-
-        private EventQueue hubQueue;
 
         public int Count => queues.Count;
 
         public EventPipe(Framework framework, bool threaded = false)
         {
             this.framework = framework;
-            this.threaded = threaded;
-            if (this.threaded)
-            {
-                this.hubQueue = new EventQueue(EventQueueId.All, EventQueueType.Master, EventQueuePriority.Normal,
-                    100000, null);
-                this.thread = new Thread(new ThreadStart(Run));
-                this.thread.Name = "Event Pipe Thread";
-                this.thread.IsBackground = true;
-                this.thread.Start();
-            }
+            if (threaded)
+                throw new NotSupportedException();
         }
 
         public void Add(IEventQueue queue)
@@ -52,22 +40,51 @@ namespace SmartQuant
             this.tree.Clear();
         }
 
-        public Event Dequeue() => null;
-
-        private void Run()
+        public Event Dequeue()
         {
-            while (true)
-            {
-                if (this.tree.IsEmpty())
-                    Thread.Sleep(1);
-                else
-                    this.hubQueue.Enqueue(this.tree.Read());
-            }
+            throw new NotSupportedException();
+        }
+
+        public bool IsEmpty()
+        {
+            for (var q = this.queues.First; q != null; q = q.Next)
+                if (!q.Data.IsEmpty())
+                    return false;
+
+            return this.tree.IsEmpty();
         }
 
         public Event Read()
         {
-            throw new NotImplementedException();
+            var node = this.queues.First;
+            var last_not_empty_q = node;
+
+            LinkedListNode<IEventQueue> linkedListNode2 = null;
+            while (node != null)
+            {
+                var q = node.Data;
+                if (!q.IsEmpty())
+                {
+                    var @event = q.Read();
+                    if (@event.TypeId == EventType.OnQueueClosed)
+                    {
+                        if (linkedListNode2 == null)
+                        {
+                            this.queues.First = node.Next;
+                        }
+                        else
+                        {
+                            linkedListNode2.Next = node.Next;
+                        }
+                        this.queues.Count--;
+                    }
+                    return @event;
+                }
+                linkedListNode2 = node;
+                node = node.Next;
+            }
+
+            return this.tree.IsEmpty() ? null : this.tree.Read();
         }
     }
 }

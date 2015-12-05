@@ -22,7 +22,22 @@ namespace SmartQuant
     }
 
     public class UserManager
-    { }
+    {
+        private Framework framework;
+        private UserServer server;
+
+        public UserManager(Framework framework, UserServer server)
+        {
+            this.framework = framework;
+            this.server = server;
+        }
+
+        public void Load()
+        {
+            this.server.Load();
+        }
+    }
+
     public class UserServer
     {
         private Framework framework;

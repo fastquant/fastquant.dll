@@ -102,35 +102,13 @@ namespace SmartQuant
         [XmlElement("QuantControllerAutoConnect")]
         public bool QuantControllerAutoConnect;
 
+        public string ServerFactoryType { get; set; }
+        public string DefaultDataSimulator { get; set; }
+        public string DefaultExecutionSimulator { get; set; }
+
         public void AddDefaultStreamers()
         {
-            var types = new string[]
-            {
-                "SmartQuant.DataObjectStreamer",
-                "SmartQuant.InstrumentStreamer",
-                "SmartQuant.AltIdStreamer",
-                "SmartQuant.LegStreamer", 
-                "SmartQuant.BidStreamer",
-                "SmartQuant.AskStreamer", 
-                "SmartQuant.QuoteStreamer", 
-                "SmartQuant.TradeStreamer",
-                "SmartQuant.BarStreamer", 
-                "SmartQuant.Level2SnapshotStreamer",
-                "SmartQuant.NewsStreamer",
-                "SmartQuant.FundamentalStreamer",
-                "SmartQuant.DataSeriesStreamer",
-                "SmartQuant.ExecutionCommandStreamer",
-                "SmartQuant.ExecutionReportStreamer",
-                "SmartQuant.PositionStreamer",
-                "SmartQuant.PortfolioStreamer",
-                "SmartQuant.ObjectTableStreamer",
-                "SmartQuant.DoubleStreamer",
-                "SmartQuant.Int16Streamer",
-                "SmartQuant.Int32Streamer",
-                "SmartQuant.Int64Streamer",
-                "SmartQuant.StringStreamer",
-                "SmartQuant.TimeSeriesItemStreamer"
-            };
+            var types = new string[] {};
 
             foreach (var name in types)
             {
@@ -143,18 +121,6 @@ namespace SmartQuant
         public void AddDefaultProviders()
         {
             var types = new Dictionary<string, bool>();
-            types.Add("SmartQuant.QR.QuantRouter", true);
-            types.Add("SmartQuant.QR2014.QuantRouter2014", true);
-
-            types.Add("SmartQuant.QB.QuantBase", true);
-            types.Add("SmartQuant.IB.IBTWS", true);
-            types.Add("SmartQuant.TT.TTFIX", true);
-            types.Add("SmartQuant.OEC.OpenECry", true);
-            types.Add("SmartQuant.IQ.IQFeed", true);
-            types.Add("SmartQuant.MNI.MNIProvider", true);
-            types.Add("SmartQuant.CX.Currenex", true);
-            types.Add("SmartQuant.HS.Hotspot", true);
-
             foreach (var pair in types)
             {
                 Type t = Type.GetType(pair.Key);
@@ -165,32 +131,33 @@ namespace SmartQuant
 
         public static Configuration DefaultConfiguaration()
         {
-            Configuration configuration = new Configuration();
+            var c = new Configuration();
 
-            configuration.IsInstrumentFileLocal = true;
-            configuration.InstrumentFileHost = "127.0.0.1";
-            configuration.InstrumentFileName = Path.Combine(Installation.DataDir.FullName, "instruments.quant");
-            configuration.IsDataFileLocal = true;
-            configuration.DataFileHost = "127.0.0.1";
-            configuration.DataFileName = Path.Combine(Installation.DataDir.FullName, "data.quant");
+            c.IsInstrumentFileLocal = true;
+            c.InstrumentFileHost = "127.0.0.1";
+            c.InstrumentFileName = Path.Combine(Installation.DataDir.FullName, "instruments.quant");
+            c.IsDataFileLocal = true;
+            c.DataFileHost = "127.0.0.1";
+            c.DataFileName = Path.Combine(Installation.DataDir.FullName, "data.quant");
 
-            configuration.IsOrderFileLocal = true;
-            configuration.OrderFileHost = "127.0.0.1";
-            configuration.OrderFilePort = 1000;
-            configuration.OrderFileName = Path.Combine(Installation.DataDir.FullName, "orders.quant");
+            c.IsOrderFileLocal = true;
+            c.OrderFileHost = "127.0.0.1";
+            c.OrderFilePort = 1000;
+            c.OrderFileName = Path.Combine(Installation.DataDir.FullName, "orders.quant");
 
-            configuration.DefaultCurrency = "USD";
-            configuration.DefaultExchange = "SMART";
-            configuration.DefaultDataProvider = "QuantRouter";
-            configuration.DefaultExecutionProvider = "QuantRouter";
-            configuration.ProviderManagerFileName = Path.Combine(Installation.ConfigDir.FullName, "providermanager.xml");
+            c.DefaultCurrency = "USD";
+            c.DefaultExchange = "SMART";
+            c.DefaultDataProvider = "QuantRouter";
+            c.DefaultExecutionProvider = "QuantRouter";
+            c.ProviderManagerFileName = Path.Combine(Installation.ConfigDir.FullName, "providermanager.xml");
 
-            configuration.Streamers = new List<StreamerPlugin>();
-            configuration.AddDefaultStreamers();
-            configuration.Providers = new List<ProviderPlugin>();
-            configuration.AddDefaultProviders();
+            c.Streamers = new List<StreamerPlugin>();
+            c.AddDefaultStreamers();
+            c.Providers = new List<ProviderPlugin>();
+            c.AddDefaultProviders();
 
-            return configuration;
+            c.ServerFactoryType = "DefaultServerFactory";
+            return c;
         }
     }
 }

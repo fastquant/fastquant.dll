@@ -18,11 +18,4 @@ namespace SmartQuant
         public const sbyte Minus = 2;
         public const sbyte ZeroMinus = 3;
     }
-
-    public enum RequestResult
-    {
-        Completed,
-        Cancelled,
-        Error,
-    }
 }

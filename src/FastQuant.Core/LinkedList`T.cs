@@ -9,9 +9,9 @@ namespace SmartQuant
 {
     public class LinkedListNode<T>
     {
-        public T Data;
+        public T Data { get; set; }
 
-        public LinkedListNode<T> Next;
+        public LinkedListNode<T> Next { get; set; }
 
         public LinkedListNode(T data)
         {
@@ -21,28 +21,34 @@ namespace SmartQuant
 
     public class LinkedList<T> : IEnumerable<T>
     {
-        public LinkedListNode<T> First;
-        public int Count;
+        public LinkedListNode<T> First { get; set; }
+        public int Count { get; set; }
+
+        public void Clear()
+        {
+            First = null;
+            Count = 0;
+        }
 
         public void Add(T data)
         {
             if (First == null)
             {
                 First = new LinkedListNode<T>(data);
-                ++Count;
+                Count++;
+                return;
             }
-            else
+
+            var n = First;
+            while (!n.Data.Equals(data))
             {
-                LinkedListNode<T> node;
-                for (node = First; node.Next != null; node = node.Next)
+                if (n.Next == null)
                 {
-                    if (node.Data.Equals(data))
-                        return;
+                    n.Next = new LinkedListNode<T>(data);
+                    Count++;
+                    break;
                 }
-                if (node.Data.Equals(data))
-                    return;
-                node.Next = new LinkedListNode<T>(data);
-                ++Count;
+                n = n.Next;
             }
         }
 
@@ -67,17 +73,11 @@ namespace SmartQuant
                     else
                     {
                         lastNode.Next = node.Next;
-                        --this.Count;
+                        --Count;
                         break;
                     }
                 }
             }
-        }
-
-        public void Clear()
-        {
-            First = null;
-            Count = 0;
         }
 
         public IEnumerator<T> GetEnumerator()
@@ -85,37 +85,21 @@ namespace SmartQuant
             return new Helper<T>(this);
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        class Helper<T1> : IEnumerator<T1>, IDisposable
+        class Helper<T1> : IEnumerator<T1>
         {
             private LinkedList<T1> list;
             private LinkedListNode<T1> node;
-            private int count;
+            private int pos;
 
-            public T1 Current
-            {
-                get
-                {
-                    return this.node.Data;
-                }
-            }
+            public T1 Current=> this.node.Data;
 
-            object IEnumerator.Current
-            {
-                get
-                {
-                    return Current;
-                }
-            }
+            object IEnumerator.Current => Current;
 
             public Helper(LinkedList<T1> list)
             {
                 this.list = list;
-                Reset();
             }
 
             public void Dispose()
@@ -124,17 +108,17 @@ namespace SmartQuant
 
             public bool MoveNext()
             {
-                if (this.count >= this.list.Count)
+                if (this.pos >= this.list.Count)
                     return false;
-                this.node = this.count == 0 ? this.list.First : this.node.Next;
-                ++this.count;
+                this.node = this.pos == 0 ? this.list.First : this.node.Next;
+                ++this.pos;
                 return true;
             }
 
             public void Reset()
             {
                 this.node = null;
-                this.count = 0;
+                this.pos = 0;
             }
         }
     }

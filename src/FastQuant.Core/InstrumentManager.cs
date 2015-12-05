@@ -7,7 +7,7 @@ namespace SmartQuant
     {
         private Framework framework;
 
-        public InstrumentServer Server { get; }
+        public InstrumentServer Server { get; set; }
         public InstrumentList Instruments { get; } = new InstrumentList();
 
         public InstrumentManager(Framework framework, InstrumentServer server)

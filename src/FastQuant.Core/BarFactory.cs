@@ -7,26 +7,6 @@ using System.Threading.Tasks;
 
 namespace SmartQuant
 {
-    public enum BarInput
-    {
-        Trade,
-        Bid,
-        Ask,
-        Middle,
-        Tick,
-        BidAsk,
-    }
-
-    public enum BarStatus : byte
-    {
-        Incomplete,
-        Complete,
-        Open,
-        High,
-        Low,
-        Close,
-    }
-
     public class BarFactoryItem
     {
         protected internal BarFactory factory;
@@ -451,6 +431,11 @@ namespace SmartQuant
         }
 
         public void Clear()
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void OnData(DataObject obj)
         {
             throw new NotImplementedException();
         }

@@ -2,6 +2,22 @@
 
 namespace SmartQuant
 {
+    public class OnException : Event
+    {
+        private Event ev;
+        private Exception exception;
+        private string source;
+
+        public override byte TypeId => EventType.OnException;
+
+        public OnException(string source, Event ev, Exception exception)
+        {
+            this.source = source;
+            this.ev = ev;
+            this.exception = exception;
+        }
+    }
+
     public class OnConnect : Event
     {
         public override byte TypeId => EventType.OnConnect;
@@ -213,13 +229,13 @@ namespace SmartQuant
         }
     }
 
-    public class OnPortfolioDeleted : Event
+    public class OnPortfolioRemoved : Event
     {
         public Portfolio Portfolio { get; private set; }
 
-        public override byte TypeId=> EventType.OnPortfolioDeleted;
+        public override byte TypeId=> EventType.OnPortfolioRemoved;
 
-        public OnPortfolioDeleted(Portfolio portfolio)
+        public OnPortfolioRemoved(Portfolio portfolio)
         {
             Portfolio = portfolio;
         }

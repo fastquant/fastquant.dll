@@ -2,7 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-//using static System.Math;
+using System.Linq;
+using static System.Math;
 
 namespace SmartQuant.Quant
 {
@@ -38,63 +39,57 @@ namespace SmartQuant.Quant
 
     public class FinMath
     {
-        public static double FV1(double P, double r, double n)
+        public static double FV1(double p, double r, double n)
         {
-            return P * (1.0 + r * n);
+            return p * (1.0 + r * n);
         }
 
-        public static double FV2(double P, double r, double n)
+        public static double FV2(double p, double r, double n)
         {
-            return P * Math.Pow(1.0 + r, n);
+            return p * Pow(1.0 + r, n);
         }
 
-        public static double FV3(double P, double r, double n, double m)
+        public static double FV3(double p, double r, double n, double m)
         {
-            return P * Math.Pow(1.0 + r / m, n * m);
+            return p * Pow(1.0 + r / m, n * m);
         }
 
-        public static double FV4(double P, double r, double n)
+        public static double FV4(double p, double r, double n)
         {
-            return P * Math.Exp(r * n);
+            return p * Exp(r * n);
         }
 
-        public static double PV1(double F, double r, double n)
+        public static double PV1(double f, double r, double n)
         {
-            return F / (1.0 + r * n);
+            return f / (1.0 + r * n);
+        }
+        
+        public static double PV2(double f, double r, double n)
+        {
+            return f / Pow(1.0 + r, n);
         }
 
-        public static double PV2(double F, double r, double n)
+        public static double PV3(double f, double r, double n, double m)
         {
-            return F / Math.Pow(1.0 + r, n);
+            return f / Pow(1.0 + r / m, n * m);
         }
 
-        public static double PV3(double F, double r, double n, double m)
+        public static double PV4(double f, double r, double n)
         {
-            return F / Math.Pow(1.0 + r / m, n * m);
+            return f / Exp(r * n);
         }
 
-        public static double PV4(double F, double r, double n)
+        public static double dPV2(double f, double r, double n)
         {
-            return F / Math.Exp(r * n);
+            return -f * n / Pow(1.0 + r, n + 1.0);
         }
 
-        public static double dPV2(double F, double r, double n)
+        public static double d2PV2(double f, double r, double n)
         {
-            return -F * n / Math.Pow(1.0 + r, n + 1.0);
+            return f* n * (n + 1.0) / Pow(1.0 + r, n + 2.0);
         }
 
-        public static double d2PV2(double F, double r, double n)
-        {
-            return F * n * (n + 1.0) / Math.Pow(1.0 + r, n + 2.0);
-        }
-
-        public static double Fact(int n)
-        {
-            double num = 1.0;
-            for (int index = 1; index <= n; ++index)
-                num *= (double)index;
-            return num;
-        }
+        public static double Fact(int n) => Enumerable.Range(1, n).Aggregate((s, i) => s * i);
 
         public static double C(int m, int n)
         {
@@ -142,14 +137,14 @@ namespace SmartQuant.Quant
             return 1.0 / Math.Sqrt(2.0 * Math.PI) * Math.Exp(-0.5 * z * z);
         }
 
-        public static double Call(double S, double X)
+        public static double Call(double s, double x)
         {
-            return Math.Max(0.0, S - X);
+            return Math.Max(0.0, s - x);
         }
 
-        public static double Put(double S, double X)
+        public static double Put(double s, double x)
         {
-            return Math.Max(0.0, X - S);
+            return Math.Max(0.0, x - s);
         }
 
         public static double Payoff(double S, double X, EPutCall PutCall)

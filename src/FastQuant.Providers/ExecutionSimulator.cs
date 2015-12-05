@@ -4,8 +4,6 @@ namespace SmartQuant
 {
     public class ExecutionSimulator : Provider, IExecutionSimulator
     {
-        private Framework framework;
-
         public TimeSpan Auction1 { get; set; }
         public TimeSpan Auction2 { get; set; }
         public BarFilter BarFilter { get; } = new BarFilter();

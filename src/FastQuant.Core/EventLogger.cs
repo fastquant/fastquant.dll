@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 
 namespace SmartQuant
 {
@@ -63,6 +64,20 @@ namespace SmartQuant
 
         public override void OnEvent(Event e)
         {
+        }
+    }
+
+    public class EventLoggerManager
+    {
+        private Dictionary<string, EventLogger> loggers = new Dictionary<string, EventLogger>();
+
+        public void Add(EventLogger logger) => this.loggers[logger.Name] = logger;
+
+        public EventLogger GetLogger(string name)
+        {
+            EventLogger result = null;
+            this.loggers.TryGetValue(name, out result);
+            return result;
         }
     }
 }

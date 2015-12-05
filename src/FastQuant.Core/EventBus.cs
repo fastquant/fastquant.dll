@@ -28,22 +28,24 @@ namespace SmartQuant
         private Event @event;
         private int queueCount;
 
-        //private IEventQueue clockQueue;
+        internal IEventQueue LocalClockEventQueue { get; set; }
+        internal IEventQueue ExchangeClockEventQueue { get; set; }
+
         internal EventBusIdleMode IdleMode { get; set; } = EventBusIdleMode.Wait;
         internal EventBusMode Mode { get; set; }
-        private ManualResetEventSlim resetEvent  = new ManualResetEventSlim(false);
+        private ManualResetEventSlim hasWorkEvent = new ManualResetEventSlim(false);
 
-        internal EventPipe LogPipe { get; }
+        internal EventPipe CommandPipe { get; }
         public EventPipe DataPipe { get; }
-        public EventPipe ServicePipe { get; }
         public EventPipe HistoricalPipe { get; }
         public EventPipe ExecutionPipe { get; }
+        public EventPipe ServicePipe { get; }
 
         public EventBus(Framework framework)
         {
             this.framework = framework;
             Mode = framework.Mode == FrameworkMode.Realtime ? EventBusMode.Realtime : EventBusMode.Simulation;
-            LogPipe = new EventPipe(framework, false);
+            CommandPipe = new EventPipe(framework, false);
             DataPipe = new EventPipe(framework, false);
             ExecutionPipe = new EventPipe(framework, false);
             ServicePipe  = new EventPipe(framework, false);
@@ -53,7 +55,7 @@ namespace SmartQuant
         public void Clear()
         {
             @event = null;
-            LogPipe.Clear();
+            CommandPipe.Clear();
             DataPipe.Clear();
             ServicePipe.Clear();
             HistoricalPipe.Clear();
@@ -69,7 +71,7 @@ namespace SmartQuant
 
         public void Attach(EventBus bus)
         {
-            var q = new EventQueue(EventQueueId.Data, EventQueueType.Master, EventQueuePriority.Normal, 25000, null);
+            var q = new EventQueue(EventQueueId.Data, EventQueueType.Master, EventQueuePriority.Normal, 25600, null);
             q.IsSynched = true;
             q.Name = $"attached {bus.framework.Name}";
             q.Enqueue(new OnQueueOpened(q));
@@ -95,6 +97,11 @@ namespace SmartQuant
         public Event Dequeue()
         {
             throw new NotImplementedException();
+        }
+
+        private bool iStree(Event e)
+        {
+            return e.TypeId != EventType.OnQueueOpened && e.TypeId != EventType.OnQueueClosed && e.TypeId != EventType.OnSimulatorStop && e.TypeId != EventType.OnSimulatorProgress;
         }
     }
 }

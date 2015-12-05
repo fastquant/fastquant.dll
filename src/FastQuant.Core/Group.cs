@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Threading;
 
 namespace SmartQuant
 {
@@ -164,6 +165,37 @@ namespace SmartQuant
             Value = value;
             OldValue = oldValue;
             UpdateType = updateType;
+        }
+    }
+
+    public class GroupManager
+    {
+        private Framework framework;
+        private int counter;
+
+        public List<Group> GroupList { get; } = new List<Group>();
+
+        public IdArray<Group> Groups { get; } = new IdArray<Group>(1024);
+
+        public GroupManager(Framework framework)
+        {
+            this.framework = framework;
+        }
+
+        public void Clear()
+        {
+            Groups.Clear();
+            GroupList.Clear();
+            this.counter = 0;
+        }
+
+        public void Add(Group group)
+        {
+            group.Id = Interlocked.Increment(ref this.counter);
+            Groups.Add(group.Id, group);
+            GroupList.Add(group);
+            group.Framework = this.framework;
+            this.framework.EventServer.OnLog(group);
         }
     }
 }

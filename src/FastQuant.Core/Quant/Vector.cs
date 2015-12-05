@@ -188,6 +188,11 @@ namespace SmartQuant.Quant
             return Enumerable.Range(0, NRows).All(i => this[i] == that[i]);
         }
 
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
         public void Print()
         {
             Print("F2");

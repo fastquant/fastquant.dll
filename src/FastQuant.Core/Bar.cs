@@ -33,6 +33,26 @@ namespace SmartQuant
         Session
     }
 
+    public enum BarInput
+    {
+        Trade,
+        Bid,
+        Ask,
+        Middle,
+        Tick,
+        BidAsk,
+    }
+
+    public enum BarStatus : byte
+    {
+        Incomplete,
+        Complete,
+        Open,
+        High,
+        Low,
+        Close,
+    }
+
     public class Bar : DataObject
     {
         private IdArray<double> fields;
@@ -45,7 +65,7 @@ namespace SmartQuant
 
         public DateTime CloseDateTime => DateTime;
 
-        public DateTime OpenDateTime { get; internal set; } = DateTime.MinValue;
+        public DateTime OpenDateTime { get; set; } = DateTime.MinValue;
 
         public TimeSpan Duration => CloseDateTime - OpenDateTime;
 

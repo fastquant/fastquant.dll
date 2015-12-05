@@ -21,61 +21,40 @@ namespace SmartQuant
 
     public class EventClient : IEventClient
     {
-        public byte[] EventTypes
+        private static int counter;
+        private EventDispatcher dispatcher;
+
+        public byte[] EventTypes { get; } = new byte[0];
+
+        public int Id { get; }
+
+        public bool IsOnEventEnabled { get; set; }
+
+        public bool IsOnQueueEnabled { get; set; }
+
+        public EventClient(EventDispatcher dispatcher)
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public int Id
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public bool IsOnEventEnabled
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public bool IsOnQueueEnabled
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-
-            set
-            {
-                throw new NotImplementedException();
-            }
+            this.dispatcher = dispatcher;
+            Id = counter++;
+            dispatcher.Add(this);
         }
 
         public void Emit(Event e)
         {
-            throw new NotImplementedException();
+            if (e.TypeId == EventType.Command)
+                ((Command)e).SenderId = Id;
+
+            this.dispatcher.Emit(e);
         }
 
         public void OnEvent(Event e)
         {
-            throw new NotImplementedException();
+            // noop
         }
 
         public void OnQueue()
         {
-            throw new NotImplementedException();
+            // noop
         }
     }
 }

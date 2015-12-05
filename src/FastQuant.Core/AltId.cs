@@ -1,6 +1,7 @@
 ﻿// Licensed under the Apache License, Version 2.0. 
 // Copyright (c) Alex Lee. All rights reserved.
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -14,18 +15,26 @@ namespace SmartQuant
 
         public string Exchange { get; set; }
 
+        public byte CurrencyId { get; set; }
+
         public AltId()
+        {
+            throw new NotSupportedException();
+        }
+
+        public AltId(byte providerId, string symbol, string exchange) : this(providerId, symbol, exchange, 0)
         {
         }
 
-        public AltId(byte providerId, string symbol, string exchange)
+        public AltId(byte providerId, string symbol, string exchange, byte currencyId)
         {
             ProviderId = providerId;
             Symbol = symbol;
             Exchange = exchange;
+            CurrencyId = currencyId;
         }
 
-        public override string ToString() => $"[{ProviderId}] {Symbol}@{Exchange}";
+        public override string ToString() => $"[{ProviderId}] {Symbol}@{Exchange} {CurrencyId}";
     }
 
     public class AltIdList : IEnumerable<AltId>

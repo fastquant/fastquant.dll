@@ -39,7 +39,7 @@ namespace SmartQuant
         protected internal string name;
         protected internal EventQueue queue;
         protected internal Framework framework;
-        
+
         public string Name => this.name;
 
         public Controller()
@@ -66,7 +66,7 @@ namespace SmartQuant
             {
                 this.queue = new EventQueue(EventQueueId.Service, EventQueueType.Master, EventQueuePriority.Normal, 100000, null);
                 this.queue.Enqueue(new OnQueueOpened(this.queue));
-                this.framework.Bus.LogPipe.Add(this.queue);
+                this.framework.Bus.CommandPipe.Add(this.queue);
             }
             this.queue.Enqueue(e);
         }
@@ -85,19 +85,75 @@ namespace SmartQuant
         private bool disposed;
         private bool isDisposable;
 
+        private DataServer dataServer;
+        private OrderServer orderServer;
+        private InstrumentServer instrumentServer;
+        private PortfolioServer portfolioServer;
+
         internal EventBus Bus => bus;
 
-        public string Name { get; internal set; }
+        public string Name { get; }
+
+        public bool IsExternalDataQueue { get; set; }
+        public bool IsDisposable { get; set; }
         public AccountDataManager AccountDataManager { get; }
+
         public Clock Clock { get; }
+
         public Clock ExchangeClock { get; }
-        public Configuration Configuration { get; }
+
+        public Configuration Configuration { get; private set; }
+
+        public StreamerManager StreamerManager { get; }
+
         public Controller Controller { get; set; }
+
         public DataFileManager DataFileManager { get; }
+
         public DataManager DataManager { get; }
+
         public EventManager EventManager { get; }
+
+        public EventLoggerManager EventLoggerManager { get; }
+
+        public SubscriptionManager SubscriptionManager { get; }
+
+        public ScenarioManager ScenarioManager { get; }
+
         public GroupManager GroupManager { get; }
+
+        public GroupDispatcher GroupDispatcher { get; set; }
+
         public InstrumentManager InstrumentManager { get; }
+
+        public InstrumentServer InstrumentServer
+        {
+            get { return this.instrumentServer; }
+            set
+            {
+                this.instrumentServer = value;
+                InstrumentManager.Server = value;
+            }
+        }
+
+        public ICurrencyConverter CurrencyConverter { get; set; }
+
+        public IDataProvider DataProvider => ProviderManager.GetDataProvider(Configuration.DefaultDataProvider);
+
+        public IExecutionProvider ExecutionProvider => ProviderManager.GetExecutionProvider(Configuration.DefaultExecutionProvider);
+
+        public DataServer DataServer
+        {
+            get
+            {
+                return this.dataServer;
+            }
+            set
+            {
+                this.dataServer = value;
+                DataManager.Server = value;
+            }
+        }
 
         public FrameworkMode Mode
         {
@@ -109,7 +165,7 @@ namespace SmartQuant
             {
                 if (this.mode != value)
                 {
-                    ProviderManager.DisconnectAll();
+                    ProviderManager?.DisconnectAll();
                     this.mode = value;
                     switch (this.mode)
                     {
@@ -136,10 +192,30 @@ namespace SmartQuant
         }
 
         public OrderManager OrderManager { get; }
+
+        public OrderServer OrderServer
+        {
+            get
+            {
+                return this.orderServer;
+            }
+            set
+            {
+                this.orderServer = value;
+                OrderManager.Server = value;
+            }
+        }
+
         public ProviderManager ProviderManager { get; }
+
+        public LicenseManager LicenseManager { get; }
+        
         public StatisticsManager StatisticsManager { get; }
+
         public StrategyManager StrategyManager { get; }
+
         public UserServer UserServer { get; }
+
         public UserManager UserManager { get; }
 
         public static Framework Current => instance = instance ?? new Framework("", FrameworkMode.Simulation, true);
@@ -147,29 +223,145 @@ namespace SmartQuant
         public EventServer EventServer { get; internal set; }
 
         public PortfolioManager PortfolioManager { get; internal set; }
-        public EventBus EventBus { get; internal set; }
-        public InstrumentServer InstrumentServer { get; internal set; }
 
-        public Framework(string name = "", FrameworkMode mode = FrameworkMode.Simulation, bool createServers = true)
+        public PortfolioServer PortfolioServer
+        {
+            get
+            {
+                return this.portfolioServer;
+            }
+            set
+            {
+                this.portfolioServer = value;
+                PortfolioManager.Server = value;
+            }
+        }
+
+        public EventBus EventBus { get; }
+
+        internal IServerFactory ServerFactory { get; }
+
+        public Framework(string name = "", FrameworkMode mode = FrameworkMode.Simulation, bool createServers = true) : this(name, mode, createServers, externalBus: null, instrumentServer: null, dataServer: null)
         {
         }
 
-        public Framework(string name, InstrumentServer instrumentServer, DataServer dataServer)
+        public Framework(string name, InstrumentServer instrumentServer, DataServer dataServer) : this(name, FrameworkMode.Simulation, createServers: false, externalBus: null, instrumentServer: instrumentServer, dataServer: dataServer)
         {
         }
 
-        public Framework(string name, EventBus externalBus, InstrumentServer instrumentServer, DataServer dataServer = null)
+        public Framework(string name, EventBus externalBus, InstrumentServer instrumentServer, DataServer dataServer = null) : this(name, FrameworkMode.Simulation, createServers: false, externalBus: externalBus, instrumentServer: instrumentServer, dataServer: dataServer)
         {
+        }
+
+        private Framework(string name, FrameworkMode mode, bool createServers, EventBus externalBus, InstrumentServer instrumentServer, DataServer dataServer)
+        {
+            Name = name;
+            LoadConfiguration();
+            // Setup events compoents setup
+            EventBus = new EventBus(this);
+            Clock = new Clock(this, ClockType.Local, false);
+            EventBus.LocalClockEventQueue = Clock.ReminderEventQueue;
+            ExchangeClock = new Clock(this, ClockType.Exchange, false);
+            EventBus.ExchangeClockEventQueue = ExchangeClock.ReminderEventQueue;
+            if (externalBus != null)
+                externalBus.Attach(EventBus);
+            EventServer = new EventServer(this, EventBus);
+            EventManager = new EventManager(this, EventBus);
+
+            // Now we can setup Mode since the Clock is all set
+            Mode = mode;
+
+            // Setup streamers
+            StreamerManager = new StreamerManager();
+            foreach (var streamer in Configuration.Streamers)
+            {
+                var type = Type.GetType(streamer.TypeName);
+                var s = (ObjectStreamer)Activator.CreateInstance(type);
+                StreamerManager.Add(s);
+            }
+
+            // Create Servers
+            ServerFactory = (IServerFactory)Activator.CreateInstance(Type.GetType(Configuration.ServerFactoryType));
+            InstrumentServer = instrumentServer ?? ServerFactory.CreateInstrumentServer();
+            DataServer = dataServer ?? ServerFactory.CreateDataServer();
+            OrderServer = ServerFactory.CreateOrderServer();
+            PortfolioServer = ServerFactory.CreatePortfolioServer();
+            UserServer = ServerFactory.CreateUserServer();
+            InstrumentManager = new InstrumentManager(this, InstrumentServer);
+            InstrumentManager.Load();
+            DataManager = new DataManager(this, DataServer);
+            UserManager = new UserManager(this, UserServer);
+            UserManager.Load();
+            OrderManager = new OrderManager(this, OrderServer);
+            PortfolioManager = new PortfolioManager(this, PortfolioServer);
+
+            // Create Providers
+            ProviderManager = new ProviderManager(this);
+            ProviderManager.DataSimulator = (IDataSimulator)Activator.CreateInstance(Type.GetType(Configuration.DefaultDataSimulator));
+            ProviderManager.ExecutionSimulator = (IExecutionSimulator)Activator.CreateInstance(Type.GetType(Configuration.DefaultExecutionSimulator));
+
+            // Other stuff
+            EventLoggerManager = new EventLoggerManager();
+            SubscriptionManager = new SubscriptionManager(this);
+            ScenarioManager = new ScenarioManager(this);
+            StrategyManager = new StrategyManager(this);
+            StatisticsManager = new StatisticsManager(this);
+            GroupManager = new GroupManager(this);
+            AccountDataManager = new AccountDataManager(this);
+            LicenseManager = new LicenseManager();
+            CurrencyConverter = new CurrencyConverter(this);
+            DataFileManager = new DataFileManager(Installation.DataDir.FullName);
+
+            Framework.instance = Framework.instance ?? this;
+        }
+
+        ~Framework()
+        {
+            Dispose(false);
         }
 
         public void Dispose()
         {
+            if (IsDisposable)
+            {
+                Console.WriteLine($"Framework::Dispose {Name}");
+                Dispose(true);
+                GC.SuppressFinalize(this);
+                return;
+            }
+            Console.WriteLine($"Framework::Dispose Framework is not disposable{Name} ");
+        }
+
+        private void Dispose(bool dispoing)
+        {
+
+        }
+
+        public void Clear()
+        {
             throw new NotImplementedException();
         }
 
-        internal void Clear()
+        public void Dump()
+        {
+            Console.WriteLine($"Framework {Name}");
+            DataManager.Dump();
+        }
+
+        public void Load(BinaryReader reader)
         {
             throw new NotImplementedException();
+        }
+
+        public void Save(BinaryWriter writer)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void LoadConfiguration()
+        {
+            //var text = File.ReadAllText(Path.Combine(Installation.ConfigDir.FullName, "configuration.xml"));
+            Configuration = Configuration.DefaultConfiguaration();
         }
     }
 

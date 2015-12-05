@@ -29,16 +29,23 @@ namespace SmartQuant
         Call
     }
 
+    public enum RequestResult
+    {
+        Completed,
+        Cancelled,
+        Error,
+    }
+
     public class Instrument
     {
         [Category("Appearance"), Description("Unique instrument id in the framework")]
         public int Id { get; set; }
 
         [Browsable(false)]
-        public Bid Bid { get; }
+        public Bid Bid { get; internal set; }
 
         [Browsable(false)]
-        public Ask Ask { get; }
+        public Ask Ask { get; internal set; }
 
         [Browsable(false)]
         public Bar Bar { get; }
@@ -49,6 +56,10 @@ namespace SmartQuant
         public int Factor { get; internal set; }
 
         public string Symbol { get; internal set; }
+
+        public byte CCY1 { get; set; }
+
+        public byte CCY2 { get; set; }
     }
 
     public class InstrumentList : IEnumerable<Instrument>

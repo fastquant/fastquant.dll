@@ -32,10 +32,7 @@ namespace SmartQuant
             Attributes = attributes;
         }
 
-        public override string ToString()
-        {
-            return $"{ Name } = { Value }";
-        }
+        public override string ToString() => $"{Name} = {Value}";
     }
 
     public class ParameterAttribute : Attribute

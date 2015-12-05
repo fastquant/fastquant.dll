@@ -8,70 +8,6 @@ using System.Threading;
 
 namespace SmartQuant
 {
-    public interface IEventQueue
-    {
-        byte Id { get; }
-
-        byte Type { get; }
-
-        bool IsSynched { get; set; }
-
-        string Name { get; }
-
-        byte Priority { get; }
-
-        long Count { get; }
-
-        long FullCount { get; }
-
-        long EmptyCount { get; }
-
-        Event Peek();
-
-        DateTime PeekDateTime();
-
-        Event Read();
-
-        void Write(Event obj);
-
-        Event Dequeue();
-
-        void Enqueue(Event obj);
-
-        bool IsEmpty();
-
-        bool IsFull();
-
-        void Clear();
-
-        void ResetCounts();
-    }
-
-    public class EventQueueId
-    {
-        public const byte All = 0;
-        public const byte Data = 1;
-        public const byte Execution = 2;
-        public const byte Reminder = 3;
-        public const byte Service = 4;
-    }
-
-    public class EventQueuePriority
-    {
-        public const byte Highest = 0;
-        public const byte High = 1;
-        public const byte Normal = 2;
-        public const byte Low = 3;
-        public const byte Lowest = 4;
-
-    }
-
-    public class EventQueueType
-    {
-        public const byte Master = 0;
-        public const byte Slave = 1;
-    }
-
     // This implemetation is not thread-safe. Use carefully!
     public class EventQueue : IComparable<IEventQueue>, IEventQueue
     {
@@ -80,17 +16,17 @@ namespace SmartQuant
         private Event[] events;
         internal EventBus bus;
 
-        public byte Id { get; private set; }
+        public byte Id { get; }
 
-        public byte Type { get; private set; }
+        public byte Type { get; }
 
-        public int Size { get; private set; }
+        public int Size { get; }
 
         public bool IsSynched { get; set; }
 
-        public string Name { get; internal set; }
+        public string Name { get; set; }
 
-        public byte Priority { get; private set; }
+        public byte Priority { get; }
 
         public long Count => EnqueueCount - DequeueCount;
 
@@ -102,7 +38,7 @@ namespace SmartQuant
 
         public long EmptyCount { get; private set; }
 
-        public EventQueue(byte id = EventQueueId.All, byte type = EventQueueType.Master, byte priority = EventQueuePriority.Normal, int size = 100000, EventBus bus = null)
+        public EventQueue(byte id = EventQueueId.All, byte type = EventQueueType.Master, byte priority = EventQueuePriority.Normal, int size = 102400, EventBus bus = null)
         {
             Id = id;
             Type = type;
@@ -125,7 +61,7 @@ namespace SmartQuant
 
         public Event Read()
         {
-            Event e = Peek();
+            var e = Peek();
             this.readPosition = (this.readPosition + 1) % Size;
             ++DequeueCount;
             return e;
@@ -142,10 +78,6 @@ namespace SmartQuant
             this.events[this.writePosition] = obj;
             this.writePosition = (this.writePosition + 1) % Size;
             ++EnqueueCount;
-            if (Count == 1 && this.bus?.IdleMode == EventBusIdleMode.Wait)
-            {
-                //this.bus.manualResetEventSlim_0.Set();
-            }
         }
 
         public Event Dequeue()
@@ -172,18 +104,11 @@ namespace SmartQuant
 
         public bool IsFull() => (this.writePosition + 1) % Size == this.readPosition;
 
-
         public void ResetCounts() => FullCount = EmptyCount = 0;
 
         public int CompareTo(IEventQueue other) => PeekDateTime().CompareTo(other.PeekDateTime());
 
         public override string ToString() => $"Id: {Id} Count = {Count} Enqueue = {EnqueueCount} Dequeue = {DequeueCount}";
-
-        internal void Enqueue(Event[] events)
-        {
-            foreach (var e in events)
-                Enqueue(e);
-        }
     }
 
     public class EventSortedSet : IEnumerable
@@ -205,7 +130,7 @@ namespace SmartQuant
         public void Add(Event e)
         {
             // Don't care what finding algorithm it uses at the moment.
-            var i = this.events.FindIndex(new Predicate<Event>(evt => evt.DateTime > e.DateTime));
+            var i = this.events.FindIndex(evt => evt.DateTime > e.DateTime);
             if (i == -1)
                 this.events.Add(e);
             else

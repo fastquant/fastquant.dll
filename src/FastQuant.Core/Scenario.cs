@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) FastQuant Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
+using System;
 using System.Threading;
 
 namespace SmartQuant
@@ -44,19 +47,22 @@ namespace SmartQuant
         public InstrumentManager InstrumentManager => this.framework.InstrumentManager;
 
         public OrderManager OrderManager => this.framework.OrderManager;
+
         public ProviderManager ProviderManager => this.framework.ProviderManager;
+
         public StatisticsManager StatisticsManager => this.framework.StatisticsManager;
+
         public StrategyManager StrategyManager => this.framework.StrategyManager;
-
-
+        
         public Scenario(Framework framework)
         {
             this.framework = framework;
-            framework.GroupManager.Clear();
+            this.framework.GroupManager.Clear();
         }
 
         public virtual void Run()
         {
+            // noop
         }
 
         public void RunWithLogger(string solutionName)
@@ -98,10 +104,11 @@ namespace SmartQuant
         {
             Console.WriteLine($"{DateTime.Now} Scenario::StartStrategy {mode}");
             this.framework.StrategyManager.StartStrategy(strategy, mode);
+
+            // Wait for completion
             while (strategy.Status != StrategyStatus.Stopped)
-            {
                 Thread.Sleep(10);
-            }
+
             Console.WriteLine($"{DateTime.Now} Scenario::StartStrategy Done");
         }
     }
@@ -110,8 +117,6 @@ namespace SmartQuant
     {
         private Framework framework;
 
-        private Thread thread;
-
         public Scenario Scenario { get; set; }
 
         public ScenarioManager(Framework framework)
@@ -119,20 +124,16 @@ namespace SmartQuant
             this.framework = framework;
         }
 
-        private void Run()
-        {
-            Scenario.Run();
-        }
-
         public void Start()
         {
             if (Scenario != null)
             {
                 this.framework.Clear();
-                this.thread = new Thread(new ThreadStart(Run));
-                this.thread.Name = "Scenario Manager Thread";
-                this.thread.IsBackground = true;
-                this.thread.Start();
+                new Thread(() => Scenario.Run())
+                {
+                    Name = "Scenario Manager Thread",
+                    IsBackground = true
+                }.Start();
             }
         }
 

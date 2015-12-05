@@ -33,6 +33,11 @@ namespace SmartQuant
             throw new NotImplementedException();
         }
 
+        internal void OnLog(Group group)
+        {
+            throw new NotImplementedException();
+        }
+
         internal void OnPositionOpened(Portfolio portfolio, Position position, bool queued)
         {
             throw new NotImplementedException();

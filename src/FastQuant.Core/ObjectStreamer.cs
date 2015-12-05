@@ -5,6 +5,13 @@ namespace SmartQuant
 {
     public class ObjectStreamer
     {
+        protected internal Type type;
+        protected internal byte typeId;
+        protected byte version;
+        protected internal StreamerManager streamerManager;
+
+        public StreamerManager StreamerManager => this.streamerManager;
+        
         public ObjectStreamer()
         {
             this.type = typeof(object);
@@ -17,13 +24,5 @@ namespace SmartQuant
         public virtual void Write(BinaryWriter writer, object obj)
         {
         }
-
-        public StreamerManager StreamerManager => this.streamerManager;
-
-        protected internal StreamerManager streamerManager;
-
-        protected internal Type type;
-        protected internal byte typeId;
-        protected byte version;
     }
 }

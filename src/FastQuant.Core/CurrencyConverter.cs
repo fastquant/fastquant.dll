@@ -217,4 +217,68 @@ namespace SmartQuant
             return amount;
         }
     }
+
+    public class CurrencyConverterFX : ICurrencyConverter
+    {
+        private IdArray<IdArray<Instrument>> mappings = new IdArray<IdArray<Instrument>>(256);
+
+        public DataManager DataManager => Framework.DataManager;
+
+        public Framework Framework { get; }
+
+        public CurrencyConverterFX(Framework framework)
+        {
+            Framework = framework;
+        }
+
+        public void Add(Instrument instrument)
+        {
+            if (instrument.CCY1 != 0 && instrument.CCY2 != 0)
+            {
+                if (this.mappings[instrument.CCY1] == null)
+                    this.mappings[instrument.CCY1] = new IdArray<Instrument>(256);
+
+                this.mappings[instrument.CCY1][instrument.CCY2] = instrument;
+            }
+        }
+
+        public virtual double Convert(double amount, byte fromCurrencyId, byte toCurrencyId)
+        {
+            if (fromCurrencyId == toCurrencyId)
+                return amount;
+
+            var instrument = this.mappings[fromCurrencyId]?[toCurrencyId];
+            if (instrument != null)
+            {
+                double price = GetPrice(instrument);
+                return price != 0.0 ? amount*price : amount;
+            }
+
+            instrument = this.mappings[toCurrencyId]?[fromCurrencyId];
+            if (instrument != null)
+            {
+                double price = GetPrice(instrument);
+                return price != 0.0 ? amount/price : amount;
+            }
+
+            return amount;
+        }
+
+        private double GetPrice(Instrument instrument)
+        {
+            if (instrument.Bid != null)
+                return instrument.Bid.Price;
+
+            if (instrument.Ask != null)
+                return instrument.Ask.Price;
+          
+            if (instrument.Trade != null)
+                return instrument.Trade.Price;
+
+            if (instrument.Bar != null)
+                return instrument.Bar.Close;
+
+            return 0;
+        }
+    }
 }
