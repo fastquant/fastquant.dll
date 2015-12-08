@@ -281,7 +281,9 @@ namespace SmartQuant
             }
 
             // Create Servers
-            ServerFactory = (IServerFactory)Activator.CreateInstance(Type.GetType(Configuration.ServerFactoryType));
+            ServerFactory = (IServerFactory)Activator.CreateInstance(Type.GetType("SmartQuant.DefaultServerFactory,FastQuant.Servers"));
+            //ServerFactory = new DefaultServerFactory();
+
             InstrumentServer = instrumentServer ?? ServerFactory.CreateInstrumentServer();
             DataServer = dataServer ?? ServerFactory.CreateDataServer();
             OrderServer = ServerFactory.CreateOrderServer();

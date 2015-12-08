@@ -45,9 +45,6 @@ namespace SmartQuant
             Size = size;
         }
 
-        public override string ToString()
-        {
-            return $"Tick {DateTime} {ProviderId} {InstrumentId} {Price} {Size}";
-        }
+        public override string ToString() => $"Tick {DateTime} {ProviderId} {InstrumentId} {Price} {Size}";
     }
 }

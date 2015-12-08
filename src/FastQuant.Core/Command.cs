@@ -138,6 +138,7 @@ namespace SmartQuant
     public class Response : Message
     {
         public override byte TypeId => EventType.Response;
+
         public int CommandId { get; }
 
         public Response()

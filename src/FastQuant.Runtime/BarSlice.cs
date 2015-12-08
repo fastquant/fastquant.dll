@@ -13,7 +13,7 @@ namespace SmartQuant
         public long Size { get; private set; }
 
         public BarSlice(Bar bar)
-            : this(bar.dateTime, bar.Size)
+            : this(bar.DateTime, bar.Size)
         {
         }
 

@@ -41,9 +41,9 @@ namespace SmartQuant
 
     public class ParameterList : DataObject
     {
-        internal List<Parameter> parameters = new List<Parameter>();
+        private List<Parameter> parameters = new List<Parameter>();
 
-        internal List<string> methods;
+        private List<string> methods;
 
         public string Name { get; set; }
 

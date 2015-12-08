@@ -39,12 +39,12 @@ namespace SmartQuant
                 for (int i = 0; i < Count; i++)
                 {
                     var reminder = (Reminder)this.events[i];
-                    if (reminder.Callback == callback && reminder.dateTime == dateTime)
+                    if (reminder.Callback == callback && reminder.DateTime == dateTime)
                     {
                         this.events.RemoveAt(i);
                         if (i == 0 && this.events.Count != 0)
                         {
-                            this.dateTime = this.events[0].dateTime;
+                            this.dateTime = this.events[0].DateTime;
                         }
                         break;
                     }
@@ -127,7 +127,7 @@ namespace SmartQuant
                             while (!ReminderEventQueue.IsEmpty() && ReminderEventQueue.PeekDateTime() < value)
                             {
                                 var reminder = (Reminder)ReminderEventQueue.Read();
-                                this.dateTime = reminder.dateTime;
+                                this.dateTime = reminder.DateTime;
                                 reminder.Execute();
                             }
                         }
@@ -182,9 +182,9 @@ namespace SmartQuant
 
         public bool AddReminder(Reminder reminder)
         {
-            if (reminder.dateTime < this.dateTime)
+            if (reminder.DateTime < this.dateTime)
             {
-                Console.WriteLine($"Clock::AddReminder ({this.type}) Can not set reminder to the past. Clock datetime = {DateTime.ToString("dd.MM.yyyy HH:mm:ss.ffff")} Reminder datetime = {reminder.dateTime.ToString("dd.MM.yyyy HH: mm:ss.ffff")} Reminder object = {reminder.Data}");
+                Console.WriteLine($"Clock::AddReminder ({this.type}) Can not set reminder to the past. Clock datetime = {DateTime.ToString("dd.MM.yyyy HH:mm:ss.ffff")} Reminder datetime = {reminder.DateTime.ToString("dd.MM.yyyy HH: mm:ss.ffff")} Reminder object = {reminder.Data}");
                 return false;
             }
             reminder.Clock = this;

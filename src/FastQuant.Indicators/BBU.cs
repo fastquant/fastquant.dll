@@ -14,15 +14,15 @@ namespace SmartQuant.Indicators
         protected BarData barData;
 
         [Category("Parameters"), Description("")]
-        public BarData BarData
+        public int Length
         {
             get
             {
-                return this.barData;
+                return this.length;
             }
             set
             {
-                this.barData = value;
+                this.length = value;
                 this.Init();
             }
         }
@@ -42,24 +42,24 @@ namespace SmartQuant.Indicators
         }
 
         [Category("Parameters"), Description("")]
-        public int Length
+        public BarData BarData
         {
             get
             {
-                return this.length;
+                return this.barData;
             }
             set
             {
-                this.length = value;
+                this.barData = value;
                 this.Init();
             }
         }
 
-        public BBU(ISeries input, int length, double k, BarData barData = BarData.Close)
+        public BBU(ISeries input, int length, double k, BarData barData = BarData.Close):base(input)
         {
             this.length = length;
-            this.barData = barData;
             this.k = k;
+            this.barData = barData;
             Init();
         }
 
@@ -73,20 +73,16 @@ namespace SmartQuant.Indicators
 
         public override void Calculate(int index)
         {
-            double num = BBU.Value(this.input, index, this.length, this.k, this.barData);
-            if (!double.IsNaN(num))
-            {
-                base.Add(this.input.GetDateTime(index), num);
-            }
+            double bbu = Value(this.input, index, this.length, this.k, this.barData);
+            if (!double.IsNaN(bbu))
+                Add(this.input.GetDateTime(index), bbu);
         }
 
         public static double Value(ISeries input, int index, int length, double k, BarData barData = BarData.Close)
         {
-            if (index >= length - 1)
-            {
-                return SMA.Value(input, index, length, barData) + k * SMD.Value(input, index, length, barData);
-            }
-            return double.NaN;
+            return index >= length - 1
+                ? SMA.Value(input, index, length, barData) + k*SMD.Value(input, index, length, barData)
+                : double.NaN;
         }
     }
 }

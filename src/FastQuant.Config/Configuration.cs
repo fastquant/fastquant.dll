@@ -26,7 +26,7 @@ namespace SmartQuant
             X64 = x64;
         }
 
-        public override string ToString() => $"{TypeName} {(X64 ? 1 : 0).ToString()}";
+        public override string ToString() => $"{TypeName} {(X64 ? 1 : 0)}";
     }
 
     public class StreamerPlugin

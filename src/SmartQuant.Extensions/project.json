@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "FastQuant.Core": "",
+	   "FastQuant.Config": "",
+	      "FastQuant.Runtime": ""
+  },
+  "frameworks": {
+    "dnx451": { },
+    "dnxcore50": {
+      "dependencies": {
+        "System.Console": "4.0.0-beta-*",
+        "System.IO.FileSystem": "4.0.1-beta-*",
+        "System.Runtime.Extensions": "4.0.11-beta-*"
+      }
+    }
+  }
+}

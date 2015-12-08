@@ -7,13 +7,7 @@ namespace SmartQuant
 {
     public class Quote : DataObject
     {
-        public override byte TypeId
-        {
-            get
-            {
-                return DataObjectType.Quote;
-            }
-        }
+        public override byte TypeId => DataObjectType.Quote;
 
         public Bid Bid { get; private set; }
 

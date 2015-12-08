@@ -232,9 +232,9 @@ namespace SmartQuant
 
             // Adjust clock
             if (this.framework.Clock.Mode == ClockMode.Simulation)
-                this.framework.Clock.DateTime = bid.dateTime;
+                this.framework.Clock.DateTime = bid.DateTime;
             else
-                bid.dateTime = this.framework.Clock.DateTime;
+                bid.DateTime = this.framework.Clock.DateTime;
             //TODO:WTF???
             //if (bid.ExchangeDateTime > this.framework.ExchangeClock.DateTime)
             //    this.framework.ExchangeClock.DateTime = bid.ExchangeDateTime;

@@ -2,16 +2,8 @@
 
 namespace SmartQuant
 {
-    internal interface IServerFactory
-    {
-        InstrumentServer CreateInstrumentServer(params object[] args);
-        DataServer CreateDataServer(params object[] args);
-        OrderServer CreateOrderServer(params object[] args);
-        PortfolioServer CreatePortfolioServer(params object[] args);
-        UserServer CreateUserServer(params object[] args);
-    }
 
-    class DefaultServerFactory : IServerFactory
+    public class DefaultServerFactory : IServerFactory
     {
         public DataServer CreateDataServer(params object[] args)
         {
@@ -20,7 +12,7 @@ namespace SmartQuant
 
         public InstrumentServer CreateInstrumentServer(params object[] args)
         {
-            throw new NotImplementedException();
+            return new FileInstrumentServer((Framework)args[0], (string)args[1]);
         }
 
         public OrderServer CreateOrderServer(params object[] args)

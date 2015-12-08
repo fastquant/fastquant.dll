@@ -53,6 +53,13 @@ namespace SmartQuant
         [Browsable(false)]
         public Trade Trade { get; }
 
+        [Browsable(false)]
+        public ObjectTable Fields { get; } = new ObjectTable();
+
+        public List<Leg> Legs { get; } = new List<Leg>();
+
+        public AltIdList AltId { get; } = new AltIdList();
+
         public int Factor { get; internal set; }
 
         public string Symbol { get; internal set; }
@@ -60,6 +67,12 @@ namespace SmartQuant
         public byte CCY1 { get; set; }
 
         public byte CCY2 { get; set; }
+
+        internal Framework Framework { get; set; }
+
+        internal Instrument()
+        {
+        }
     }
 
     public class InstrumentList : IEnumerable<Instrument>

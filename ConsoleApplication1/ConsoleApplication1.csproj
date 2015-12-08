@@ -62,6 +62,12 @@
       <Link>dnxcore50\FastQuant.Statistics.dll</Link>
     </DNXCORE50Assemblies>
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="SmartQuant, Version=1.2.0.0, Culture=neutral, PublicKeyToken=023ca4f8a69375d5, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files\SmartQuant Ltd\OpenQuant 2014\SmartQuant.dll</HintPath>
+    </Reference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -78,11 +84,4 @@
   <Target Name="MergeAssembliesDnxCore50">
     <ILMergeTool InputAssemblies="@(DNXCORE50Assemblies)" OutputFile="$(MergedOutDir)\dnxcore50\SmartQuant.dll" ToolPath="$(SolutionDir)packages\ILMerge.Tools.2.14.1208.49\tools\ILMerge.exe" />
   </Target>
-  <ItemGroup />
-  <ItemGroup>
-    <Reference Include="SmartQuant, Version=1.2.0.0, Culture=neutral, PublicKeyToken=023ca4f8a69375d5, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files\SmartQuant Ltd\OpenQuant 2014\SmartQuant.dll</HintPath>
-    </Reference>
-  </ItemGroup>
 </Project>

@@ -132,12 +132,12 @@ namespace SmartQuant
 
         protected virtual DateTime GetBarOpenDateTime(DataObject obj)
         {
-            return obj.dateTime;
+            return obj.DateTime;
         }
 
         protected virtual DateTime GetBarCloseDateTime(DataObject obj)
         {
-            return obj.dateTime;
+            return obj.DateTime;
         }
 
         protected virtual DateTime GetDataObjectDateTime(DataObject obj, ClockType type)
@@ -212,7 +212,7 @@ namespace SmartQuant
 
         protected internal override void OnReminder(DateTime datetime)
         {
-            this.bar.dateTime = this.type == ClockType.Local ? datetime : this.factory.framework.Clock.DateTime;
+            this.bar.DateTime = this.type == ClockType.Local ? datetime : this.factory.framework.Clock.DateTime;
             EmitBar();
         }
     }
@@ -318,9 +318,9 @@ namespace SmartQuant
         protected internal override void OnReminder(DateTime datetime)
         {
             if (this.type == ClockType.Local)
-                this.bar.dateTime = datetime;
+                this.bar.DateTime = datetime;
             else
-                this.bar.dateTime = this.factory.framework.Clock.DateTime;
+                this.bar.DateTime = this.factory.framework.Clock.DateTime;
             EmitBar();
         }
     }

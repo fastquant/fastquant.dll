@@ -1,8 +1,13 @@
-﻿using System;
+﻿// Copyright (c) FastQuant Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
+using System;
 using System.ComponentModel;
+using System.Linq;
 
 namespace SmartQuant.Indicators
 {
+    [Serializable]
     public class SMA : Indicator
     {
         protected BarData barData;
@@ -18,7 +23,7 @@ namespace SmartQuant.Indicators
             set
             {
                 this.barData = value;
-                this.Init();
+                Init();
             }
         }
 
@@ -32,7 +37,7 @@ namespace SmartQuant.Indicators
             set
             {
                 this.length = value;
-                this.Init();
+                Init();
             }
         }
 
@@ -43,13 +48,30 @@ namespace SmartQuant.Indicators
             Init();
         }
 
+        //TODO: reduce it!
         public override void Calculate(int index)
         {
+            if (index >= this.length - 1)
+            {
+                double num = 0;
+                if (index == this.length - 1)
+                {
+                    for (int i = index; i >= index - this.length + 1; i--)
+                    {
+                        num += this.input[i, this.barData] / this.length;
+                    }
+                }
+                else
+                {
+                    num = base[this.input.GetDateTime(index - 1), SearchOption.ExactFirst] + (this.input[index, this.barData] - this.input[index - this.length, this.barData]) / this.length;
+                }
+                Add(this.input.GetDateTime(index), num);
+            }
         }
 
         protected override void Init()
         {
-            this.name = $"SMA ({ this.length })";
+            this.name = $"SMA ({this.length})";
             this.description = "Simple Moving Average";
             Clear();
             this.calculate = true;
@@ -57,7 +79,9 @@ namespace SmartQuant.Indicators
 
         public static double Value(ISeries input, int index, int length, BarData barData = BarData.Close)
         {
-            throw new NotImplementedException();
+            return index >= length - 1
+                ? Enumerable.Range(index - length + 1, length).Sum(i => input[i, barData])/length
+                : double.NaN;
         }
     }
 }

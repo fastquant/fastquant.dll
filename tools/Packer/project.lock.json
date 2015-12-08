@@ -3,6 +3,13 @@
   "version": 2,
   "targets": {
     "DNX,Version=v4.5.1": {
+      "FastQuant.Config/1.0.0": {
+        "type": "project",
+        "framework": "DNX,Version=v4.5.1",
+        "frameworkAssemblies": [
+          "System.Xml"
+        ]
+      },
       "FastQuant.Core/1.0.0": {
         "type": "project",
         "framework": "DNX,Version=v4.5.1"
@@ -11,14 +18,25 @@
         "type": "project",
         "framework": "DNX,Version=v4.5.1",
         "dependencies": {
-          "FastQuant.Core": null
+          "FastQuant.Runtime": null
         }
+      },
+      "FastQuant.Runtime/1.0.0": {
+        "type": "project",
+        "framework": "DNX,Version=v4.5.1",
+        "dependencies": {
+          "FastQuant.Config": null,
+          "FastQuant.Core": null
+        },
+        "frameworkAssemblies": [
+          "System.Drawing"
+        ]
       },
       "FastQuant.Statistics/1.0.0": {
         "type": "project",
         "framework": "DNX,Version=v4.5.1",
         "dependencies": {
-          "FastQuant.Core": null
+          "FastQuant.Runtime": null
         }
       },
       "ILMerge.Tools.MSBuildToolTask/2.14.1208.49": {
@@ -408,6 +426,13 @@
       }
     },
     "DNX,Version=v4.5.1/win7-x86": {
+      "FastQuant.Config/1.0.0": {
+        "type": "project",
+        "framework": "DNX,Version=v4.5.1",
+        "frameworkAssemblies": [
+          "System.Xml"
+        ]
+      },
       "FastQuant.Core/1.0.0": {
         "type": "project",
         "framework": "DNX,Version=v4.5.1"
@@ -416,14 +441,25 @@
         "type": "project",
         "framework": "DNX,Version=v4.5.1",
         "dependencies": {
-          "FastQuant.Core": null
+          "FastQuant.Runtime": null
         }
+      },
+      "FastQuant.Runtime/1.0.0": {
+        "type": "project",
+        "framework": "DNX,Version=v4.5.1",
+        "dependencies": {
+          "FastQuant.Config": null,
+          "FastQuant.Core": null
+        },
+        "frameworkAssemblies": [
+          "System.Drawing"
+        ]
       },
       "FastQuant.Statistics/1.0.0": {
         "type": "project",
         "framework": "DNX,Version=v4.5.1",
         "dependencies": {
-          "FastQuant.Core": null
+          "FastQuant.Runtime": null
         }
       },
       "ILMerge.Tools.MSBuildToolTask/2.14.1208.49": {
@@ -813,6 +849,13 @@
       }
     },
     "DNX,Version=v4.5.1/win7-x64": {
+      "FastQuant.Config/1.0.0": {
+        "type": "project",
+        "framework": "DNX,Version=v4.5.1",
+        "frameworkAssemblies": [
+          "System.Xml"
+        ]
+      },
       "FastQuant.Core/1.0.0": {
         "type": "project",
         "framework": "DNX,Version=v4.5.1"
@@ -821,14 +864,25 @@
         "type": "project",
         "framework": "DNX,Version=v4.5.1",
         "dependencies": {
-          "FastQuant.Core": null
+          "FastQuant.Runtime": null
         }
+      },
+      "FastQuant.Runtime/1.0.0": {
+        "type": "project",
+        "framework": "DNX,Version=v4.5.1",
+        "dependencies": {
+          "FastQuant.Config": null,
+          "FastQuant.Core": null
+        },
+        "frameworkAssemblies": [
+          "System.Drawing"
+        ]
       },
       "FastQuant.Statistics/1.0.0": {
         "type": "project",
         "framework": "DNX,Version=v4.5.1",
         "dependencies": {
-          "FastQuant.Core": null
+          "FastQuant.Runtime": null
         }
       },
       "ILMerge.Tools.MSBuildToolTask/2.14.1208.49": {
@@ -1219,6 +1273,10 @@
     }
   },
   "libraries": {
+    "FastQuant.Config/1.0.0": {
+      "type": "project",
+      "path": "../../src/FastQuant.Config/project.json"
+    },
     "FastQuant.Core/1.0.0": {
       "type": "project",
       "path": "../../src/FastQuant.Core/project.json"
@@ -1226,6 +1284,10 @@
     "FastQuant.Providers/1.0.0": {
       "type": "project",
       "path": "../../src/FastQuant.Providers/project.json"
+    },
+    "FastQuant.Runtime/1.0.0": {
+      "type": "project",
+      "path": "../../src/FastQuant.Runtime/project.json"
     },
     "FastQuant.Statistics/1.0.0": {
       "type": "project",

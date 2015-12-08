@@ -9,21 +9,29 @@ namespace SmartQuant
 {
     public class StreamerManager
     {
-        private Dictionary<Type, ObjectStreamer> streamsByType= new Dictionary<Type, ObjectStreamer>();
+        private Dictionary<Type, ObjectStreamer> streamsByType = new Dictionary<Type, ObjectStreamer>();
 
         private IdArray<ObjectStreamer> streamsById = new IdArray<ObjectStreamer>(1024);
 
         public StreamerManager()
         {
-            var names =new string[] {
-                "DataObjectStreamer", "FreeKeyListStreamer", "ObjectKeyListStreamer", "ObjectTableStreamer",
-                "DataSeriesStreamer", "DataKeyIdArrayStreamer"
-            };
-            foreach (var n in names)
-            {
-                var streamer = (ObjectStreamer)Activator.CreateInstance(Type.GetType(n));
-                Add(streamer);
-            }
+            //string[] names = {
+            //    "DataObjectStreamer", "FreeKeyListStreamer", "ObjectKeyListStreamer", "ObjectTableStreamer",
+            //    "DataSeriesStreamer", "DataKeyIdArrayStreamer"
+            //};
+            //string[] names = {
+            //    "SmartQuant.DataObjectStreamer, FastQuant.Core"
+            //};
+
+            //foreach (var n in names)
+            //{
+            //    var t = Type.GetType(n);
+            //    if (t == null)
+            //        throw new ArgumentNullException($"Can't found type: {n}");
+
+            //    var streamer = (ObjectStreamer)Activator.CreateInstance(Type.GetType(n));
+            //    Add(streamer);
+            //}
         }
 
         public void Add(ObjectStreamer streamer)

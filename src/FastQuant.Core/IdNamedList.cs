@@ -20,7 +20,7 @@ namespace SmartQuant
         public string Name { get { return this.name; } }
     }
 
-    public class IdNamedList : IEnumerable<IIdNamedItem>, IEnumerable
+    public class IdNamedList : IEnumerable<IIdNamedItem>
     {
         private Dictionary<string, IIdNamedItem> dictionary;
         private IdArray<IIdNamedItem> array;

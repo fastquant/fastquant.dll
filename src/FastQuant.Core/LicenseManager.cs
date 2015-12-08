@@ -40,10 +40,6 @@ namespace SmartQuant
 
     public class LicenseManager
     {
-        internal LicenseManager()
-        {
-        }
-
         public string GetHardwareID()
         {
             throw new NotImplementedException();

@@ -19,7 +19,7 @@ namespace SmartQuant
 
         public AltId()
         {
-            throw new NotSupportedException();
+            throw new NotSupportedException("Don't use this!");
         }
 
         public AltId(byte providerId, string symbol, string exchange) : this(providerId, symbol, exchange, 0)

@@ -89,5 +89,10 @@ namespace SmartQuant
         {
             throw new NotImplementedException();
         }
+
+        internal void OnBid(Bid bid)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

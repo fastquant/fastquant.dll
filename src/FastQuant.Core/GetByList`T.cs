@@ -8,7 +8,7 @@ using System.Reflection;
 
 namespace SmartQuant
 {
-    class GetByList<T> : IEnumerable<T>
+    public class GetByList<T> : IEnumerable<T>
     {
         private static MethodInfo nameMethodInfo;
         private static MethodInfo idMethodInfo;
@@ -122,6 +122,6 @@ namespace SmartQuant
 
         public IEnumerator<T> GetEnumerator() => this.list.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() => this.list.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

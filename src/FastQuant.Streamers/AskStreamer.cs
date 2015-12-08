@@ -30,7 +30,7 @@ namespace SmartQuant
         public override void Write(BinaryWriter writer, object obj)
         {
             var ask = obj as Ask;
-            writer.Write(ask.dateTime.Ticks);
+            writer.Write(ask.DateTime.Ticks);
             if (ask.ExchangeDateTime.Ticks != 0)
                 writer.Write(ask.ExchangeDateTime.Ticks);
             writer.Write(ask.ProviderId);

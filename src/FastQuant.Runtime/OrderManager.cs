@@ -5,6 +5,7 @@ namespace SmartQuant
     public class OrderManager
     {
         private Framework framework;
+
         public OrderServer Server { get; set; }
 
         public OrderManager(Framework framework, OrderServer orderServer)

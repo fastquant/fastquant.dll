@@ -24,7 +24,6 @@ namespace SmartQuant
         public override string ToString() => nameof(OnSimulatorStart);
     }
 
-
     public class OnSimulatorStop : DataObject
     {
         public override byte TypeId => DataObjectType.OnSimulatorStop;

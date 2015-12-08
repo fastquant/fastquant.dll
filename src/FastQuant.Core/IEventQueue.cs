@@ -65,5 +65,4 @@ namespace SmartQuant
         public const byte Master = 0;
         public const byte Slave = 1;
     }
-
 }
