@@ -4,49 +4,18 @@
 using System;
 using System.ComponentModel;
 using System.Collections.Generic;
+using System.Reflection;
+using System.Linq;
 
 namespace SmartQuant
 {
-    public class StrategyEventArgs : EventArgs
-    {
-    }
-
-    public enum StrategyMode
-    {
-        Backtest = 1,
-        Paper,
-        Live
-    }
-
-    public enum StrategyPersistence
-    {
-        None,
-        Full,
-        Save,
-        Load
-    }
-
-    public enum StrategyStatus
-    {
-        Running,
-        Stopped
-    }
-
-    public enum StrategyStatusType : byte
-    {
-        Started,
-        Stopped
-    }
-
-    public class StrategyMethodAttribute : Attribute
-    {
-    }
-
     public class Strategy
     {
         protected internal Framework framework;
 
         protected internal bool raiseEvents;
+        private ParameterHelper parameterHelper = new ParameterHelper();
+        private Portfolio portfolio;
 
         public int Id { get; }
         public int ClientId { get; set; }
@@ -87,15 +56,106 @@ namespace SmartQuant
             
         }
 
-        public void AddInstruments(InstrumentList instruments)
+        public Reminder AddReminder(DateTime dateTime, object data = null)
+        {
+            return this.framework.Clock.AddReminderWithHandler(OnReminder, dateTime, data);
+        }
+
+        public Reminder AddExchangeReminder(DateTime dateTime, object data = null)
+        {
+            return this.framework.ExchangeClock.AddReminderWithHandler(OnExchangeReminder, dateTime, data);
+        }
+
+        #region Instrument Management
+
+        public void AddInstrument(string symbol)
+        {
+            var instrument = this.framework.InstrumentManager.Get(symbol);
+            if (instrument != null)
+                AddInstrument(instrument);
+            else
+                Console.WriteLine($"Strategy::AddInstrument instrument with symbol {symbol} doesn't exist in the framework");
+        }
+
+        public void AddInstrument(int id)
+        {
+            var instrument = this.framework.InstrumentManager.GetById(id);
+            if (instrument != null)
+                AddInstrument(instrument);
+            else
+                Console.WriteLine($"Strategy::AddInstrument instrument with Id {id} doesn't exist in the framework");
+        }
+
+        public virtual void AddInstrument(Instrument instrument)
+        {
+            AddInstrument(instrument, null);
+        }
+
+        public void AddInstrument(Instrument instrument, IDataProvider provider)
         {
             throw new NotImplementedException();
         }
 
-        public void AddInstrument(Instrument instrument1)
+        public void AddInstruments(string[] symbols)
+        {
+            foreach (var symbol in symbols)
+                AddInstrument(symbol);
+        }
+
+        public void AddInstruments(InstrumentList instruments)
+        {
+            foreach (var instrument in instruments)
+                AddInstrument(instrument);
+        }
+
+        public void RemoveInstrument(string symbol)
+        {
+            var instrument = this.framework.InstrumentManager.Get(symbol);
+            if (instrument != null)
+                RemoveInstrument(instrument);
+            else
+                Console.WriteLine($"Strategy::RemoveInstrument instrument with symbol {symbol} doesn't exist in the framework");
+        }
+
+        public void RemoveInstrument(int id)
+        {
+            var instrument = this.framework.InstrumentManager.GetById(id);
+            if (instrument != null)
+                RemoveInstrument(instrument);
+            else
+                Console.WriteLine($"Strategy::RemoveInstrument instrument with Id {id} doesn't exist in the framework");
+        }
+
+        public virtual void RemoveInstrument(Instrument instrument)
         {
             throw new NotImplementedException();
         }
+
+        public void RemoveInstrument(Instrument instrument, IDataProvider dataProvider)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region Strategy Management
+
+        public void AddStrategy(Strategy strategy)
+        {
+            AddStrategy(strategy, true);
+        }
+
+        public void AddStrategy(Strategy strategy, bool callOnStrategyStart)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveStrategy(Strategy strategy)
+        {
+            // noop
+        }
+
+        #endregion
 
         public void AddStop(Stop stop)
         {
@@ -182,6 +242,7 @@ namespace SmartQuant
         {
             throw new NotImplementedException();
         }
+
         public void Log(DataObject data, Group group)
         {
             throw new NotImplementedException();
@@ -202,6 +263,37 @@ namespace SmartQuant
             throw new NotImplementedException();
         }
 
+        public string GetModeAsString() => Mode == StrategyMode.Backtest ? "Backtest" : Mode == StrategyMode.Paper ? "Paper" : Mode == StrategyMode.Live ? "Live" : "Undefined";
+
+        public void SetParameter(string name, object value) => this.parameterHelper.SetStrategyParameter(name, this, value);
+
+        public object GetParameter(string name) =>  this.parameterHelper.GetStrategyParameter(name, this);
+
+        public ParameterList GetParameters() =>  this.parameterHelper.GetStrategyParameters(Name, this);
+
+        public bool ExecuteMethod(string methodName)
+        {
+            var methods = GetType().GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public);
+            var method = methods.FirstOrDefault(m => m.GetCustomAttributes(typeof (StrategyMethodAttribute), true).Any() && m.GetParameters().Length == 0 && m.Name == methodName);
+            method?.Invoke(this, null);
+            return method != null;
+        }
+
+        public virtual double Objective() => this.portfolio.Value;
+
+        public Order Order(Instrument instrument, OrderType type, OrderSide side, double qty, double stopPx, double price, string text = "")
+        {
+            throw new NotImplementedException();
+            //var order = new Order(this.method_5(instrument), this.portfolio, instrument, type, side, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
+            //order.StrategyId = Id;
+            //order.ClientId = ClientId;
+            //order.Text = text;
+            //order.StopPx = stopPx;
+            //order.Price = price;
+            //this.framework.OrderManager.Register(order);
+            //return order;
+        }
+
         protected internal virtual void OnStrategyInit()
         {
         }
@@ -211,6 +303,14 @@ namespace SmartQuant
         }
 
         protected internal virtual void OnStrategyStop()
+        {
+        }
+
+        protected virtual void OnReminder(DateTime dateTime, object data)
+        {
+        }
+
+        protected virtual void OnExchangeReminder(DateTime dateTime, object data)
         {
         }
 
@@ -294,11 +394,6 @@ namespace SmartQuant
         {
         }
 
-        internal double Objective()
-        {
-            throw new NotImplementedException();
-        }
-
         protected internal virtual void OnOrderReplaceRejected(Order order)
         {
         }
@@ -354,6 +449,10 @@ namespace SmartQuant
                 throw new NotImplementedException();
             }
         }
+
+        public bool IsConnecting => false;
+
+        public bool IsDisconnecting => false;
 
         public SellSideStrategy(Framework framework, string name): base(framework, name)
         {

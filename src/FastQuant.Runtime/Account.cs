@@ -5,10 +5,6 @@ using System;
 
 namespace SmartQuant
 {
-    public class AccountReport : ExecutionMessage
-    {
-    }
-
     public class Account
     {
         private Framework framework;

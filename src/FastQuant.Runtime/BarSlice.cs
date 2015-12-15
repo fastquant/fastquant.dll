@@ -10,7 +10,7 @@ namespace SmartQuant
     {
         public override byte TypeId => EventType.BarSlice;
 
-        public long Size { get; private set; }
+        public long Size { get; }
 
         public BarSlice(Bar bar)
             : this(bar.DateTime, bar.Size)

@@ -19,5 +19,10 @@ namespace SmartQuant
         {
             throw new NotImplementedException();
         }
+
+        public void Register(Order order)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

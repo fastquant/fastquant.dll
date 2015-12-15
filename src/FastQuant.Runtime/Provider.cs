@@ -118,6 +118,10 @@ namespace SmartQuant
 
         bool IsDisconnected { get; }
 
+        bool IsConnecting { get; }
+
+        bool IsDisconnecting { get; }
+
         byte Id { get; }
 
         string Name { get; }
@@ -286,6 +290,12 @@ namespace SmartQuant
 
         [Category("Status")]
         public bool IsDisconnected => Status == ProviderStatus.Disconnected;
+
+        [Category("Status")]
+        public bool IsConnecting => Status == ProviderStatus.Connecting;
+
+        [Category("Status")]
+        public bool IsDisconnecting => Status == ProviderStatus.Disconnecting;
 
         public ProviderStatus Status
         {

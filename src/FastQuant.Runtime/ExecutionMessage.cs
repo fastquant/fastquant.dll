@@ -4,42 +4,92 @@ namespace SmartQuant
 {
     public class ExecutionMessage : DataObject
     {
-        public int Id { get; internal set; }
+        private Instrument instrument;
+        private int instrumentId;
+        private ObjectTable fields;
+        private Order order;
+        private int orderId;
 
-        public Order Order { get; set; }
+        public int Id { get; } = -1;
 
-        public int OrderId { get; set; }
+        public int ClientId { get; set; } = -1;
 
-        public string ClOrderId { get; set; }
+        public bool IsLoaded { get; private set; }
 
-        public string ProviderOrderId { get; set; }
+        public Order Order
+        {
+            get
+            {
+                return this.order;
+            }
+            set
+            {
+                this.order = value;
+                this.orderId = this.order.Id;
+            }
+        }
 
-        public int InstrumentId { get; internal set; }
+        public int OrderId
+        {
+            get
+            {
+                return this.orderId;
+            }
+            set
+            {
+                this.orderId = value;
+            }
+        }
 
-        public Instrument Instrument { get; set; }
+        public string ClOrderId { get; set; } = string.Empty;
 
-        internal ObjectTable Fields { get; set; }
+        public string ProviderOrderId { get; set; } = string.Empty;
+
+        public int InstrumentId => this.instrumentId;
+
+        public byte CurrencyId { get; set; }
+
+        public Instrument Instrument
+        {
+            get
+            {
+                return this.instrument;
+            }
+            set
+            {
+                this.instrument = value;
+                this.instrumentId = this.instrument.Id;
+                CurrencyId = this.instrument.CurrencyId;
+            }
+        }
+
+        public ObjectTable Fields => this.fields = this.fields ?? new ObjectTable();
 
         public object this[int index]
         {
             get
             {
-                return Fields != null ? Fields[index] : null;
+                return this.fields?[index];
             }
             set
             {
-                if (Fields == null)
-                    Fields = new ObjectTable();
                 Fields[index] = value;
             }
         }
     }
 
+    public class AccountReport : ExecutionMessage
+    {
+        public override byte TypeId => DataObjectType.AccountReport;
+        public double Amount { get; }
+        public new byte CurrencyId { get; }
+        public int PortfolioId { get; }
+        public string Text { get; }
+    }
+
     public class ExecutionReport : ExecutionMessage
     {
         public override byte TypeId => DataObjectType.ExecutionReport;
-
-        public byte CurrencyId { get; set; }
 
         public ExecType ExecType { get; set; }
 

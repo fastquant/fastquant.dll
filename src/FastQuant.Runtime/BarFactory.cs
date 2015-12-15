@@ -17,6 +17,8 @@ namespace SmartQuant
         protected internal bool sessionEnabled;
         protected internal TimeSpan session1;
         protected internal TimeSpan session2;
+        protected internal int providerId;
+
         protected Bar bar;
 
         public Instrument Instrument => this.instrument;
@@ -61,15 +63,18 @@ namespace SmartQuant
             }
         }
 
-        protected BarFactoryItem(Instrument instrument, BarType barType, long barSize, BarInput barInput = BarInput.Trade)
+        public int ProviderId { get; set; }
+
+        protected BarFactoryItem(Instrument instrument, BarType barType, long barSize, BarInput barInput = BarInput.Trade, int providerId = -1)
         {
             this.instrument = instrument;
             this.barType = barType;
             this.barSize = barSize;
             this.barInput = barInput;
+            this.providerId = providerId;
         }
 
-        protected BarFactoryItem(Instrument instrument, BarType barType, long barSize, BarInput barInput, TimeSpan session1, TimeSpan session2)
+        protected BarFactoryItem(Instrument instrument, BarType barType, long barSize, BarInput barInput, TimeSpan session1, TimeSpan session2, int providerId = -1)
         {
             this.factory = null;
             this.instrument = instrument;
@@ -79,6 +84,7 @@ namespace SmartQuant
             this.sessionEnabled = true;
             this.session1 = session1;
             this.session2 = session2;
+            this.providerId = providerId;
         }
 
         //TODO: rewrite!
@@ -164,27 +170,33 @@ namespace SmartQuant
     {
         private ClockType type;
 
-        public TimeBarFactoryItem(Instrument instrument, long barSize, BarInput barInput = BarInput.Trade, ClockType type = ClockType.Local)
-            : base(instrument, BarType.Time, barSize, barInput)
+        public TimeBarFactoryItem(Instrument instrument, long barSize, int providerId = -1): base(instrument, BarType.Time, barSize, BarInput.Trade, providerId)
+        {
+        }
+
+        public TimeBarFactoryItem(Instrument instrument, long barSize, ClockType type = ClockType.Local, int providerId = -1)
+        : base(instrument, BarType.Time, barSize, BarInput.Trade, providerId)
         {
             this.type = type;
         }
 
-        public TimeBarFactoryItem(Instrument instrument, long barSize, ClockType type = ClockType.Local)
-            : base(instrument, BarType.Time, barSize)
+        public TimeBarFactoryItem(Instrument instrument, long barSize, BarInput barInput = BarInput.Trade, int providerId = -1): base(instrument, BarType.Time, barSize, barInput, providerId)
+        {
+        }
+
+        public TimeBarFactoryItem(Instrument instrument, long barSize, BarInput barInput = BarInput.Trade, ClockType type = ClockType.Local, int providerId = -1): base(instrument, BarType.Time, barSize, barInput, providerId)
         {
             this.type = type;
         }
 
-        public TimeBarFactoryItem(Instrument instrument, long barSize, BarInput barInput, ClockType type, TimeSpan session1, TimeSpan session2)
-            : base(instrument, BarType.Time, barSize, barInput, session1, session2)
+        public TimeBarFactoryItem(Instrument instrument, long barSize, BarInput barInput, TimeSpan session1, TimeSpan session2, int providerId = -1): base(instrument, BarType.Tick, barSize, barInput, session1, session2, providerId)
         {
-            this.type = type;
         }
 
-        public TimeBarFactoryItem(Instrument instrument, long barSize, BarInput barInput, TimeSpan session1, TimeSpan session2)
-            : base(instrument, BarType.Tick, barSize, barInput, session1, session2)
-        {
+        // Token: 0x06000050 RID: 80 RVA: 0x00002698 File Offset: 0x00000898
+        public TimeBarFactoryItem(Instrument instrument, long barSize, BarInput barInput, ClockType type, TimeSpan session1, TimeSpan session2, int providerId = -1) : base(instrument, BarType.Time, barSize, barInput, session1, session2, providerId)
+        {   
+            this.type = type;
         }
 
         protected override void OnData(DataObject obj)
@@ -219,14 +231,11 @@ namespace SmartQuant
 
     public class TickBarFactoryItem : BarFactoryItem
     {
-        public TickBarFactoryItem(Instrument instrument, long barSize, BarInput barInput = BarInput.Trade)
-            : base(instrument, BarType.Tick, barSize, barInput)
-        {
+        public TickBarFactoryItem(Instrument instrument, long barSize, BarInput barInput = BarInput.Trade, int providerId = -1) : base(instrument, BarType.Tick, barSize, barInput, providerId)
+        { 
         }
 
-
-        public TickBarFactoryItem(Instrument instrument, long barSize, BarInput barInput, TimeSpan session1, TimeSpan session2)
-        : base(instrument, BarType.Tick, barSize, barInput, session1, session2)
+        public TickBarFactoryItem(Instrument instrument, long barSize, BarInput barInput, TimeSpan session1, TimeSpan session2, int providerId = -1): base(instrument, BarType.Tick, barSize, barInput, session1, session2, providerId)
         {
         }
 
@@ -240,13 +249,11 @@ namespace SmartQuant
 
     public class RangeBarFactoryItem : BarFactoryItem
     {
-        public RangeBarFactoryItem(Instrument instrument, long barSize, BarInput barInput = BarInput.Trade)
-            : base(instrument, BarType.Tick, barSize, barInput)
+        public RangeBarFactoryItem(Instrument instrument, long barSize, BarInput barInput = BarInput.Trade, int providerId = -1) : base(instrument, BarType.Range, barSize, barInput, providerId)
         {
         }
 
-        public RangeBarFactoryItem(Instrument instrument, long barSize, BarInput barInput, TimeSpan session1, TimeSpan session2)
-            : base(instrument, BarType.Tick, barSize, barInput, session1, session2)
+        public RangeBarFactoryItem(Instrument instrument, long barSize, BarInput barInput, TimeSpan session1, TimeSpan session2, int providerId = -1) : base(instrument, BarType.Tick, barSize, barInput, session1, session2, providerId)
         {
         }
 
@@ -260,13 +267,12 @@ namespace SmartQuant
 
     public class VolumeBarFactoryItem : BarFactoryItem
     {
-        public VolumeBarFactoryItem(Instrument instrument, long barSize, BarInput barInput = BarInput.Trade)
-            : base(instrument, BarType.Volume, barSize, barInput)
+        public VolumeBarFactoryItem(Instrument instrument, long barSize, BarInput barInput = BarInput.Trade, int providerId = -1) : base(instrument, BarType.Volume, barSize, barInput, providerId)
         {
         }
 
-        public VolumeBarFactoryItem(Instrument instrument, long barSize, BarInput barInput, TimeSpan session1, TimeSpan session2)
-            : base(instrument, BarType.Tick, barSize, barInput, session1, session2)
+        public VolumeBarFactoryItem(Instrument instrument, long barSize, BarInput barInput, TimeSpan session1, TimeSpan session2, int providerId = -1) : base(instrument, BarType.Tick, barSize, barInput, session1, session2, providerId)
+
         {
         }
 
@@ -282,15 +288,13 @@ namespace SmartQuant
     {
         private ClockType type;
 
-        public SessionBarFactoryItem(Instrument instrument, BarInput barInput, ClockType type, TimeSpan session1, TimeSpan session2)
-            : base(instrument, BarType.Session, (long)(session2 - session1).Seconds, barInput, session1, session2)
+        public SessionBarFactoryItem(Instrument instrument, BarInput barInput, TimeSpan session1, TimeSpan session2, int providerId = -1) : base(instrument, BarType.Session, (long)(session2 - session1).TotalSeconds, barInput, session1, session2, providerId)
         {
-            this.type = type;
         }
 
-        public SessionBarFactoryItem(Instrument instrument, BarInput barInput, TimeSpan session1, TimeSpan session2)
-            : base(instrument, BarType.Session, (long)(session2 - session1).Seconds, barInput, session1, session2)
+        public SessionBarFactoryItem(Instrument instrument, BarInput barInput, ClockType type, TimeSpan session1, TimeSpan session2, int providerId = -1) : base(instrument, BarType.Session, (long)(session2 - session1).TotalSeconds, barInput, session1, session2, providerId)
         {
+            this.type = type;
         }
 
         protected override void OnData(DataObject obj)

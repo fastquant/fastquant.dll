@@ -59,6 +59,8 @@ namespace SmartQuant
         public string InstrumentFileName;
         [XmlElement("IsDataFileLocal")]
         public bool IsDataFileLocal;
+        [XmlElement("CheckUpdates")]
+        public bool CheckUpdates;
         [XmlElement("DataFileHost")]
         public string DataFileHost;
         [XmlElement("DataFilePort")]

@@ -70,6 +70,8 @@ namespace SmartQuant
 
         internal Framework Framework { get; set; }
 
+        public byte CurrencyId { get; set; }
+
         internal Instrument()
         {
         }
