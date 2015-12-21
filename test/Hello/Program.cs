@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 
 namespace HelloWorldSample 
 {
@@ -8,7 +9,9 @@ namespace HelloWorldSample
 		{
 			var t = Type.GetType("System.Console");
 			Console.WriteLine(t.Name);
-            Console.WriteLine(Type.GetType("SmartQuant.Configuration, FastQuant.Config").Name);
+		    var a = Assembly.LoadFrom("bin\\Debug\\dnx45\\FastQuant.Config.dll");
+            Console.WriteLine(a.FullName);
+            Console.WriteLine(a.GetType("SmartQuant.Configuration").Name);
             Console.WriteLine("Hello World!");
 		}
 	}

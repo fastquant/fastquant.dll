@@ -2,21 +2,11 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "Launch",
-			"type": "mono",
+			"name": "Mock-Debug",
+			"type": "mock",
 			"request": "launch",
-			"program": "program.exe",
-			"args": [],
-			"cwd": ".",
-			"runtimeExecutable": null,
-			"env": {}
-		},
-		{
-			"name": "Attach",
-			"type": "mono",
-			"request": "attach",
-			"address": "localhost",
-			"port": 5858
+			"program": "readme.md",
+			"stopOnEntry": true
 		}
 	]
 }

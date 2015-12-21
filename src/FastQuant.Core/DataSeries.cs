@@ -39,26 +39,17 @@ namespace SmartQuant
     {
         private string seriesName;
 
-        public DataSeries(string seriesName)
-        {
-            this.seriesName = seriesName;
-        }
+        public string Name { get; }
 
-        public DataObject this[long index]
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        public string Description { get; }
 
-        public long Count
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        public bool CacheObjects { get; set; }
+
+        public long Count { get; }
+
+        public DataObject this[long index] => Get(index);
+
+        public DataObject this[DateTime dateTime] => Get(dateTime);
 
         public DateTime DateTime1
         {
@@ -76,21 +67,12 @@ namespace SmartQuant
             }
         }
 
-        public string Description
+
+        public DataSeries(string name)
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            Name = name;
         }
 
-        public string Name
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
 
         public void Add(DataObject obj)
         {
@@ -102,12 +84,9 @@ namespace SmartQuant
             throw new NotImplementedException();
         }
 
-        public bool Contains(DateTime dateTime)
-        {
-            throw new NotImplementedException();
-        }
+        public virtual bool Contains(DateTime dateTime) => GetIndex(dateTime, SearchOption.ExactFirst) != -1;
 
-        public long GetIndex(DateTime dateTime, SearchOption option = SearchOption.Prev)
+        public virtual long GetIndex(DateTime dateTime, SearchOption option = SearchOption.Prev)
         {
             throw new NotImplementedException();
         }
@@ -119,6 +98,12 @@ namespace SmartQuant
 
         public virtual void Refresh()
         {
+            // noop
+        }
+
+        public virtual void Update(long index, DataObject obj)
+        {
+            throw new NotImplementedException();
         }
 
         public virtual DataObject Get(long index)
@@ -131,6 +116,9 @@ namespace SmartQuant
             throw new NotImplementedException();
         }
 
+        public void Dump()
+        {
+        }
     }
 
     public class DataSeriesIterator

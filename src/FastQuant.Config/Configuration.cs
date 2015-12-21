@@ -49,6 +49,11 @@ namespace SmartQuant
     [XmlRoot("Configuration")]
     public class Configuration
     {
+        static Configuration()
+        {
+            
+        }
+
         [XmlElement("IsInstrumentFileLocal")]
         public bool IsInstrumentFileLocal;
         [XmlElement("InstrumentFileHost")]

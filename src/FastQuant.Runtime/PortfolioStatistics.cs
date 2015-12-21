@@ -110,8 +110,8 @@ namespace SmartQuant
         public PortfolioStatisticsItem()
         {
             this.totalValues = new TimeSeries(Name, "");
-            this.longValues = new TimeSeries(string.Format("{0} Long", Name), "");
-            this.shortValues = new TimeSeries(string.Format("{0} Short", Name), "");
+            this.longValues = new TimeSeries($"{Name} Long", "");
+            this.shortValues = new TimeSeries($"{Name} Short", "");
         }
 
         public void Subscribe(int itemType)
@@ -184,61 +184,25 @@ namespace SmartQuant
     {
         private GetByList<PortfolioStatisticsItem> items = new GetByList<PortfolioStatisticsItem>();
 
-        public int Count
-        {
-            get
-            {
-                return this.items.Count;
-            }
-        }
+        public int Count => this.items.Count;
+   
+        public PortfolioStatisticsItem this[int index] => this.items.GetByIndex(index);
 
-        public PortfolioStatisticsItem this[int index]
-        {
-            get
-            {
-                return this.items.GetByIndex(index);
-            }
-        }
+        public bool Contains(int type) => this.items.Contains(type);
 
-        public bool Contains(int type)
-        {
-            return this.items.Contains(type);
-        }
+        public void Add(PortfolioStatisticsItem item) => this.items.Add(item);
 
-        public void Add(PortfolioStatisticsItem item)
-        {
-            this.items.Add(item);
-        }
+        public void Remove(int type) => this.items.Remove(type);
 
-        public void Remove(int type)
-        {
-            this.items.Remove(type);
-        }
+        public PortfolioStatisticsItem GetByType(int type) => this.items.GetById(type);
 
-        public PortfolioStatisticsItem GetByType(int type)
-        {
-            return this.items.GetById(type);
-        }
+        public PortfolioStatisticsItem GetByIndex(int index) => this.items.GetByIndex(index);
 
-        public PortfolioStatisticsItem GetByIndex(int index)
-        {
-            return this.items.GetByIndex(index);
-        }
+        public void Clear() => this.items.Clear();
 
-        public void Clear()
-        {
-            this.items.Clear();
-        }
+        public IEnumerator<PortfolioStatisticsItem> GetEnumerator() => this.items.GetEnumerator();
 
-        public IEnumerator<PortfolioStatisticsItem> GetEnumerator()
-        {
-            return this.items.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.items.GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 
     public class PortfolioStatistics
@@ -284,7 +248,7 @@ namespace SmartQuant
                 this.idArray_1[type] = new List<int>();
             else if (this.idArray_1[type].Contains(item.Type))
             {
-                Console.WriteLine("PortfolioStatistics::Subscribe Item {0} is already subscribed for item {1}", item.Type, type);
+                Console.WriteLine($"PortfolioStatistics::Subscribe Item {item.Type} is already subscribed for item {type}");
                 return;
             }
             this.idArray_1[type].Add(item.Type);

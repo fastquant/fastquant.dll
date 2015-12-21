@@ -1,0 +1,9 @@
+﻿{
+  "dependencies": {
+    "OmniQuant.Stdio": ""
+  },
+  "frameworks": {
+    "dnx451": { },
+    "dnxcore50": { }
+  }
+}
