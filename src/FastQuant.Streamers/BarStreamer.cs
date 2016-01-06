@@ -32,12 +32,10 @@ namespace SmartQuant
             if (version >= 1)
                 bar.Type = (BarType)reader.ReadByte();
             int size = reader.ReadInt32();
-            if (size != 0)
-            {
-                bar.fields = new IdArray<double>(size);
-                for (int i = 0; i < size; ++i)
-                    bar.fields[i] = reader.ReadDouble();
-            }
+
+            for (int i = 0; i < size; ++i)
+                bar[(byte)i] = reader.ReadDouble();
+            
             return bar;
         }
 
@@ -59,8 +57,8 @@ namespace SmartQuant
             if (bar.Fields != null)
             {
                 writer.Write(bar.fields.Size);
-                for (int i = 0; i < bar.fields.Size; ++i)
-                    writer.Write(bar.fields[i]);
+                for (int i = 0; i < bar.Fields.Size; ++i)
+                    writer.Write(bar[(byte)i]);
             }
             else
                 writer.Write(0);

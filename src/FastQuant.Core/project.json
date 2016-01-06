@@ -5,6 +5,7 @@
       "dependencies": {
         "netcoreshim": "",
         "System.Console": "4.0.0-beta-*",
+        "System.IO.FileSystem": "4.0.1-beta-*",
         "System.Threading.Tasks.Parallel": "4.0.1-beta-*",
         "System.Linq": "4.0.1-beta-*",
         "System.Reflection.TypeExtensions": "4.1.0-beta-*",

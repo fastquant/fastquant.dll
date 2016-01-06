@@ -85,7 +85,7 @@ namespace SmartQuant
 
         public virtual string Name => "Unknown";
 
-        public virtual string Format=> "F2";
+        public virtual string Format => "F2";
 
         public virtual string Description => "Unknown";
 
@@ -95,17 +95,17 @@ namespace SmartQuant
 
         public double TotalValue => this.totalValue;
 
-        public double LongValue=> this.longValue;
+        public double LongValue => this.longValue;
 
-        public double ShortValue=> this.shortValue;
+        public double ShortValue => this.shortValue;
 
-        public TimeSeries TotalValues=> this.totalValues;
+        public TimeSeries TotalValues => this.totalValues;
 
-        public TimeSeries LongValues=> this.longValues;
+        public TimeSeries LongValues => this.longValues;
 
-        public TimeSeries ShortValues=> this.shortValues;
+        public TimeSeries ShortValues => this.shortValues;
 
-        public Clock Clock=> this.portfolio.framework.Clock;
+        public Clock Clock => this.portfolio.framework.Clock;
 
         public PortfolioStatisticsItem()
         {
@@ -135,47 +135,51 @@ namespace SmartQuant
             this.statistics.OnStatistics(this.portfolio, this);
         }
 
-        protected internal virtual void OnInit()
+        protected /*internal*/ virtual void OnInit()
         {
         }
 
-        protected internal virtual void OnEquity(double equity)
+        protected /*internal*/ virtual void OnEquity(double equity)
         {
         }
 
-        protected internal virtual void OnFill(Fill fill)
+        protected /*internal*/ virtual void OnFill(Fill fill)
         {
         }
 
-        protected internal virtual void OnTransaction(Transaction transaction)
+        protected /*internal*/ virtual void OnTransaction(Transaction transaction)
         {
         }
 
-        protected internal virtual void OnPositionOpened(Position position)
+        protected /*internal*/ virtual void OnPositionOpened(Position position)
         {
         }
 
-        protected internal virtual void OnPositionClosed(Position position)
+        protected /*internal*/ virtual void OnPositionClosed(Position position)
         {
         }
 
-        protected internal virtual void OnPositionChanged(Position position)
+        protected /*internal*/ virtual void OnPositionChanged(Position position)
         {
         }
 
-        protected internal virtual void OnRoundTrip(TradeInfo trade)
+        protected  /*internal*/ virtual void OnPositionSideChanged(Position position)
         {
         }
 
-        protected internal virtual void OnStatistics(PortfolioStatisticsItem statistics)
+        protected /*internal*/ virtual void OnRoundTrip(TradeInfo trade)
         {
         }
 
-        protected internal virtual void OnStatistics(Portfolio portfolio, PortfolioStatisticsItem statistics)
+        protected /*internal*/ virtual void OnStatistics(PortfolioStatisticsItem statistics)
         {
         }
 
-        protected internal virtual void OnClear()
+        protected /*internal*/ virtual void OnStatistics(Portfolio portfolio, PortfolioStatisticsItem statistics)
+        {
+        }
+
+        protected virtual void OnClear()
         {
         }
     }
@@ -185,7 +189,7 @@ namespace SmartQuant
         private GetByList<PortfolioStatisticsItem> items = new GetByList<PortfolioStatisticsItem>();
 
         public int Count => this.items.Count;
-   
+
         public PortfolioStatisticsItem this[int index] => this.items.GetByIndex(index);
 
         public bool Contains(int type) => this.items.Contains(type);
@@ -255,7 +259,7 @@ namespace SmartQuant
         }
 
         internal void Unsubscribe(PortfolioStatisticsItem item, int type)
-        {  
+        {
             if (this.idArray_1[type] != null && this.idArray_1[type].Contains(item.Type))
                 this.idArray_1[type].Remove(item.Type);
             else

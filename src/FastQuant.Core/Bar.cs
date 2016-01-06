@@ -115,8 +115,7 @@ namespace SmartQuant
             }
             set
             {
-                if (this.fields == null)
-                    this.fields = new IdArray<double>(16);
+                this.fields = this.fields ?? new IdArray<double>(16);
                 this.fields[index] = value;
             }
         }
@@ -125,7 +124,7 @@ namespace SmartQuant
         {
             get
             {
-                return this.fields[mapping[name]];
+                return this[mapping[name]];
             }
             set
             {

@@ -18,7 +18,7 @@ namespace FastQuant.Private.DataFile
             this.dictionary_0 = new Dictionary<string, ObjectKey>();
             this.list_0 = new List<Class23>();
             base..ctor();
-            this.string_1 = name;
+            this.name = name;
             this.streamerManager_0 = streamerManager;
             this.memoryStream_0 = new MemoryStream();
             this.binaryWriter_0 = new BinaryWriter(this.memoryStream_0);
@@ -28,7 +28,7 @@ namespace FastQuant.Private.DataFile
         {
             if (!this.bool_0)
             {
-                Console.WriteLine("DataFileImpl::Close File is not open: " + this.string_1);
+                Console.WriteLine("DataFileImpl::Close File is not open: " + this.name);
                 return;
             }
             this.Flush();
@@ -65,7 +65,7 @@ namespace FastQuant.Private.DataFile
                 Console.WriteLine(string.Concat(new object[]
                 {
                     "DataFile::Dump DataFile ",
-                    this.string_1,
+                    this.name,
                     " is open in ",
                     this.fileMode_0,
                     " mode and contains ",
@@ -79,7 +79,7 @@ namespace FastQuant.Private.DataFile
                 Console.WriteLine("Free objects = " + this.int_3);
                 return;
             }
-            Console.WriteLine("DataFile::Dump DataFile " + this.string_1 + " is closed");
+            Console.WriteLine("DataFile::Dump DataFile " + this.name + " is closed");
         }
 
         ~DataFileImpl()
@@ -91,7 +91,7 @@ namespace FastQuant.Private.DataFile
         {
             if (!this.bool_0)
             {
-                Console.WriteLine("DataFile::Flush Can not flush file which is not open " + this.string_1);
+                Console.WriteLine("DataFile::Flush Can not flush file which is not open " + this.name);
                 return;
             }
             if (this.bool_1)
@@ -115,7 +115,6 @@ namespace FastQuant.Private.DataFile
             this.bool_1 = false;
         }
 
-        // Token: 0x06000379 RID: 889 RVA: 0x0001E7E8 File Offset: 0x0001C9E8
         public virtual object Get(string name)
         {
             ObjectKey objectKey;
@@ -127,7 +126,7 @@ namespace FastQuant.Private.DataFile
             return null;
         }
 
-        internal bool method_0()
+        internal bool ReadHeader()
         {
             byte[] buffer = new byte[62];
             this.ReadBuffer(buffer, 0, 62);
@@ -192,8 +191,7 @@ namespace FastQuant.Private.DataFile
             this.method_1();
         }
 
-        // Token: 0x06000377 RID: 887 RVA: 0x0001E690 File Offset: 0x0001C890
-        internal ObjectKey method_3(long long_4)
+        internal ObjectKey ReadKey(long long_4)
         {
             byte[] buffer = new byte[37];
             this.ReadBuffer(buffer, long_4, 37);
@@ -272,7 +270,7 @@ namespace FastQuant.Private.DataFile
 
         internal void method_7(ObjectKey objectKey_2)
         {
-            this.memoryStream_0.SetLength(0L);
+            this.memoryStream_0.SetLength(0);
             objectKey_2.Write(this.binaryWriter_0);
             if (objectKey_2.long_0 != -1L)
             {
@@ -318,7 +316,6 @@ namespace FastQuant.Private.DataFile
             this.bool_1 = true;
         }
 
-        // Token: 0x06000381 RID: 897 RVA: 0x0001EC34 File Offset: 0x0001CE34
         private void method_8()
         {
             if (this.objectKey_0 != null)
@@ -332,7 +329,6 @@ namespace FastQuant.Private.DataFile
             this.int_0 = this.objectKey_0.int_0 + this.objectKey_0.int_1;
         }
 
-        // Token: 0x06000382 RID: 898 RVA: 0x0001ECBC File Offset: 0x0001CEBC
         private void method_9()
         {
             if (this.objectKey_1 != null)
@@ -346,7 +342,6 @@ namespace FastQuant.Private.DataFile
             this.int_1 = this.objectKey_1.int_0 + this.objectKey_1.int_1;
         }
 
-        // Token: 0x06000371 RID: 881 RVA: 0x0001E340 File Offset: 0x0001C540
         public virtual void Open(FileMode mode = FileMode.OpenOrCreate)
         {
             if (mode != FileMode.OpenOrCreate && mode != FileMode.Create)
@@ -356,11 +351,11 @@ namespace FastQuant.Private.DataFile
             }
             if (this.bool_0)
             {
-                Console.WriteLine("DataFile::Open File is already open: " + this.string_1);
+                Console.WriteLine("DataFile::Open File is already open: " + this.name);
                 return;
             }
             this.fileMode_0 = mode;
-            if (!this.OpenFileStream(this.string_1, mode))
+            if (!this.OpenFileStream(this.name, mode))
             {
                 this.long_0 = 62L;
                 this.long_1 = 62L;
@@ -368,9 +363,9 @@ namespace FastQuant.Private.DataFile
             }
             else
             {
-                if (!this.method_0())
+                if (!this.ReadHeader())
                 {
-                    Console.WriteLine("DataFile::Open Error opening file " + this.string_1);
+                    Console.WriteLine("DataFile::Open Error opening file " + this.name);
                     return;
                 }
                 if (this.long_2 == -1L || this.long_3 == -1L)
@@ -384,14 +379,12 @@ namespace FastQuant.Private.DataFile
             this.bool_0 = true;
         }
 
-        // Token: 0x0600036F RID: 879 RVA: 0x00004A74 File Offset: 0x00002C74
         protected virtual bool OpenFileStream(string name, FileMode mode)
         {
             this.stream_0 = new FileStream(name, mode);
             return this.stream_0.Length != 0L;
         }
 
-        // Token: 0x06000374 RID: 884 RVA: 0x0001E5DC File Offset: 0x0001C7DC
         protected internal virtual void ReadBuffer(byte[] buffer, long position, int length)
         {
             lock (this)
@@ -401,7 +394,6 @@ namespace FastQuant.Private.DataFile
             }
         }
 
-        // Token: 0x06000380 RID: 896 RVA: 0x0001EBB4 File Offset: 0x0001CDB4
         protected void ReadFree()
         {
             if (this.int_1 == 0)
@@ -419,7 +411,6 @@ namespace FastQuant.Private.DataFile
             this.objectKey_1 = objectKey;
         }
 
-        // Token: 0x0600037F RID: 895 RVA: 0x0001EAE8 File Offset: 0x0001CCE8
         protected void ReadKeys()
         {
             if (this.int_0 == 0)
@@ -441,7 +432,6 @@ namespace FastQuant.Private.DataFile
             this.objectKey_0 = objectKey;
         }
 
-        // Token: 0x06000384 RID: 900 RVA: 0x0001EE40 File Offset: 0x0001D040
         public virtual void Recover()
         {
             this.dictionary_0.Clear();
@@ -453,7 +443,7 @@ namespace FastQuant.Private.DataFile
             {
                 try
                 {
-                    objectKey = this.method_3(num);
+                    objectKey = this.ReadKey(num);
                     goto IL_F6;
                 }
                 catch (Exception arg)
@@ -506,12 +496,10 @@ namespace FastQuant.Private.DataFile
             this.Flush();
         }
 
-        // Token: 0x06000385 RID: 901 RVA: 0x000024A4 File Offset: 0x000006A4
         public virtual void Refresh()
         {
         }
 
-        // Token: 0x06000378 RID: 888 RVA: 0x0001E76C File Offset: 0x0001C96C
         public virtual void Write(string name, object obj)
         {
             ObjectKey objectKey;
@@ -535,7 +523,6 @@ namespace FastQuant.Private.DataFile
             this.method_7(objectKey);
         }
 
-        // Token: 0x06000375 RID: 885 RVA: 0x0001E630 File Offset: 0x0001C830
         protected internal virtual void WriteBuffer(byte[] buffer, long position, int length)
         {
             lock (this)
@@ -549,7 +536,6 @@ namespace FastQuant.Private.DataFile
             }
         }
 
-        // Token: 0x170000CB RID: 203
         public byte CompressionLevel
         {
             // Token: 0x0600036C RID: 876 RVA: 0x00004A63 File Offset: 0x00002C63
@@ -662,6 +648,80 @@ namespace FastQuant.Private.DataFile
         internal string string_0;
 
         // Token: 0x04000180 RID: 384
-        internal string string_1;
+        internal string name;
     }
+
+    internal class Class24
+    {
+        internal Class24(List<FreeKey> sNSyTAzOtSrOnZ0qtS)
+        {
+            this.list_0 = sNSyTAzOtSrOnZ0qtS;
+        }
+
+        internal List<FreeKey> list_0;
+    }
+
+
+    internal class Class26
+    {
+        internal Class26(Dictionary<string, ObjectKeyImpl> zDOX6N4lLLHBLYT6hL8)
+        {
+            this.dictionary_0 = zDOX6N4lLLHBLYT6hL8;
+        }
+
+        internal Dictionary<string, ObjectKeyImpl> dictionary_0;
+    }
+
+    internal class FreeKey : IComparable<FreeKey>
+    {
+        public FreeKey()
+        {
+        }
+
+        public FreeKey(ObjectKey objectKey_0)
+        {
+            this.dataFile_0 = objectKey_0.dataFile_0;
+            this.long_0 = objectKey_0.long_0;
+            this.int_0 = objectKey_0.int_2;
+        }
+
+        public FreeKey(DataFile dataFile_1, long long_1 = -1, int int_1 = -1)
+        {
+            this.dataFile_0 = dataFile_1;
+            this.long_0 = long_1;
+            this.int_0 = int_1;
+        }
+
+        public int CompareTo(FreeKey other) => other == null ? 1 : this.int_0.CompareTo(other.int_0);
+
+        internal void WriteKey(BinaryWriter binaryWriter_0)
+        {
+            binaryWriter_0.Write(this.version);
+            binaryWriter_0.Write(this.long_0);
+            binaryWriter_0.Write(this.int_0);
+        }
+
+        internal void ReadKey(BinaryReader reader, bool bool_0 = true)
+        {
+            if (bool_0)
+            {
+                this.version = reader.ReadString();
+                if (!this.version.StartsWith("FK"))
+                {
+                    Console.WriteLine("FreeKey::ReadKey This is not FreeKey! version = " + this.version);
+                }
+            }
+            this.long_0 = reader.ReadInt64();
+            this.int_0 = reader.ReadInt32();
+        }
+
+        internal DataFile dataFile_0;
+
+        internal int int_0 = -1;
+
+        internal long long_0 = -1;
+
+        internal string version = "FK01";
+    }
+
 }

@@ -28,7 +28,8 @@ namespace SmartQuant
     {
         public double Amount { get; }
         public double EntryPrice { get; set; }
-        public int Price { get; set; }
+        public double Price => Portfolio.Pricer.GetPrice(this);
+
         public double Qty { get; set; }
         public double AvgPx { get; }
 
@@ -37,8 +38,15 @@ namespace SmartQuant
         public Instrument Instrument { get; }
         public int InstrumentId { get; }
 
+        public List<Fill> Fills { get; } = new List<Fill>();
+
+        public double Value => Portfolio.Pricer.GetValue(this);
+
+        public double OpenValue { get; }
 
         public PositionSide Side => Amount < 0 ? PositionSide.Short : PositionSide.Long;
+
+        public double UPnL => Value - OpenValue;
 
         public Position()
         {
@@ -56,5 +64,7 @@ namespace SmartQuant
         {
             throw new NotImplementedException();
         }
+
+        public string GetSideAsString() => Side == PositionSide.Long ? "Long" : Side == PositionSide.Short ? "Short" : "Undefined";
     }
 }
