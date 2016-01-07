@@ -10,7 +10,7 @@ namespace SmartQuant.Statistics
 
         protected bool isSet;
 
-        protected override void OnEquity(double equity)
+        public override void OnEquity(double equity)
         {
             if (!this.isSet)
             {
@@ -19,12 +19,12 @@ namespace SmartQuant.Statistics
             }
         }
 
-        protected override void OnInit()
+        public override void OnInit()
         {
             Subscribe(PortfolioStatisticsType.AnnualReturn);
         }
 
-        protected override void OnStatistics(PortfolioStatisticsItem statistics)
+        public override void OnStatistics(PortfolioStatisticsItem statistics)
         {
             if (statistics.Type == PortfolioStatisticsType.AnnualReturn)
             {

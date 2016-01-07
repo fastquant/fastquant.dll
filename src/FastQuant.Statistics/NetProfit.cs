@@ -11,13 +11,13 @@
 
         public override int Type => PortfolioStatisticsType.NetProfit;
 
-        protected override void OnInit()
+        public override void OnInit()
         {
             Subscribe(PortfolioStatisticsType.GrossProfit);
             Subscribe(PortfolioStatisticsType.GrossLoss);
         }
 
-        protected override void OnStatistics(PortfolioStatisticsItem statistics)
+        public override void OnStatistics(PortfolioStatisticsItem statistics)
         {
             bool changed = false;
             if (statistics.Type == PortfolioStatisticsType.GrossProfit)

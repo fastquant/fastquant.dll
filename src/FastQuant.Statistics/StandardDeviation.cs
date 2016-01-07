@@ -21,12 +21,12 @@ namespace SmartQuant.Statistics
             return ts.Count > 1 ? Sqrt(Enumerable.Range(0, ts.Count).Sum(i => Pow(ts[i] - avg, 2)) / (ts.Count - 1)) : 0;
         }
 
-        protected override void OnInit()
+        public override void OnInit()
         {
             Subscribe(this.type);
         }
 
-        protected override void OnStatistics(PortfolioStatisticsItem statistics)
+        public override void OnStatistics(PortfolioStatisticsItem statistics)
         {
             if (statistics.Type == this.type)
             {
@@ -59,4 +59,20 @@ namespace SmartQuant.Statistics
             }
         }
     }
+
+    public class DailyReturnPercentStdDev : StandardDeviation
+    {
+        public DailyReturnPercentStdDev():base(PortfolioStatisticsType.DailyReturnPercent)
+        {
+        }
+
+        public override string Category => "Daily / Annual returns";
+
+        public override string Format => "P2";
+
+        public override string Name => "Daily Return % Standard Deviation";
+
+        public override int Type => PortfolioStatisticsType.DailyReturnPercentStdDev;
+    }
+
 }

@@ -11,12 +11,12 @@ namespace SmartQuant.Statistics
             this.type = type;
         }
 
-        protected override void OnInit()
+        public override void OnInit()
         {
             Subscribe(this.type);
         }
 
-        protected override void OnStatistics(PortfolioStatisticsItem statistics)
+        public override void OnStatistics(PortfolioStatisticsItem statistics)
         {
             if (statistics.Type == this.type)
             {

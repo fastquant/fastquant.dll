@@ -22,7 +22,7 @@ namespace SmartQuant.Statistics
 
         public override int Type => PortfolioStatisticsType.Drawdown;
 
-        protected override void OnEquity(double equity)
+        public override void OnEquity(double equity)
         {
             if (this.longAccValue == 0 && this.shortAccValue == 0)
                 this.longAccValue = this.shortAccValue = this.portfolio.AccountValue;
@@ -49,7 +49,7 @@ namespace SmartQuant.Statistics
             Emit();
         }
 
-        protected override void OnPositionChanged(Position position)
+        public override void OnPositionChanged(Position position)
         {
             var fill = position.Fills[position.Fills.Count - 1];
             if (position.Side == PositionSide.Long)
@@ -58,7 +58,7 @@ namespace SmartQuant.Statistics
                 this.shortAccValue -= fill.CashFlow;
         }
 
-        protected override void OnPositionClosed(Position position)
+        public override void OnPositionClosed(Position position)
         {
             var fill = position.Fills[position.Fills.Count - 1];
             if (fill.Side == OrderSide.Sell)
@@ -67,7 +67,7 @@ namespace SmartQuant.Statistics
                 this.shortAccValue -= fill.CashFlow;
         }
 
-        protected override void OnPositionSideChanged(Position position)
+        public override void OnPositionSideChanged(Position position)
         {
             var fill = position.Fills[position.Fills.Count - 1];
             double v = fill.CashFlow * (fill.Qty - position.Qty) / fill.Qty;
@@ -83,7 +83,7 @@ namespace SmartQuant.Statistics
             }
         }
 
-        protected override void OnRoundTrip(TradeInfo trade)
+        public override void OnRoundTrip(TradeInfo trade)
         {
             if (trade.IsLong)
                 this.longAccValue += trade.NetPnL;

@@ -2,7 +2,7 @@
 {
     public class TradesPnL : PortfolioStatisticsItem
     {
-        protected override void OnRoundTrip(TradeInfo trade)
+        public override void OnRoundTrip(TradeInfo trade)
         {
             if (trade.IsLong)
             {
@@ -30,7 +30,7 @@
 
     public class WinTradesPnL : PortfolioStatisticsItem
     {
-        protected override void OnRoundTrip(TradeInfo trade)
+        public override void OnRoundTrip(TradeInfo trade)
         {
             if (trade.IsWinning)
             {
@@ -61,7 +61,7 @@
 
     public class LossTradesPnL : PortfolioStatisticsItem
     {
-        protected override void OnRoundTrip(TradeInfo trade)
+        public override void OnRoundTrip(TradeInfo trade)
         {
             if (!trade.IsWinning)
             {

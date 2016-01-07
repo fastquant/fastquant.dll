@@ -13,14 +13,14 @@
 
         public override int Type => PortfolioStatisticsType.SharpeRatio;
 
-        protected override void OnInit()
+        public override void OnInit()
         {
             RiskFreeReturn = 0;
             Subscribe(PortfolioStatisticsType.AvgAnnualReturnPercent);
             Subscribe(PortfolioStatisticsType.AnnualReturnPercentStdDev);
         }
 
-        protected override void OnStatistics(PortfolioStatisticsItem statistics)
+        public override void OnStatistics(PortfolioStatisticsItem statistics)
         {
             bool changed = false;
             if (statistics.Type == PortfolioStatisticsType.AvgAnnualReturnPercent)

@@ -22,6 +22,15 @@ namespace System.Drawing
 {
     public struct Color
     {
+        static public Color Red
+        {
+            get { return FromArgb(0); }
+        }
+
+        static public Color Green
+        {
+            get { return FromArgb(0); }
+        }
         static public Color Blue
         {
             get { return FromArgb(0); }

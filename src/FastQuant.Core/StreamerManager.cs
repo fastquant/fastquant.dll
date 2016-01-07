@@ -161,6 +161,17 @@ namespace SmartQuant
                 Remove(streamer);
         }
 
+        #region Addition to Origin
+        public ObjectStreamer Get(Type type) => this.streamsByType[type];
+
+        public void Get(Type type, out ObjectStreamer streamer)
+        {
+            this.streamsByType.TryGetValue(type, out streamer);
+        }
+
+        public ObjectStreamer Get(byte typeId) => this.streamsById[typeId];
+        #endregion
+
         public void Serialize(BinaryWriter writer, object obj)
         {
             var type = obj.GetType();
