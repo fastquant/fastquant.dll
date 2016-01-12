@@ -1,9 +1,6 @@
 {
   "dependencies": {
-    "FastQuant.Core": "",
-    "FastQuant.Providers": "",
-    "FastQuant.Statistics": "",
-    "FastQuant.Indicators": ""
+    "SmartQuant": ""
   },
   "frameworks": {
     "dnx451": { },

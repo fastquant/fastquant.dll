@@ -2,16 +2,7 @@
   "locked": false,
   "version": 2,
   "targets": {
-    "DNX,Version=v4.5.1": {
-      "SmartQuant/1.0.0": {
-        "type": "project",
-        "framework": "DNX,Version=v4.5.1",
-        "frameworkAssemblies": [
-          "System.Drawing",
-          "System.Xml"
-        ]
-      }
-    },
+    "DNX,Version=v4.5.1": {},
     "DNXCore,Version=v5.0": {
       "Microsoft.Win32.Primitives/4.0.0": {
         "type": "package",
@@ -31,24 +22,6 @@
         "framework": "DNXCore,Version=v5.0",
         "dependencies": {
           "System.Console": "4.0.0-beta"
-        }
-      },
-      "SmartQuant/1.0.0": {
-        "type": "project",
-        "framework": "DNXCore,Version=v5.0",
-        "dependencies": {
-          "netcoreshim": null,
-          "System.Collections": "4.0.11-beta",
-          "System.ComponentModel.TypeConverter": "4.0.1-beta",
-          "System.Console": "4.0.0-beta",
-          "System.Linq": "4.0.1-beta",
-          "System.Net.Sockets": "4.0.10-beta",
-          "System.Reflection.Extensions": "4.0.1-beta",
-          "System.Reflection.TypeExtensions": "4.1.0-beta",
-          "System.Runtime.Extensions": "4.0.11-beta",
-          "System.Threading.Tasks.Parallel": "4.0.1-beta",
-          "System.Threading.Thread": "4.0.0-beta",
-          "System.Xml.XmlSerializer": "4.0.11-beta"
         }
       },
       "System.Collections/4.0.11-beta-23516": {
@@ -584,26 +557,8 @@
         }
       }
     },
-    "DNX,Version=v4.5.1/win7-x86": {
-      "SmartQuant/1.0.0": {
-        "type": "project",
-        "framework": "DNX,Version=v4.5.1",
-        "frameworkAssemblies": [
-          "System.Drawing",
-          "System.Xml"
-        ]
-      }
-    },
-    "DNX,Version=v4.5.1/win7-x64": {
-      "SmartQuant/1.0.0": {
-        "type": "project",
-        "framework": "DNX,Version=v4.5.1",
-        "frameworkAssemblies": [
-          "System.Drawing",
-          "System.Xml"
-        ]
-      }
-    },
+    "DNX,Version=v4.5.1/win7-x86": {},
+    "DNX,Version=v4.5.1/win7-x64": {},
     "DNXCore,Version=v5.0/win7-x86": {
       "Microsoft.Win32.Primitives/4.0.0": {
         "type": "package",
@@ -690,24 +645,6 @@
         },
         "runtime": {
           "lib/DNXCore50/System.Runtime.Extensions.dll": {}
-        }
-      },
-      "SmartQuant/1.0.0": {
-        "type": "project",
-        "framework": "DNXCore,Version=v5.0",
-        "dependencies": {
-          "netcoreshim": null,
-          "System.Collections": "4.0.11-beta",
-          "System.ComponentModel.TypeConverter": "4.0.1-beta",
-          "System.Console": "4.0.0-beta",
-          "System.Linq": "4.0.1-beta",
-          "System.Net.Sockets": "4.0.10-beta",
-          "System.Reflection.Extensions": "4.0.1-beta",
-          "System.Reflection.TypeExtensions": "4.1.0-beta",
-          "System.Runtime.Extensions": "4.0.11-beta",
-          "System.Threading.Tasks.Parallel": "4.0.1-beta",
-          "System.Threading.Thread": "4.0.0-beta",
-          "System.Xml.XmlSerializer": "4.0.11-beta"
         }
       },
       "System.Collections/4.0.11-beta-23516": {
@@ -1382,24 +1319,6 @@
           "lib/DNXCore50/System.Runtime.Extensions.dll": {}
         }
       },
-      "SmartQuant/1.0.0": {
-        "type": "project",
-        "framework": "DNXCore,Version=v5.0",
-        "dependencies": {
-          "netcoreshim": null,
-          "System.Collections": "4.0.11-beta",
-          "System.ComponentModel.TypeConverter": "4.0.1-beta",
-          "System.Console": "4.0.0-beta",
-          "System.Linq": "4.0.1-beta",
-          "System.Net.Sockets": "4.0.10-beta",
-          "System.Reflection.Extensions": "4.0.1-beta",
-          "System.Reflection.TypeExtensions": "4.1.0-beta",
-          "System.Runtime.Extensions": "4.0.11-beta",
-          "System.Threading.Tasks.Parallel": "4.0.1-beta",
-          "System.Threading.Thread": "4.0.0-beta",
-          "System.Xml.XmlSerializer": "4.0.11-beta"
-        }
-      },
       "System.Collections/4.0.11-beta-23516": {
         "type": "package",
         "dependencies": {
@@ -1988,11 +1907,7 @@
   "libraries": {
     "netcoreshim/1.0.0": {
       "type": "project",
-      "path": "../../src/netcoreshim/project.json"
-    },
-    "SmartQuant/1.0.0": {
-      "type": "project",
-      "path": "../../src/SmartQuant/project.json"
+      "path": "../netcoreshim/project.json"
     },
     "Microsoft.Win32.Primitives/4.0.0": {
       "type": "package",
@@ -3495,10 +3410,24 @@
     }
   },
   "projectFileDependencyGroups": {
-    "": [
-      "SmartQuant "
+    "": [],
+    "DNX,Version=v4.5.1": [
+      "fx/System.Drawing >= 4.0.0",
+      "fx/System.Xml >= 4.0.0"
     ],
-    "DNX,Version=v4.5.1": [],
-    "DNXCore,Version=v5.0": []
+    "DNXCore,Version=v5.0": [
+      "netcoreshim ",
+      "System.Collections >= 4.0.11-beta-*",
+      "System.Console >= 4.0.0-beta-*",
+      "System.Net.Sockets >= 4.0.10-beta-*",
+      "System.Linq >= 4.0.1-beta-*",
+      "System.Runtime.Extensions >= 4.0.11-beta-*",
+      "System.Threading.Tasks.Parallel >= 4.0.1-beta-*",
+      "System.Threading.Thread >= 4.0.0-beta-*",
+      "System.ComponentModel.TypeConverter >= 4.0.1-beta-*",
+      "System.Reflection.Extensions >= 4.0.1-beta-*",
+      "System.Reflection.TypeExtensions >= 4.1.0-beta-*",
+      "System.Xml.XmlSerializer >= 4.0.11-beta-*"
+    ]
   }
 }

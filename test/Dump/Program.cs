@@ -9,14 +9,35 @@ namespace HelloWorldSample
 	{
 		public static void Main() 
 		{
-            var m = new MemoryStream();
-            var writer = new BinaryWriter(m);
-            writer.Write("SmartQuant");
-            writer.Flush();
-            Console.WriteLine(m.ToArray().Length);
+            var ms =new MemoryStream();
+            var wr = new BinaryWriter(ms);
+            wr.Write("FKey");
+            Console.WriteLine(ms.ToArray().Length);
+         
             var f = Framework.Current;
-            var df = f.DataFileManager.GetFile(@"C:\Users\alex\AppData\Roaming\SmartQuant Ltd\OpenQuant 2014\data\data.quant");
-            Console.WriteLine($"Hello World!, {f.Name}");
+            var df = new DataFile("d:\\data.quant", f.StreamerManager);
+            df.Open();
+            df.Dump();
+            ObjectKey key;
+            var kname = "AAPL.0.Bid";
+            df.Keys.TryGetValue(kname, out key);
+            if (key != null)
+            {
+                key.Dump();
+                Console.WriteLine(key.DateTime);
+                Console.WriteLine(key.CompressionLevel);
+                Console.WriteLine(key.CompressionMethod);
+            }
+            df.Close();
+            DumpInstrument();
+            Console.ReadLine();
 		}
+
+        static void DumpInstrument()
+        {
+            var f = Framework.Current;
+            foreach (var i in f.InstrumentManager.Instruments)
+                Console.WriteLine(i.Symbol);
+        }
 	}
 }

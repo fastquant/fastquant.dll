@@ -3,7 +3,7 @@
     "emitEntryPoint": true
   },
   "dependencies": {
-    "FastQuant.Runtime": ""
+    "SmartQuant": ""
   },
   "commands": {
     "app": "Dump"

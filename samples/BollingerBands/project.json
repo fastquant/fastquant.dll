@@ -3,10 +3,10 @@
     "emitEntryPoint": true
   },
   "dependencies": {
-    "FastQuant.Runtime": "",
-    "FastQuant.Providers": "",
-    "FastQuant.Statistics": "",
-    "FastQuant.Indicators": ""
+    "SmartQuant": ""
+  },
+  "commands": {
+    "app": "BollingerBands"
   },
   "frameworks": {
     "dnx451": { },
