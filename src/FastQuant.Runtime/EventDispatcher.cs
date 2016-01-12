@@ -145,59 +145,59 @@ namespace SmartQuant
         }
     }
 
-    public class EventDispatcherServer
-    {
-        private int port = 1000;
-        private IdArray<EventDispatcherServerClient> clients = new IdArray<EventDispatcherServerClient>(1024);
-        private TcpListener listener;
-        private IPAddress ip = IPAddress.Any;
+    //public class EventDispatcherServer
+    //{
+    //    private int port = 1000;
+    //    private IdArray<EventDispatcherServerClient> clients = new IdArray<EventDispatcherServerClient>(1024);
+    //    private TcpListener listener;
+    //    private IPAddress ip = IPAddress.Any;
 
-        public EventDispatcherServer(int port, string path)
-        {
-            Console.WriteLine($"{DateTime.Now} Creating EventDispatcherServer");
-            this.port = port;
-        }
+    //    public EventDispatcherServer(int port, string path)
+    //    {
+    //        Console.WriteLine($"{DateTime.Now} Creating EventDispatcherServer");
+    //        this.port = port;
+    //    }
 
-        public void Start()
-        {
-            throw new NotImplementedException();
-        }
+    //    public void Start()
+    //    {
+    //        throw new NotImplementedException();
+    //    }
 
-        public void Stop()
-        {
-           throw new NotImplementedException();
-        }
-    }
+    //    public void Stop()
+    //    {
+    //       throw new NotImplementedException();
+    //    }
+    //}
 
-    public class EventDispatcherServerClient
-    {
-        private StreamerManager smanager = new StreamerManager();
+    //public class EventDispatcherServerClient
+    //{
+    //    private StreamerManager smanager = new StreamerManager();
 
-        public EventDispatcherServerClient()
-        {
-            this.smanager.AddDefaultStreamers();
-        }
+    //    public EventDispatcherServerClient()
+    //    {
+    //        this.smanager.AddDefaultStreamers();
+    //    }
 
-        public void Emit(Event e)
-        {
-            throw new NotImplementedException();
-        }
+    //    public void Emit(Event e)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
 
-        public virtual void OnEvent(Event e)
-        {
-            throw new NotImplementedException();
-        }
+    //    public virtual void OnEvent(Event e)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
 
-        public void Start()
-        {
-            throw new NotImplementedException();
-        }
+    //    public void Start()
+    //    {
+    //        throw new NotImplementedException();
+    //    }
 
-        public void Stop()
-        {
-            throw new NotImplementedException();
-        }
+    //    public void Stop()
+    //    {
+    //        throw new NotImplementedException();
+    //    }
 
-        public EventDispatcher Dispatcher { get; set; }
-    }
+    //    public EventDispatcher Dispatcher { get; set; }
+    //}
 }

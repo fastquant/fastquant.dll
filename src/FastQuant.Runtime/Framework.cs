@@ -95,14 +95,16 @@ namespace SmartQuant
         public string Name { get; }
 
         public bool IsExternalDataQueue { get; set; }
+
         public bool IsDisposable { get; set; }
-        public AccountDataManager AccountDataManager { get; }
 
         public Clock Clock { get; }
 
         public Clock ExchangeClock { get; }
 
         public Configuration Configuration { get; private set; }
+
+        public AccountDataManager AccountDataManager { get; }
 
         public StreamerManager StreamerManager { get; }
 
@@ -224,6 +226,8 @@ namespace SmartQuant
 
         public PortfolioManager PortfolioManager { get; internal set; }
 
+        public OutputManager OutputManager { get; private set; }
+
         public PortfolioServer PortfolioServer
         {
             get
@@ -257,6 +261,7 @@ namespace SmartQuant
         {
             Name = name;
             LoadConfiguration();
+
             // Setup events compoents setup
             EventBus = new EventBus(this);
             Clock = new Clock(this, ClockType.Local, false);
@@ -281,26 +286,26 @@ namespace SmartQuant
             }
 
             // Create Servers
-            ServerFactory = (IServerFactory)Activator.CreateInstance(Type.GetType("SmartQuant.DefaultServerFactory,FastQuant.Servers"));
+            //ServerFactory = (IServerFactory)Activator.CreateInstance(Type.GetType("SmartQuant.DefaultServerFactory,FastQuant.Servers"));
             //ServerFactory = new DefaultServerFactory();
 
-            InstrumentServer = instrumentServer ?? ServerFactory.CreateInstrumentServer();
-            DataServer = dataServer ?? ServerFactory.CreateDataServer();
-            OrderServer = ServerFactory.CreateOrderServer();
-            PortfolioServer = ServerFactory.CreatePortfolioServer();
-            UserServer = ServerFactory.CreateUserServer();
+            //InstrumentServer = instrumentServer ?? ServerFactory.CreateInstrumentServer();
+            //DataServer = dataServer ?? ServerFactory.CreateDataServer();
+            //OrderServer = ServerFactory.CreateOrderServer();
+            //PortfolioServer = ServerFactory.CreatePortfolioServer();
+            //UserServer = ServerFactory.CreateUserServer();
             InstrumentManager = new InstrumentManager(this, InstrumentServer);
-            InstrumentManager.Load();
+            //InstrumentManager.Load();
             DataManager = new DataManager(this, DataServer);
-            UserManager = new UserManager(this, UserServer);
-            UserManager.Load();
+            //UserManager = new UserManager(this, UserServer);
+            //UserManager.Load();
             OrderManager = new OrderManager(this, OrderServer);
             PortfolioManager = new PortfolioManager(this, PortfolioServer);
 
             // Create Providers
             ProviderManager = new ProviderManager(this);
-            ProviderManager.DataSimulator = (IDataSimulator)Activator.CreateInstance(Type.GetType(Configuration.DefaultDataSimulator));
-            ProviderManager.ExecutionSimulator = (IExecutionSimulator)Activator.CreateInstance(Type.GetType(Configuration.DefaultExecutionSimulator));
+            //ProviderManager.DataSimulator = (IDataSimulator)Activator.CreateInstance(Type.GetType(Configuration.DefaultDataSimulator));
+            //ProviderManager.ExecutionSimulator = (IExecutionSimulator)Activator.CreateInstance(Type.GetType(Configuration.DefaultExecutionSimulator));
 
             // Other stuff
             EventLoggerManager = new EventLoggerManager();
@@ -329,9 +334,11 @@ namespace SmartQuant
                 Console.WriteLine($"Framework::Dispose {Name}");
                 Dispose(true);
                 GC.SuppressFinalize(this);
-                return;
             }
-            Console.WriteLine($"Framework::Dispose Framework is not disposable{Name} ");
+            else
+            {
+                Console.WriteLine($"Framework::Dispose Framework is not disposable{Name}");
+            }
         }
 
         private void Dispose(bool dispoing)
@@ -341,7 +348,25 @@ namespace SmartQuant
 
         public void Clear()
         {
-            throw new NotImplementedException();
+            Console.WriteLine($"{DateTime.Now} Framework::Clear");
+            Clock?.Clear();
+            ExchangeClock?.Clear();
+            EventBus?.Clear();
+            EventServer?.Clear();
+            EventManager?.Clear();
+            ProviderManager?.DisconnectAll();
+            ProviderManager?.Clear();
+            InstrumentManager?.Clear();
+            DataManager?.Clear();
+            SubscriptionManager?.Clear();
+            OrderManager?.Clear();
+            PortfolioManager?.Clear();
+            StrategyManager?.Clear();
+            AccountDataManager?.Clear();
+            GroupManager?.Clear();
+            OutputManager?.Clear();
+            GC.Collect();
+            EventServer.OnFrameworkCleared(this);
         }
 
         public void Dump()

@@ -1,0 +1,15 @@
+{
+  "compilationOptions": {
+    "emitEntryPoint": true
+  },
+  "dependencies": {
+    "FastQuant.Runtime": ""
+  },
+  "commands": {
+    "app": "Dump"
+  },
+  "frameworks": {
+    "dnx451": { },
+    "dnxcore50": { }
+  }
+}

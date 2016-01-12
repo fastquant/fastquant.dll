@@ -1,7 +1,8 @@
 {
   "dependencies": {
     "FastQuant.Config": "",
-    "FastQuant.Core": ""
+    "FastQuant.Core": "",
+    "FastQuant.Data": ""
   },
   "frameworks": {
     "dnx451": {

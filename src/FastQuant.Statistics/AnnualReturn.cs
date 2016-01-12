@@ -215,11 +215,6 @@ namespace SmartQuant.Statistics
 
         protected int count;
 
-        // Token: 0x04000889 RID: 2185
-        [CompilerGenerated]
-        private double double_0;
-
-        // Token: 0x04000887 RID: 2183
         protected double sumsq;
     }
 

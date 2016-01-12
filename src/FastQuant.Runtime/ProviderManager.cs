@@ -40,5 +40,10 @@ namespace SmartQuant
         {
             return Providers.GetByName(name);
         }
+
+        public void Clear()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

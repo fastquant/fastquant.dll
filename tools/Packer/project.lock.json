@@ -14,6 +14,13 @@
         "type": "project",
         "framework": "DNX,Version=v4.5.1"
       },
+      "FastQuant.Data/1.0.0": {
+        "type": "project",
+        "framework": "DNX,Version=v4.5.1",
+        "dependencies": {
+          "FastQuant.Core": null
+        }
+      },
       "FastQuant.Providers/1.0.0": {
         "type": "project",
         "framework": "DNX,Version=v4.5.1",
@@ -26,7 +33,8 @@
         "framework": "DNX,Version=v4.5.1",
         "dependencies": {
           "FastQuant.Config": null,
-          "FastQuant.Core": null
+          "FastQuant.Core": null,
+          "FastQuant.Data": null
         },
         "frameworkAssemblies": [
           "System.Drawing"
@@ -437,6 +445,13 @@
         "type": "project",
         "framework": "DNX,Version=v4.5.1"
       },
+      "FastQuant.Data/1.0.0": {
+        "type": "project",
+        "framework": "DNX,Version=v4.5.1",
+        "dependencies": {
+          "FastQuant.Core": null
+        }
+      },
       "FastQuant.Providers/1.0.0": {
         "type": "project",
         "framework": "DNX,Version=v4.5.1",
@@ -449,7 +464,8 @@
         "framework": "DNX,Version=v4.5.1",
         "dependencies": {
           "FastQuant.Config": null,
-          "FastQuant.Core": null
+          "FastQuant.Core": null,
+          "FastQuant.Data": null
         },
         "frameworkAssemblies": [
           "System.Drawing"
@@ -860,6 +876,13 @@
         "type": "project",
         "framework": "DNX,Version=v4.5.1"
       },
+      "FastQuant.Data/1.0.0": {
+        "type": "project",
+        "framework": "DNX,Version=v4.5.1",
+        "dependencies": {
+          "FastQuant.Core": null
+        }
+      },
       "FastQuant.Providers/1.0.0": {
         "type": "project",
         "framework": "DNX,Version=v4.5.1",
@@ -872,7 +895,8 @@
         "framework": "DNX,Version=v4.5.1",
         "dependencies": {
           "FastQuant.Config": null,
-          "FastQuant.Core": null
+          "FastQuant.Core": null,
+          "FastQuant.Data": null
         },
         "frameworkAssemblies": [
           "System.Drawing"
@@ -1280,6 +1304,10 @@
     "FastQuant.Core/1.0.0": {
       "type": "project",
       "path": "../../src/FastQuant.Core/project.json"
+    },
+    "FastQuant.Data/1.0.0": {
+      "type": "project",
+      "path": "../../src/FastQuant.Data/project.json"
     },
     "FastQuant.Providers/1.0.0": {
       "type": "project",

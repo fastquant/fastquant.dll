@@ -89,10 +89,7 @@ namespace SmartQuant.Quant
             return v;
         }
 
-        public bool IsValid()
-        {
-            return NRows != -1;
-        }
+        public bool IsValid() => NRows != -1;
 
         public static bool AreCompatible(Vector v1, Vector v2)
         {
@@ -188,15 +185,9 @@ namespace SmartQuant.Quant
             return Enumerable.Range(0, NRows).All(i => this[i] == that[i]);
         }
 
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
+        public override int GetHashCode() => base.GetHashCode();
 
-        public void Print()
-        {
-            Print("F2");
-        }
+        public void Print() => Print("F2");
 
         public void Print(string format)
         {

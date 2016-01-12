@@ -80,8 +80,15 @@ namespace SmartQuant
         public string Text { get; set; }
 
         public double AvgPx { get; set; }
+
+        public double LeavesQty { get; }
+
+        public double CumQty { get; }
+
+        public Instrument Instrument { get; set; }
+
+
         public int Id { get; internal set; }
-        public bool IsDone { get; set; }
 
         [ReadOnly(true)]
         public double Price
@@ -100,12 +107,10 @@ namespace SmartQuant
         [ReadOnly(true)]
         public double Qty
         {
-            // Token: 0x06000F92 RID: 3986 RVA: 0x0000CDBC File Offset: 0x0000AFBC
             get
             {
                 return this.qty;
             }
-            // Token: 0x06000F93 RID: 3987 RVA: 0x0000CDC4 File Offset: 0x0000AFC4
             set
             {
                 EnsureNotSent();
@@ -189,12 +194,10 @@ namespace SmartQuant
         [ReadOnly(true)]
         public byte RouteId
         {
-            // Token: 0x06000F9B RID: 3995 RVA: 0x0000CE19 File Offset: 0x0000B019
             get
             {
                 return this.routeId;
             }
-            // Token: 0x06000F9C RID: 3996 RVA: 0x0000CE21 File Offset: 0x0000B021
             set
             {
                 EnsureNotSent();
@@ -202,6 +205,41 @@ namespace SmartQuant
             }
         }
 
+        [Browsable(false)]
+        public bool IsFilled => Status == OrderStatus.Filled;
+
+        [Browsable(false)]
+        public bool IsCancelled => Status == OrderStatus.Cancelled;
+
+        [Browsable(false)]
+        public bool IsRejected => Status == OrderStatus.Rejected;
+
+        [Browsable(false)]
+        public bool IsExpired => Status == OrderStatus.Expired;
+
+        [Browsable(false)]
+        public bool IsNew => Status == OrderStatus.New;
+
+        [Browsable(false)]
+        public bool IsPartiallyFilled => Status == OrderStatus.PartiallyFilled;
+
+        [Browsable(false)]
+        public bool IsNotSent => Status == OrderStatus.NotSent;
+
+        [Browsable(false)]
+        public bool IsPendingCancel => Status == OrderStatus.PendingCancel;
+
+        [Browsable(false)]
+        public bool IsPendingNew => Status == OrderStatus.PendingNew;
+
+        [Browsable(false)]
+        public bool IsPendingReplace => Status == OrderStatus.PendingReplace;
+
+        [Browsable(false)]
+        public bool IsReplaced => Status == OrderStatus.Replaced;
+
+        [Browsable(false)]
+        public bool IsDone => IsFilled || IsCancelled || IsRejected || IsExpired;
 
         public Order()
         {

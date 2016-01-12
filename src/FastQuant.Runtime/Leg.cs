@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.IO;
 
 namespace SmartQuant
 {
@@ -8,6 +9,8 @@ namespace SmartQuant
         private Framework framework;
 
         private Instrument instrument;
+
+        public int InstrumentId { get; private set; }
 
         public double Weight { get; set; }
 
@@ -24,16 +27,16 @@ namespace SmartQuant
         {
             this.instrument = instrument;
             Weight = weight;
-            this.instrumentId = instrument.Id;
+            InstrumentId = instrument.Id;
             this.framework = instrument.Framework;
         }
 
         internal void Init(Framework framework)
         {
             this.framework = framework;
-            this.instrument = framework.InstrumentManager.GetById(this.instrumentId);
+            this.instrument = framework.InstrumentManager.GetById(InstrumentId);
             if (this.instrument == null)
-                Console.WriteLine($"{nameof(Leg)}::{nameof(Init)} Can not find leg instrument in the framework instrument manager. Id = {this.instrumentId}");
+                Console.WriteLine($"{nameof(Leg)}::{nameof(Init)} Can not find leg instrument in the framework instrument manager. Id = {InstrumentId}");
         }
 
         [Browsable(false)]
@@ -46,7 +49,7 @@ namespace SmartQuant
             set
             {
                 this.instrument = value;
-                this.instrumentId = this.instrument.Id;
+                InstrumentId = this.instrument.Id;
             }
         }
 
@@ -60,14 +63,29 @@ namespace SmartQuant
             {
                 var instrument = this.framework.InstrumentManager[value];
                 if (instrument == null)
-                    Console.WriteLine($"Leg::Symbol Can not find instrument with such symbol in the framework instrument manager. Symbol = {this.instrumentId}");
+                    Console.WriteLine($"Leg::Symbol Can not find instrument with such symbol in the framework instrument manager. Symbol = {InstrumentId}");
 
                 this.instrument = instrument;
-                this.instrumentId = instrument.Id;
+                InstrumentId = instrument.Id;
             }
         }
 
-        private int instrumentId;
-    }
+        #region Extra
+        public static Leg FromReader(BinaryReader reader)
+        {
+            return new Leg
+            {
+                InstrumentId = reader.ReadInt32(),
+                Weight = reader.ReadDouble()
+            };
+        }
 
+        public void ToWriter(BinaryWriter writer)
+        {
+            writer.Write(InstrumentId);
+            writer.Write(Weight);
+        }
+
+        #endregion
+    }
 }

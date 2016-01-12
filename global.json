@@ -1,15 +1,5 @@
 {
-  "projects": [
-    "src/netcoreshim",
-    "src/FastQuant.Config",
-    "src/FastQuant.Runtime",
-    "src/FastQuant.Core",
-    "src/FastQuant.Providers",
-    "src/FastQuant.Statistics",
-    "src/FastQuant.Streamers",
-    "src/FastQuant.Indicators",
-    "samples"
-  ],
+  "projects": ["src", "samples"],
   "sdk": {
     "version": "1.0.0-rc1-update1",
     "runtime": "coreclr"

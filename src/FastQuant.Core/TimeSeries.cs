@@ -2,10 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace SmartQuant
 {
@@ -111,8 +109,7 @@ namespace SmartQuant
             }
         }
 
-        public double this[DateTime dateTime, int row, SearchOption option = SearchOption.ExactFirst]
-            => GetByDateTime(dateTime, option).Value;
+        public double this[DateTime dateTime, int row, SearchOption option = SearchOption.ExactFirst] => GetByDateTime(dateTime, option).Value;
 
         public virtual int Count => (int)this.series.Count;
 
@@ -536,10 +533,7 @@ namespace SmartQuant
         #endregion
 
         #region Statistics Functions
-        public double GetSum()
-        {
-            return this.dirty ? this.sum = GetSum(0, Count - 1, 0) : this.sum;
-        }
+        public double GetSum() => this.dirty ? this.sum = GetSum(0, Count - 1, 0) : this.sum;
 
         public double GetSum(int index1, int index2, int row)
         {
@@ -573,11 +567,7 @@ namespace SmartQuant
             return GetMean(i1, i2, row);
         }
 
-        public double GetMedian()
-        {
-            EnsureNotEmpty("Can not calculate median. Array is empty.");
-            return this.dirty ? this.median = GetMedian(0, Count - 1) : this.median;
-        }
+        public double GetMedian() => this.dirty ? this.median = GetMedian(0, Count - 1) : this.median;
 
         public virtual double GetMedian(int row) => GetMedian(0, this.Count - 1, row);
 
@@ -601,6 +591,31 @@ namespace SmartQuant
             int i1, i2;
             EnsureIndexInRange(dateTime1, dateTime2, out i1, out i2);
             return GetMedian(i1, i2, row);
+        }
+
+        public double GetVariance() => this.dirty ? this.variance = GetVariance(0, Count - 1, 0) : this.variance;
+
+        public virtual double GetVariance(int row) => GetVariance(0, Count - 1, row);
+
+        public virtual double GetVariance(int index1, int index2) => GetVariance(index1, index2, 0);
+
+        public virtual double GetVariance(DateTime dateTime1, DateTime dateTime2) => GetVariance(dateTime1, dateTime2, 0);
+
+        public double GetVariance(int index1, int index2, int row)
+        {
+            EnsureAtLeastOneElement();
+            EnsureIndexInRange(index1, index2);
+            double mean = GetMean(index1, index2, row);
+            int count = index2 - index1 + 1;
+            return Enumerable.Range(index1, count).Sum(i => (mean - this[i, row]) * (mean - this[i, row])) / (count - 1);
+        }
+
+        public virtual double GetVariance(DateTime dateTime1, DateTime dateTime2, int row)
+        {
+            EnsureAtLeastOneElement();
+            int i1, i2;
+            EnsureIndexInRange(dateTime1, dateTime2, out i1, out i2);
+            return GetVariance(i1, i2, row);
         }
 
         public double GetCovariance(int row1, int row2, int index1, int index2)

@@ -14,12 +14,20 @@
         "type": "project",
         "framework": "DNX,Version=v4.5.1"
       },
+      "FastQuant.Data/1.0.0": {
+        "type": "project",
+        "framework": "DNX,Version=v4.5.1",
+        "dependencies": {
+          "FastQuant.Core": null
+        }
+      },
       "FastQuant.Runtime/1.0.0": {
         "type": "project",
         "framework": "DNX,Version=v4.5.1",
         "dependencies": {
           "FastQuant.Config": null,
-          "FastQuant.Core": null
+          "FastQuant.Core": null,
+          "FastQuant.Data": null
         },
         "frameworkAssemblies": [
           "System.Drawing"
@@ -53,12 +61,21 @@
           "System.Threading.Tasks.Parallel": "4.0.1-beta"
         }
       },
+      "FastQuant.Data/1.0.0": {
+        "type": "project",
+        "framework": "DNXCore,Version=v5.0",
+        "dependencies": {
+          "FastQuant.Core": null,
+          "System.Runtime.Extensions": "4.0.11-beta"
+        }
+      },
       "FastQuant.Runtime/1.0.0": {
         "type": "project",
         "framework": "DNXCore,Version=v5.0",
         "dependencies": {
           "FastQuant.Config": null,
           "FastQuant.Core": null,
+          "FastQuant.Data": null,
           "netcoreshim": null,
           "System.Collections": "4.0.11-beta",
           "System.Console": "4.0.0-beta",
@@ -638,12 +655,20 @@
         "type": "project",
         "framework": "DNX,Version=v4.5.1"
       },
+      "FastQuant.Data/1.0.0": {
+        "type": "project",
+        "framework": "DNX,Version=v4.5.1",
+        "dependencies": {
+          "FastQuant.Core": null
+        }
+      },
       "FastQuant.Runtime/1.0.0": {
         "type": "project",
         "framework": "DNX,Version=v4.5.1",
         "dependencies": {
           "FastQuant.Config": null,
-          "FastQuant.Core": null
+          "FastQuant.Core": null,
+          "FastQuant.Data": null
         },
         "frameworkAssemblies": [
           "System.Drawing"
@@ -662,12 +687,20 @@
         "type": "project",
         "framework": "DNX,Version=v4.5.1"
       },
+      "FastQuant.Data/1.0.0": {
+        "type": "project",
+        "framework": "DNX,Version=v4.5.1",
+        "dependencies": {
+          "FastQuant.Core": null
+        }
+      },
       "FastQuant.Runtime/1.0.0": {
         "type": "project",
         "framework": "DNX,Version=v4.5.1",
         "dependencies": {
           "FastQuant.Config": null,
-          "FastQuant.Core": null
+          "FastQuant.Core": null,
+          "FastQuant.Data": null
         },
         "frameworkAssemblies": [
           "System.Drawing"
@@ -701,12 +734,21 @@
           "System.Threading.Tasks.Parallel": "4.0.1-beta"
         }
       },
+      "FastQuant.Data/1.0.0": {
+        "type": "project",
+        "framework": "DNXCore,Version=v5.0",
+        "dependencies": {
+          "FastQuant.Core": null,
+          "System.Runtime.Extensions": "4.0.11-beta"
+        }
+      },
       "FastQuant.Runtime/1.0.0": {
         "type": "project",
         "framework": "DNXCore,Version=v5.0",
         "dependencies": {
           "FastQuant.Config": null,
           "FastQuant.Core": null,
+          "FastQuant.Data": null,
           "netcoreshim": null,
           "System.Collections": "4.0.11-beta",
           "System.Console": "4.0.0-beta",
@@ -1430,12 +1472,21 @@
           "System.Threading.Tasks.Parallel": "4.0.1-beta"
         }
       },
+      "FastQuant.Data/1.0.0": {
+        "type": "project",
+        "framework": "DNXCore,Version=v5.0",
+        "dependencies": {
+          "FastQuant.Core": null,
+          "System.Runtime.Extensions": "4.0.11-beta"
+        }
+      },
       "FastQuant.Runtime/1.0.0": {
         "type": "project",
         "framework": "DNXCore,Version=v5.0",
         "dependencies": {
           "FastQuant.Config": null,
           "FastQuant.Core": null,
+          "FastQuant.Data": null,
           "netcoreshim": null,
           "System.Collections": "4.0.11-beta",
           "System.Console": "4.0.0-beta",
@@ -2141,6 +2192,10 @@
     "FastQuant.Core/1.0.0": {
       "type": "project",
       "path": "../FastQuant.Core/project.json"
+    },
+    "FastQuant.Data/1.0.0": {
+      "type": "project",
+      "path": "../FastQuant.Data/project.json"
     },
     "FastQuant.Runtime/1.0.0": {
       "type": "project",

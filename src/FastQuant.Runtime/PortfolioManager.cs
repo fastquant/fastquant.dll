@@ -1,4 +1,6 @@
-﻿namespace SmartQuant
+﻿using System;
+
+namespace SmartQuant
 {
     public class PortfolioManager
     {
@@ -14,5 +16,9 @@
 
         public Pricer Pricer { get; internal set; }
 
+        public void Clear()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

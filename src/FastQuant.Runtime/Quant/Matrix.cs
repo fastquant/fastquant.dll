@@ -190,13 +190,9 @@ namespace SmartQuant.Quant
             if (!Matrix.AreComparable(m1, m2))
                 return false;
             for (int i = 0; i < m1.m; ++i)
-            {
                 for (int j = 0; j < m1.n; ++j)
-                {
                     if (m1.elms[i, j] != m2.elms[i, j])
                         return false;
-                }
-            }
             return true;
         }
 
@@ -259,13 +255,9 @@ namespace SmartQuant.Quant
         public static bool operator >=(Matrix matrix, double Scalar)
         {
             for (int index1 = 0; index1 < matrix.m; ++index1)
-            {
                 for (int index2 = 0; index2 < matrix.n; ++index2)
-                {
                     if (matrix.elms[index1, index2] < Scalar)
                         return false;
-                }
-            }
             return true;
         }
 
@@ -346,7 +338,7 @@ namespace SmartQuant.Quant
                 while (index2 != index1);
                 continue;
                 label_31:
-                this.Error("MakeEigenVectors", "too many iterationsn");
+                Error("MakeEigenVectors", "too many iterationsn");
                 return;
             }
             for (int index = 0; index < rows * rows; ++index)
@@ -392,17 +384,15 @@ namespace SmartQuant.Quant
         {
             if (!this.IsSymmetric)
                 throw new ApplicationException("Not yet implemented for non-symmetric matrix");
-            Matrix matrix = new Matrix(this.Rows, this.Cols);
+            var matrix = new Matrix(this.Rows, this.Cols);
             for (int index1 = 0; index1 < this.Rows; ++index1)
-            {
                 for (int index2 = 0; index2 < this.Cols; ++index2)
                     matrix[index1, index2] = this[index1, index2];
-            }
             eigenValues.ResizeTo(this.Rows);
-            Vector e = new Vector(this.Rows);
-            this.MakeTridiagonal(matrix, eigenValues, e);
-            this.MakeEigenVectors(eigenValues, e, matrix);
-            this.EigenSort(matrix, eigenValues);
+            var e = new Vector(this.Rows);
+            MakeTridiagonal(matrix, eigenValues, e);
+            MakeEigenVectors(eigenValues, e, matrix);
+            EigenSort(matrix, eigenValues);
             return matrix;
         }
 
@@ -413,11 +403,11 @@ namespace SmartQuant.Quant
                 throw new ArgumentException("Matrix to tridiagonalize must be square");
             if (!a.IsSymmetric)
                 throw new ArgumentException("Can only tridiagonalise symmetric matrix");
-            double[] numArray1 = new double[this.M * this.N];
+            var numArray1 = new double[this.M * this.N];
             for (int index = 0; index < this.M * this.N; ++index)
                 numArray1[index] = a.Elements[index / this.M, index % this.N];
-            double[] elements1 = d.Elements;
-            double[] elements2 = e.Elements;
+            var elements1 = d.Elements;
+            var elements2 = e.Elements;
             for (int index1 = num1 - 1; index1 > 0; --index1)
             {
                 int num2 = index1 - 1;
@@ -505,10 +495,7 @@ namespace SmartQuant.Quant
                 a.Elements[index / this.M, index % this.N] = numArray1[index];
         }
 
-        public static bool AreComparable(Matrix m1, Matrix m2)
-        {
-            return m1.m == m2.m && m1.n == m2.n;
-        }
+        public static bool AreComparable(Matrix m1, Matrix m2) => m1.m == m2.m && m1.n == m2.n;
 
         public Matrix Abs()
         {
@@ -750,15 +737,9 @@ namespace SmartQuant.Quant
             }
         }
 
-        public override bool Equals(object matrix)
-        {
-            return this == (Matrix)matrix;
-        }
+        public override bool Equals(object matrix) => this == (Matrix)matrix;
 
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
+        public override int GetHashCode() => base.GetHashCode();
 
         protected void Error(string where, string what)
         {
@@ -767,10 +748,7 @@ namespace SmartQuant.Quant
 
         public class TElementPosAction
         {
-            public virtual double Operation(double element)
-            {
-                return element;
-            }
+            public virtual double Operation(double element) => element;
         }
     }
 
@@ -797,13 +775,7 @@ namespace SmartQuant.Quant
             }
         }
 
-        public int NDiag
-        {
-            get
-            {
-                return Math.Min(this.matrix.N, this.matrix.M);
-            }
-        }
+        public int NDiag => Math.Min(this.matrix.N, this.matrix.M);
 
         public MatrixDiag(Matrix matrix)
         {
@@ -821,14 +793,8 @@ namespace SmartQuant.Quant
         {
         }
 
-        public override bool Equals(object matrixDiag)
-        {
-            return this.matrix.Equals(((MatrixDiag)matrixDiag).matrix);
-        }
+        public override bool Equals(object matrixDiag) => this.matrix.Equals(((MatrixDiag)matrixDiag).matrix);
 
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
+        public override int GetHashCode() => base.GetHashCode();
     }
 }

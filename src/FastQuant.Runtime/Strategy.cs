@@ -21,7 +21,7 @@ namespace SmartQuant
         public int ClientId { get; set; }
         public string Name { get; set; }
         public bool Enabled { get; set; }
-        public Strategy Parent { get; private set;  }
+        public Strategy Parent { get; private set; }
         public StrategyStatus Status { get; private set; }
         public LinkedList<Strategy> Strategies { get; private set; }
         public Portfolio Portfolio { get; private set; }
@@ -41,6 +41,7 @@ namespace SmartQuant
         public EventManager EventManager => this.framework.EventManager;
         public ProviderManager ProviderManager => this.framework.ProviderManager;
         public StrategyManager StrategyManager => this.framework.StrategyManager;
+        public BarFactory BarFactory => this.framework.EventManager.BarFactory;
 
         public IDataProvider DataProvider { get; set; }
         public IExecutionProvider ExecutionProvider { get; set; }
@@ -53,7 +54,7 @@ namespace SmartQuant
 
         public virtual void Init()
         {
-            
+
         }
 
         public Reminder AddReminder(DateTime dateTime, object data = null)
@@ -267,14 +268,14 @@ namespace SmartQuant
 
         public void SetParameter(string name, object value) => this.parameterHelper.SetStrategyParameter(name, this, value);
 
-        public object GetParameter(string name) =>  this.parameterHelper.GetStrategyParameter(name, this);
+        public object GetParameter(string name) => this.parameterHelper.GetStrategyParameter(name, this);
 
-        public ParameterList GetParameters() =>  this.parameterHelper.GetStrategyParameters(Name, this);
+        public ParameterList GetParameters() => this.parameterHelper.GetStrategyParameters(Name, this);
 
         public bool ExecuteMethod(string methodName)
         {
             var methods = GetType().GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public);
-            var method = methods.FirstOrDefault(m => m.GetCustomAttributes(typeof (StrategyMethodAttribute), true).Any() && m.GetParameters().Length == 0 && m.Name == methodName);
+            var method = methods.FirstOrDefault(m => m.GetCustomAttributes(typeof(StrategyMethodAttribute), true).Any() && m.GetParameters().Length == 0 && m.Name == methodName);
             method?.Invoke(this, null);
             return method != null;
         }
@@ -302,7 +303,7 @@ namespace SmartQuant
         {
         }
 
-        protected internal virtual void OnStrategyStop()
+        protected virtual void OnStrategyStop()
         {
         }
 
@@ -314,91 +315,107 @@ namespace SmartQuant
         {
         }
 
-        protected internal virtual void OnBid(Instrument instrument, Bid bid)
+        protected virtual void OnBid(Instrument instrument, Bid bid)
         {
         }
 
-        protected internal virtual void OnAsk(Instrument instrument, Ask ask)
+        protected virtual void OnAsk(Instrument instrument, Ask ask)
         {
         }
 
-        protected internal virtual void OnBarOpen(Instrument instrument, Bar bar)
+        protected virtual void OnBarOpen(Instrument instrument, Bar bar)
         {
         }
 
-        protected internal virtual void OnBar(Instrument instrument, Bar bar)
+        protected virtual void OnBar(Instrument instrument, Bar bar)
         {
         }
 
-        protected internal virtual void OnBarSlice(BarSlice slice)
+        protected virtual void OnBarSlice(BarSlice slice)
         {
         }
 
-        protected internal virtual void OnFill(Fill fill)
+        protected virtual void OnExecutionReport(ExecutionReport report)
         {
         }
 
-        protected internal virtual void OnTrade(Instrument instrument, Trade trade)
+        protected virtual void OnFill(Fill fill)
         {
         }
 
-        protected internal virtual void OnTransaction(Transaction transaction)
+        protected virtual void OnTrade(Instrument instrument, Trade trade)
         {
         }
 
-        protected internal virtual void OnPositionOpened(Position position)
+        protected virtual void OnTransaction(Transaction transaction)
         {
         }
 
-        protected internal virtual void OnPositionChanged(Position position)
+        protected virtual void OnPositionOpened(Position position)
         {
         }
 
-        protected internal virtual void OnPositionClosed(Position position)
+        protected virtual void OnPositionChanged(Position position)
         {
         }
 
-        protected internal virtual void OnNewOrder(Order order)
+        protected virtual void OnPositionClosed(Position position)
         {
         }
 
-        protected internal virtual void OnOrderCancelled(Order order)
+        protected virtual void OnNewOrder(Order order)
         {
         }
 
-        protected internal virtual void OnOrderCancelRejected(Order order)
+        protected virtual void OnOrderCancelled(Order order)
         {
         }
 
-        protected internal virtual void OnOrderDone(Order order)
+        protected virtual void OnOrderCancelRejected(Order order)
         {
         }
 
-        protected internal virtual void OnOrderExpired(Order order)
+        protected virtual void OnOrderDone(Order order)
         {
         }
 
-        protected internal virtual void OnOrderFilled(Order order)
+        protected virtual void OnOrderExpired(Order order)
         {
         }
 
-        protected internal virtual void OnOrderPartiallyFilled(Order order)
+        protected virtual void OnOrderFilled(Order order)
         {
         }
 
-        protected internal virtual void OnOrderRejected(Order order)
+        protected virtual void OnOrderPartiallyFilled(Order order)
         {
         }
 
-        protected internal virtual void OnOrderReplaced(Order order)
+        protected virtual void OnOrderRejected(Order order)
         {
         }
 
-        protected internal virtual void OnOrderReplaceRejected(Order order)
+        protected virtual void OnOrderReplaced(Order order)
         {
         }
 
-        protected internal virtual void OnOrderStatusChanged(Order order)
+        protected virtual void OnOrderReplaceRejected(Order order)
+        {
+        }
+
+        protected virtual void OnOrderStatusChanged(Order order)
+        {
+        }
+
+        protected virtual void OnStopCancelled(Stop stop)
+        {
+        }
+
+        protected virtual void OnStopExecuted(Stop stop)
+        {
+        }
+
+        protected virtual void OnStopStatusChanged(Stop stop)
         {
         }
     }
@@ -454,7 +471,7 @@ namespace SmartQuant
 
         public bool IsDisconnecting => false;
 
-        public SellSideStrategy(Framework framework, string name): base(framework, name)
+        public SellSideStrategy(Framework framework, string name) : base(framework, name)
         {
         }
 
@@ -529,6 +546,41 @@ namespace SmartQuant
         public void Send(ExecutionCommand command)
         {
             throw new NotImplementedException();
+        }
+
+        public virtual void EmitAsk(Ask ask)
+        {
+            this.framework.EventManager.OnEvent(new Ask(ask) { ProviderId = (byte)Id });
+        }
+
+        public virtual void EmitAsk(DateTime dateTime, int instrumentId, double price, int size)
+        {
+            this.framework.EventManager.OnEvent(new Ask(dateTime, (byte)Id, instrumentId, price, size));
+        }
+
+        public virtual void EmitBid(Bid bid)
+        {
+            this.framework.EventManager.OnEvent(new Bid(bid) { ProviderId = (byte)Id });
+        }
+
+        public virtual void EmitBid(DateTime dateTime, int instrumentId, double price, int size)
+        {
+            this.framework.EventManager.OnEvent(new Bid(dateTime, (byte)Id, instrumentId, price, size));
+        }
+
+        public virtual void EmitTrade(Trade trade)
+        {
+            this.framework.EventManager.OnEvent(new Trade(trade) { ProviderId = (byte)Id });
+        }
+
+        public virtual void EmitTrade(DateTime dateTime, int instrumentId, double price, int size)
+        {
+            this.framework.EventManager.OnEvent(new Trade(dateTime, (byte)Id, instrumentId, price, size));
+        }
+
+        public virtual void EmitBar(Bar bar)
+        {
+            this.framework.EventManager.OnEvent(bar);
         }
     }
 

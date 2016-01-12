@@ -6,6 +6,51 @@ using System.IO;
 
 namespace SmartQuant
 {
+    public class GroupEventStreamer : ObjectStreamer
+    {
+        public GroupEventStreamer()
+        {
+            this.typeId = DataObjectType.GroupEvent;
+            this.type = typeof(GroupEvent);
+        }
+
+        public override object Read(BinaryReader reader, byte version)
+        {
+            int groupId = reader.ReadInt32();
+            var e = this.streamerManager.Deserialize(reader) as Event;
+            return new GroupEvent(e, groupId);
+        }
+
+        public override void Write(BinaryWriter writer, object obj)
+        {
+            var ge = obj as GroupEvent;
+            writer.Write((ge.Group == null) ? ge.GroupId : ge.Group.Id);
+            this.streamerManager.Serialize(writer, ge.Obj);
+        }
+    }
+
+    public class GroupUpdateStreamer : ObjectStreamer
+    {
+        public GroupUpdateStreamer()
+        {
+            this.typeId = DataObjectType.GroupUpdate;
+            this.type = typeof(GroupUpdate);
+        }
+
+        public override object Read(BinaryReader reader, byte version)
+        {
+            reader.ReadInt32();
+            this.streamerManager.Deserialize(reader);
+            return null;
+        }
+
+        public override void Write(BinaryWriter writer, object obj)
+        {
+            this.streamerManager.Serialize(writer, (obj as GroupEvent).Obj);
+        }
+    }
+
+
     public class GroupStreamer : ObjectStreamer
     {
         public GroupStreamer()

@@ -10,6 +10,8 @@ namespace SmartQuant
         protected byte version;
         protected internal StreamerManager streamerManager;
 
+        public Type Type => this.type;
+        public byte TypeId => this.typeId;
         public StreamerManager StreamerManager => this.streamerManager;
         
         public ObjectStreamer()

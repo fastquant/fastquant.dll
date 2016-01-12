@@ -25,7 +25,7 @@ namespace SmartQuant
 
         public void OnEvent(Event e)
         {
-            throw new NotImplementedException();
+            this.framework.EventManager.OnEvent(e);
         }
 
         internal void OnPositionChanged(Portfolio portfolio, Position position, bool queued)
@@ -54,6 +54,16 @@ namespace SmartQuant
         }
 
         internal void OnPositionClosed(Portfolio portfolio, Position position, bool queued)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnFrameworkCleared(Framework framework)
+        {
+            OnEvent(new OnFrameworkCleared(framework));
+        }
+
+        public void Clear()
         {
             throw new NotImplementedException();
         }

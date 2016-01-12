@@ -19,7 +19,7 @@ namespace SmartQuant
         private static string GetApplicationDataPath()
         {
 #if DNXCORE50
-            return Path.Combine(Environment.GetEnvironmentVariable("HOME"), "AppData", "Roaming");
+            return Path.Combine(Environment.GetEnvironmentVariable("HOME") ?? Environment.GetEnvironmentVariable("USERPROFILE"), "AppData", "Roaming");
 #else
             return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 #endif

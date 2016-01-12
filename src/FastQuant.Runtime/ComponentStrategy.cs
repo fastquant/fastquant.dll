@@ -23,7 +23,8 @@ namespace SmartQuant.Component
         public Instrument Instrument => this.strategy.Instrument;
         public InstrumentManager InstrumentManager => this.framework.InstrumentManager;
         public OrderManager OrderManager => this.framework.OrderManager;
-        public Portfolio Portfolio=> this.strategy.Portfolio;
+        public GroupManager GroupManager => this.framework.GroupManager;
+        public Portfolio Portfolio => this.strategy.Portfolio;
         public Position Position => this.strategy.Position;
 
         public void Signal(double value)

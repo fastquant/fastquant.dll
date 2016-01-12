@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace SmartQuant
 {
@@ -51,6 +52,8 @@ namespace SmartQuant
 
         public override byte TypeId => EventType.Message;
 
+        public int Id { get; }
+
         public int Type { get; set; }
 
         public int SenderId { get; set; } = -1;
@@ -58,8 +61,6 @@ namespace SmartQuant
         public int ReceiverId { get; set; } = -1;
 
         public ObjectTable Fields { get; } = new ObjectTable();
-
-        public int Id { get; }
 
         public Message() : base(DateTime.Now)
         {
@@ -104,6 +105,19 @@ namespace SmartQuant
                 Fields[index] = value;
             }
         }
+
+        #region Extra
+
+        public Message(DateTime dateTime, int type, int id, int senderId, int receiverId, ObjectTable fields) : base(dateTime)
+        {
+            Type = type;
+            Id = id;
+            SenderId = senderId;
+            ReceiverId = receiverId;
+            Fields = fields;
+        }
+
+        #endregion
     }
 
     public class ResponseType
@@ -184,6 +198,12 @@ namespace SmartQuant
         public Command(DateTime dateTime, int type, int id, int senderId, int receiverId) : base(dateTime, type, id, senderId, receiverId)
         {
         }
+
+        #region Extra
+        public Command(DateTime dateTime, int type, int id, int senderId, int receiverId, ObjectTable fields) : base(dateTime, type, id, senderId, receiverId, fields)
+        {
+        }
+        #endregion
     }
 
     public delegate void CommandEventHandler(object sender, Command command);

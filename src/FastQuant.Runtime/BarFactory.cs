@@ -193,7 +193,6 @@ namespace SmartQuant
         {
         }
 
-        // Token: 0x06000050 RID: 80 RVA: 0x00002698 File Offset: 0x00000898
         public TimeBarFactoryItem(Instrument instrument, long barSize, BarInput barInput, ClockType type, TimeSpan session1, TimeSpan session2, int providerId = -1) : base(instrument, BarType.Time, barSize, barInput, session1, session2, providerId)
         {   
             this.type = type;

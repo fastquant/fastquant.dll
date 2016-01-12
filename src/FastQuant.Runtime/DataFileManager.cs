@@ -62,8 +62,8 @@ namespace SmartQuant
 
         public DataSeries GetSeries(string fileName, string seriesName)
         {
-            DataFile file = GetFile(fileName, FileMode.OpenOrCreate);
-            DataSeries dataSeries = (DataSeries)file.Get(seriesName);
+            var file = GetFile(fileName, FileMode.OpenOrCreate);
+            var dataSeries = (DataSeries)file.Get(seriesName);
             if (dataSeries == null)
             {
                 dataSeries = new DataSeries(seriesName);

@@ -13,15 +13,15 @@ namespace SmartQuant
 
         public Instrument Instrument { get; private set; }
 
-        public byte CurrencyId { get; internal set; }
+        public byte CurrencyId { get; set; }
 
-        public OrderSide Side { get; internal set; }
+        public OrderSide Side { get; set; }
 
-        public double Qty { get; internal set; }
+        public double Qty { get; set; }
 
-        public double Price { get; internal set; }
+        public double Price { get; set; }
 
-        public string Text { get; internal set; }
+        public string Text { get; set; }
 
         public double Commission { get; private set; }
 
@@ -89,5 +89,11 @@ namespace SmartQuant
         {
             return $"{DateTime} {GetSideAsString()} {Instrument.Symbol} {Qty} {Price} {Text}";
         }
+
+
+        #region Extra
+        public int OrderId { get; set; }
+        public int InstrumentId { get; set; }
+        #endregion
     }
 }

@@ -2,19 +2,19 @@
 {
     public class ObjectTable
     {
-        private IdArray<object> fields = new IdArray<object>(16);
+        public IdArray<object> Fields { get; set; } = new IdArray<object>(16);
 
-        public int Size =>this.fields.Size;
+        public int Size => Fields.Size;
 
         public object this[int index]
         {
             get
             {
-                return this.fields[index];
+                return Fields[index];
             }
             set
             {
-                this.fields[index] = value;
+                Fields[index] = value;
             }
         }
 
@@ -27,34 +27,16 @@
             table.CopyTo(this);
         }
 
-        public void Clear()
-        {
-            this.fields.Clear();
-        }
+        public void Clear() => Fields.Clear();
+  
+        public void Remove(int id)=> Fields.Remove(id);
 
-        public void Remove(int id)
-        {
-            this.fields.Remove(id);
-        }
+        public double GetDouble(int index) => (double)this[index];
 
-        public double GetDouble(int index)
-        {
-            return (double)this.fields[index];
-        }
+        public int GetInt(int index) => (int)this[index];
 
-        public int GetInt(int index)
-        {
-            return (int)this.fields[index];
-        }
+        public string GetString(int index) => (string)this[index];
 
-        public string GetString(int index)
-        {
-            return (string)this.fields[index];
-        }
-
-        public void CopyTo(ObjectTable table)
-        {
-            this.fields.CopyTo(table.fields);
-        }
+        public void CopyTo(ObjectTable table) => Fields.CopyTo(table.Fields);
     }
 }

@@ -508,6 +508,19 @@ namespace Samples.Roll
         }
     }
 
+    public class RollInfo
+    {
+        public int LegIndex { get; private set; }
+        public string Symbol { get; private set; }
+        public DateTime Maturity { get; private set; }
+
+        public RollInfo(int legIndex, string symbol, DateTime maturity)
+        {
+            LegIndex = legIndex;
+            Symbol = symbol;
+            Maturity = maturity;
+        }
+    }
 
     class Program
     {

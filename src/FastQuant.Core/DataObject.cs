@@ -145,6 +145,18 @@ namespace SmartQuant
         public const byte SeriesReset = 254;
     }
 
+    public class ObjectType
+    {
+        public const byte DataSeries = 101;
+        public const byte ObjectKeyList = 102;
+        public const byte FreeKeyList = 103;
+        public const byte ObjectKeyIdArray = 104;
+        public const byte DataKeyIdArray = 105;
+        public const byte Instrument = 106;
+        public const byte AltId = 107;
+        public const byte Leg = 108;
+    }
+
     public class DataObject : Event
     {
         public DataObject()

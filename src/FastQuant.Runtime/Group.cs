@@ -25,7 +25,7 @@ namespace SmartQuant
             GroupId = group != null ? group.Id : -1;
         }
 
-        internal GroupEvent(Event obj, int groupId)
+        public GroupEvent(Event obj, int groupId)
         {
             Obj = obj;
             GroupId = groupId;

@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "FastQuant.Runtime": ""
+    "FastQuant.Core": ""
   },
   "frameworks": {
     "dnx451": { },

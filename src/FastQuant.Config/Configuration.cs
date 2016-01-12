@@ -49,10 +49,10 @@ namespace SmartQuant
     [XmlRoot("Configuration")]
     public class Configuration
     {
-        static Configuration()
-        {
-            
-        }
+        public const string FILENAME_DATA = "data.quant";
+        public const string FILENAME_INSTRUMENTS = "instruments.quant";
+        public const string FILENAME_ORDERS = "orders.quant";
+        public const string FILENAME_PORTFOLIOS = "portfolios.quant";
 
         [XmlElement("IsInstrumentFileLocal")]
         public bool IsInstrumentFileLocal;
@@ -127,13 +127,13 @@ namespace SmartQuant
 
         public void AddDefaultProviders()
         {
-            var types = new Dictionary<string, bool>();
-            foreach (var pair in types)
-            {
-                Type t = Type.GetType(pair.Key);
-                if (t != null)
-                    Providers.Add(new ProviderPlugin(t.FullName, pair.Value));
-            }
+            //var types = new Dictionary<string, bool>();
+            //foreach (var pair in types)
+            //{
+            //    Type t = Type.GetType(pair.Key);
+            //    if (t != null)
+            //        Providers.Add(new ProviderPlugin(t.FullName, pair.Value));
+            //}
         }
 
         public static Configuration DefaultConfiguaration()

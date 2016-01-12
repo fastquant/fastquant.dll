@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace SmartQuant
 {
@@ -120,11 +121,14 @@ namespace SmartQuant
                 "SeriesResetStreamer"
             };
 
-            foreach (var n in names)
-            {
-                var streamer = (ObjectStreamer)Activator.CreateInstance(Type.GetType(n));
-                Add(streamer);
-            }
+            foreach (var s in names.Select(s => Type.GetType(s)).TakeWhile(t => t != null).Select(t => (ObjectStreamer)Activator.CreateInstance(t)))
+                Add(s);
+
+            //foreach (var n in names)
+            //{
+            //    var streamer = (ObjectStreamer)Activator.CreateInstance(Type.GetType(n));
+            //    Add(streamer);
+            //}
         }
 
         public object Deserialize(BinaryReader reader)

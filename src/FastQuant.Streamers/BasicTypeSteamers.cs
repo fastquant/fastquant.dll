@@ -197,4 +197,30 @@ namespace SmartQuant
         }
     }
 
+    public class ArrayStreamer : ObjectStreamer
+    {
+        public ArrayStreamer()
+        {
+            this.typeId = DataObjectType.Array;
+            this.type = typeof(object[]);
+        }
+
+        public override object Read(BinaryReader reader, byte version)
+        {
+            int length = reader.ReadInt32();
+            var array = new object[length];
+            for (int i = 0; i < length; i++)
+                array[i] = StreamerManager.Deserialize(reader);
+            return array;
+        }
+
+        public override void Write(BinaryWriter writer, object obj)
+        {
+            var array = (object[])obj;
+            writer.Write(array.Length);
+            for (int i = 0; i < array.Length; i++)
+                StreamerManager.Serialize(writer, array[i]);
+        }
+    }
+
 }

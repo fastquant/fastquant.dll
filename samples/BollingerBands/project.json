@@ -3,7 +3,6 @@
     "emitEntryPoint": true
   },
   "dependencies": {
-    "FastQuant.Core": "",
     "FastQuant.Runtime": "",
     "FastQuant.Providers": "",
     "FastQuant.Statistics": "",

@@ -13,6 +13,13 @@
       "FastQuant.Core/1.0.0": {
         "type": "project",
         "framework": "DNX,Version=v4.5.1"
+      },
+      "FastQuant.Data/1.0.0": {
+        "type": "project",
+        "framework": "DNX,Version=v4.5.1",
+        "dependencies": {
+          "FastQuant.Core": null
+        }
       }
     },
     "DNXCore,Version=v5.0": {
@@ -40,6 +47,14 @@
           "System.Reflection.Extensions": "4.0.1-beta",
           "System.Reflection.TypeExtensions": "4.1.0-beta",
           "System.Threading.Tasks.Parallel": "4.0.1-beta"
+        }
+      },
+      "FastQuant.Data/1.0.0": {
+        "type": "project",
+        "framework": "DNXCore,Version=v5.0",
+        "dependencies": {
+          "FastQuant.Core": null,
+          "System.Runtime.Extensions": "4.0.11-beta"
         }
       },
       "Microsoft.Win32.Primitives/4.0.0": {
@@ -609,6 +624,13 @@
       "FastQuant.Core/1.0.0": {
         "type": "project",
         "framework": "DNX,Version=v4.5.1"
+      },
+      "FastQuant.Data/1.0.0": {
+        "type": "project",
+        "framework": "DNX,Version=v4.5.1",
+        "dependencies": {
+          "FastQuant.Core": null
+        }
       }
     },
     "DNX,Version=v4.5.1/win7-x64": {
@@ -622,6 +644,13 @@
       "FastQuant.Core/1.0.0": {
         "type": "project",
         "framework": "DNX,Version=v4.5.1"
+      },
+      "FastQuant.Data/1.0.0": {
+        "type": "project",
+        "framework": "DNX,Version=v4.5.1",
+        "dependencies": {
+          "FastQuant.Core": null
+        }
       }
     },
     "DNXCore,Version=v5.0/win7-x86": {
@@ -649,6 +678,14 @@
           "System.Reflection.Extensions": "4.0.1-beta",
           "System.Reflection.TypeExtensions": "4.1.0-beta",
           "System.Threading.Tasks.Parallel": "4.0.1-beta"
+        }
+      },
+      "FastQuant.Data/1.0.0": {
+        "type": "project",
+        "framework": "DNXCore,Version=v5.0",
+        "dependencies": {
+          "FastQuant.Core": null,
+          "System.Runtime.Extensions": "4.0.11-beta"
         }
       },
       "Microsoft.Win32.Primitives/4.0.0": {
@@ -1363,6 +1400,14 @@
           "System.Threading.Tasks.Parallel": "4.0.1-beta"
         }
       },
+      "FastQuant.Data/1.0.0": {
+        "type": "project",
+        "framework": "DNXCore,Version=v5.0",
+        "dependencies": {
+          "FastQuant.Core": null,
+          "System.Runtime.Extensions": "4.0.11-beta"
+        }
+      },
       "Microsoft.Win32.Primitives/4.0.0": {
         "type": "package",
         "dependencies": {
@@ -2057,6 +2102,10 @@
     "FastQuant.Core/1.0.0": {
       "type": "project",
       "path": "../FastQuant.Core/project.json"
+    },
+    "FastQuant.Data/1.0.0": {
+      "type": "project",
+      "path": "../FastQuant.Data/project.json"
     },
     "netcoreshim/1.0.0": {
       "type": "project",
@@ -3658,7 +3707,8 @@
   "projectFileDependencyGroups": {
     "": [
       "FastQuant.Config ",
-      "FastQuant.Core "
+      "FastQuant.Core ",
+      "FastQuant.Data "
     ],
     "DNX,Version=v4.5.1": [
       "fx/System.Drawing >= 4.0.0"

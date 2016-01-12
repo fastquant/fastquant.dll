@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SmartQuant
 {
@@ -10,6 +11,11 @@ namespace SmartQuant
         {
             this.framework = framework;
             //this.dictionary_0 = new Dictionary<int, Class4>();
+        }
+
+        public void Clear()
+        {
+            throw new NotImplementedException();
         }
     }
 }

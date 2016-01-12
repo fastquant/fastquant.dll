@@ -179,6 +179,15 @@ namespace SmartQuant
         {
             return $"Bar [{OpenDateTime} - {DateTime}] Instrument={InstrumentId} Type={Type} Size={Size} Open={Open} High={High} Low={Low} Close={Close} Volume={Volume}";
         }
-    }
 
+        #region Extra
+        public IdArray<double> Fields
+        {
+            get
+            {
+                return this.fields;
+            }
+        }
+        #endregion
+    }
 }
