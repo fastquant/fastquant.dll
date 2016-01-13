@@ -16,6 +16,10 @@ namespace SmartQuant
 
         public Pricer Pricer { get; internal set; }
 
+        public PortfolioList Portfolios { get;}
+
+
+
         public void Clear()
         {
             throw new NotImplementedException();
