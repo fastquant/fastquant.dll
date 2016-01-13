@@ -405,4 +405,633 @@ namespace SmartQuant
             this.streamerManager.Serialize(writer, f.Fields);
         }
     }
+
+    public class NewsStreamer : ObjectStreamer
+    {
+        public NewsStreamer()
+        {
+            this.typeId = DataObjectType.News;
+            this.type = typeof(News);
+        }
+
+        public override object Read(BinaryReader reader, byte version)
+        {
+            return new News
+            {
+                DateTime = new DateTime(reader.ReadInt64()),
+                ProviderId = reader.ReadInt32(),
+                InstrumentId = reader.ReadInt32(),
+                Urgency = reader.ReadByte(),
+                Url = reader.ReadString(),
+                Headline = reader.ReadString(),
+                Text = reader.ReadString()
+            };
+        }
+
+        public override void Write(BinaryWriter writer, object obj)
+        {
+            News news = obj as News;
+            writer.Write(news.DateTime.Ticks);
+            writer.Write(news.ProviderId);
+            writer.Write(news.InstrumentId);
+            writer.Write(news.Urgency);
+            writer.Write(news.Url);
+            writer.Write(news.Headline);
+            writer.Write(news.Text);
+        }
+    }
+
+    public class PositionStreamer : ObjectStreamer
+    {
+        public PositionStreamer()
+        {
+            this.typeId = DataObjectType.Position;
+            this.type = typeof(Position);
+            this.version = 1;
+        }
+
+        public override object Read(BinaryReader reader, byte version)
+        {
+            var p = new Position();
+            if (version >= 1)
+            {
+                p.PortfolioId = reader.ReadInt32();
+                p.InstrumentId = reader.ReadInt32();
+                p.Amount = reader.ReadDouble();
+                p.QtyBought = reader.ReadDouble();
+                p.QtySold = reader.ReadDouble();
+            }
+            return p;
+        }
+
+        public override void Write(BinaryWriter writer, object obj)
+        {
+            var p = (Position)obj;
+            if (this.version >= 1)
+            {
+                writer.Write(p.PortfolioId);
+                writer.Write(p.InstrumentId);
+                writer.Write(p.Amount);
+                writer.Write(p.QtyBought);
+                writer.Write(p.QtySold);
+            }
+        }
+    }
+
+    public class PortfolioStreamer : ObjectStreamer
+    {
+        public PortfolioStreamer()
+        {
+            this.typeId = DataObjectType.Portfolio;
+            this.type = typeof(Portfolio);
+        }
+
+        public override object Read(BinaryReader reader, byte version)
+        {
+            var p = new Portfolio(reader.ReadString());
+            p.Description = reader.ReadString();
+            p.Id = reader.ReadInt32();
+            int count = reader.ReadInt32();
+            for (int i = 0; i < count; i++)
+                p.Children.Add((Portfolio)this.streamerManager.Deserialize(reader));
+            return p;
+        }
+
+        public override void Write(BinaryWriter writer, object obj)
+        {
+            Portfolio portfolio = (Portfolio)obj;
+            writer.Write(portfolio.Name);
+            writer.Write(portfolio.Description);
+            writer.Write(portfolio.Id);
+            writer.Write(portfolio.Children.Count);
+            foreach (var c in portfolio.Children)
+                this.streamerManager.Serialize(writer, c);
+        }
+    }
+
+    public class AccountDataStreamer : ObjectStreamer
+    {
+        public AccountDataStreamer()
+        {
+            this.typeId = DataObjectType.AccountData;
+            this.type = typeof(AccountData);
+        }
+
+        public override object Read(BinaryReader reader, byte version)
+        {
+            var datetime = new DateTime(reader.ReadInt64());
+            var type = (AccountDataType)reader.ReadInt32();
+            var account = reader.ReadString();
+            var providerId = reader.ReadByte();
+            var route = reader.ReadByte();
+            var accountData = new AccountData(datetime, type, account, providerId, route);
+            int count = reader.ReadInt32();
+            for (int i = 0; i < count; i++)
+            {
+                var name = reader.ReadString();
+                var currency = reader.ReadString();
+                object value = StreamerManager.Deserialize(reader);
+                accountData.Fields.Add(name, currency, value);
+            }
+            return accountData;
+        }
+
+        public override void Write(BinaryWriter writer, object obj)
+        {
+            var data = (AccountData)obj;
+            writer.Write(data.DateTime.Ticks);
+            writer.Write((int)data.Type);
+            writer.Write(data.Account);
+            writer.Write(data.ProviderId);
+            writer.Write(data.Route);
+            var list = new List<AccountDataField>();
+            foreach (AccountDataField field in data.Fields)
+            {
+                var type = field.Value.GetType();
+                if (StreamerManager.HasStreamer(type))
+                {
+                    list.Add(field);
+                }
+                else if (type == typeof(object[]))
+                {
+                    var array = (object[])field.Value;
+                    for (int i = 0; i < array.Length; i++)
+                        StreamerManager.HasStreamer(array[i].GetType());
+                    list.Add(field);
+                }
+            }
+            writer.Write(list.Count);
+            foreach (var field in list)
+            {
+                writer.Write(field.Name);
+                writer.Write(field.Currency);
+                StreamerManager.Serialize(writer, field.Value);
+            }
+        }
+    }
+
+    public class AccountTransactionStreamer : ObjectStreamer
+    {
+        public AccountTransactionStreamer()
+        {
+            this.typeId = DataObjectType.AccountTransaction;
+            this.type = typeof(AccountTransaction);
+        }
+
+        public override object Read(BinaryReader reader, byte version)
+        {
+            var dateTime = new DateTime(reader.ReadInt64());
+            byte currencyId = reader.ReadByte();
+            string text = reader.ReadString();
+            double value = reader.ReadDouble();
+            return new AccountTransaction(dateTime, value, currencyId, text);
+        }
+
+        public override void Write(BinaryWriter writer, object obj)
+        {
+            var t = obj as AccountTransaction;
+            writer.Write(t.DateTime.Ticks);
+            writer.Write(t.CurrencyId);
+            writer.Write(t.Text);
+            writer.Write(t.Value);
+        }
+    }
+
+    public class UserStreamer : ObjectStreamer
+    {
+        public UserStreamer()
+        {
+            this.typeId = DataObjectType.User;
+            this.type = typeof(User);
+        }
+
+        public override object Read(BinaryReader reader, byte version)
+        {
+            var user = new User();
+            user.Id = reader.ReadInt32();
+            user.Name = reader.ReadString();
+            user.Password = reader.ReadString();
+            int count = reader.ReadInt32();
+            for (int i = 0; i < count; i++)
+            {
+                UserItem userItem = new UserItem();
+                userItem.Name = reader.ReadString();
+                userItem.Value = reader.ReadString();
+                user.Items.Add(userItem);
+            }
+            return user;
+        }
+
+        public override void Write(BinaryWriter writer, object obj)
+        {
+            User user = (User)obj;
+            writer.Write(user.Id);
+            writer.Write(user.Name);
+            writer.Write(user.Password);
+            writer.Write(user.Items.Count);
+            if (user.Items.Count > 0)
+            {
+                foreach (var item in user.Items)
+                {
+                    writer.Write(item.Name);
+                    writer.Write(item.Value);
+                }
+            }
+        }
+    }
+
+    public class AccountReportStreamer : ObjectStreamer
+    {
+        public AccountReportStreamer()
+        {
+            this.typeId = DataObjectType.AccountReport;
+            this.type = typeof(AccountReport);
+        }
+
+        public override object Read(BinaryReader reader, byte version)
+        {
+            var r = new AccountReport();
+            r.DateTime = new DateTime(reader.ReadInt64());
+            r.PortfolioId = reader.ReadInt32();
+            r.CurrencyId = reader.ReadByte();
+            r.Amount = reader.ReadDouble();
+            r.Text = reader.ReadString();
+            if (reader.ReadBoolean())
+            {
+                r.Fields = (ObjectTable)this.streamerManager.Deserialize(reader);
+            }
+            return r;
+        }
+
+        public override void Write(BinaryWriter writer, object obj)
+        {
+            var r = (AccountReport)obj;
+            writer.Write(r.dateTime.Ticks);
+            writer.Write(r.PortfolioId);
+            writer.Write(r.CurrencyId);
+            writer.Write(r.Amount);
+            writer.Write(r.Text);
+            if (r.Fields != null)
+            {
+                writer.Write(true);
+                this.streamerManager.Serialize(writer, r.Fields);
+            }
+            else
+            {
+                writer.Write(false);
+            }
+        }
+    }
+
+    public class OnSubscribeStreamer : ObjectStreamer
+    {
+        public OnSubscribeStreamer()
+        {
+            this.typeId = DataObjectType.OnSubscribe;
+            this.type = typeof(OnSubscribe);
+            this.version = 1;
+        }
+
+        public override object Read(BinaryReader reader, byte version)
+        {
+            var dateTime = new DateTime(reader.ReadInt64());
+            OnSubscribe os = new OnSubscribe(reader.ReadString());
+            os.dateTime = dateTime;
+            if (version >= 1 && reader.ReadBoolean())
+            {
+                os.Subscription = new Subscription
+                {
+                    SourceId = reader.ReadInt32(),
+                    ProviderId = reader.ReadInt32(),
+                    RouteId = reader.ReadInt32(),
+                    RequestId = reader.ReadInt32(),
+                    Symbol = reader.ReadString(),
+                    Instrument = (Instrument)this.StreamerManager.Deserialize(reader)
+                };
+            }
+            return os;
+        }
+
+        public override void Write(BinaryWriter writer, object obj)
+        {
+            OnSubscribe os = (OnSubscribe)obj;
+            writer.Write(os.DateTime.Ticks);
+            writer.Write(os.Symbol);
+            if (this.version >= 1)
+            {
+                writer.Write(os.Subscription != null);
+                if (os.Subscription != null)
+                {
+                    writer.Write(os.Subscription.SourceId);
+                    writer.Write(os.Subscription.ProviderId);
+                    writer.Write(os.Subscription.RouteId);
+                    writer.Write(os.Subscription.RequestId);
+                    writer.Write(os.Subscription.Symbol);
+                    this.StreamerManager.Serialize(writer, os.Subscription.Instrument);
+                }
+            }
+        }
+    }
+
+    public class OnUnsubscribeStreamer : ObjectStreamer
+    {
+        public OnUnsubscribeStreamer()
+        {
+            this.typeId = DataObjectType.OnUnsubscribe;
+            this.type = typeof(OnUnsubscribe);
+            this.version = 1;
+        }
+
+        public override object Read(BinaryReader reader, byte version)
+        {
+            var ou = new OnUnsubscribe();
+            ou.DateTime = new DateTime(reader.ReadInt64());
+            ou.Symbol = reader.ReadString();
+            if (version >= 1 && reader.ReadBoolean())
+            {
+                ou.Subscription = new Subscription
+                {
+                    SourceId = reader.ReadInt32(),
+                    ProviderId = reader.ReadInt32(),
+                    RouteId = reader.ReadInt32(),
+                    RequestId = reader.ReadInt32(),
+                    Symbol = reader.ReadString(),
+                    Instrument = (Instrument)StreamerManager.Deserialize(reader)
+                };
+            }
+            return ou;
+        }
+
+        // Token: 0x060008B1 RID: 2225 RVA: 0x0002EC6C File Offset: 0x0002CE6C
+        public override void Write(BinaryWriter writer, object obj)
+        {
+            var ou = (OnUnsubscribe)obj;
+            writer.Write(ou.DateTime.Ticks);
+            writer.Write(ou.Symbol);
+            if (this.version >= 1)
+            {
+                writer.Write(ou.Subscription != null);
+                if (ou.Subscription != null)
+                {
+                    writer.Write(ou.Subscription.SourceId);
+                    writer.Write(ou.Subscription.ProviderId);
+                    writer.Write(ou.Subscription.RouteId);
+                    writer.Write(ou.Subscription.RequestId);
+                    writer.Write(ou.Subscription.Symbol);
+                    StreamerManager.Serialize(writer, ou.Subscription.Instrument);
+                }
+            }
+        }
+    }
+
+    public class ParameterStreamer : ObjectStreamer
+    {
+        public ParameterStreamer()
+        {
+            this.typeId = DataObjectType.Parameter;
+            this.type = typeof(Parameter);
+        }
+
+        public override object Read(BinaryReader reader, byte version)
+        {
+            var name = reader.ReadString();
+            var value = StreamerManager.Deserialize(reader);
+            var typeName = reader.ReadString();
+            int count = reader.ReadInt32();
+            var attributes = new List<Attribute>();
+            for (int i = 0; i < count; i++)
+            {
+                var attribute = StreamerManager.Deserialize(reader) as Attribute;
+                if (attribute != null)
+                    attributes.Add(attribute);
+            }
+            return new Parameter(name, value, typeName, attributes.ToArray());
+        }
+
+        public override void Write(BinaryWriter writer, object obj)
+        {
+            var p = (Parameter)obj;
+            writer.Write(p.Name);
+            StreamerManager.Serialize(writer, p.Value);
+            writer.Write(p.TypeName);
+            writer.Write(p.Attributes.Length);
+            var attributes = p.Attributes;
+            for (int i = 0; i < attributes.Length; i++)
+                StreamerManager.Serialize(writer, attributes[i]);
+        }
+    }
+
+    public class ParameterListStreamer : ObjectStreamer
+    {
+        public ParameterListStreamer()
+        {
+            this.typeId = DataObjectType.ParameterList;
+            this.type = typeof(ParameterList);
+        }
+
+        public override object Read(BinaryReader reader, byte version)
+        {
+            var list = new ParameterList();
+            list.Name = reader.ReadString();
+            int pCount = reader.ReadInt32();
+            int mCount = reader.ReadInt32();
+            for (int i = 0; i < pCount; i++)
+                list.Add(StreamerManager.Deserialize(reader) as Parameter);
+            for (int j = 0; j < mCount; j++)
+                list.Methods.Add(reader.ReadString());
+            return list;
+        }
+
+        public override void Write(BinaryWriter writer, object obj)
+        {
+            var list = (ParameterList)obj;
+            var ps = list.Parameters().Select(p => StreamerManager.HasStreamer(p.Value.GetType()));
+            writer.Write(list.Name);
+            writer.Write(ps.Count());
+            writer.Write(list.Methods.Count);
+            foreach (var p in ps)
+                StreamerManager.Serialize(writer, p);
+            foreach (string m in list.Methods)
+                writer.Write(m);
+        }
+    }
+
+    public class OnLoginStreamer : ObjectStreamer
+    {
+        public OnLoginStreamer()
+        {
+            this.typeId = DataObjectType.OnLogin;
+            this.type = typeof(OnLogin);
+        }
+
+        public override object Read(BinaryReader reader, byte version)
+        {
+            var dateTime = new DateTime(reader.ReadInt64());
+            return new OnLogin(dateTime)
+            {
+                ProductName = reader.ReadString(),
+                UserName = reader.ReadString(),
+                Password = reader.ReadString(),
+                Id = reader.ReadInt32(),
+                GUID = reader.ReadString()
+            };
+        }
+
+        public override void Write(BinaryWriter writer, object obj)
+        {
+            var ol = (OnLogin)obj;
+            writer.Write(ol.DateTime.Ticks);
+            writer.Write(ol.ProductName);
+            writer.Write(ol.UserName);
+            writer.Write(ol.Password);
+            writer.Write(ol.Id);
+            writer.Write(ol.GUID);
+        }
+    }
+
+    public class OnLogoutStreamer : ObjectStreamer
+    {
+        public OnLogoutStreamer()
+        {
+            this.typeId = DataObjectType.OnLogout;
+            this.type = typeof(OnLogout);
+        }
+
+        public override object Read(BinaryReader reader, byte version)
+        {
+            DateTime dateTime = new DateTime(reader.ReadInt64());
+            return new OnLogout(dateTime)
+            {
+                ProductName = reader.ReadString(),
+                UserName = reader.ReadString(),
+                Reason = reader.ReadString(),
+                Id = reader.ReadInt32()
+            };
+        }
+
+        public override void Write(BinaryWriter writer, object obj)
+        {
+            var ol = (OnLogout)obj;
+            writer.Write(ol.DateTime.Ticks);
+            writer.Write(ol.ProductName);
+            writer.Write(ol.UserName);
+            writer.Write(ol.Reason);
+            writer.Write(ol.Id);
+        }
+    }
+
+    public class OnLoggedInStreamer : ObjectStreamer
+    {
+        public OnLoggedInStreamer()
+        {
+            this.typeId = DataObjectType.OnLoggedIn;
+            this.type = typeof(OnLoggedIn);
+        }
+
+        public override object Read(BinaryReader reader, byte version)
+        {
+            var dateTime = new DateTime(reader.ReadInt64());
+            return new OnLoggedIn(dateTime)
+            {
+                UserId = reader.ReadInt32(),
+                UserName = reader.ReadString(),
+                DefaultAlgoId = reader.ReadInt32(),
+                Fields = (ObjectTable)StreamerManager.Deserialize(reader)
+            };
+        }
+
+        public override void Write(BinaryWriter writer, object obj)
+        {
+            var ol = (OnLoggedIn)obj;
+            writer.Write(ol.DateTime.Ticks);
+            writer.Write(ol.UserId);
+            writer.Write(ol.UserName);
+            writer.Write(ol.DefaultAlgoId);
+            StreamerManager.Serialize(writer, ol.Fields);
+        }
+    }
+
+    public class OnLoggedOutStreamer : ObjectStreamer
+    {
+        public OnLoggedOutStreamer()
+        {
+            this.typeId = DataObjectType.OnLoggedOut;
+            this.type = typeof(OnLoggedOut);
+        }
+
+        public override object Read(BinaryReader reader, byte version)
+        {
+            return new OnLoggedOut(new DateTime(reader.ReadInt64()));
+        }
+
+        public override void Write(BinaryWriter writer, object obj)
+        {
+            writer.Write((obj as Event).DateTime.Ticks);
+        }
+    }
+
+    public class OnHeartbeatStreamer : ObjectStreamer
+    {
+        public OnHeartbeatStreamer()
+        {
+            this.typeId = DataObjectType.OnHeartbeat;
+            this.type = typeof(OnHeartbeat);
+        }
+
+        public override object Read(BinaryReader reader, byte version)
+        {
+            return new OnHeartbeat(new DateTime(reader.ReadInt64()));
+        }
+
+        public override void Write(BinaryWriter writer, object obj)
+        {
+            writer.Write((obj as OnHeartbeat).DateTime.Ticks);
+        }
+    }
+
+    public class OnProviderConnectedStreamer : ObjectStreamer
+    {
+        public OnProviderConnectedStreamer()
+        {
+            this.typeId = DataObjectType.OnProviderConnected;
+            this.type = typeof(OnProviderConnected);
+        }
+
+        public override object Read(BinaryReader reader, byte version)
+        {
+            var dateTime = new DateTime(reader.ReadInt64());
+            var providerId = reader.ReadByte();
+            return new OnProviderConnected(dateTime, providerId);
+        }
+
+        public override void Write(BinaryWriter writer, object obj)
+        {
+            var op = (OnProviderConnected)obj;
+            writer.Write(op.DateTime.Ticks);
+            writer.Write(op.ProviderId);
+        }
+    }
+
+    public class OnProviderDisconnectedStreamer : ObjectStreamer
+    {
+        public OnProviderDisconnectedStreamer()
+        {
+            this.typeId = DataObjectType.OnProviderDisconnected;
+            this.type = typeof(OnProviderDisconnected);
+        }
+
+        public override object Read(BinaryReader reader, byte version)
+        {
+            var dateTime = new DateTime(reader.ReadInt64());
+            var providerId = reader.ReadByte();
+            return new OnProviderDisconnected(dateTime, providerId);
+        }
+
+        public override void Write(BinaryWriter writer, object obj)
+        {
+            var op = (OnProviderDisconnected)obj;
+            writer.Write(op.DateTime.Ticks);
+            writer.Write(op.ProviderId);
+        }
+    }
 }

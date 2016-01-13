@@ -32,6 +32,10 @@ namespace SmartQuant
         [Parameter]
         public int RouteId { get; set; } = -1;
 
+        public Subscription()
+        {
+        }
+
         public Subscription(Instrument instrument, IDataProvider provider, int sourceId = -1)
         {
             SourceId = sourceId;

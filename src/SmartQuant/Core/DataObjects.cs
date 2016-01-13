@@ -111,4 +111,6 @@ namespace SmartQuant
 
         public override byte TypeId => DataObjectType.StrategyStatus;
     }
+
+
 }

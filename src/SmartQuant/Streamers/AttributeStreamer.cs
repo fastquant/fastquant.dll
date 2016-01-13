@@ -21,5 +21,4 @@ namespace SmartQuant
             throw new NotImplementedException();
         }
     }
-
 }

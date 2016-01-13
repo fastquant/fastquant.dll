@@ -14,6 +14,8 @@ namespace SmartQuant
             this.framework = framework;
         }
 
+        public bool UpdateParent { get; set; }
+
         public double Value { get; internal set; }
 
         public Account Parent { get; internal set; }

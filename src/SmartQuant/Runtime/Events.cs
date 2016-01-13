@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 
 namespace SmartQuant
 {
@@ -32,27 +33,68 @@ namespace SmartQuant
     {
         public override byte TypeId => EventType.OnSubscribe;
 
-        internal Instrument Instrument { get; }
+        public string Symbol { get; }
+
+        public Subscription Subscription { get; internal set; }
+
+        public Instrument Instrument { get; }
+
+        internal InstrumentList Instruments { get; }
 
         internal DateTime DateTime1 { get; } = DateTime.MinValue;
 
         internal DateTime DateTime2 { get; } = DateTime.MaxValue;
 
-        public OnSubscribe(InstrumentList instruments)
+        public OnSubscribe(Subscription subscription)
         {
+            Subscription = subscription;
+            Symbol = subscription.Symbol;
+            Instrument = subscription.Instrument;
         }
 
-        public OnSubscribe(Instrument instrument)
+        public OnSubscribe(string symbol)
         {
-            Instrument = instrument;
+            Symbol = symbol;
         }
+
+        public OnSubscribe(InstrumentList instruments)
+        {
+            Instruments = instruments;
+        }
+
     }
 
     public class OnUnsubscribe : Event
     {
         public override byte TypeId => EventType.OnUnsubscribe;
+        public string Symbol { get; internal set; }
 
-        internal Instrument Instrument { get; private set; }
+        public Subscription Subscription { get; internal set; }
+
+        public Instrument Instrument { get; private set; }
+
+        internal InstrumentList Instruments { get; }
+
+        public OnUnsubscribe()
+        {
+        }
+
+        public OnUnsubscribe(Subscription subscription)
+        {
+            Subscription = subscription;
+            Symbol = subscription.Symbol;
+            Instrument = subscription.Instrument;
+        }
+
+        public OnUnsubscribe(string symbol)
+        {
+            Symbol = symbol;
+        }
+
+        public OnUnsubscribe(InstrumentList instruments)
+        {
+            Instruments = instruments;
+        }
 
         public OnUnsubscribe(Instrument instrument)
         {
@@ -185,8 +227,8 @@ namespace SmartQuant
     {
         internal Framework Framework { get; }
 
-        public override byte TypeId=> EventType.OnFrameworkCleared;
- 
+        public override byte TypeId => EventType.OnFrameworkCleared;
+
         public OnFrameworkCleared(Framework framework)
         {
             Framework = framework;
@@ -258,7 +300,7 @@ namespace SmartQuant
     {
         public Portfolio Portfolio { get; private set; }
 
-        public override byte TypeId=> EventType.OnPortfolioRemoved;
+        public override byte TypeId => EventType.OnPortfolioRemoved;
 
         public OnPortfolioRemoved(Portfolio portfolio)
         {
@@ -270,7 +312,7 @@ namespace SmartQuant
     {
         public byte ProviderId { get; }
 
-        public IProvider Provider { get;  }
+        public IProvider Provider { get; }
 
         public override byte TypeId => EventType.OnProviderAdded;
 
@@ -302,7 +344,7 @@ namespace SmartQuant
 
         public byte ProviderId { get; }
 
-        public override byte TypeId=> EventType.OnProviderConnected;
+        public override byte TypeId => EventType.OnProviderConnected;
 
         public OnProviderConnected(DateTime dateTime, byte providerId)
             : base(dateTime)
@@ -323,7 +365,7 @@ namespace SmartQuant
 
         public byte ProviderId { get; }
 
-        public override byte TypeId=> EventType.OnProviderDisconnected;
+        public override byte TypeId => EventType.OnProviderDisconnected;
 
         public OnProviderDisconnected(DateTime dateTime, byte providerId)
             : base(dateTime)
@@ -351,5 +393,110 @@ namespace SmartQuant
             Provider = provider;
             ProviderId = provider.Id;
         }
+    }
+
+    public class OnLogin : Event
+    {
+        public OnLogin()
+        {
+        }
+
+        public OnLogin(DateTime dateTime) : base(dateTime)
+        {
+        }
+
+        public override byte TypeId => EventType.OnLogin;
+
+        [Parameter]
+        public string GUID { get; set; } = "";
+
+        [Parameter]
+        public int Id { get; set; } = -1;
+
+        [Parameter, PasswordPropertyText(true)]
+        public string Password { get; set; } = "";
+
+        [Parameter]
+        public string ProductName { get; set; } = "";
+
+        [Parameter]
+        public string UserName { get; set; } = "";
+    }
+
+    public class OnLogout : Event
+    {
+        public OnLogout()
+        {
+        }
+
+        public OnLogout(DateTime dateTime) : base(dateTime)
+        {
+        }
+
+        public override byte TypeId => EventType.OnLogout;
+
+        public int Id { get; set; } = -1;
+        public string ProductName { get; set; } = "";
+        public string Reason { get; set; } = "";
+        public string UserName { get; set; } = "";
+    }
+
+    public class OnLoggedIn : Event
+    {
+        public OnLoggedIn()
+        {
+        }
+
+        public OnLoggedIn(DateTime dateTime) : base(dateTime)
+        {
+        }
+
+        public int DefaultAlgoId { get; set; } = -1;
+
+        public ObjectTable Fields { get; internal set; } = new ObjectTable();
+
+        public object this[int index]
+        {
+            get
+            {
+                return Fields[index];
+            }
+            set
+            {
+                Fields[index] = value;
+            }
+        }
+
+        public override byte TypeId => EventType.OnLoggedIn;
+
+        public int UserId { get; set; } = -1;
+
+        public string UserName { get; set; } = string.Empty;
+    }
+
+    public class OnLoggedOut : Event
+    {
+        public OnLoggedOut()
+        {
+        }
+
+        public OnLoggedOut(DateTime dateTime) : base(dateTime)
+        {
+        }
+
+        public override byte TypeId => EventType.OnLoggedOut;
+    }
+
+    public class OnHeartbeat : Event
+    {
+        public OnHeartbeat()
+        {
+        }
+
+        public OnHeartbeat(DateTime dateTime) : base(dateTime)
+        {
+        }
+
+        public override byte TypeId => EventType.OnHeartbeat;
     }
 }

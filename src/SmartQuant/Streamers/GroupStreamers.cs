@@ -61,14 +61,15 @@ namespace SmartQuant
 
         public override object Read(BinaryReader reader, byte version)
         {
-            string gname = reader.ReadString();
-            reader.ReadInt32();
+            var gname = reader.ReadString();
+            var id = reader.ReadInt32();
             var group = new Group(gname);
+            group.Id = id;
             int count = reader.ReadInt32();
             for (int i = 0; i < count; ++i)
             {
-                string name = reader.ReadString();
-                byte type = reader.ReadByte();
+                var name = reader.ReadString();
+                var type = reader.ReadByte();
                 object obj = this.streamerManager.Deserialize(reader);
                 group.Add(name, type, obj);
             }
@@ -77,9 +78,7 @@ namespace SmartQuant
 
         public override void Write(BinaryWriter writer, object obj)
         {
-            byte version = 0;
             var group = obj as Group;
-            writer.Write(version);
             writer.Write(group.Name);
             writer.Write(group.Id);
             writer.Write(group.Fields.Count);

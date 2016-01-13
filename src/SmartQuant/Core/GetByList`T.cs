@@ -13,9 +13,12 @@ namespace SmartQuant
         private static MethodInfo nameMethodInfo;
         private static MethodInfo idMethodInfo;
 
-        private Dictionary<string, T> dictionary;
-        private IdArray<T> array;
-        private List<T> list;
+        private Dictionary<string, T> dictionary = new Dictionary<string, T>();
+        private IdArray<T> array = new IdArray<T>();
+        private List<T> list = new List<T>();
+
+        private Func<T, string> nameFunc;
+        private Func<T, int> idFunc;
 
         public int Count => this.list.Count;
 
@@ -37,11 +40,10 @@ namespace SmartQuant
             idMethodInfo = typeof(T).GetMethod("GetId", BindingFlags.NonPublic | BindingFlags.Instance);
         }
 
-        public GetByList()
+        public GetByList(Func<T, string> nameFunc = null, Func<T, int> idFunc= null)
         {
-            this.dictionary = new Dictionary<string, T>();
-            this.array = new IdArray<T>();
-            this.list = new List<T>();
+            this.nameFunc = nameFunc;
+            this.idFunc = idFunc;
         }
 
         public bool Contains(T obj)
@@ -92,15 +94,9 @@ namespace SmartQuant
             return obj;
         }
 
-        public T GetByIndex(int index)
-        {
-            return this.list[index];
-        }
+        public T GetByIndex(int index) => this.list[index];
 
-        public T GetById(int id)
-        {
-            return this.array[id];
-        }
+        public T GetById(int id) => this.array[id];
 
         public void Clear()
         {

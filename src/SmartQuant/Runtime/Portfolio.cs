@@ -14,14 +14,18 @@ namespace SmartQuant
 
         private Portfolio parent;
 
-        public int Id { get; internal set; }
+        private bool updateParent = true;
+
+        public int Id { get; internal set; } = -1;
 
         public string Name { get; private set; }
+
+        public string Description { get; set; } = "";
 
         [Browsable(false)]
         public Account Account { get; private set; }
 
-        public List<Portfolio> Children { get; private set; }
+        public List<Portfolio> Children { get; } = new List<Portfolio>();
 
         [Browsable(false)]
         public Portfolio Parent
@@ -51,29 +55,29 @@ namespace SmartQuant
         public Pricer Pricer { get; set; }
 
         [Browsable(false)]
-        public List<Transaction> Transactions { get; private set; }
+        public List<Transaction> Transactions { get; } = new List<Transaction>();
 
-        internal IdArray<Transaction> TransactionsByOrderId { get; private set; }
+        internal IdArray<Transaction> TransactionsByOrderId { get; } = new IdArray<Transaction>(102400);
 
         [Browsable(false)]
         public PortfolioPerformance Performance { get; private set; }
 
         [Browsable(false)]
-        public List<Position> Positions { get; private set; }
+        public List<Position> Positions { get; } = new List<Position>();
 
-        internal IdArray<Position> PositionsByInstrumentId { get; private set; }
+        internal IdArray<Position> PositionsByInstrumentId { get; } = new IdArray<Position>(10240);
 
-        public double Value=> AccountValue + PositionValue;
+        public double Value => AccountValue + PositionValue;
 
-        public double AccountValue=> Account.Value;
+        public double AccountValue => Account.Value;
 
         public double PositionValue
         {
             get
             {
                 double num = 0;
-//                for (int index = 0; index < this.list_1.Count; ++index)
-//                    num += this.framework_0.ginterface4_0.Convert(this.list_1[index].Value, this.list_1[index].instrument_0.byte_0, this.account_0.byte_0);
+                //                for (int index = 0; index < this.list_1.Count; ++index)
+                //                    num += this.framework_0.ginterface4_0.Convert(this.list_1[index].Value, this.list_1[index].instrument_0.byte_0, this.account_0.byte_0);
                 return num;
             }
         }
@@ -84,17 +88,36 @@ namespace SmartQuant
         [Browsable(false)]
         public PortfolioStatistics Statistics { get; private set; }
 
-        public Portfolio(Framework framework, string name = "")
+        public bool UpdateParent
+        {
+            get
+            {
+                return this.updateParent;
+            }
+            set
+            {
+                if (this.updateParent != value)
+                {
+                    this.updateParent = value;
+                    Account.UpdateParent = value;
+                }
+            }
+        }
+        public Portfolio(string name)
+        {
+            Name = name;
+        }
+
+        public Portfolio(Framework framework, string name = "") : this(name)
+        {
+            Init(framework);
+        }
+
+        public void Init(Framework framework)
         {
             this.framework = framework;
-            Name = name;
-            Children = new List<Portfolio>();
-            Transactions = new List<Transaction>();
-            TransactionsByOrderId = new IdArray<Transaction>(131072);
-            PositionsByInstrumentId = new IdArray<Position>(8192);
-            Positions = new List<Position>();
             Account = new Account(framework);
-            Fills = new FillSeries(name);
+            Fills = new FillSeries(Name);
             Pricer = this.framework.PortfolioManager.Pricer;
             Performance = new PortfolioPerformance(this);
             Statistics = new PortfolioStatistics(this);
@@ -108,33 +131,33 @@ namespace SmartQuant
         internal void Add(ExecutionReport report, bool bool_0 = true)
         {
             throw new NotImplementedException();
-//            switch (report.ExecType)
-//            {
-//                case ExecType.ExecRejected:
-//                case ExecType.ExecCancelled:
-//                    Transaction transaction_0_1 = this.idArray_0[report.Order.Id];
-//                    if (transaction_0_1 == null)
-//                        break;
-//                    transaction_0_1.bool_0 = true;
-//                    this.method_4(transaction_0_1, true);
-//                    break;
-//                case ExecType.ExecTrade:
-//                    Transaction transaction_0_2 = this.idArray_0[report.Order.Id];
-//                    if (transaction_0_2 == null)
-//                    {
-//                        transaction_0_2 = new Transaction();
-//                        this.method_3(transaction_0_2, true);
-//                        this.idArray_0[report.Order.Id] = transaction_0_2;
-//                    }
-//                    Fill fill = new Fill(report);
-//                    transaction_0_2.Add(fill);
-//                    this.method_2(fill, bool_0);
-//                    if (report.OrdStatus != OrderStatus.Filled)
-//                        break;
-//                    transaction_0_2.bool_0 = true;
-//                    this.method_4(transaction_0_2, true);
-//                    break;
-//            }
+            //            switch (report.ExecType)
+            //            {
+            //                case ExecType.ExecRejected:
+            //                case ExecType.ExecCancelled:
+            //                    Transaction transaction_0_1 = this.idArray_0[report.Order.Id];
+            //                    if (transaction_0_1 == null)
+            //                        break;
+            //                    transaction_0_1.bool_0 = true;
+            //                    this.method_4(transaction_0_1, true);
+            //                    break;
+            //                case ExecType.ExecTrade:
+            //                    Transaction transaction_0_2 = this.idArray_0[report.Order.Id];
+            //                    if (transaction_0_2 == null)
+            //                    {
+            //                        transaction_0_2 = new Transaction();
+            //                        this.method_3(transaction_0_2, true);
+            //                        this.idArray_0[report.Order.Id] = transaction_0_2;
+            //                    }
+            //                    Fill fill = new Fill(report);
+            //                    transaction_0_2.Add(fill);
+            //                    this.method_2(fill, bool_0);
+            //                    if (report.OrdStatus != OrderStatus.Filled)
+            //                        break;
+            //                    transaction_0_2.bool_0 = true;
+            //                    this.method_4(transaction_0_2, true);
+            //                    break;
+            //            }
         }
 
         public void Add(Fill fill)

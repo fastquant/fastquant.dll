@@ -25,8 +25,8 @@ namespace SmartQuant
     public delegate void PositionEventHandler(object sender, PositionEventArgs args);
 
     public class Position
-    {
-        public double Amount { get; }
+    { 
+        public double Amount { get; internal set; }
         public double EntryPrice { get; set; }
         public double Price => Portfolio.Pricer.GetPrice(this);
 
@@ -34,9 +34,9 @@ namespace SmartQuant
         public double AvgPx { get; }
 
         public Portfolio Portfolio { get; }
-        public int PortfolioId { get; }
+        public int PortfolioId { get; internal set; }
         public Instrument Instrument { get; }
-        public int InstrumentId { get; }
+        public int InstrumentId { get; internal set; }
 
         public List<Fill> Fills { get; } = new List<Fill>();
 
@@ -47,6 +47,10 @@ namespace SmartQuant
         public PositionSide Side => Amount < 0 ? PositionSide.Short : PositionSide.Long;
 
         public double UPnL => Value - OpenValue;
+
+        public double QtyBought { get; internal set; }
+
+        public double QtySold { get; internal set; }
 
         public Position()
         {

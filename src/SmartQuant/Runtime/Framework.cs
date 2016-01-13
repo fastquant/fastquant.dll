@@ -278,12 +278,13 @@ namespace SmartQuant
 
             // Setup streamers
             StreamerManager = new StreamerManager();
-            foreach (var streamer in Configuration.Streamers)
-            {
-                var type = Type.GetType(streamer.TypeName);
-                var s = (ObjectStreamer)Activator.CreateInstance(type);
-                StreamerManager.Add(s);
-            }
+            StreamerManager.AddDefaultStreamers();
+            //foreach (var streamer in Configuration.Streamers)
+            //{
+            //    var type = Type.GetType(streamer.TypeName);
+            //    var s = (ObjectStreamer)Activator.CreateInstance(type);
+            //    StreamerManager.Add(s);
+            //}
 
             // Create Servers
             //ServerFactory = (IServerFactory)Activator.CreateInstance(Type.GetType("SmartQuant.DefaultServerFactory,FastQuant.Servers"));

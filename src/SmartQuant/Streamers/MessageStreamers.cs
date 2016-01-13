@@ -64,4 +64,37 @@ namespace SmartQuant
             this.streamerManager.Serialize(writer, command.Fields);
         }
     }
+
+    public class ResponseStreamer : ObjectStreamer
+    {
+        public ResponseStreamer()
+        {
+            this.typeId = DataObjectType.Response;
+            this.type = typeof(Response);
+        }
+
+        public override object Read(BinaryReader reader, byte version)
+        {
+            var dateTime = new DateTime(reader.ReadInt64());
+            var type = reader.ReadInt32();
+            var id = reader.ReadInt32();
+            var commandId = reader.ReadInt32();
+            var senderId = reader.ReadInt32();
+            var receiverId = reader.ReadInt32();
+            var fields = (ObjectTable)this.streamerManager.Deserialize(reader);
+            return new Response(dateTime, type, id, commandId, senderId, receiverId, fields);
+        }
+
+        public override void Write(BinaryWriter writer, object obj)
+        {
+            var r = (Response)obj;
+            writer.Write(r.DateTime.Ticks);
+            writer.Write(r.Type);
+            writer.Write(r.Id);
+            writer.Write(r.CommandId);
+            writer.Write(r.SenderId);
+            writer.Write(r.ReceiverId);
+            this.streamerManager.Serialize(writer, r.Fields);
+        }
+    }
 }

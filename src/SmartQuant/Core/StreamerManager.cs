@@ -52,12 +52,12 @@ namespace SmartQuant
                 new AskStreamer(),
                 new TradeStreamer(),
                 new QuoteStreamer(),
-                new  BarStreamer(),
+                new BarStreamer(),
                 new Level2Streamer(),
                 new Level2SnapshotStreamer(),
                 new Level2UpdateStreamer(),
-                new  FillStreamer(),
-                new  TimeSeriesItemStreamer(),
+                new FillStreamer(),
+                new TimeSeriesItemStreamer(),
                 new ExecutionReportStreamer(),
                 new ExecutionCommandStreamer(),
                 new TextInfoStreamer(),
@@ -65,62 +65,59 @@ namespace SmartQuant
                 new StrategyStatusStreamer(),
                 new ProviderErrorStreamer(),
                 new FundamentalStreamer(),
-             //NewsStreamer());
-             //PositionStreamer());
-             //PortfolioStreamer());
-             //GroupStreamer());
-             //GroupUpdateStreamer());
-             //GroupEventStreamer());
-             //MessageStreamer());
-             //CommandStreamer());
-             //ResponseStreamer());
-             //InstrumentStreamer());
-             //AltIdStreamer());
-             //LegStreamer());
-             //AccountDataStreamer());
-             //AccountTransactionStreamer());
-             //UserStreamer());
-             //StringStreamer());
-             //Int64Streamer());
-             //Int32Streamer());
-             //DateTimeStreamer());
-             //CharStreamer());
-             //BooleanStreamer());
-             //ColorStreamer());
-             //ByteStreamer());
-             //DoubleStreamer());
-             //Int16Streamer());
-             //ArrayStreamer());
-             //AccountReportStreamer());
-             //OnSubscribeStreamer());
-             //OnUnsubscribeStreamer());
-             //ParameterStreamer());
-             //ParameterListStreamer());
-             //OnLoginStreamer());
-             //OnLogoutStreamer());
-             //OnLoggedInStreamer());
-             //OnLoggedOutStreamer());
-             //OnHeartbeatStreamer());
-             //OnProviderConnectedStreamer());
-             //OnProviderDisconnectedStreamer());
-             //ClientStatusStreamer());
-             //ClientStatusRequestStreamer());
-             //ClientInfoStreamer());
-             //StrategyRunListRequestStreamer());
-             //StrategyRunListReponseStreamer());
-             //DownloadHistoricalBacktestRequestStreamer());
-             //DownloadHistoricalBacktestResponseStreamer());
-             //StartOfBacktestStreamer());
-             //EndOfBacktestStreamer());
-             //SolutionStatusStreamer());
-             //AttributeStreamer());
-             //TimeSpanStreamer());
-             //SeriesResetStreamer());
-
+                new NewsStreamer(),
+                new PositionStreamer(),
+                new PortfolioStreamer(),
+                new GroupStreamer(),
+                new GroupUpdateStreamer(),
+                new GroupEventStreamer(),
+                new MessageStreamer(),
+                new CommandStreamer(),
+                new ResponseStreamer(),
+                new InstrumentStreamer(),
+                new AltIdStreamer(),
+                new LegStreamer(),
+                new AccountDataStreamer(),
+                new AccountTransactionStreamer(),
+                new UserStreamer(),
+                new StringStreamer(),
+                new Int64Streamer(),
+                new Int32Streamer(),
+                new DateTimeStreamer(),
+                new CharStreamer(),
+                new BooleanStreamer(),
+                new ColorStreamer(),
+                new ByteStreamer(),
+                new DoubleStreamer(),
+                new Int16Streamer(),
+                new ArrayStreamer(),
+                new AccountReportStreamer(),
+                new OnSubscribeStreamer(),
+                new OnUnsubscribeStreamer(),
+                new ParameterStreamer(),
+                new ParameterListStreamer(),
+                new OnLoginStreamer(),
+                new OnLogoutStreamer(),
+                new OnLoggedInStreamer(),
+                new OnLoggedOutStreamer(),
+                new OnHeartbeatStreamer(),
+                new OnProviderConnectedStreamer(),
+                new OnProviderDisconnectedStreamer(),
+            //    new ClientStatusStreamer(),
+            //ClientStatusRequestStreamer());
+            //ClientInfoStreamer());
+            //    new StrategyRunListRequestStreamer(),
+            //StrategyRunListReponseStreamer());
+            //DownloadHistoricalBacktestRequestStreamer());
+            //DownloadHistoricalBacktestResponseStreamer());
+            //StartOfBacktestStreamer());
+            //EndOfBacktestStreamer());
+            //SolutionStatusStreamer());
+              new AttributeStreamer(),
+              new TimeSpanStreamer()
         };
             foreach (var s in streamers)
                 Add(s);
-
         }
 
         public object Deserialize(BinaryReader reader)

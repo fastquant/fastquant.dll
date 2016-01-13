@@ -39,22 +39,36 @@ namespace SmartQuant
 
     public class AltIdList : IEnumerable<AltId>
     {
-        private GetByList<AltId> lists = new GetByList<AltId>();
+        private IdArray<AltId> array = new IdArray<AltId>();
 
-        public int Count => this.lists.Count;
+        private List<AltId> list = new List<AltId>();
 
-        public AltId this[int i] => this.lists.GetByIndex(i);
+        public void Add(AltId id)
+        {
+            this.array[id.ProviderId] = id;
+            this.list.Add(id);
+        }
 
-        public void Clear() => this.lists.Clear();
+        public void Clear()
+        {
+            this.array.Clear();
+            this.list.Clear();
+        }
 
-        public void Add(AltId id) => this.lists.Add(id);
+        public AltId Get(byte providerId)=> this.array[providerId];
 
-        public void Remove(AltId id) => this.lists.Remove(id);
+        public IEnumerator<AltId> GetEnumerator() => this.list.GetEnumerator();
 
-        public AltId Get(byte providerId) => this.lists.GetById(providerId);
+        public void Remove(AltId id)
+        {
+            this.array.Remove(id.ProviderId);
+            this.list.Remove(id);
+        }
 
-        public IEnumerator<AltId> GetEnumerator() => this.lists.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() => this.lists.GetEnumerator();
+        public int Count => this.list.Count;
+
+        public AltId this[int i]=> this.list[i];
     }
 }

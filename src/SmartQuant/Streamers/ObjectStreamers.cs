@@ -91,10 +91,10 @@ namespace SmartQuant
 
         public override object Read(BinaryReader reader, byte version)
         {
-            var altId = new AltId();
-            altId.ProviderId = reader.ReadByte();
-            altId.Symbol = reader.ReadString();
-            altId.Exchange = reader.ReadString();
+            var providerId = reader.ReadByte();
+            var symbol = reader.ReadString();
+            var exchange = reader.ReadString();
+            var altId = new AltId(providerId, symbol, exchange);
             if (version >= 1)
                 altId.CurrencyId = reader.ReadByte();
             return altId;

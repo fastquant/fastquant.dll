@@ -169,6 +169,13 @@ namespace SmartQuant
         {
             CommandId = commandId;
         }
+
+        #region Extra
+        public Response(DateTime dateTime, int type, int id, int commandId, int senderId, int receiverId, ObjectTable fields) : base(dateTime, type, id, senderId, receiverId, fields)
+        {
+            CommandId = commandId;
+        }
+        #endregion
     }
 
     public class Command : Message

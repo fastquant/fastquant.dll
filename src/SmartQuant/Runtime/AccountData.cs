@@ -85,11 +85,11 @@ namespace SmartQuant
         public const string PRICE = "Price";
         public const string STOP_PX = "StopPx";
 
-        public string Name { get; }
+        public string Name { get; private set; }
 
-        public string Currency { get; }
+        public string Currency { get; private set; }
 
-        public object Value { get; }
+        public object Value { get; private set; }
 
         public AccountDataField(string name, string currency, object value)
         {
@@ -106,9 +106,9 @@ namespace SmartQuant
 
     public class AccountDataFieldList : ICollection
     {
-        private Dictionary<string, Dictionary<string, object>> acccountFields = new Dictionary<string, Dictionary<string, object>>();
+        private Dictionary<string, Dictionary<string, object>> fields = new Dictionary<string, Dictionary<string, object>>();
 
-        public int Count => acccountFields.Values.Count;
+        public int Count => fields.Values.Count;
 
         public bool IsSynchronized => false;
 
@@ -119,7 +119,7 @@ namespace SmartQuant
             get
             {
                 Dictionary<string, object> logger;
-                if (!acccountFields.TryGetValue(name, out logger))
+                if (!fields.TryGetValue(name, out logger))
                     return null;
                 object value;
                 logger.TryGetValue(currency, out value);
@@ -140,10 +140,10 @@ namespace SmartQuant
         public void Add(string name, string currency, object value)
         {
             Dictionary<string, object> logger;
-            if (!acccountFields.TryGetValue(name, out logger))
+            if (!fields.TryGetValue(name, out logger))
             {
                 logger = new Dictionary<string, object>();
-                acccountFields.Add(name, logger);
+                fields.Add(name, logger);
             }
             logger.Add(currency, value);
         }
@@ -155,27 +155,21 @@ namespace SmartQuant
 
         public void Clear()
         {
-            acccountFields.Clear();
+            fields.Clear();
         }
 
         public AccountDataField[] ToArray()
         {
             var list = new List<AccountDataField>();
-            foreach (var logger in acccountFields)
+            foreach (var logger in fields)
                 foreach (var field in logger.Value)
                     list.Add(new AccountDataField(logger.Key, field.Key, field.Value));
             return list.ToArray();
         }
 
-        public void CopyTo(Array array, int index)
-        {
-            ToArray().CopyTo(array, index);
-        }
+        public void CopyTo(Array array, int index) => ToArray().CopyTo(array, index);
 
-        public IEnumerator GetEnumerator()
-        {
-            return ToArray().GetEnumerator();
-        }
+        public IEnumerator GetEnumerator() => ToArray().GetEnumerator();
     }
 
     public class AccountDataEventArgs : EventArgs
