@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{DC33D65A-4031-4891-9DC3-18B2EBFB74AB}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SmartQuant.Charting</RootNamespace>
+    <AssemblyName>SmartQuant.Charting</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="EAxisLabelAlignment.cs" />
+    <Compile Include="EAxisPosition.cs" />
+    <Compile Include="EAxisTitlePosition.cs" />
+    <Compile Include="EAxisType.cs" />
+    <Compile Include="EGraphMoveStyle.cs" />
+    <Compile Include="EGraphStyle.cs" />
+    <Compile Include="EGridSize.cs" />
+    <Compile Include="ELegendPosition.cs" />
+    <Compile Include="EMarkerStyle.cs" />
+    <Compile Include="EMarkerTextPosition.cs" />
+    <Compile Include="EMouseWheelMode.cs" />
+    <Compile Include="EPalette.cs" />
+    <Compile Include="EPrintAlign.cs" />
+    <Compile Include="EPrintLayout.cs" />
+    <Compile Include="ETextBoxPosition.cs" />
+    <Compile Include="ETextPosition.cs" />
+    <Compile Include="ETitlePosition.cs" />
+    <Compile Include="ETitleStrategy.cs" />
+    <Compile Include="ETransformationType.cs" />
+    <Compile Include="EVerticalGridStyle.cs" />
+    <Compile Include="IChartTransformation.cs" />
+    <Compile Include="IDrawable.cs" />
+    <Compile Include="IMovable.cs" />
+    <Compile Include="IZoomable.cs" />
+    <Compile Include="NewTickEventArgs.cs" />
+    <Compile Include="NewTickEventHandler.cs" />
+    <Compile Include="PadRange.cs" />
+    <Compile Include="Pad.cs" />
+    <Compile Include="TDistance.cs" />
+    <Compile Include="Draw3D\EChartLook.cs" />
+    <Compile Include="Draw3D\ESmoothing.cs" />
+    <Compile Include="TTitleItem.cs" />
+    <Compile Include="TTextBoxItem.cs" />
+    <Compile Include="TLegendItem.cs" />
+    <Compile Include="TTitle.cs" />
+    <Compile Include="Viewer.cs" />
+    <Compile Include="TTextBox.cs" />
+    <Compile Include="TText.cs" />
+    <Compile Include="TPieItem.cs" />
+    <Compile Include="TLine.cs" />
+    <Compile Include="TLabel.cs" />
+    <Compile Include="TMarker.cs" />
+    <Compile Include="TEmptyTransformation.cs" />
+    <Compile Include="TImage.cs" />
+    <Compile Include="TIntradayTransformation.cs" />
+    <Compile Include="Draw3D\TColor.cs" />
+    <Compile Include="Draw3D\TSurface.cs" />
+    <Compile Include="Draw3D\TAxisCalc.cs" />
+    <Compile Include="Draw3D\TMat3x3.cs" />
+    <Compile Include="Draw3D\TVec3.cs" />
+    <Compile Include="Draw3D\TLight.cs" />
+    <Compile Include="Draw3D\TView.cs" />
+    <Compile Include="Draw3D\TFunction.cs" />
+    <Compile Include="Axis.cs" />
+    <Compile Include="Canvas.cs" />
+    <Compile Include="Chart.cs" />
+    <Compile Include="CanvasList.cs" />
+    <Compile Include="CanvasManager.cs" />
+    <Compile Include="PadList.cs" />
+    <Compile Include="Graph.cs" />
+    <Compile Include="Histogram.cs" />
+    <Compile Include="Histogram2D.cs" />
+    <Compile Include="PadProperyForm.cs" />
+    <Compile Include="Pie.cs" />
+    <Compile Include="TLegend.cs" />
+    <Compile Include="Chart.WinForm.cs" />
+    <Compile Include="ZoomEventArgs.cs" />
+    <Compile Include="ZoomEventHandler.cs" />
+    <Compile Include="TPaintingBitmap.cs" />
+    <Compile Include="Extensions.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Draw3D\" />
+  </ItemGroup>
+</Project>

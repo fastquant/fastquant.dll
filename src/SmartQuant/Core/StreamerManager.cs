@@ -15,7 +15,7 @@ namespace SmartQuant
 
         public StreamerManager()
         {
-            var names = new string[] {
+            var names = new[] {
                 "DataObjectStreamer", "FreeKeyListStreamer", "ObjectKeyListStreamer", "ObjectTableStreamer",
                 "DataSeriesStreamer", "DataKeyIdArrayStreamer"
             }.Select(s => $"{nameof(SmartQuant)}.{s}");
@@ -103,19 +103,9 @@ namespace SmartQuant
                 new OnHeartbeatStreamer(),
                 new OnProviderConnectedStreamer(),
                 new OnProviderDisconnectedStreamer(),
-            //    new ClientStatusStreamer(),
-            //ClientStatusRequestStreamer());
-            //ClientInfoStreamer());
-            //    new StrategyRunListRequestStreamer(),
-            //StrategyRunListReponseStreamer());
-            //DownloadHistoricalBacktestRequestStreamer());
-            //DownloadHistoricalBacktestResponseStreamer());
-            //StartOfBacktestStreamer());
-            //EndOfBacktestStreamer());
-            //SolutionStatusStreamer());
-              new AttributeStreamer(),
-              new TimeSpanStreamer()
-        };
+                new AttributeStreamer(),
+                new TimeSpanStreamer()
+            };
             foreach (var s in streamers)
                 Add(s);
         }

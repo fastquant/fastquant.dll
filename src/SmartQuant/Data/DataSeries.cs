@@ -14,18 +14,18 @@ namespace SmartQuant
 
         internal bool readOpened;
         internal bool writeOpened;
-    //    internal bool bool_2;
+
         internal bool changed;
-        internal IdArray<DataKey> dKeys;
+        internal IdArray<DataKey> dataKeys;
 
         internal long count;
         internal long position1;
         internal long position2;
         internal long dKeysKeyPosition;
 
-        internal int bufCount;
-        internal ObjectKey objectKey_0;
-        internal ObjectKey dKeysKey;
+        internal int bufferCount;
+        internal ObjectKey oKey;
+        internal ObjectKey dataKeysKey;
 
         public string Name { get; private set; }
 
@@ -73,7 +73,7 @@ namespace SmartQuant
                 }
                 DateTime2 = obj.DateTime;
             }
-            if (this.lastReadDKey.count == this.lastReadDKey.capacity)
+            if (this.lastReadDKey.count == this.lastReadDKey.capcity)
             {
                 SaveWriteDKey(this.lastReadDKey);
                 if (!CacheObjects && this.lastReadDKey != this.lastUpdateDKey && this.lastReadDKey != this.lastWriteDKey && this.lastReadDKey != this.lastDeleteDKey)
@@ -81,12 +81,12 @@ namespace SmartQuant
                     this.lastReadDKey.objs = null;
                 }
                 this.lastReadDKey = new DataKey(this.dataFile, null, this.lastReadDKey.position, -1);
-                this.lastReadDKey.number = this.bufCount;
+                this.lastReadDKey.number = this.bufferCount;
                 this.lastReadDKey.index1 = this.count - 1;
                 this.lastReadDKey.index2 = this.count - 1;
                 this.lastReadDKey.changed = true;
-                this.bufCount++;
-                this.dKeys[this.lastReadDKey.number] = this.lastReadDKey;
+                this.bufferCount++;
+                this.dataKeys[this.lastReadDKey.number] = this.lastReadDKey;
             }
             this.lastReadDKey.Add(obj);
             this.count += 1L;
@@ -96,32 +96,30 @@ namespace SmartQuant
 
         public void Clear()
         {
-            if (this.dKeys == null)
+            if (this.dataKeys == null)
                 InitDataKeys();
 
             if (this.position1 != -1)
             {
-                DataKey key = GetDataKey(this.position1);
+                var key = GetDataKey(this.position1);
                 while (true)
                 {
                     this.dataFile.DeleteObjectKey(key, false, true);
-                    if (key.next == -1L)
-                    {
+                    if (key.next == -1)
                         break;
-                    }
                     key = GetDataKey(key.next);
                 }
             }
             this.count = 0;
-            this.bufCount = 0;
+            this.bufferCount = 0;
             DateTime1 = new DateTime(0);
             DateTime2 = new DateTime(0);
             this.position1 = -1;
             this.position2 = -1;
             this.readOpened = false;
             this.writeOpened = false;
-            this.dKeys = new IdArray<DataKey>(4096);
-            this.dKeysKey.dkeyIdArray = new DataKeyIdArray(this.dKeys);
+            this.dataKeys = new IdArray<DataKey>(4096);
+            this.dataKeysKey.obj = new DataKeyIdArray(this.dataKeys);
             this.lastUpdateDKey = null;
             this.lastReadDKey = null;
             this.lastDeleteDKey = null;
@@ -245,10 +243,9 @@ namespace SmartQuant
         public virtual DataObject Get(long index)
         {
             if (!this.readOpened)
-            {
                 OpenRead();
-            }
-            DataKey key = GetKey(index, this.lastUpdateDKey);
+
+            var key = GetKey(index, this.lastUpdateDKey);
             if (key == null)
                 return null;
 
@@ -300,17 +297,17 @@ namespace SmartQuant
             Console.WriteLine("Position2 = " + this.position2);
             Console.WriteLine("DateTime1 = " + DateTime1.Ticks);
             Console.WriteLine("DateTime2 = " + DateTime2.Ticks);
-            Console.WriteLine("Buffer count = " + this.bufCount);
+            Console.WriteLine("Buffer count = " + this.bufferCount);
             Console.WriteLine();
             Console.WriteLine("Keys in cache:");
             Console.WriteLine();
-            if (this.dKeys != null)
+            if (this.dataKeys != null)
             {
-                for (int i = 0; i < this.bufCount; i++)
+                for (int i = 0; i < this.bufferCount; i++)
                 {
-                    if (this.dKeys[i] != null)
+                    if (this.dataKeys[i] != null)
                     {
-                        Console.WriteLine(this.dKeys[i]);
+                        Console.WriteLine(this.dataKeys[i]);
                     }
                 }
             }
@@ -349,7 +346,7 @@ namespace SmartQuant
         public void ToWriter(BinaryWriter writer)
         {
             writer.Write(Count);
-            writer.Write(bufCount);
+            writer.Write(bufferCount);
             writer.Write(dKeysKeyPosition);
             writer.Write(DateTime2.Ticks);
             writer.Write(DateTime1.Ticks);
@@ -363,7 +360,7 @@ namespace SmartQuant
             return new DataSeries("")
             {
                 Count = reader.ReadInt64(),
-                bufCount = reader.ReadInt32(),
+                bufferCount = reader.ReadInt32(),
                 dKeysKeyPosition = reader.ReadInt64(),
                 DateTime2 = new DateTime(reader.ReadInt64()),
                 DateTime1 = new DateTime(reader.ReadInt64()),
@@ -374,16 +371,18 @@ namespace SmartQuant
         }
         #endregion
 
-        internal void Init(DataFile dataFile, ObjectKey key)
+        internal void Init(DataFile file, ObjectKey key)
         {
-            this.dataFile = dataFile;
-            this.objectKey_0 = key;
+            this.dataFile = file;
+            this.oKey = key;
             key.CompressionLevel = 0;
             key.CompressionMethod = 0;
+            
+            // Init dataKey list
             if (this.dKeysKeyPosition == -1)
             {
-                this.dKeys = new IdArray<DataKey>(Math.Max(4096, this.bufCount));
-                this.dKeysKey = new ObjectKey(dataFile, "", new DataKeyIdArray(this.dKeys));
+                this.dataKeys = new IdArray<DataKey>(Math.Max(4096, this.bufferCount));
+                this.dataKeysKey = new ObjectKey(file, "", new DataKeyIdArray(this.dataKeys));
             }
         }
 
@@ -394,7 +393,7 @@ namespace SmartQuant
                 Console.WriteLine("DataSeries::OpenRead already read open");
                 return;
             }
-            if (this.dKeys == null)
+            if (this.dataKeys == null)
                 InitDataKeys();
 
             this.readOpened = true;
@@ -407,12 +406,12 @@ namespace SmartQuant
                 Console.WriteLine("DataSeries::OpenWrite already write open");
                 return;
             }
-            if (this.dKeys == null)
+            if (this.dataKeys == null)
                 InitDataKeys();
 
-            if (this.bufCount != 0 && this.dKeys[this.bufCount - 1] != null)
+            if (this.bufferCount != 0 && this.dataKeys[this.bufferCount - 1] != null)
             {
-                this.lastReadDKey = this.dKeys[this.bufCount - 1];
+                this.lastReadDKey = this.dataKeys[this.bufferCount - 1];
                 this.lastReadDKey.LoadDataObjects();
             }
             else
@@ -420,7 +419,7 @@ namespace SmartQuant
                 if (this.position2 != -1)
                 {
                     this.lastReadDKey = GetDataKey(this.position2);
-                    this.lastReadDKey.number = this.bufCount - 1;
+                    this.lastReadDKey.number = this.bufferCount - 1;
                     this.lastReadDKey.LoadDataObjects();
                 }
                 else
@@ -428,26 +427,26 @@ namespace SmartQuant
                     this.lastReadDKey = new DataKey(this.dataFile, null, -1L, -1L);
                     this.lastReadDKey.number = 0;
                     this.lastReadDKey.changed = true;
-                    this.bufCount = 1;
+                    this.bufferCount = 1;
                 }
-                this.dKeys[this.lastReadDKey.number] = this.lastReadDKey;
+                this.dataKeys[this.lastReadDKey.number] = this.lastReadDKey;
             }
-            if (this.dKeysKey.position != -1)
+            if (this.dataKeysKey.position != -1)
             {
-                this.dataFile.DeleteObjectKey(this.dKeysKey, false, false);
+                this.dataFile.DeleteObjectKey(this.dataKeysKey, false, false);
             }
             this.dKeysKeyPosition = -1;
-            this.dataFile.WriteObjectKey(this.objectKey_0);
+            this.dataFile.WriteObjectKey(this.oKey);
             this.writeOpened = true;
         }
 
         private void InitDataKeys()
         {
-            this.dKeysKey = this.dataFile.ReadObjectKey(this.dKeysKeyPosition, ObjectKey.EMPTYNAME_KEY_SIZE);
-            this.dKeys = ((DataKeyIdArray)this.dKeysKey.GetObject()).Keys;
-            for (int i = 0; i < this.dKeys.Size; i++)
+            this.dataKeysKey = this.dataFile.ReadObjectKey(this.dKeysKeyPosition, ObjectKey.EMPTYNAME_KEY_SIZE);
+            this.dataKeys = ((DataKeyIdArray)this.dataKeysKey.GetObject()).Keys;
+            for (int i = 0; i < this.dataKeys.Size; i++)
             {
-                var dk = this.dKeys[i];
+                var dk = this.dataKeys[i];
                 if (dk != null)
                 {
                     dk.dataFile = this.dataFile;
@@ -458,10 +457,10 @@ namespace SmartQuant
 
         private void SaveDataKeysKey()
         {
-            if (this.dKeysKey == null)
-                this.dKeysKey = new ObjectKey(this.dataFile, "", new DataKeyIdArray(this.dKeys));
-            this.dataFile.WriteObjectKey(this.dKeysKey);
-            this.dKeysKeyPosition = this.dKeysKey.position;
+            if (this.dataKeysKey == null)
+                this.dataKeysKey = new ObjectKey(this.dataFile, "", new DataKeyIdArray(this.dataKeys));
+            this.dataFile.WriteObjectKey(this.dataKeysKey);
+            this.dKeysKeyPosition = this.dataKeysKey.position;
         }
 
         private void SaveDataObject(DataObject obj)
@@ -470,16 +469,16 @@ namespace SmartQuant
             if (obj.DateTime >= this.lastReadDKey.dateTime1 && obj.DateTime <= this.lastReadDKey.dateTime2)
             {
                 this.lastReadDKey.Add(obj);
-                if (this.lastReadDKey.count >= this.lastReadDKey.capacity)
+                if (this.lastReadDKey.count >= this.lastReadDKey.capcity)
                 {
                     SaveWriteDKey(this.lastReadDKey);
                     this.lastReadDKey = new DataKey(this.dataFile, null, this.lastReadDKey.position, -1L);
-                    this.lastReadDKey.number = this.bufCount;
+                    this.lastReadDKey.number = this.bufferCount;
                     this.lastReadDKey.index1 = this.count;
                     this.lastReadDKey.index2 = this.count;
                     this.lastReadDKey.changed = true;
-                    this.bufCount++;
-                    this.dKeys[this.lastReadDKey.number] = this.lastReadDKey;
+                    this.bufferCount++;
+                    this.dataKeys[this.lastReadDKey.number] = this.lastReadDKey;
                 }
                 else
                 {
@@ -506,10 +505,10 @@ namespace SmartQuant
                 this.lastWriteDKey = key;
             }
             this.lastWriteDKey.LoadDataObjects();
-            if (this.lastWriteDKey.count < this.lastWriteDKey.capacity)
+            if (this.lastWriteDKey.count < this.lastWriteDKey.capcity)
             {
                 this.lastWriteDKey.Add(obj);
-                if (this.lastWriteDKey.count == this.lastWriteDKey.capacity)
+                if (this.lastWriteDKey.count == this.lastWriteDKey.capcity)
                 {
                     SaveWriteDKey(this.lastWriteDKey);
                 }
@@ -561,65 +560,65 @@ namespace SmartQuant
 
         private void Insert(DataKey class19_4, DataKey class19_5)
         {
-            for (int i = this.bufCount; i > class19_5.number + 1; i--)
+            for (int i = this.bufferCount; i > class19_5.number + 1; i--)
             {
-                this.dKeys[i] = this.dKeys[i - 1];
-                if (this.dKeys[i] != null)
+                this.dataKeys[i] = this.dataKeys[i - 1];
+                if (this.dataKeys[i] != null)
                 {
-                    this.dKeys[i].number = i;
+                    this.dataKeys[i].number = i;
                 }
             }
-            this.bufCount++;
+            this.bufferCount++;
             class19_4.number = class19_5.number + 1;
-            this.dKeys[class19_4.number] = class19_4;
+            this.dataKeys[class19_4.number] = class19_4;
             class19_4.prev = class19_5.position;
             class19_4.next = class19_5.next;
             SaveWriteDKey(class19_4);
-            this.dataFile.WriteObjectKey(this.objectKey_0);
+            this.dataFile.WriteObjectKey(this.oKey);
         }
 
-        private void SaveWriteDKey(DataKey class19_4)
+        private void SaveWriteDKey(DataKey key)
         {
-            long num = class19_4.position;
-            this.dataFile.WriteObjectKey(class19_4);
-            if (class19_4.position != num)
+            long num = key.position;
+            this.dataFile.WriteObjectKey(key);
+            if (key.position != num)
             {
                 DataKey @class = null;
-                if (class19_4.number != 0)
+                if (key.number != 0)
                 {
-                    @class = this.dKeys[class19_4.number - 1];
+                    @class = this.dataKeys[key.number - 1];
                 }
                 if (@class != null)
                 {
-                    @class.next = class19_4.position;
+                    @class.next = key.position;
                     if (!@class.changed)
                     {
-                        WriteDKeyNext(class19_4.prev, class19_4.position);
+                        WriteDKeyNext(key.prev, key.position);
                     }
                 }
-                else if (class19_4.prev != -1)
+                else if (key.prev != -1)
                 {
-                    WriteDKeyNext(class19_4.prev, class19_4.position);
+                    WriteDKeyNext(key.prev, key.position);
                 }
                 DataKey class2 = null;
-                if (class19_4.number != this.bufCount - 1)
+                if (key.number != this.bufferCount - 1)
                 {
-                    class2 = this.dKeys[class19_4.number + 1];
+                    class2 = this.dataKeys[key.number + 1];
                 }
                 if (class2 != null)
                 {
-                    class2.prev = class19_4.position;
+                    class2.prev = key.position;
                     if (!class2.changed)
                     {
-                        this.WriteDKeyPrev(class19_4.next, class19_4.position);
+                        this.WriteDKeyPrev(key.next, key.position);
                     }
                 }
-                else if (class19_4.next != -1)
+                else if (key.next != -1)
                 {
-                    this.WriteDKeyPrev(class19_4.next, class19_4.position);
+                    this.WriteDKeyPrev(key.next, key.position);
                 }
             }
-            if (class19_4 == this.lastReadDKey)
+            if (key == this.lastReadDKey)
             {
                 if (this.position1 == -1)
                 {
@@ -627,61 +626,67 @@ namespace SmartQuant
                 }
                 this.position2 = this.lastReadDKey.position;
             }
-            this.dataFile.WriteObjectKey(this.objectKey_0);
+            this.dataFile.WriteObjectKey(this.oKey);
         }
 
-        private void UpdateDKeyPrev(DataKey key, long long_4)
+        private void UpdateDKeyPrev(DataKey key, long number)
         {
-            key.prev = long_4;
-            WriteDKeyPrev(key.position, long_4);
+            key.prev = number;
+            WriteDKeyPrev(key.position, number);
         }
 
-        private void UpdateDKeyNext(DataKey key, long long_4)
+        private void UpdateDKeyNext(DataKey key, long number)
         {
-            key.next = long_4;
-            WriteDKeyNext(key.position, long_4);
+            key.next = number;
+            WriteDKeyNext(key.position, number);
         }
 
-        private void WriteDKeyPrev(long long_4, long long_5)
+        private void WriteDKeyPrev(long position, long number)
         {
-            var mstream = new MemoryStream();
-            var writer = new BinaryWriter(mstream);
-            writer.Write(long_5);
-            var buf = mstream.ToArray();
-            this.dataFile.WriteBuffer(buf, long_4 + 61, 8);
+            var buf = GetBuffer(number);
+            this.dataFile.WriteBuffer(buf, position + DataKey.PREV_OFFSET, sizeof(long));
         }
 
-        private void WriteDKeyNext(long long_4, long long_5)
+        private void WriteDKeyNext(long position, long number)
         {
-            var mstream = new MemoryStream();
-            var writer = new BinaryWriter(mstream);
-            writer.Write(long_5);
-            var buf = mstream.ToArray();
-            this.dataFile.WriteBuffer(buf, long_4 + 69, 8);
+            var buf = GetBuffer(number);
+            this.dataFile.WriteBuffer(buf, position + DataKey.NEXT_OFFSET, sizeof(long));
+        }
+
+        private byte[] GetBuffer(long value)
+        {
+            using (var mstream = new MemoryStream())
+            {
+                using (var writer = new BinaryWriter(mstream))
+                {
+                    writer.Write(value);
+                    return mstream.ToArray();
+                }
+            }
         }
 
         private void Delete(DataKey class19_4)
         {
             if (class19_4.position == this.position2)
             {
-                if (class19_4.prev != -1L)
+                if (class19_4.prev != -1)
                 {
                     this.position2 = class19_4.prev;
                 }
                 else
                 {
-                    this.position1 = -1L;
-                    this.position2 = -1L;
+                    this.position1 = -1;
+                    this.position2 = -1;
                 }
             }
             this.dataFile.DeleteObjectKey(class19_4, false, true);
             if (class19_4.prev != -1)
             {
-                DataKey @class = this.dKeys[class19_4.number - 1];
-                if (@class != null)
+                var k = this.dataKeys[class19_4.number - 1];
+                if (k != null)
                 {
-                    @class.next = class19_4.next;
-                    if (!@class.changed)
+                    k.next = class19_4.next;
+                    if (!k.changed)
                     {
                         this.WriteDKeyNext(class19_4.prev, class19_4.next);
                     }
@@ -693,30 +698,30 @@ namespace SmartQuant
             }
             if (class19_4.next != -1)
             {
-                DataKey class2 = this.dKeys[class19_4.number + 1];
-                if (class2 != null)
+                var k = this.dataKeys[class19_4.number + 1];
+                if (k != null)
                 {
-                    class2.prev = class19_4.prev;
-                    if (!class2.changed)
+                    k.prev = class19_4.prev;
+                    if (!k.changed)
                     {
-                        this.WriteDKeyPrev(class19_4.next, class19_4.prev);
+                        WriteDKeyPrev(class19_4.next, class19_4.prev);
                     }
                 }
                 else
                 {
-                    this.WriteDKeyPrev(class19_4.next, class19_4.prev);
+                    WriteDKeyPrev(class19_4.next, class19_4.prev);
                 }
             }
-            for (int i = class19_4.number; i < this.bufCount - 1; i++)
+            for (int i = class19_4.number; i < this.bufferCount - 1; i++)
             {
-                this.dKeys[i] = this.dKeys[i + 1];
-                if (this.dKeys[i] != null)
+                this.dataKeys[i] = this.dataKeys[i + 1];
+                if (this.dataKeys[i] != null)
                 {
-                    this.dKeys[i].number = i;
+                    this.dataKeys[i].number = i;
                 }
             }
-            this.bufCount--;
-            this.dataFile.WriteObjectKey(this.objectKey_0);
+            this.bufferCount--;
+            this.dataFile.WriteObjectKey(this.oKey);
         }
 
         private DataKey GetDataKey(long position)
@@ -733,11 +738,11 @@ namespace SmartQuant
 
         private DataKey GetFirstKey()
         {
-            var key = this.dKeys[0];
+            var key = this.dataKeys[0];
             if (key == null)
             {
                 key = GetDataKey(this.position1);
-                this.dKeys[0] = key;
+                this.dataKeys[0] = key;
             }
             key.number = 0;
             key.index1 = 0;
@@ -750,7 +755,7 @@ namespace SmartQuant
             if (key.number == -1)
                 Console.WriteLine("DataSeries::GetNextKey Error: key.number is not set");
 
-            var nextKey = this.dKeys[key.number + 1];
+            var nextKey = this.dataKeys[key.number + 1];
             if (nextKey == null)
             {
                 if (key.next == -1)
@@ -759,7 +764,7 @@ namespace SmartQuant
                 }
                 nextKey = GetDataKey(key.next);
                 nextKey.number = key.number + 1;
-                this.dKeys[nextKey.number] = nextKey;
+                this.dataKeys[nextKey.number] = nextKey;
             }
             nextKey.index1 = key.index2 + 1;
             nextKey.index2 = nextKey.index1 + (long)nextKey.count - 1;
@@ -768,7 +773,7 @@ namespace SmartQuant
 
         internal DataKey GetKey(long index, DataKey key = null)
         {
-            if (index >= 0L && index < this.count)
+            if (index >= 0 && index < this.count)
             {
                 if (key == null)
                 {
@@ -783,12 +788,12 @@ namespace SmartQuant
                     }
                     if (index > key.index2)
                     {
-                        @class = this.GetNextKey(key);
+                        @class = GetNextKey(key);
                     }
                 }
                 if (@class == null)
                 {
-                    @class = this.GetFirstKey();
+                    @class = GetFirstKey();
                 }
                 while (index < @class.index1 || index > @class.index2)
                 {
@@ -866,7 +871,7 @@ namespace SmartQuant
                     this.SaveWriteDKey(this.lastDeleteDKey);
                 }
                 SaveDataKeysKey();
-                this.dataFile.WriteObjectKey(this.objectKey_0);
+                this.dataFile.WriteObjectKey(this.oKey);
                 this.changed = false;
             }
         }

@@ -23,13 +23,16 @@ namespace HelloWorldSample
             df.Keys.TryGetValue(kname, out key);
             if (key != null)
             {
-                key.Dump();
                 Console.WriteLine(key.DateTime);
                 Console.WriteLine(key.CompressionLevel);
                 Console.WriteLine(key.CompressionMethod);
+                var obj = (DataSeries)key.GetObject();
+                obj.Dump();
+                for (long i= 0;i < obj.Count;i++)
+                    Console.WriteLine(obj.Get(i));
             }
             df.Close();
-            DumpInstrument();
+           // DumpInstrument();
             Console.ReadLine();
 		}
 

@@ -47,7 +47,7 @@ namespace SmartQuant
 
         public EventController Controller { get; set; }
 
-        public FrameworkEventHandler FrameworkCleared { get; internal set; }
+        public FrameworkEventHandler FrameworkCleared { get; set; }
 
         public GroupEventHandler NewGroup { get; internal set; }
 

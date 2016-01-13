@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows.Forms;
+using SmartQuant;
 
 namespace TestForm
 {
@@ -27,6 +28,8 @@ namespace TestForm
         public Form1()
         {
             InitializeComponent();
+            var f = Framework.Current;
+            Console.WriteLine(f.Name);
         }
 
         #region Windows Form Designer generated code

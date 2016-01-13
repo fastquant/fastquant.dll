@@ -2,15 +2,49 @@
   "locked": false,
   "version": 2,
   "targets": {
-    "DNX,Version=v4.5.1": {},
-    "DNX,Version=v4.5.1/win7-x86": {},
-    "DNX,Version=v4.5.1/win7-x64": {}
+    "DNX,Version=v4.5.1": {
+      "SmartQuant/1.0.0": {
+        "type": "project",
+        "framework": "DNX,Version=v4.5.1",
+        "frameworkAssemblies": [
+          "System.Drawing",
+          "System.Xml"
+        ]
+      }
+    },
+    "DNX,Version=v4.5.1/win7-x86": {
+      "SmartQuant/1.0.0": {
+        "type": "project",
+        "framework": "DNX,Version=v4.5.1",
+        "frameworkAssemblies": [
+          "System.Drawing",
+          "System.Xml"
+        ]
+      }
+    },
+    "DNX,Version=v4.5.1/win7-x64": {
+      "SmartQuant/1.0.0": {
+        "type": "project",
+        "framework": "DNX,Version=v4.5.1",
+        "frameworkAssemblies": [
+          "System.Drawing",
+          "System.Xml"
+        ]
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "SmartQuant/1.0.0": {
+      "type": "project",
+      "path": "../../src/SmartQuant/project.json"
+    }
+  },
   "projectFileDependencyGroups": {
     "": [],
     "DNX,Version=v4.5.1": [
-      "fx/System.Windows.Forms >= 4.0.0"
+      "SmartQuant ",
+      "fx/System.Windows.Forms >= 4.0.0",
+      "fx/System.Drawing >= 4.0.0"
     ]
   }
 }

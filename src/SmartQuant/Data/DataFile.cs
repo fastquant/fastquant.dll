@@ -8,25 +8,28 @@ namespace SmartQuant
     public class DataKey : ObjectKey
     {
         internal static string LABEL = "DKey";
+        private static int LABEL_SIZE = 5;
         internal static int HEADER_SIZE = 77;
+        internal static int PREV_OFFSET = 61;
+        internal static int NEXT_OFFSET = 69;
 
         public DataKey(DataFile dataFile, object obj = null, long prev = -1, long next = -1) : base(dataFile, "", obj)
         {
             Label = "DK01";
-            this.size = HEADER_SIZE;
+            this.capcity = HEADER_SIZE;
             this.prev = prev;
             this.next = next;
         }
 
         public void Add(DataObject obj)
         {
-            if (this.count == this.size)
+            if (this.count == this.capcity)
             {
                 Console.WriteLine("DataKey::Add Can not add object. Buffer is full.");
                 return;
             }
             if (this.objs == null)
-                this.objs = new DataObject[this.size];
+                this.objs = new DataObject[this.capcity];
 
             if (this.count == 0)
             {
@@ -108,7 +111,7 @@ namespace SmartQuant
             if (this.objs != null)
                 return this.objs;
 
-            this.objs = new DataObject[this.size];
+            this.objs = new DataObject[this.capcity];
             if (this.contentSize == -1)
             {
                 return this.objs;
@@ -178,7 +181,7 @@ namespace SmartQuant
                 }
             }
             ReadHeader(reader);
-            this.size = reader.ReadInt32();
+            this.capcity = reader.ReadInt32();
             this.count = reader.ReadInt32();
             this.dateTime1 = new DateTime(reader.ReadInt64());
             this.dateTime2 = new DateTime(reader.ReadInt64());
@@ -188,7 +191,7 @@ namespace SmartQuant
 
         public override string ToString()
         {
-            return $"DataKey position = {this.position} prev = {this.prev} next = {this.next}  number {this.number} size = {this.size}  count = {this.count} {this.changed}  index1 = {this.index1}  index2 = {this.index2}";
+            return $"DataKey position = {this.position} prev = {this.prev} next = {this.next}  number {this.number} size = {this.capcity}  count = {this.count} {this.changed}  index1 = {this.index1}  index2 = {this.index2}";
         }
 
         internal override void Write(BinaryWriter writer)
@@ -196,7 +199,7 @@ namespace SmartQuant
             var buf = WriteObjectData(true);
             this.contentSize = buf.Length;
             if (this.totalSize == -1)
-                this.totalSize = this.size + this.contentSize;
+                this.totalSize = this.capcity + this.contentSize;
             WriteKey(writer);
             writer.Write(buf, 0, buf.Length);
         }
@@ -204,7 +207,7 @@ namespace SmartQuant
         internal override void WriteKey(BinaryWriter writer)
         {
             WriteHeader(writer);                   // 37 == ObjectKey.HEADER_SIZE
-            writer.Write(this.size);               // 41
+            writer.Write(this.capcity);               // 41
             writer.Write(this.count);              // 45
             writer.Write(this.dateTime1.Ticks);    // 53    
             writer.Write(this.dateTime2.Ticks);    // 61
@@ -240,7 +243,7 @@ namespace SmartQuant
 
         internal DateTime dateTime2;
 
-        internal new int size;
+        internal int capcity;
 
         internal int count;
 
@@ -253,8 +256,6 @@ namespace SmartQuant
         internal long prev;
 
         internal long next;
-
-        internal int capacity;
     }
 
     public class FreeKeyList
@@ -327,6 +328,7 @@ namespace SmartQuant
     public class FreeKey : IComparable<FreeKey>
     {
         internal static string LABEL = "FKey";
+        private static int LABEL_SIZE = 5;
         internal static int HEADER_SIZE = 17;
 
         public FreeKey()
@@ -555,10 +557,10 @@ namespace SmartQuant
             WriteHeader();
         }
 
-        internal ObjectKey ReadKey(long pos)
+        internal ObjectKey ReadKey(long position)
         {
             var buffer = new byte[ObjectKey.HEADER_SIZE];
-            ReadBuffer(buffer, pos, buffer.Length);
+            ReadBuffer(buffer, position, buffer.Length);
             var input = new MemoryStream(buffer);
             var reader = new BinaryReader(input);
             string text = reader.ReadString();
@@ -568,7 +570,7 @@ namespace SmartQuant
             key.ReadHeader(reader);
 
             buffer = new byte[key.headSize];
-            ReadBuffer(buffer, pos, buffer.Length);
+            ReadBuffer(buffer, position, buffer.Length);
             input = new MemoryStream(buffer);
             reader = new BinaryReader(input);
             if (text.StartsWith("OK"))
@@ -590,20 +592,13 @@ namespace SmartQuant
 
         private FreeKey GetFreeKeyWithEnoughLength(int size)
         {
-            foreach (FreeKey k in this.fKeys)
-            {
-                if (k.size >= size)
-                {
-                    return k;
-                }
-            }
-            return null;
+            return this.freeKeys.FirstOrDefault(k => k.size >= size);
         }
 
         internal void DeleteObjectKey(ObjectKey key, bool remove = true, bool recycle = true)
         {
             key.freed = true;
-            WriteBuffer(new byte[] { 1 }, key.position + 5, 1);
+            WriteBuffer(new byte[] { 1 }, key.position + ObjectKey.LABEL_SIZE, 1);
             if (remove)
             {
                 Keys.Remove(key.Name);
@@ -611,8 +606,8 @@ namespace SmartQuant
             }
             if (recycle)
             {
-                this.fKeys.Add(new FreeKey(key));
-                this.fKeys.Sort();
+                this.freeKeys.Add(new FreeKey(key));
+                this.freeKeys.Sort();
                 this.fKeysCount++;
             }
             this.changed = true;
@@ -639,12 +634,12 @@ namespace SmartQuant
                 {
                     DeleteObjectKey(key, false, true);
                     key.totalSize = (int)this.mstream.Length;
-                    var fKey = key == this.fKeysKey ? GetFreeKeyWithEnoughLength(key.headSize + key.contentSize - 17) : GetFreeKeyWithEnoughLength(key.headSize + key.contentSize);
+                    var fKey = key == this.fKeysKey ? GetFreeKeyWithEnoughLength(key.headSize + key.contentSize - FreeKey.HEADER_SIZE) : GetFreeKeyWithEnoughLength(key.headSize + key.contentSize);
                     if (fKey != null)
                     {
                         key.position = fKey.position;
                         key.totalSize = fKey.size;
-                        this.fKeys.Remove(fKey);
+                        this.freeKeys.Remove(fKey);
                         this.fKeysCount--;
                         if (key == this.fKeysKey)
                         {
@@ -687,7 +682,7 @@ namespace SmartQuant
             if (this.fKeysKey != null)
                 DeleteObjectKey(this.fKeysKey, false, true);
 
-            this.fKeysKey = new ObjectKey(this, "FreeKeys", new FreeKeyList(this.fKeys));
+            this.fKeysKey = new ObjectKey(this, "FreeKeys", new FreeKeyList(this.freeKeys));
             this.fKeysKey.CompressionLevel = 0;
             WriteObjectKey(this.fKeysKey);
             this.fKeysKeyPosition = this.fKeysKey.position;
@@ -710,9 +705,10 @@ namespace SmartQuant
             this.mode = mode;
             if (!OpenFileStream(this.name, mode))
             {
+                // when it is empty
                 this.headSize = HEAD_SIZE;
                 this.newKeyPosition = HEAD_SIZE;
-                this.Reset();
+                Reset();
             }
             else
             {
@@ -765,15 +761,9 @@ namespace SmartQuant
             if (this.fKeysKeySize == 0)
                 return;
 
-            var buffer = new byte[this.fKeysKeySize];
-            ReadBuffer(buffer, this.fKeysKeyPosition, this.fKeysKeySize);
-            var input = new MemoryStream(buffer);
-            var reader = new BinaryReader(input);
-            var okey = new ObjectKey(this, null, null);
-            okey.Read(reader, true);
-            okey.position = this.fKeysKeyPosition;
-            this.fKeys = ((FreeKeyList)okey.GetObject()).Keys;
-            this.fKeysKey = okey;
+            var key = ReadObjectKey(this.fKeysKeyPosition, this.fKeysKeySize);
+            this.freeKeys = ((FreeKeyList)key.GetObject()).Keys;
+            this.fKeysKey = key;
         }
 
         protected void ReadKeys()
@@ -781,23 +771,18 @@ namespace SmartQuant
             if (this.oKeysKeySize == 0)
                 return;
 
-            var buffer = new byte[this.oKeysKeySize];
-            ReadBuffer(buffer, this.oKeysKeyPosition, buffer.Length);
-
-            var reader = new BinaryReader(new MemoryStream(buffer));
-            var okey = new ObjectKey(this, null, null);
-            okey.Read(reader, true);
-            okey.position = this.oKeysKeyPosition;
-            Keys = ((ObjectKeyList)okey.GetObject()).Keys;
+            var key = ReadObjectKey(this.oKeysKeyPosition, this.oKeysKeySize);
+            Keys = ((ObjectKeyList)key.GetObject()).Keys;
             foreach (var k in Keys.Values)
                 k.Init(this);
-            this.oKeysKey = okey;
+            this.oKeysKey = key;
         }
 
+        // TODO: rewrite it!
         public virtual void Recover()
         {
             Keys.Clear();
-            this.fKeys.Clear();
+            this.freeKeys.Clear();
             long num = this.headSize;
             new BinaryReader(this.stream);
             ObjectKey objectKey = null;
@@ -817,7 +802,7 @@ namespace SmartQuant
                 IL_6A:
                 if (objectKey.freed)
                 {
-                    this.fKeys.Add(new FreeKey(objectKey));
+                    this.freeKeys.Add(new FreeKey(objectKey));
                 }
                 else if (!(objectKey is DataKey) && objectKey.TypeId != ObjectType.DataKeyIdArray)
                 {
@@ -860,6 +845,7 @@ namespace SmartQuant
 
         public virtual void Refresh()
         {
+            // do nothing
         }
 
         public virtual void Write(string name, object obj)
@@ -868,7 +854,7 @@ namespace SmartQuant
             Keys.TryGetValue(name, out key);
             if (key != null)
             {
-                key.dkeyIdArray = (DataKeyIdArray)obj;
+                key.obj = obj;
                 key.Init(this);
             }
             else
@@ -911,7 +897,7 @@ namespace SmartQuant
 
         private int fKeysCount;
 
-        private List<FreeKey> fKeys = new List<FreeKey>();
+        private List<FreeKey> freeKeys = new List<FreeKey>();
 
         private long headSize;
 

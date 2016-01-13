@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{F64EB5F7-68D6-4CAC-978E-BBAC43A4C2A6}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SmartQuant.FinChart</RootNamespace>
+    <AssemblyName>SmartQuant.FinChart</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="BSStyle.cs" />
+    <Compile Include="ChartActionType.cs" />
+    <Compile Include="EAxisLabelAlignment.cs" />
+    <Compile Include="EAxisTitlePosition.cs" />
+    <Compile Include="EGridSize.cs" />
+    <Compile Include="IAxesMarked.cs" />
+    <Compile Include="IChartDrawable.cs" />
+    <Compile Include="IDateDrawable.cs" />
+    <Compile Include="IZoomable.cs" />
+    <Compile Include="PadRange.cs" />
+    <Compile Include="PadScaleStyle.cs" />
+    <Compile Include="Pad.cs" />
+    <Compile Include="Objects\IUpdatable.cs" />
+    <Compile Include="ChartUpdateStyle.cs" />
+    <Compile Include="SimpleBSStyle.cs" />
+    <Compile Include="SimpleDSStyle.cs" />
+    <Compile Include="Distance.cs" />
+    <Compile Include="Axis.cs" />
+    <Compile Include="Chart.cs" />
+    <Compile Include="SeriesView.cs" />
+    <Compile Include="BSView.cs" />
+    <Compile Include="ColorSeries.cs" />
+    <Compile Include="DSView.cs" />
+    <Compile Include="PadList.cs" />
+    <Compile Include="PropertyForm.cs" />
+    <Compile Include="SortedRangeList.cs" />
+    <Compile Include="ToolBar.cs" />
+    <Compile Include="Objects\DrawingEllipse.cs" />
+    <Compile Include="Objects\DrawingImage.cs" />
+    <Compile Include="Objects\DrawingLine.cs" />
+    <Compile Include="Objects\DrawingPath.cs" />
+    <Compile Include="Objects\DrawingPoint.cs" />
+    <Compile Include="Objects\DrawingRay.cs" />
+    <Compile Include="Objects\DrawingRectangle.cs" />
+    <Compile Include="Objects\EllipseView.cs" />
+    <Compile Include="Objects\ImageView.cs" />
+    <Compile Include="Objects\LineView.cs" />
+    <Compile Include="Objects\PathView.cs" />
+    <Compile Include="Objects\RayView.cs" />
+    <Compile Include="Objects\RectangleView.cs" />
+    <Compile Include="ChartToolStrip.cs" />
+    <Compile Include="Chart.WinForm.cs" />
+    <Compile Include="FillView.cs" />
+    <Compile Include="SimpleBSView.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Objects\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ToolBar.resx" />
+    <None Include="ChartToolBar.resx" />
+    <None Include="ChartToolStrip.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\SmartQuant.dll\src\SmartQuant\SmartQuant.csproj">
+      <Project>{4A09B376-7AFA-40CE-AFBD-448984BC4514}</Project>
+      <Name>SmartQuant</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

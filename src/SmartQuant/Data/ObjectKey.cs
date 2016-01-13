@@ -49,6 +49,7 @@ namespace SmartQuant
     public class ObjectKey : IComparable<ObjectKey>
     {
         private static string LABEL = "OKey";
+        internal static int LABEL_SIZE = 5;
         internal static int HEADER_SIZE = 37;
         internal static int EMPTYNAME_KEY_SIZE = HEADER_SIZE + 1;  // 38
 
@@ -59,9 +60,8 @@ namespace SmartQuant
         public ObjectKey(DataFile file, string name = null, object obj = null)
         {
             Name = name;
-            this.dkeyIdArray = (DataKeyIdArray)obj;
-
             this.obj = obj;
+
             if (file != null)
             {
                 CompressionMethod = file.CompressionMethod;
@@ -81,11 +81,8 @@ namespace SmartQuant
 
         public virtual object GetObject()
         {
-            if (this.dkeyIdArray != null)
-                return this.dkeyIdArray;
-
-            //if (this.obj != null)
-            //    return this.obj;
+            if (this.obj != null)
+                return this.obj;
 
             if (this.contentSize == -1)
                 return null;
@@ -94,33 +91,30 @@ namespace SmartQuant
             var reader = new BinaryReader(input);
             var streamer = this.dataFile.StreamerManager.Get(TypeId);
             byte version = reader.ReadByte();
-            var obj = streamer.Read(reader, version);
-            this.dkeyIdArray = obj;
-            this.obj = obj;
+            this.obj = streamer.Read(reader, version);
             if (TypeId == ObjectType.DataSeries)
-                ((DataSeries)obj).Init(this.dataFile, this);
-
-            return this.dkeyIdArray;
+                ((DataSeries)this.obj).Init(this.dataFile, this);
+            return this.obj;
         }
 
-        public void Init(DataFile dataFile)
+        public void Init(DataFile file)
         {
-            this.dataFile = dataFile;
-            if (this.dkeyIdArray != null)
+            this.dataFile = file;
+            if (this.obj != null)
             {
                 ObjectStreamer streamer;
-                dataFile.StreamerManager.Get(this.dkeyIdArray.GetType(), out streamer);
+                file.StreamerManager.Get(this.obj.GetType(), out streamer);
                 if (streamer != null)
                     TypeId = streamer.TypeId;
                 else
-                    Console.WriteLine($"ObjectKey::Init Can not find streamer for object of type {this.dkeyIdArray.GetType()}");
+                    Console.WriteLine($"ObjectKey::Init Can not find streamer for object of type {this.obj.GetType()}");
             }
         }
 
         internal byte[] ReadObjectData(bool compress = true)
         {
             var data = new byte[this.contentSize];
-            this.dataFile.ReadBuffer(data, this.position + this.headSize, this.contentSize);
+            this.dataFile.ReadBuffer(data, this.position + this.headSize, data.Length);
             return compress && CompressionLevel != 0 ? new QuickLZ().Decompress(data) : data;
         }
 
@@ -195,10 +189,10 @@ namespace SmartQuant
         {
             var mstream = new MemoryStream();
             var writer = new BinaryWriter(mstream);
-            Type type = this.dkeyIdArray.GetType();
+            Type type = this.obj.GetType();
             var streamer = this.dataFile.StreamerManager.Get(type);
-            writer.Write(streamer.GetVersion(this.dkeyIdArray));
-            streamer.Write(writer, this.dkeyIdArray);
+            writer.Write(streamer.GetVersion(this.obj));
+            streamer.Write(writer, this.obj);
             var data = mstream.ToArray();
             return compress && CompressionLevel != 0 ? new QuickLZ().Compress(data) : data;
         }
@@ -215,10 +209,9 @@ namespace SmartQuant
 
         protected internal bool changed;
 
-        //TODO: properties
         internal string Label { get; set; }
 
-        internal object dkeyIdArray;
+        internal object obj;
 
         internal DataFile dataFile;
 
@@ -231,7 +224,5 @@ namespace SmartQuant
         internal int totalSize = -1;
 
         internal long position = -1;
-
-        internal object obj;
     }
 }

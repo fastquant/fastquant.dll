@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E6515A7E-2CBC-4823-AB77-E2B747227FA9}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SmartQuant.ChartViewers</RootNamespace>
+    <AssemblyName>SmartQuant.ChartViewers</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DrawStyle.cs" />
+    <Compile Include="BarSeriesViewer.cs" />
+    <Compile Include="FillSeriesViewer.cs" />
+    <Compile Include="TickSeriesViewer.cs" />
+    <Compile Include="TimeSeriesViewer.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SmartQuant.Charting.WinForm\SmartQuant.Charting.WinForm.csproj">
+      <Project>{DC33D65A-4031-4891-9DC3-18B2EBFB74AB}</Project>
+      <Name>SmartQuant.Charting.WinForm</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SmartQuant.dll\src\SmartQuant\SmartQuant.csproj">
+      <Project>{4A09B376-7AFA-40CE-AFBD-448984BC4514}</Project>
+      <Name>SmartQuant</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

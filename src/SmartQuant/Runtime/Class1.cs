@@ -3,6 +3,13 @@
 
 namespace SmartQuant
 {
+    public enum EWidthStyle
+    {
+        Pixel,
+        DateTime,
+        Auto
+    }
+
     public enum ChartStyle
     {
         Bar,
