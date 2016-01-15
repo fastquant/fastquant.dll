@@ -24,8 +24,7 @@ namespace SmartQuant.Charting
             Font = font;
         }
 
-        public TLegendItem(string text, Color color)
-            : this(text, color, new Font("Arial", 8f))
+        public TLegendItem(string text, Color color) : this(text, color, new Font("Arial", 8))
         {
         }
     }
@@ -93,20 +92,11 @@ namespace SmartQuant.Charting
             Items = new ArrayList();
         }
 
-        public void Add(string text, Color color)
-        {
-            Items.Add(new TLegendItem(text, color));
-        }
+        public void Add(string text, Color color) => Items.Add(new TLegendItem(text, color));
 
-        public void Add(string text, Color color, Font font)
-        {
-            Items.Add(new TLegendItem(text, color, font));
-        }
+        public void Add(string text, Color color, Font font) => Items.Add(new TLegendItem(text, color, font));
 
-        public void Add(TLegendItem item)
-        {
-            Items.Add(item);
-        }
+        public void Add(TLegendItem item) => Items.Add(item);
 
         public virtual void Paint()
         {

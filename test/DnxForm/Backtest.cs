@@ -175,7 +175,7 @@ namespace Demo
         {
             Instrument instrument1 = InstrumentManager.Instruments["AAPL"];
             Instrument instrument2 = InstrumentManager.Instruments["MSFT"];
-
+            InstrumentManager.Dump();
             strategy = new MyStrategy(framework, "BollingerBands");
 
             strategy.AddInstrument(instrument1);

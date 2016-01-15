@@ -3,6 +3,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Printing;
+using System.IO;
 
 #if GTK
 using Compatibility.Gtk;
@@ -15,29 +16,23 @@ namespace SmartQuant.Charting
     [Serializable]
     public class Canvas : Form
     {
-        private Chart chart;
+       // private Chart chart;
 
-        public static bool FileEnabled { get; set; }
+        public static bool FileEnabled { get; set; } = false;
 
-        public static string FileDir { get; set; }
+        public static string FileDir { get; set; } = "";
 
-        public static string FileNamePrefix { get; set; }
+        public static string FileNamePrefix { get; set; } = "";
 
-        public static string FileNameSuffix { get; set; }
+        public static string FileNameSuffix { get; set; } = "";
 
-        public Pad Pad
-        {
-            get
-            {
-                return Chart.Pad;
-            }
-        }
+        public Pad Pad => Chart.Pad;
 
-        #if GTK
+#if GTK
         public new string Title
-        #else
+#else
         public string Title
-        #endif
+#endif
         {
             get
             {
@@ -53,11 +48,11 @@ namespace SmartQuant.Charting
         {
             get
             {
-                return this.chart.GroupZoomEnabled;
+                return Chart.GroupZoomEnabled;
             }
             set
             {
-                this.chart.GroupZoomEnabled = value;
+                Chart.GroupZoomEnabled = value;
             }
         }
 
@@ -65,11 +60,11 @@ namespace SmartQuant.Charting
         {
             get
             {
-                return this.chart.GroupLeftMarginEnabled;
+                return Chart.GroupLeftMarginEnabled;
             }
             set
             {
-                this.chart.GroupLeftMarginEnabled = value;
+                Chart.GroupLeftMarginEnabled = value;
             }
         }
 
@@ -77,11 +72,11 @@ namespace SmartQuant.Charting
         {
             get
             {
-                return this.chart.DoubleBufferingEnabled;
+                return Chart.DoubleBufferingEnabled;
             }
             set
             {
-                this.chart.DoubleBufferingEnabled = value;
+                Chart.DoubleBufferingEnabled = value;
             }
         }
 
@@ -89,11 +84,11 @@ namespace SmartQuant.Charting
         {
             get
             {
-                return this.chart.SmoothingEnabled;
+                return Chart.SmoothingEnabled;
             }
             set
             {
-                this.chart.SmoothingEnabled = value;
+                Chart.SmoothingEnabled = value;
             }
         }
 
@@ -101,11 +96,11 @@ namespace SmartQuant.Charting
         {
             get
             {
-                return this.chart.AntiAliasingEnabled;
+                return Chart.AntiAliasingEnabled;
             }
             set
             {
-                this.chart.AntiAliasingEnabled = value;
+                Chart.AntiAliasingEnabled = value;
             }
         }
 
@@ -113,11 +108,11 @@ namespace SmartQuant.Charting
         {
             get
             {
-                return this.chart.PrintDocument;
+                return Chart.PrintDocument;
             }
             set
             {
-                this.chart.PrintDocument = value;
+                Chart.PrintDocument = value;
             }
         }
 
@@ -125,11 +120,11 @@ namespace SmartQuant.Charting
         {
             get
             {
-                return this.chart.PrintX;
+                return Chart.PrintX;
             }
             set
             {
-                this.chart.PrintX = value;
+                Chart.PrintX = value;
             }
         }
 
@@ -137,11 +132,11 @@ namespace SmartQuant.Charting
         {
             get
             {
-                return this.chart.PrintY;
+                return Chart.PrintY;
             }
             set
             {
-                this.chart.PrintY = value;
+                Chart.PrintY = value;
             }
         }
 
@@ -149,11 +144,11 @@ namespace SmartQuant.Charting
         {
             get
             {
-                return this.chart.PrintWidth;
+                return Chart.PrintWidth;
             }
             set
             {
-                this.chart.PrintWidth = value;
+                Chart.PrintWidth = value;
             }
         }
 
@@ -161,11 +156,11 @@ namespace SmartQuant.Charting
         {
             get
             {
-                return this.chart.PrintHeight;
+                return Chart.PrintHeight;
             }
             set
             {
-                this.chart.PrintHeight = value;
+                Chart.PrintHeight = value;
             }
         }
 
@@ -173,11 +168,11 @@ namespace SmartQuant.Charting
         {
             get
             {
-                return this.chart.PrintAlign;
+                return Chart.PrintAlign;
             }
             set
             {
-                this.chart.PrintAlign = value;
+                Chart.PrintAlign = value;
             }
         }
 
@@ -185,55 +180,37 @@ namespace SmartQuant.Charting
         {
             get
             {
-                return this.chart.PrintLayout;
+                return Chart.PrintLayout;
             }
             set
             {
-                this.chart.PrintLayout = value;
+                Chart.PrintLayout = value;
             }
         }
 
-        public Chart Chart
-        {
-            get
-            {
-                return this.chart;
-            }
-        }
+        public Chart Chart { get; private set; }
 
-        static Canvas()
-        {
-            FileDir = FileNamePrefix = FileNameSuffix = string.Empty;
-            FileEnabled = false;
-        }
-
-        public Canvas()
-            : this("Canvas", "SmartQuant Canvas")
+        public Canvas() : this("Canvas", "SmartQuant Canvas")
         {
         }
 
-        public Canvas(string name, string title)
-            : this(name, title, null)
+        public Canvas(string name, string title) : this(name, title, null)
         {
         }
 
-        public Canvas(string name)
-            : this(name, name)
+        public Canvas(string name) : this(name, name)
         {
         }
 
-        public Canvas(string name, string title, string fileName)
-            : this(name, name, fileName, 0, 0)
+        public Canvas(string name, string title, string fileName) : this(name, name, fileName, 0, 0)
         {
         }
 
-        public Canvas(string Name, string Title, int Width, int Height)
-            : this(Name, Title, null, Width, Height)
+        public Canvas(string name, string title, int width, int height) : this(name, title, null, width, height)
         {
         }
 
-        public Canvas(string name, int width, int height)
-            : this(name, name, width, height)
+        public Canvas(string name, int width, int height) : this(name, name, width, height)
         {
         }
 
@@ -245,47 +222,29 @@ namespace SmartQuant.Charting
             Width = width;
             Height = height;
             CanvasManager.Add(this);
-            FileEnabled = fileName != null ? true : FileEnabled;                                                                                                                                                                                   
-            this.chart.FileName = fileName != null ? fileName : FileEnabled ? System.IO.Path.Combine(FileDir, string.Format("{0}{1}{2:MMddyyyhhmmss}{3}.gif", FileNamePrefix, Name, DateTime.Now, FileNameSuffix)) : this.chart.FileName;
+            FileEnabled = fileName != null ? true : FileEnabled;
+            Chart.FileName = fileName != null ? fileName : FileEnabled ? Path.Combine(FileDir, $"{FileNamePrefix}{Name}{DateTime.Now:MMddyyyhhmmss}{FileNameSuffix}.gif") : Chart.FileName;
             if (!FileEnabled)
                 Show();
         }
 
-        public Pad cd(int pad)
-        {
-            return this.chart.cd(pad);
-        }
+        public Pad cd(int pad) => Chart.cd(pad);
 
-        public void Clear()
-        {
-            this.chart.Clear();
-        }
+        public void Clear() => Chart.Clear();
 
-        public void UpdateChart()
-        {
-            this.chart.UpdatePads();
-        }
+        public void UpdateChart()=> Chart.UpdatePads();
 
         public new void Update()
         {
             base.Update();
-            this.UpdateChart();
+            UpdateChart();
         }
 
-        public Pad AddPad(double x1, double y1, double x2, double y2)
-        {
-            return this.chart.AddPad(x1, y1, x2, y2);
-        }
+        public Pad AddPad(double x1, double y1, double x2, double y2) => Chart.AddPad(x1, y1, x2, y2);
 
-        public void Divide(int x, int y)
-        {
-            this.chart.Divide(x, y);
-        }
+        public void Divide(int x, int y) => Chart.Divide(x, y);
 
-        public void Divide(int x, int y, double[] widths, double[] heights)
-        {
-            this.chart.Divide(x, y, widths, heights);
-        }
+        public void Divide(int x, int y, double[] widths, double[] heights)=> Chart.Divide(x, y, widths, heights);
 
         protected override void Dispose(bool disposing)
         {
@@ -293,80 +252,56 @@ namespace SmartQuant.Charting
             base.Dispose(disposing);
         }
 
-        public virtual void Print()
-        {
-            this.chart.Print();
-        }
+        public virtual void Print()=> Chart.Print();
 
-        public virtual void PrintPreview()
-        {
-            this.chart.PrintPreview();
-        }
+        public virtual void PrintPreview() => Chart.PrintPreview();
 
-        public virtual void PrintSetup()
-        {
-            this.chart.PrintSetup();
-        }
+        public virtual void PrintSetup() => Chart.PrintSetup();
 
-        public virtual void PrintPageSetup()
-        {
-            this.chart.PrintPageSetup();
-        }
+        public virtual void PrintPageSetup()=> Chart.PrintPageSetup();
 
         private void InitializeComponent()
         {
-            this.chart = new Chart();
-            #if GTK
-            Add(chart);
-            #else
-            this.SuspendLayout();
-            this.chart.AntiAliasingEnabled = false;
-            this.chart.Dock = DockStyle.Fill;
-            this.chart.DoubleBufferingEnabled = true;
-            this.chart.FileName = null;
-            this.chart.GroupLeftMarginEnabled = false;
-            this.chart.GroupZoomEnabled = false;
-            this.chart.ImeMode = ImeMode.Off;
-            this.chart.Location = new Point(0, 0);
-            this.chart.Name = "fChart";
-            this.chart.PrintAlign = EPrintAlign.None;
-            this.chart.PrintHeight = 400;
-            this.chart.PrintLayout = EPrintLayout.Portrait;
-            this.chart.PrintWidth = 600;
-            this.chart.PrintX = 10;
-            this.chart.PrintY = 10;
-            this.chart.Size = new Size(488, 293);
-            this.chart.SmoothingEnabled = false;
-            this.chart.TabIndex = 0;
-            this.AutoScaleBaseSize = new Size(5, 13);
-            this.ClientSize = new Size(488, 293);
-            this.Controls.Add(this.chart);
-            this.Name = "TCanvas";
-            this.Text = "TCanvas";
-            this.ResumeLayout(false);
-            #endif
+            Chart = new Chart();
+#if GTK
+            Add(Chart);
+#else
+            SuspendLayout();
+            Chart.AntiAliasingEnabled = false;
+            Chart.Dock = DockStyle.Fill;
+            Chart.DoubleBufferingEnabled = true;
+            Chart.FileName = null;
+            Chart.GroupLeftMarginEnabled = false;
+            Chart.GroupZoomEnabled = false;
+            Chart.ImeMode = ImeMode.Off;
+            Chart.Location = new Point(0, 0);
+            Chart.Name = "fChart";
+            Chart.PrintAlign = EPrintAlign.None;
+            Chart.PrintHeight = 400;
+            Chart.PrintLayout = EPrintLayout.Portrait;
+            Chart.PrintWidth = 600;
+            Chart.PrintX = 10;
+            Chart.PrintY = 10;
+            Chart.Size = new Size(488, 293);
+            Chart.SmoothingEnabled = false;
+            Chart.TabIndex = 0;
+            AutoScaleBaseSize = new Size(5, 13);
+            ClientSize = new Size(488, 293);
+            Controls.Add(Chart);
+            Name = "TCanvas";
+            Text = "TCanvas";
+            ResumeLayout(false);
+#endif
         }
     }
 
     public class CanvasList : SortedList
     {
-        public Canvas this[string name]
-        {
-            get
-            {
-                return base[name] as Canvas;
-            }
-        }
+        public Canvas this[string name] => base[name] as Canvas;
 
-        public void Add(Canvas canvas)
-        {
-            Add(canvas.Name, canvas);
-        }
+        public void Add(Canvas canvas) => Add(canvas.Name, canvas);
 
-        public void Remove(Canvas canvas)
-        {
-            Remove(canvas.Name);
-        }
+        public void Remove(Canvas canvas) => Remove(canvas.Name);
 
         public void Print()
         {
@@ -377,12 +312,7 @@ namespace SmartQuant.Charting
 
     public class CanvasManager
     {
-        public static CanvasList Canvases { get; private set; }
-
-        static CanvasManager()
-        {
-            Canvases = new CanvasList();
-        }
+        public static CanvasList Canvases { get; } = new CanvasList();
 
         public static void Add(Canvas canvas)
         {
@@ -391,14 +321,8 @@ namespace SmartQuant.Charting
             Canvases.Add(canvas.Name, canvas);
         }
 
-        public static void Remove(Canvas canvas)
-        {
-            Canvases.Remove(canvas.Name);
-        }
+        public static void Remove(Canvas canvas) => Canvases.Remove(canvas.Name);
 
-        public static Canvas GetCanvas(string name)
-        {
-            return Canvases[name];
-        }
+        public static Canvas GetCanvas(string name) => Canvases[name];
     }
 }

@@ -9,19 +9,14 @@ namespace SmartQuant.Charting
     public class Viewer
     {
         protected Dictionary<object, List<Property>> metadata = new Dictionary<object, List<Property>>();
-        public Type Type;
+
+        public Type Type { get; set; }
 
         public virtual bool IsZoomable { get; private set; }
 
-        public virtual PadRange GetPadRangeX(object obj, Pad pad)
-        {
-            return null;
-        }
+        public virtual PadRange GetPadRangeX(object obj, Pad pad) => null;
 
-        public virtual PadRange GetPadRangeY(object obj, Pad pad)
-        {
-            return null;
-        }
+        public virtual PadRange GetPadRangeY(object obj, Pad pad) => null;
 
         public virtual void Paint(object obj, Pad pad)
         {
@@ -40,8 +35,8 @@ namespace SmartQuant.Charting
 
         protected class Property
         {
-            public string Name;
-            public object Value;
+            public string Name { get; set; }
+            public object Value { get; set; }
 
             public Property(string name, object value)
             {

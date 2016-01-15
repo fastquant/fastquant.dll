@@ -1,5 +1,4 @@
-﻿using SmartQuant.Controls;
-using SmartQuant.Controls.BarChart;
+﻿using SmartQuant.Controls.BarChart;
 using SmartQuant.FinChart;
 using System.Windows.Forms;
 

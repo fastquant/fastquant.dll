@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SmartQuant
 {
@@ -87,5 +88,7 @@ namespace SmartQuant
         {
             throw new NotImplementedException();
         }
+
+        public List<DataSeries> GetDataSeriesList(Instrument instrument = null, string pattern = null) => Server.GetDataSeriesList(instrument, pattern);
     }
 }

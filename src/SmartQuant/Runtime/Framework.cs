@@ -84,7 +84,10 @@ namespace SmartQuant
         private EventBus bus;
         private bool disposed;
         private bool isDisposable;
-
+        private bool bool_1;
+        private bool bool_2;
+        private bool bool_3;
+        private bool bool_4;
         private DataServer dataServer;
         private OrderServer orderServer;
         private InstrumentServer instrumentServer;
@@ -211,7 +214,7 @@ namespace SmartQuant
         public ProviderManager ProviderManager { get; }
 
         public LicenseManager LicenseManager { get; }
-        
+
         public StatisticsManager StatisticsManager { get; }
 
         public StrategyManager StrategyManager { get; }
@@ -296,7 +299,7 @@ namespace SmartQuant
             InstrumentServer = iServer;
             InstrumentManager.Load();
             //, "instruments.quant", "", this.configuration_0.InstrumentFilePort);
-            //DataServer = dataServer ?? ServerFactory.CreateDataServer();
+            DataServer = dataServer ?? new FileDataServer(this, "d:\\data.quant");
             //OrderServer = ServerFactory.CreateOrderServer();
             //PortfolioServer = ServerFactory.CreatePortfolioServer();
             //UserServer = ServerFactory.CreateUserServer();
@@ -348,7 +351,22 @@ namespace SmartQuant
 
         private void Dispose(bool dispoing)
         {
-
+            if (!this.disposed)
+            {
+                if (dispoing)
+                {
+                    //   this.method_3();
+                    if (this.bool_1) InstrumentServer?.Dispose();
+                    if (this.bool_2) DataServer?.Dispose();
+                    if (this.bool_3) OrderServer?.Dispose();
+                    if (this.bool_4) PortfolioServer?.Dispose();
+                    ProviderManager?.Dispose();
+                    DataManager?.Dispose();
+                    EventManager?.Dispose();
+                    OutputManager?.Dispose();
+                }
+                this.disposed = true;
+            }
         }
 
         public void Clear()

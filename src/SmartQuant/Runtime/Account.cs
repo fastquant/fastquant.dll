@@ -2,12 +2,15 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using CId = SmartQuant.CurrencyId;
 
 namespace SmartQuant
 {
     public class Account
     {
         private Framework framework;
+
+        public byte CurrencyId { get; set; }
 
         public Account(Framework framework)
         {
@@ -30,24 +33,34 @@ namespace SmartQuant
             throw new NotImplementedException();
         }
 
-        public void Add(DateTime dateTime, double value, byte currencyId = 148, string text = null, bool updateParent = true)
+        public void Add(DateTime dateTime, double value, byte currencyId = CId.USD, string text = null, bool updateParent = true)
         {
             throw new NotImplementedException();
         }
 
-        public void Add(double value, byte currencyId = 148, string text = null, bool updateParent = true)
+        public void Add(double value, byte currencyId = CId.USD, string text = null, bool updateParent = true)
         {
             throw new NotImplementedException();
         }
 
-        public void Deposit(DateTime dateTime, double value, byte currencyId = 148, string text = null, bool updateParent = true)
+        public void Deposit(DateTime dateTime, double value, byte currencyId = CId.USD, string text = null, bool updateParent = true)
         {
             Add(dateTime, value, currencyId, text, updateParent);
         }
 
-        public void Deposit(double value, byte currencyId = 148, string text = null, bool updateParent = true)
+        public void Deposit(double value, byte currencyId = CId.USD, string text = null, bool updateParent = true)
         {
             Add(value, currencyId, text, updateParent);
+        }
+
+        public void Withdraw(double value, byte currencyId = CId.USD, string text = null, bool updateParent = true)
+        {
+            Add(-value, currencyId, text, updateParent);
+        }
+
+        public void Withdraw(DateTime dateTime, double value, byte currencyId = CId.USD, string text = null, bool updateParent = true)
+        {
+            Add(dateTime, -value, currencyId, text, updateParent);
         }
     }
 
@@ -92,8 +105,7 @@ namespace SmartQuant
             Text = text;
         }
 
-        public AccountTransaction(Fill fill)
-            : this(fill.DateTime, fill.CashFlow, fill.CurrencyId, fill.Text)
+        public AccountTransaction(Fill fill) : this(fill.DateTime, fill.CashFlow, fill.CurrencyId, fill.Text)
         {
         }
 

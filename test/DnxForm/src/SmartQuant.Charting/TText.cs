@@ -124,8 +124,7 @@ namespace SmartQuant.Charting
             }
         }
 
-        public TText(string text, double x, double y)
-            : this(text, x, y, Color.Black)
+        public TText(string text, double x, double y) : this(text, x, y, Color.Black)
         {
         }
 
@@ -140,13 +139,11 @@ namespace SmartQuant.Charting
             Color = color;
         }
 
-        public TText(string text, DateTime x, double y)
-            : this(text, x.Ticks, y, Color.Black)
+        public TText(string text, DateTime x, double y) : this(text, x.Ticks, y, Color.Black)
         {
         }
 
-        public TText(string text, DateTime x, double y, Color color)
-            : this(text, x.Ticks, y, color)
+        public TText(string text, DateTime x, double y, Color color) : this(text, x.Ticks, y, color)
         {
         }
 
@@ -179,9 +176,6 @@ namespace SmartQuant.Charting
             }
         }
 
-        public TDistance Distance(double X, double Y)
-        {
-            return null;
-        }
+        public TDistance Distance(double X, double Y) => null;
     }
 }

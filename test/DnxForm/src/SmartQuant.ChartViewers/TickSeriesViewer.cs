@@ -1,5 +1,4 @@
-﻿using SmartQuant;
-using SmartQuant.Charting;
+﻿using SmartQuant.Charting;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -14,13 +13,7 @@ namespace SmartQuant.ChartViewers
 
         public int DrawWidth { get; set; }
 
-        public override bool IsZoomable
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool IsZoomable => true;
 
         public TickSeriesViewer()
         {
@@ -29,10 +22,7 @@ namespace SmartQuant.ChartViewers
             DrawWidth = 1;
         }
 
-        public override PadRange GetPadRangeX(object obj, Pad pad)
-        {
-            return null;
-        }
+        public override PadRange GetPadRangeX(object obj, Pad pad) => null;
 
         public override PadRange GetPadRangeY(object obj, Pad pad)
         {

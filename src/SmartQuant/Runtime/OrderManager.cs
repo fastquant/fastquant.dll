@@ -8,6 +8,8 @@ namespace SmartQuant
 
         public OrderServer Server { get; set; }
 
+        public bool IsPersistent { get; set; }
+
         public OrderManager(Framework framework, OrderServer orderServer)
         {
             this.framework = framework;
@@ -26,6 +28,11 @@ namespace SmartQuant
         }
 
         public void Clear()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Load(string name = null, int clientId = -1)
         {
             throw new NotImplementedException();
         }

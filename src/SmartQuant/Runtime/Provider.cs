@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 using System.Threading;
+using System.Linq;
 
 namespace SmartQuant
 {
@@ -52,30 +53,17 @@ namespace SmartQuant
         public const byte MNI = 45;
         public const byte MatchingEngine = 99;
 
-        private static Dictionary<string, byte> mapping;
+        private static Dictionary<string, byte> mapping = new Dictionary<string, byte>();
 
         static ProviderId()
         {
-            mapping = new Dictionary<string, byte>();
-
-            foreach (var info in typeof(ProviderId).GetFields(BindingFlags.Static | BindingFlags.Public))
-            {
-                if (info.FieldType == typeof(byte))
-                {
-                    mapping.Add(info.Name, (byte)info.GetValue(null));
-                }
-            }
+            var fields = typeof(ProviderId).GetFields(BindingFlags.Static | BindingFlags.Public).TakeWhile(f => f.FieldType == typeof(byte)).ToList();
+            fields.ForEach(f => mapping.Add(f.Name, (byte)f.GetValue(null)));
         }
 
-        public static void Add(string name, byte id)
-        {
-            mapping.Add(name, id);
-        }
+        public static void Add(string name, byte id) => mapping.Add(name, id);
 
-        public static void Remove(string name)
-        {
-            mapping.Remove(name);
-        }
+        public static void Remove(string name) => mapping.Remove(name);
 
         public static byte Get(string name)
         {
@@ -310,10 +298,10 @@ namespace SmartQuant
                     this.status = value;
 
                     if (this.status == ProviderStatus.Connected)
-                        this.OnConnected();
+                        OnConnected();
 
                     if (this.status == ProviderStatus.Disconnected)
-                        this.OnDisconnected();
+                        OnDisconnected();
 
                     this.framework.EventServer.OnProviderStatusChanged(this);
                 }
@@ -431,7 +419,20 @@ namespace SmartQuant
 
         protected virtual void OnConnected()
         {
-            throw new NotImplementedException();
+            if ((this is IDataProvider || this is IFundamentalProvider) && this.dataQueue == null)
+            {
+                this.dataQueue = new EventQueue(EventQueueId.Data, EventQueueType.Master, EventQueuePriority.Normal, 25600, this.framework.EventBus);
+                this.dataQueue.Enqueue(new OnQueueOpened(this.dataQueue));
+                this.dataQueue.Name = $"{this.name} data queue";
+                this.framework.EventBus.DataPipe.Add(this.dataQueue);
+            }
+            if (this is IExecutionProvider && this.executionQueue == null)
+            {
+                this.executionQueue = new EventQueue(EventQueueId.Execution, EventQueueType.Master, EventQueuePriority.Normal, 25600, this.framework.EventBus);
+                this.executionQueue.Enqueue(new OnQueueOpened(this.executionQueue));
+                this.executionQueue.Name = $"{this.name}  execution queue";
+                this.framework.EventBus.ExecutionPipe.Add(this.executionQueue);
+            }
         }
 
         protected virtual void OnDisconnected()
@@ -440,7 +441,7 @@ namespace SmartQuant
         }
     }
 
-        public class ProviderInfo
+    public class ProviderInfo
     {
         public byte Id { get; internal set; }
 
@@ -489,10 +490,7 @@ namespace SmartQuant
             Status = provider.Status;
         }
 
-        public override string ToString()
-        {
-            return $"provider id = {Id} {Name} ({Description}) {Url}";
-        }
+        public override string ToString() => $"provider id = {Id} {Name} ({Description}) {Url}";
     }
 
     public class ProviderError : DataObject
@@ -540,6 +538,7 @@ namespace SmartQuant
             Provider = provider;
         }
     }
+
     public class ProviderErrorEventArgs : EventArgs
     {
         public ProviderError Error { get; private set; }
@@ -553,5 +552,4 @@ namespace SmartQuant
     public delegate void ProviderEventHandler(object sender, ProviderEventArgs args);
 
     public delegate void ProviderErrorEventHandler(object sender, ProviderErrorEventArgs args);
-
 }

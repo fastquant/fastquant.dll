@@ -55,7 +55,7 @@ namespace SmartQuant.FinChart.Objects
             }
         }
 
-        public string Name { get; private set; }
+        public string Name { get; }
 
         public DateTime X1
         {

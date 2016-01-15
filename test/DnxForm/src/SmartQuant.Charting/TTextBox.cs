@@ -28,6 +28,7 @@ namespace SmartQuant.Charting
         {
         }
     }
+
     [Serializable]
     public class TTextBox : IDrawable
     {
@@ -57,8 +58,7 @@ namespace SmartQuant.Charting
 
         public ArrayList Items { get; private set; }
 
-        public TTextBox()
-            : this(10, 10)
+        public TTextBox() : this(10, 10)
         {
         }
 
@@ -75,25 +75,13 @@ namespace SmartQuant.Charting
             Items = new ArrayList();
         }
 
-        public void Add(string text, Color color)
-        {
-            Items.Add(new TTextBoxItem(text, color));
-        }
+        public void Add(string text, Color color) => Items.Add(new TTextBoxItem(text, color));
 
-        public void Add(string text, Color color, Font font)
-        {
-            Items.Add(new TTextBoxItem(text, color, font));
-        }
+        public void Add(string text, Color color, Font font) => Items.Add(new TTextBoxItem(text, color, font));
 
-        public void Add(TTextBoxItem item)
-        {
-            Items.Add(item);
-        }
+        public void Add(TTextBoxItem item) => Items.Add(item);
 
-        public void Clear()
-        {
-            Items.Clear();
-        }
+        public void Clear() => Items.Clear();
 
         public virtual void Draw()
         {
@@ -160,9 +148,6 @@ namespace SmartQuant.Charting
             }
         }
 
-        public TDistance Distance(double x, double y)
-        {
-            return null;
-        }
+        public TDistance Distance(double x, double y) => null;
     }
 }

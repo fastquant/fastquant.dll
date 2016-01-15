@@ -103,6 +103,9 @@ namespace SmartQuant
                 }
             }
         }
+
+        public bool IsLoaded { get; private set; }
+
         public Portfolio(string name)
         {
             Name = name;
@@ -338,7 +341,7 @@ namespace SmartQuant
 
     public class PortfolioList : IEnumerable<Portfolio>
     {
-        private GetByList<Portfolio> list = new GetByList<Portfolio>();
+        private GetByList<Portfolio> list = new GetByList<Portfolio>("Id", "Name");
 
         public int Count
         {

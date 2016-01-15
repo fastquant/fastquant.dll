@@ -18,6 +18,28 @@ namespace SmartQuant.FinChart
         Arith,
         Log
     }
+
+    public interface IChartDrawable
+    {
+        bool ToolTipEnabled { get; set; }
+        string ToolTipFormat { get; set; }
+        void Paint();
+        void SetInterval(DateTime minDate, DateTime maxDate);
+        Distance Distance(int x, double y);
+        void Select();
+        void UnSelect();
+    }
+
+    public interface IDateDrawable
+    {
+        DateTime DateTime { get; }
+    }
+
+    public interface IZoomable
+    {
+        PadRange GetPadRangeY(Pad pad);
+    }
+
     public class Pad
     {
         private Chart chart;
@@ -39,13 +61,7 @@ namespace SmartQuant.FinChart
 
         internal int AxisGap { get; private set; }
 
-        internal Chart Chart
-        {
-            get
-            {
-                return this.chart;
-            }
-        }
+        internal Chart Chart => this.chart;
 
         public bool DrawItems { get; set; }
 
@@ -93,45 +109,15 @@ namespace SmartQuant.FinChart
             }
         }
 
-        public ISeries Series
-        {
-            get
-            {
-                return this.chart.Series;
-            }
-        }
+        public ISeries Series => this.chart.Series;
 
-        public ISeries MainSeries
-        {
-            get
-            {
-                return this.chart.MainSeries;
-            }
-        }
+        public ISeries MainSeries => this.chart.MainSeries;
 
-        public double IntervalWidth
-        {
-            get
-            {
-                return this.chart.IntervalWidth;
-            }
-        }
+        public double IntervalWidth => this.chart.IntervalWidth;
 
-        public int FirstIndex
-        {
-            get
-            {
-                return this.chart.FirstIndex;
-            }
-        }
+        public int FirstIndex => this.chart.FirstIndex;
 
-        public int LastIndex
-        {
-            get
-            {
-                return this.chart.LastIndex;
-            }
-        }
+        public int LastIndex => this.chart.LastIndex;
 
         public Graphics Graphics { get; private set; }
 
@@ -313,10 +299,7 @@ namespace SmartQuant.FinChart
                 g.DrawRectangle(new Pen(Color.Green), this.outlineRectangle);
         }
 
-        public DateTime GetDateTime(int x)
-        {
-            return this.chart.GetDateTime(x);
-        }
+        public DateTime GetDateTime(int x) => this.chart.GetDateTime(x);
 
         public double WorldY(int y)
         {
@@ -505,10 +488,7 @@ namespace SmartQuant.FinChart
             this.chart.Invalidate();
         }
 
-        public bool IsInRange(double x, double y)
-        {
-            return X1 <= x && x <= X2 && Y1 <= y && y <= Y2;
-        }
+        public bool IsInRange(double x, double y) => X1 <= x && x <= X2 && Y1 <= y && y <= Y2;
 
         #region Helper Methods
 
@@ -527,13 +507,7 @@ namespace SmartQuant.FinChart
     {
         private ArrayList list = new ArrayList();
 
-        public bool IsReadOnly
-        {
-            get
-            {
-                return this.list.IsReadOnly;
-            }
-        }
+        public bool IsReadOnly => this.list.IsReadOnly;
 
         object IList.this[int index]
         {
@@ -547,125 +521,56 @@ namespace SmartQuant.FinChart
             }
         }
 
-        public bool IsFixedSize
-        {
-            get
-            {
-                return this.list.IsFixedSize;
-            }
-        }
+        public bool IsFixedSize => this.list.IsFixedSize;
 
-        public bool IsSynchronized
-        {
-            get
-            {
-                return this.list.IsSynchronized;
-            }
-        }
+        public bool IsSynchronized => this.list.IsSynchronized;
 
-        public int Count
-        {
-            get
-            {
-                return this.list.Count;
-            }
-        }
+        public int Count => this.list.Count;
 
-        public object SyncRoot
-        {
-            get
-            {
-                return this.list.SyncRoot;
-            }
-        }
+        public object SyncRoot => this.list.SyncRoot;
 
-        public Pad this[int index]
-        {
-            get
-            {
-                return this.list[index] as Pad;
-            }
-        }
+        public Pad this[int index] => this.list[index] as Pad;
 
-        public void RemoveAt(int index)
-        {
-            this.list.RemoveAt(index);
-        }
+        public void RemoveAt(int index) => this.list.RemoveAt(index);
 
         void IList.Insert(int index, object value)
         {
             throw new NotSupportedException();
         }
 
-        void IList.Remove(object value)
-        {
-            Remove(value as Pad);
-        }
+        void IList.Remove(object value) => Remove(value as Pad);
 
-        bool IList.Contains(object value)
-        {
-            return this.list.Contains(value);
-        }
+        bool IList.Contains(object value) => this.list.Contains(value);
 
-        public void Clear()
-        {
-            this.list.Clear();
-        }
+        public void Clear() => this.list.Clear();
 
-        int IList.IndexOf(object value)
-        {
-            return IndexOf(value as Pad);
-        }
+        int IList.IndexOf(object value) => IndexOf(value as Pad);
 
-        int IList.Add(object value)
-        {
-            return Add(value as Pad);
-        }
+        int IList.Add(object value) => Add(value as Pad);
 
-        public void CopyTo(Array array, int index)
-        {
-            this.list.CopyTo(array, index);
-        }
+        public void CopyTo(Array array, int index) => this.list.CopyTo(array, index);
 
-        public IEnumerator GetEnumerator()
-        {
-            return this.list.GetEnumerator();
-        }
+        public IEnumerator GetEnumerator() => this.list.GetEnumerator();
 
-        public int Add(Pad pad)
-        {
-            return this.list.Add(pad);
-        }
+        public int Add(Pad pad) => this.list.Add(pad);
 
-        public void Remove(Pad pad)
-        {
-            this.list.Remove(pad);
-        }
+        public void Remove(Pad pad) => this.list.Remove(pad);
 
-        public void Insert(int index, Pad pad)
-        {
-            this.list.Insert(index, pad);
-        }
+        public void Insert(int index, Pad pad) => this.list.Insert(index, pad);
 
-        public int IndexOf(Pad pad)
-        {
-            return this.list.IndexOf(pad);
-        }
+        public int IndexOf(Pad pad) => this.list.IndexOf(pad);
     }
+
     [Serializable]
     public class PadRange
     {
-        public double Min;
-        public double Max;
+        public double Min { get; set; }
+
+        public double Max { get; set; }
+
         protected bool isValid;
 
-        public bool IsValid
-        {
-            get
-            {
-                return this.isValid;
-            }
-        }
+        public bool IsValid => this.isValid;
 
         public PadRange(double min, double max)
         {

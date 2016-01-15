@@ -8,19 +8,22 @@ using System.Reflection;
 
 namespace SmartQuant
 {
-    public class GetByList<T> : IEnumerable<T>
+    class GetByList<T> : IEnumerable<T>
     {
-        private static MethodInfo nameMethodInfo;
-        private static MethodInfo idMethodInfo;
+        //private static MethodInfo nameMethodInfo;
+        //private static MethodInfo idMethodInfo;
 
-        private Dictionary<string, T> dictionary = new Dictionary<string, T>();
-        private IdArray<T> array = new IdArray<T>();
-        private List<T> list = new List<T>();
+        private Dictionary<string, T> dictionary;
+        private IdArray<T> array;
+        private List<T> list;
 
-        private Func<T, string> nameFunc;
-        private Func<T, int> idFunc;
+        //private Func<T, string> nameFunc;
+        //private Func<T, int> idFunc;
 
         public int Count => this.list.Count;
+
+        private MethodInfo nameMethod;
+        private MethodInfo idMethod;
 
         public T this[int index]
         {
@@ -34,21 +37,32 @@ namespace SmartQuant
             }
         }
 
-        static GetByList()
-        {
-            nameMethodInfo = typeof(T).GetMethod("GetName", BindingFlags.NonPublic | BindingFlags.Instance);
-            idMethodInfo = typeof(T).GetMethod("GetId", BindingFlags.NonPublic | BindingFlags.Instance);
-        }
+        //static GetByList()
+        //{
+        //    var t = typeof(T);
+        //    nameMethodInfo = t.GetMethod("GetName", BindingFlags.NonPublic | BindingFlags.Instance);
+        //    idMethodInfo = t.GetProperty("Id")?.GetGetMethod() ?? t.GetMethod("GetId", BindingFlags.NonPublic | BindingFlags.Instance);
+        //}
 
-        public GetByList(Func<T, string> nameFunc = null, Func<T, int> idFunc= null)
+        //public GetByList(Func<T, string> nameFunc = null, Func<T, int> idFunc= null)
+        //{
+        //    this.nameFunc = nameFunc;
+        //    this.idFunc = idFunc;
+        //}
+
+        public GetByList(string idPropName, string namePropName, int size = 1024)
         {
-            this.nameFunc = nameFunc;
-            this.idFunc = idFunc;
+            var t = typeof(T);
+            this.idMethod = t.GetProperty(idPropName).GetGetMethod();
+            this.nameMethod = t.GetProperty(namePropName).GetGetMethod();
+            this.dictionary = new Dictionary<string, T>();
+            this.array = new IdArray<T>(size);
+            this.list = new List<T>();
         }
 
         public bool Contains(T obj)
         {
-            string name = (string)nameMethodInfo?.Invoke(obj, new object[0]);
+            string name = (string)this.nameMethod.Invoke(obj, new object[0]);
             return Contains(name);
         }
 
@@ -58,11 +72,11 @@ namespace SmartQuant
 
         public void Add(T obj)
         {
-            int id = (int)idMethodInfo.Invoke(obj, new object[0]);
+            int id = Convert.ToInt32(this.idMethod.Invoke(obj, new object[0]));
             if (this.array[id] == null)
             {
                 this.list.Add(obj);
-                string name = (string)nameMethodInfo?.Invoke(obj, new object[0]);
+                string name = (string)this.nameMethod.Invoke(obj, new object[0]);
                 if (name != null)
                     this.dictionary[name] = obj;
                 this.array[id] = obj;
@@ -78,13 +92,12 @@ namespace SmartQuant
 
         public void Remove(T obj)
         {
-            string name = (string)nameMethodInfo?.Invoke(obj, new object[0]);
-            int? id = (int)idMethodInfo?.Invoke(obj, new object[0]);
+            string name = (string)this.nameMethod.Invoke(obj, new object[0]);
+            int id = (int)this.idMethod.Invoke(obj, new object[0]);
             this.list.Remove(obj);
             if (name != null)
                 this.dictionary.Remove(name);
-            if (id != null)
-                this.array.Remove((int)id);
+            this.array.Remove(id);
         }
 
         public T GetByName(string name)

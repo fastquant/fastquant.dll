@@ -6,6 +6,13 @@ using System.Drawing;
 
 namespace SmartQuant.ChartViewers
 {
+    public enum DrawStyle
+    {
+        Line,
+        Bar,
+        Circle,
+    }
+
     public class TimeSeriesViewer : Viewer
     {
         public Pad Pad { get; set; }
@@ -16,13 +23,7 @@ namespace SmartQuant.ChartViewers
 
         public DrawStyle DrawStyle { get; set; }
 
-        public override bool IsZoomable
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool IsZoomable => true;
 
         public TimeSeriesViewer()
         {
@@ -32,10 +33,7 @@ namespace SmartQuant.ChartViewers
             DrawStyle = DrawStyle.Line;
         }
 
-        public override PadRange GetPadRangeX(object obj, Pad pad)
-        {
-            return null;
-        }
+        public override PadRange GetPadRangeX(object obj, Pad pad) => null;
 
         public override PadRange GetPadRangeY(object obj, Pad pad)
         {

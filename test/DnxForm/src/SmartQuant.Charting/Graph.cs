@@ -30,6 +30,7 @@ namespace SmartQuant.Charting
             ZoomUnzoom = zoomUnzoom;
         }
     }
+
     public delegate void NewTickEventHandler(object sender, NewTickEventArgs e);
 
     public class NewTickEventArgs : EventArgs
@@ -41,17 +42,20 @@ namespace SmartQuant.Charting
             DateTime = datetime;
         }
     }
+
     public enum EGraphMoveStyle
     {
         Graph,
         Point
     }
+
     public enum EGraphStyle
     {
         Scatter,
         Line,
         Bar
     }
+
     public enum EGridSize : long
     {
         min1 = 1 * TimeSpan.TicksPerMinute,
@@ -86,6 +90,7 @@ namespace SmartQuant.Charting
         year10 = 10 * year1,
         year20 = 20 * year1
     }
+
     [Serializable]
     public enum ELegendPosition
     {
@@ -94,6 +99,7 @@ namespace SmartQuant.Charting
         BottomRight,
         BottomLeft
     }
+
     public enum EMarkerStyle
     {
         Point,
@@ -110,6 +116,7 @@ namespace SmartQuant.Charting
         Cross,
         None
     }
+
     public enum EMarkerTextPosition
     {
         Top,
@@ -118,6 +125,7 @@ namespace SmartQuant.Charting
         Left,
         Auto
     }
+
     public enum EMouseWheelMode
     {
         MoveX,
@@ -126,11 +134,13 @@ namespace SmartQuant.Charting
         ZoomY,
         Zoom
     }
+
     public enum EPalette
     {
         Gray,
         Rainbow
     }
+
     public enum EPrintAlign
     {
         Veritcal,
@@ -138,11 +148,13 @@ namespace SmartQuant.Charting
         Center,
         None
     }
+
     public enum EPrintLayout
     {
         Portrait,
         Landscape
     }
+
     public enum ETextBoxPosition
     {
         TopRight,
@@ -150,6 +162,7 @@ namespace SmartQuant.Charting
         BottomRight,
         BottomLeft
     }
+
     public enum ETextPosition
     {
         RightTop,
@@ -159,6 +172,7 @@ namespace SmartQuant.Charting
         LeftBottom,
         CentreBottom
     }
+
     public enum ETitlePosition
     {
         Left,
@@ -168,21 +182,48 @@ namespace SmartQuant.Charting
         InsideRight,
         InsideCentre
     }
-    public enum ETitleStrategy
-    {
-        Smart,
-        None,
-    }
+
     public enum ETransformationType
     {
         Empty,
         Intraday,
     }
+
     public enum EVerticalGridStyle
     {
         ByDateTime,
         NotByDateTime,
     }
+
+    public interface IMovable
+    {
+        void Move(double X, double Y, double dX, double dY);
+    }
+
+    public interface IZoomable
+    {
+        bool IsPadRangeX();
+
+        bool IsPadRangeY();
+
+        PadRange GetPadRangeX(Pad pad);
+
+        PadRange GetPadRangeY(Pad pad);
+    }
+
+    public interface IDrawable
+    {
+        bool ToolTipEnabled { get; set; }
+
+        string ToolTipFormat { get; set; }
+
+        void Draw();
+
+        void Paint(Pad pad, double minX, double maxX, double minY, double maxY);
+
+        TDistance Distance(double x, double y);
+    }
+
     [Serializable]
     public class Graph : IDrawable, IZoomable, IMovable
     {
@@ -293,13 +334,11 @@ namespace SmartQuant.Charting
         [Browsable(false)]
         public double MaxY { get; private set; }
 
-        public Graph()
-            : this(null, null)
+        public Graph() : this(null, null)
         {
         }
 
-        public Graph(string name)
-            : this(name, null)
+        public Graph(string name) : this(name, null)
         {
         }
 
@@ -310,10 +349,8 @@ namespace SmartQuant.Charting
             Style = EGraphStyle.Line;
             MoveStyle = EGraphMoveStyle.Point;
             Points = new ArrayList();
-            MinX = double.MaxValue;
-            MinY = double.MaxValue;
-            MaxX = double.MinValue;
-            MaxY = double.MinValue;
+            MinX = MinY = double.MaxValue;
+            MaxX = MaxY = double.MinValue;
             MarkerEnabled = true;
             this.markerStyle = EMarkerStyle.Rectangle;
             this.markerSize = 5;
@@ -334,10 +371,7 @@ namespace SmartQuant.Charting
             MaxY = Math.Max(MaxY, y);
         }
 
-        public void Add(double x, double y)
-        {
-            Add(x, y, this.markerColor);
-        }
+        public void Add(double x, double y) => Add(x, y, MarkerColor);
 
         public void Add(double x, double y, Color color)
         {
@@ -345,26 +379,16 @@ namespace SmartQuant.Charting
             MinMax(x, y);
         }
 
-        public void Add(double x, double y, string text)
-        {
-            Add(x, y, text, MarkerColor);
-        }
+        public void Add(double x, double y, string text) => Add(x, y, text, MarkerColor);
 
-        public void Add(double x, double y, string text, Color markerColor)
-        {
-            TLabel tlabel = new TLabel(text, x, y, markerColor);
-            tlabel.Style = this.markerStyle;
-            tlabel.Size = this.markerSize;
-            Points.Add(tlabel);
-            MinMax(x, y);
-        }
+        public void Add(double x, double y, string text, Color markerColor) => Add(x, y, text, markerColor, Color.Black);
 
         public void Add(double x, double y, string text, Color markerColor, Color textColor)
         {
-            TLabel tlabel = new TLabel(text, x, y, markerColor, textColor);
-            tlabel.Style = this.markerStyle;
-            tlabel.Size = this.markerSize;
-            Points.Add(tlabel);
+            var label = new TLabel(text, x, y, markerColor, textColor);
+            label.Style = this.markerStyle;
+            label.Size = this.markerSize;
+            Points.Add(label);
             MinMax(x, y);
         }
 
@@ -380,25 +404,13 @@ namespace SmartQuant.Charting
             MinMax(label.X, label.Y);
         }
 
-        public virtual bool IsPadRangeX()
-        {
-            return false;
-        }
+        public virtual bool IsPadRangeX() => false;
 
-        public virtual bool IsPadRangeY()
-        {
-            return false;
-        }
+        public virtual bool IsPadRangeY() => false;
 
-        public virtual PadRange GetPadRangeX(Pad pad)
-        {
-            return null;
-        }
+        public virtual PadRange GetPadRangeX(Pad pad) => null;
 
-        public virtual PadRange GetPadRangeY(Pad pad)
-        {
-            return null;
-        }
+        public virtual PadRange GetPadRangeY(Pad pad) => null;
 
         public virtual void Draw(string option)
         {
@@ -414,10 +426,7 @@ namespace SmartQuant.Charting
             Chart.Pad.SetRange(MinX - (MaxX - MinX) / 10.0, MaxX + (MaxX - MinX) / 10.0, MinY - (MaxY - MinY) / 10.0, MaxY + (MaxY - MinY) / 10.0);
         }
 
-        public virtual void Draw()
-        {
-            Draw("");
-        }
+        public virtual void Draw() => Draw("");
 
         public virtual void Paint(Pad pad, double xMin, double xMax, double yMin, double yMax)
         {

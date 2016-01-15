@@ -188,7 +188,7 @@ namespace SmartQuant
 
     public class PortfolioStatisticsItemList : IEnumerable<PortfolioStatisticsItem>
     {
-        private GetByList<PortfolioStatisticsItem> items = new GetByList<PortfolioStatisticsItem>();
+        private GetByList<PortfolioStatisticsItem> items = new GetByList<PortfolioStatisticsItem>("Type", "Name");
 
         public int Count => this.items.Count;
 

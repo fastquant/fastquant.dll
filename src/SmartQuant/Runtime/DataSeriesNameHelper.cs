@@ -5,15 +5,9 @@ namespace SmartQuant
 
     public static class DataSeriesNameHelper
     {
-        public static string GetName(Instrument instrument, byte type)
-        {
-            return string.Format("{0}.{1}.{2}", instrument.Symbol, instrument.Id, GetDataTypeAsString(type));
-        }
+        public static string GetName(Instrument instrument, byte type) => $"{instrument.Symbol}.{instrument.Id}.{GetDataTypeAsString(type)}";
 
-        public static string GetName(Instrument instrument, BarType barType, long barSize)
-        {
-            return string.Format("{0}.{1}.{2}", instrument.Symbol, instrument.Id, GetBarTypeAsString(barType, barSize));
-        }
+        public static string GetName(Instrument instrument, BarType barType, long barSize)=> $"{instrument.Symbol}.{instrument.Id}.{GetBarTypeAsString(barType, barSize)}";
 
         public static bool TryGetBarTypeSize(DataSeries series, out BarType barType, out long barSize)
         {
@@ -30,10 +24,7 @@ namespace SmartQuant
             return framework.InstrumentManager.GetById(id);
         }
 
-        public static string GetSymbol(DataSeries series)
-        {
-            return GetSymbol(series.Name);
-        }
+        public static string GetSymbol(DataSeries series) => GetSymbol(series.Name);
 
         public static string GetSymbol(string seriesName)
         {
@@ -42,10 +33,7 @@ namespace SmartQuant
             return string.Join(".", parts, 0, parts.Length - which);
         }
 
-        public static byte GetDataType(DataSeries series)
-        {
-            return GetDataTypeFromName(series.Name);
-        }
+        public static byte GetDataType(DataSeries series) => GetDataTypeFromName(series.Name);
 
         private static byte GetDataTypeFromName(string seriesName)
         {

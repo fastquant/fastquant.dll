@@ -20,6 +20,7 @@ namespace SmartQuant.Charting
             Color = color;
         }
     }
+
     public class Pie : IDrawable
     {
         private Color[] palette;
@@ -42,13 +43,11 @@ namespace SmartQuant.Charting
 
         public string Format { get; set; }
 
-        public Pie()
-            : this(null, null)
+        public Pie() : this(null, null)
         {
         }
 
-        public Pie(string name)
-            : this(name, null)
+        public Pie(string name) : this(name, null)
         {
         }
 
@@ -65,20 +64,11 @@ namespace SmartQuant.Charting
         }
 
 
-        public void Add(double weight)
-        {
-            Pieces.Add(new TPieItem(weight, "", Color.Empty));
-        }
+        public void Add(double weight) => Pieces.Add(new TPieItem(weight, "", Color.Empty));
 
-        public void Add(double weight, string text, Color color)
-        {
-            Pieces.Add(new TPieItem(weight, text, color));
-        }
+        public void Add(double weight, string text, Color color) => Pieces.Add(new TPieItem(weight, text, color));
 
-        public void Add(double weight, string text)
-        {
-            Pieces.Add(new TPieItem(weight, text, Color.Empty));
-        }
+        public void Add(double weight, string text) => Pieces.Add(new TPieItem(weight, text, Color.Empty));
 
         public virtual void Draw(string option)
         {
@@ -117,10 +107,7 @@ namespace SmartQuant.Charting
             }
         }
 
-        public virtual void Draw()
-        {
-            Draw("");
-        }
+        public virtual void Draw() => Draw("");
 
         private Color[] CreatePalette(Color LowColor, Color HighColor, int NColors)
         {
@@ -244,10 +231,7 @@ namespace SmartQuant.Charting
             }
         }
 
-        public TDistance Distance(double x, double y)
-        {
-            return null;
-        }
+        public TDistance Distance(double x, double y) => null;
     }
 }
 

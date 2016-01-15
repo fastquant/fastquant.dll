@@ -15,6 +15,13 @@ using System.Windows.Forms;
 
 namespace SmartQuant.FinChart
 {
+    public enum ChartUpdateStyle
+    {
+        WholeRange,
+        Trailing,
+        Fixed,
+    }
+
     public enum EGridSize : long
     {
         sec1 = TimeSpan.TicksPerSecond,

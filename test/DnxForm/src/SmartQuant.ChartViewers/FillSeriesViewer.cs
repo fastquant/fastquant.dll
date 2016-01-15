@@ -14,13 +14,7 @@ namespace SmartQuant.ChartViewers
 
         public bool TextEnabled { get; set; }
 
-        public override bool IsZoomable
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool IsZoomable => true;
 
         public FillSeriesViewer()
         {
@@ -30,15 +24,9 @@ namespace SmartQuant.ChartViewers
             TextEnabled = true;
         }
 
-        public override PadRange GetPadRangeX(object obj, Pad pad)
-        {
-            return null;
-        }
+        public override PadRange GetPadRangeX(object obj, Pad pad) => null;
 
-        public override PadRange GetPadRangeY(object obj, Pad pad)
-        {
-            return null;
-        }
+        public override PadRange GetPadRangeY(object obj, Pad pad) => null;
 
         public override void Paint(object obj, Pad pad)
         {

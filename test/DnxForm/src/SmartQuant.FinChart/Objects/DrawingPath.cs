@@ -10,9 +10,12 @@ namespace SmartQuant.FinChart.Objects
     public class DrawingPath : IUpdatable
     {
         private int wigth = 1;
-        private List<DrawingPoint> points;
         private Color color;
         private bool rangeY;
+
+        public string Name { get; }
+
+        public List<DrawingPoint> Points { get; } = new List<DrawingPoint>();
 
         public bool RangeY
         {
@@ -53,39 +56,30 @@ namespace SmartQuant.FinChart.Objects
             }
         }
 
-        public string Name { get; private set; }
 
-        public List<DrawingPoint> Points
-        {
-            get
-            {
-                return this.points;
-            }
-        }
 
         public event EventHandler Updated;
 
         public DrawingPath(string name)
         {
-            this.Name = name;
-            this.points = new List<DrawingPoint>();
+            Name = name;
         }
 
         public void Add(DateTime x, double y)
         {
-            this.points.Add(new DrawingPoint(x, y));
+            Points.Add(new DrawingPoint(x, y));
             EmitUpdated();
         }
 
         public void RemoveAt(int index)
         {
-            this.points.RemoveAt(index);
+            Points.RemoveAt(index);
             EmitUpdated();
         }
 
         public void Insert(int index, DateTime x, double y)
         {
-            this.points.Insert(index, new DrawingPoint(x, y));
+            Points.Insert(index, new DrawingPoint(x, y));
             EmitUpdated();
         }
 

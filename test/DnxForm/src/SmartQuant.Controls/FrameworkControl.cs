@@ -16,25 +16,13 @@ namespace SmartQuant.Controls
 {
     public class ControlSettings : Dictionary<string, string>
     {
-        protected internal void SetValue(string key, string value)
-        {
-            this[key] = value;
-        }
+        protected internal void SetValue(string key, string value) => this[key] = value;
 
-        protected internal void SetEnumValue<T>(string key, T value) where T : struct
-        {
-            SetValue(key, value.ToString());
-        }
+        protected internal void SetEnumValue<T>(string key, T value) where T : struct => SetValue(key, value.ToString());
 
-        protected internal void SetValue(string key, bool value)
-        {
-            SetValue(key, value.ToString());
-        }
+        protected internal void SetValue(string key, bool value) => SetValue(key, value.ToString());
 
-        protected internal void SetValue(string key, byte value)
-        {
-            SetValue(key, value.ToString());
-        }
+        protected internal void SetValue(string key, byte value) => SetValue(key, value.ToString());
 
         protected internal string GetStringValue(string key, string defaultValue)
         {
@@ -83,18 +71,11 @@ namespace SmartQuant.Controls
 
         public static bool UpdatedSuspened { get; set; }
 
-        public virtual object PropertyObject
-        {
-            get
-            {
-                return null;
-            }
-        }
+        public virtual object PropertyObject => null;
 
         public event EventHandler<ShowPropertiesEventArgs> ShowProperties;
 
-        protected FrameworkControl()
-            : base()
+        protected FrameworkControl() : base()
         {
         }
 

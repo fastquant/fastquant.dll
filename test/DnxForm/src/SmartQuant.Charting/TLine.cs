@@ -42,8 +42,7 @@ namespace SmartQuant.Charting
             Width = 1;
         }
 
-        public TLine(DateTime x1, double y1, DateTime x2, double y2)
-            : this(x1.Ticks, y1, x2.Ticks, y2)
+        public TLine(DateTime x1, double y1, DateTime x2, double y2) : this(x1.Ticks, y1, x2.Ticks, y2)
         {
         }
 
@@ -53,7 +52,7 @@ namespace SmartQuant.Charting
             {
                 var canvas = new Canvas("Canvas", "Canvas");
             }
-            Chart.Pad.Add((object)this);
+            Chart.Pad.Add(this);
         }
 
         public virtual void Paint(Pad pad, double xMin, double xMax, double yMin, double yMax)
@@ -61,9 +60,6 @@ namespace SmartQuant.Charting
             pad.DrawLine(new Pen(Color) { Width = Width, DashStyle = DashStyle }, X1, Y1, X2, Y2);
         }
 
-        public TDistance Distance(double X, double Y)
-        {
-            return null;
-        }
+        public TDistance Distance(double X, double Y) => null;
     }
 }

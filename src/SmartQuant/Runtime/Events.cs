@@ -235,6 +235,34 @@ namespace SmartQuant
         }
     }
 
+    public class OnStrategyAdded : Event
+    {
+        public override byte TypeId => EventType.OnStrategyAdded;
+
+        public Strategy Strategy { get; }
+
+        public string StrategyName { get; }
+
+        public OnStrategyAdded(Strategy strategy)
+        {
+            Strategy = strategy;
+            StrategyName = strategy.Name;
+        }
+    }
+
+    public class OnStrategyEvent : Event
+    {
+        public override byte TypeId => EventType.OnStrategyEvent;
+
+        internal object Data { get; }
+
+        public OnStrategyEvent(object data)
+        {
+            Data = data;
+        }
+    }
+
+
     public class OnInstrumentAdded : Event
     {
         public Instrument Instrument { get; }

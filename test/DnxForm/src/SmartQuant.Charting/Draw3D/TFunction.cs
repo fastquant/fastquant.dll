@@ -1,9 +1,15 @@
-﻿using SmartQuant.Charting;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Drawing.Imaging;
 
 namespace SmartQuant.Charting.Draw3D
 {
+    public class TSurface
+    {
+        public TColor Diffuse { get; set; } = new TColor(Color.White);
+        public TColor GridDiffuse { get; set; } = new TColor(Color.Orange);
+        public TColor Specular { get; set; } = new TColor(Color.White);
+    }
+
     public abstract class TFunction
     {
         protected double MaxX = 1.0;
@@ -46,7 +52,7 @@ namespace SmartQuant.Charting.Draw3D
             this.Top = tview.Top;
             this.W = tview.H;
             this.H = tview.H;
-            this.o = tview.o - new TVec3((double) this.Left, (double) this.Top, 0.0);
+            this.o = tview.O - new TVec3((double) this.Left, (double) this.Top, 0.0);
             this.Lx = tview.Lx;
             this.Ly = tview.Ly;
             this.Lz = tview.Lz;

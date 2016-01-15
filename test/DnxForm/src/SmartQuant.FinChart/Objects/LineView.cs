@@ -1,12 +1,9 @@
 ﻿// Licensed under the Apache License, Version 2.0. 
 // Copyright (c) Alex Lee. All rights reserved.
 
-using SmartQuant;
-using SmartQuant.FinChart;
 using System;
 using System.ComponentModel;
 using System.Drawing;
-using System.Text;
 
 namespace SmartQuant.FinChart.Objects
 {
@@ -128,10 +125,7 @@ namespace SmartQuant.FinChart.Objects
         {
         }
 
-        public PadRange GetPadRangeY(Pad pad)
-        {
-            return new PadRange(0, 0);
-        }
+        public PadRange GetPadRangeY(Pad pad) => new PadRange(0, 0);
 
         private double GetLineValueAt(int x)
         {

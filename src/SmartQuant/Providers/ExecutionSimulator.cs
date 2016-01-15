@@ -1,25 +1,58 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SmartQuant
 {
     public class ExecutionSimulator : Provider, IExecutionSimulator
     {
+        private class Class43
+        {
+            public Class43(ExecutionReport report)
+            {
+                OrdStatus = report.OrdStatus;
+                AvgPx = report.AvgPx;
+                CumQty = report.CumQty;
+                LeavesQty = report.LeavesQty;
+                Commission = report.Commission;
+            }
+
+            public double AvgPx { get; }
+
+            public double LeavesQty { get; }
+
+            public double Commission { get; }
+
+            public OrderStatus OrdStatus { get; }
+
+            public double CumQty { get; }
+        }
+
+        private List<Order> list_1 = new List<Order>();
+        private IdArray<List<Order>> idArray_0= new IdArray<List<Order>>(10240);
+        private IdArray<ExecutionSimulator.Class43> idArray_1 = new IdArray<ExecutionSimulator.Class43>(10240);
+
         public TimeSpan Auction1 { get; set; }
+
         public TimeSpan Auction2 { get; set; }
+
         public BarFilter BarFilter { get; } = new BarFilter();
+
         public ISlippageProvider SlippageProvider { get; set; } = new SlippageProvider();
+
         public ICommissionProvider CommissionProvider { get; set; } = new CommissionProvider();
-        public bool FillAtLimitPrice { get; set; } = true;
-        public bool FillAtStopPrice { get; set; }
-        public bool FillLimitOnNext { get; set; }
-        public bool FillMarketOnNext { get; set; }
-        public bool FillOnBar { get; set; } = false;
-        public bool FillOnBarOpen { get; set; } = false;
-        public bool FillOnLevel2 { get; set; } = true;
+
         public bool FillOnQuote { get; set; } = true;
         public bool FillOnTrade { get; set; } = true;
-        public bool FillStopLimitOnNext { get; set; }
-        public bool FillStopOnNext { get; set; }
+        public bool FillOnLevel2 { get; set; } = true;
+        public bool FillLimitOnNext { get; set; } = true;
+        public bool FillStopOnNext { get; set; } = true;
+        public bool FillStopLimitOnNext { get; set; } = true;
+        public bool FillAtLimitPrice { get; set; } = true;
+        public bool FillAtStopPrice { get; set; }
+        public bool FillMarketOnNext { get; set; }
+        public bool FillOnBar { get; set; }
+        public bool FillOnBarOpen { get; set; }
+
         public bool Queued { get; set; } = true;
         public bool PartialFills { get; set; }
 
@@ -34,6 +67,8 @@ namespace SmartQuant
 
         public override void Clear()
         {
+            this.idArray_0.Clear();
+            this.idArray_1.Clear();
         }
 
         public override void Send(ExecutionCommand command)

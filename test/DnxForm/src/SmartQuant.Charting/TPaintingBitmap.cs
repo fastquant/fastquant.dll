@@ -9,34 +9,16 @@ namespace SmartQuant.Charting
     public class TPaintingBitmap
     {
         public const PixelFormat pixel_format = PixelFormat.Format32bppRgb;
-        private int[] M;
+        private int[] m;
         private int width;
         private int height;
-        private int Sz;
+        private int sz;
 
-        public int Width
-        {
-            get
-            {
-                return this.width;
-            }
-        }
+        public int Width => this.width;
 
-        public int Height
-        {
-            get
-            {
-                return this.height;
-            }
-        }
+        public int Height => this.height;
 
-        public bool Valid
-        {
-            get
-            {
-                return this.M != null;
-            }
-        }
+        public bool Valid => this.m != null;
 
         public TPaintingBitmap()
         {
@@ -44,15 +26,15 @@ namespace SmartQuant.Charting
 
         public TPaintingBitmap(int W, int H)
         {
-            this.BeginDrawing(W, H);
+            BeginDrawing(W, H);
         }
 
-        public bool BeginDrawing(int W, int H)
+        public bool BeginDrawing(int w, int h)
         {
-            this.width = W;
-            this.height = H;
-            this.Sz = W * H;
-            this.M = new int[this.Sz];
+            this.width = w;
+            this.height = h;
+            this.sz = w * h;
+            this.m = new int[this.sz];
             return true;
         }
 
@@ -61,41 +43,26 @@ namespace SmartQuant.Charting
             Bitmap bitmap = new Bitmap(this.width, this.height, PixelFormat.Format32bppRgb);
             Rectangle rect = new Rectangle(0, 0, this.width, this.height);
             BitmapData bitmapdata = bitmap.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format32bppRgb);
-            Marshal.Copy(this.M, 0, bitmapdata.Scan0, this.Sz);
+            Marshal.Copy(this.m, 0, bitmapdata.Scan0, this.sz);
             bitmap.UnlockBits(bitmapdata);
             return bitmap;
         }
 
-        public int intGetPixel(int x, int y)
-        {
-            return this.M[this.width * y + x];
-        }
+        public int intGetPixel(int x, int y) => this.m[this.width * y + x];
 
-        public Color ColorGetPixel(int x, int y)
-        {
-            return Color.FromArgb(this.M[this.width * y + x]);
-        }
+        public Color ColorGetPixel(int x, int y) => Color.FromArgb(this.m[this.width * y + x]);
 
-        public void SetPixel(int x, int y, int c)
-        {
-            this.M[this.width * y + x] = c;
-        }
+        public void SetPixel(int x, int y, int c) => this.m[this.width * y + x] = c;
 
-        public void SetPixel(int x, int y, Color c)
-        {
-            this.M[this.width * y + x] = c.ToArgb();
-        }
+        public void SetPixel(int x, int y, Color c) => this.m[this.width * y + x] = c.ToArgb();
 
         public void Fill(int c)
         {
-            for (int i = 0; i < this.Sz; ++i)
-                this.M[i] = c;
+            for (int i = 0; i < this.sz; ++i)
+                this.m[i] = c;
         }
 
-        public void Fill(Color c)
-        {
-            Fill(c.ToArgb());
-        }
+        public void Fill(Color c) => Fill(c.ToArgb());
 
         public unsafe void FillRectangle(int c, int x, int y, int w, int h)
         {
@@ -113,7 +80,7 @@ namespace SmartQuant.Charting
                 h += y;
                 y = 0;
             }
-            fixed (int* numPtr1 = this.M)
+            fixed (int* numPtr1 = this.m)
             {
                 int* numPtr2 = numPtr1 + this.width * y + x;
                 int num = y + h;
@@ -128,9 +95,6 @@ namespace SmartQuant.Charting
             }
         }
 
-        public void FillRectangle(Color c, int x, int y, int w, int h)
-        {
-            FillRectangle(c.ToArgb(), x, y, w, h);
-        }
+        public void FillRectangle(Color c, int x, int y, int w, int h) => FillRectangle(c.ToArgb(), x, y, w, h);
     }
 }

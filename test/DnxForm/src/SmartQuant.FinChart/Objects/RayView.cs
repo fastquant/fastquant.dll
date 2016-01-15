@@ -115,9 +115,6 @@ namespace SmartQuant.FinChart.Objects
         {
         }
 
-        public PadRange GetPadRangeY(Pad pad)
-        {
-            return new PadRange(this.ray.Y * 0.999, this.ray.Y * 1.001);
-        }
+        public PadRange GetPadRangeY(Pad pad) => new PadRange(this.ray.Y * 0.999, this.ray.Y * 1.001);
     }
 }

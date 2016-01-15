@@ -9,8 +9,8 @@ namespace SmartQuant.Charting.Draw3D
     {
         private static TMat3x3 ReverseY = new TMat3x3Diagonal(1, -1, 1);
         private static TMat3x3 ExchangeYZ = new TExchangeYZ();
-        private static TMat3x3 ToScreenCoords = TView.ReverseY * TView.ExchangeYZ;
-        public TLight Light = new TLight();
+        private static TMat3x3 ToScreenCoords = ReverseY * ExchangeYZ;
+        public TLight Light { get; set; } = new TLight();
         private double fScaleZ = 1;
         private TMat3x3 m;
         private TMat3x3 ms;
@@ -22,61 +22,19 @@ namespace SmartQuant.Charting.Draw3D
         private int fTop;
         private int fH;
 
-        public int Left
-        {
-            get
-            {
-                return this.fLeft;
-            }
-        }
+        public int Left => this.fLeft;
 
-        public int Top
-        {
-            get
-            {
-                return this.fTop;
-            }
-        }
+        public int Top => this.fTop;
 
-        public int H
-        {
-            get
-            {
-                return this.fH;
-            }
-        }
+        public int H => this.fH;
 
-        public TVec3 o
-        {
-            get
-            {
-                return this.fo;
-            }
-        }
+        public TVec3 O => this.fo;
 
-        public TVec3 Lx
-        {
-            get
-            {
-                return this.fLx;
-            }
-        }
+        public TVec3 Lx => this.fLx;
 
-        public TVec3 Ly
-        {
-            get
-            {
-                return this.fLy;
-            }
-        }
+        public TVec3 Ly => this.fLy;
 
-        public TVec3 Lz
-        {
-            get
-            {
-                return this.fLz;
-            }
-        }
+        public TVec3 Lz => this.fLz;
 
         public double ScaleZ
         {
@@ -97,8 +55,7 @@ namespace SmartQuant.Charting.Draw3D
 
         public static TView View(Pad pad)
         {
-            if (pad.View3D == null)
-                pad.View3D = new TView();
+            pad.View3D = pad.View3D ?? new TView();
             return (TView)pad.View3D;
         }
 
@@ -287,7 +244,7 @@ namespace SmartQuant.Charting.Draw3D
             pad.X2 = left + h;
             pad.Y1 = top;
             pad.Y2 = top + h;
-            this.PaintAxes(pad, left, top, h);
+            PaintAxes(pad, left, top, h);
             pad.Graphics = graphics;
             pad.X1 = x1;
             pad.X2 = x2;
@@ -300,10 +257,10 @@ namespace SmartQuant.Charting.Draw3D
             CalculateAxes(pad, left, top, h);
             var v = new TVec3[]
             {
-                this.o - 0.5 * this.Lx - 0.5 * this.Ly,
-                this.o + 0.5 * this.Lx - 0.5 * this.Ly,
-                this.o + 0.5 * this.Lx + 0.5 * this.Ly,
-                this.o - 0.5 * this.Lx + 0.5 * this.Ly
+                this.O - 0.5 * Lx - 0.5 * Ly,
+                this.O + 0.5 * Lx - 0.5 * Ly,
+                this.O + 0.5 * Lx + 0.5 * Ly,
+                this.O - 0.5 * Lx + 0.5 * Ly
             };
             double num1 = -1.0;
             int num2 = -1;
@@ -351,14 +308,14 @@ namespace SmartQuant.Charting.Draw3D
             };
             var points3 = new Point[]
             {
-                (Point)v[index2],
-                (Point)v[index3],
-                (Point)(v[index3] + this.Lz),
-                (Point)(v[index2] + this.Lz)
+                v[index2],
+                v[index3],
+                v[index3] + Lz,
+                v[index2] + Lz
             };
-            Graphics graphics = pad.Graphics;
+            var graphics = pad.Graphics;
             graphics.Clip = new Region(new Rectangle(pad.X1, pad.Y1, pad.Width + 1, pad.Height + 1));
-            Pen pen = new Pen(Color.Black, 1f);
+            var pen = new Pen(Color.Black, 1f);
             Brush brush = new SolidBrush(Color.White);
             graphics.FillPolygon(brush, points1);
             graphics.FillPolygon(brush, points2);
@@ -370,12 +327,12 @@ namespace SmartQuant.Charting.Draw3D
             pad.AxisX3D.Position = EAxisPosition.Bottom;
             pad.AxisY3D.Position = EAxisPosition.Bottom;
             pad.AxisZ3D.Position = EAxisPosition.Right;
-            this.PaintAxisGridAndTicks(graphics, pad.AxisX3D, true, v[0], v[0] + this.Ly, this.Lx);
-            this.PaintAxisGridAndTicks(graphics, pad.AxisY3D, true, v[0], v[0] + this.Lx, this.Ly);
-            this.PaintAxisGridAndTicks(graphics, pad.AxisX3D, false, v[index2], v[index2] + this.Lz, this.Lx);
-            this.PaintAxisGridAndTicks(graphics, pad.AxisY3D, false, v[index2], v[index2] + this.Lz, this.Ly);
-            this.PaintAxisGridAndTicks(graphics, pad.AxisZ3D, true, v[index2], v[index2] + this.Lx, this.Lz);
-            this.PaintAxisGridAndTicks(graphics, pad.AxisZ3D, true, v[index2], v[index2] + this.Ly, this.Lz);
+            PaintAxisGridAndTicks(graphics, pad.AxisX3D, true, v[0], v[0] + Ly, Lx);
+            PaintAxisGridAndTicks(graphics, pad.AxisY3D, true, v[0], v[0] + Lx, Ly);
+            PaintAxisGridAndTicks(graphics, pad.AxisX3D, false, v[index2], v[index2] + Lz, Lx);
+            PaintAxisGridAndTicks(graphics, pad.AxisY3D, false, v[index2], v[index2] + Lz, Ly);
+            PaintAxisGridAndTicks(graphics, pad.AxisZ3D, true, v[index2], v[index2] + Lx, Lz);
+            PaintAxisGridAndTicks(graphics, pad.AxisZ3D, true, v[index2], v[index2] + Ly, Lz);
         }
     }
 }

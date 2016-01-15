@@ -360,6 +360,33 @@ namespace SmartQuant
             this.stopPrice = this.GetInstrumentPrice();
             OnStopStatusChange(StopStatus.Executed);
         }
+
+        internal void method_6(Ask ask)
+        {
+            if (TraceOnQuote && this.side == PositionSide.Short)
+            {
+                this.currPrice = GetPrice(ask.Price);
+                this.fillPrice = this.currPrice;
+                this.trailPrice = this.currPrice;
+                this.method_1();
+            }
+        }
+
+        private void method_1()
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void method_5(Bid bid)
+        {
+            if (this.traceOnQuote && this.side == PositionSide.Long)
+            {
+                this.currPrice = this.GetPrice(bid.Price);
+                this.fillPrice = this.currPrice;
+                this.trailPrice = this.currPrice;
+                this.method_1();
+            }
+        }
     }
 }
 

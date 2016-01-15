@@ -82,10 +82,7 @@ namespace SmartQuant.FinChart.Objects
             this.lastDate = maxDate;
         }
 
-        public Distance Distance(int x, double y)
-        {
-            return null;
-        }
+        public Distance Distance(int x, double y) => null;
 
         public void Select()
         {
@@ -95,9 +92,6 @@ namespace SmartQuant.FinChart.Objects
         {
         }
 
-        public PadRange GetPadRangeY(Pad pad)
-        {
-            return new PadRange(0, 0);
-        }
+        public PadRange GetPadRangeY(Pad pad) => new PadRange(0, 0);
     }
 }

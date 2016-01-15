@@ -147,10 +147,7 @@ namespace SmartQuant.Charting
                 Console.WriteLine("{0} - [{1} {2} {3}] : {4:F2}", i, GetBinMin(i), GetBinCentre(i), GetBinMax(i), this.fBins[i]);
         }
 
-        public virtual void Draw()
-        {
-            Draw("");
-        }
+        public virtual void Draw() => Draw("");
 
         public virtual void Draw(string option)
         {
@@ -177,9 +174,6 @@ namespace SmartQuant.Charting
             }
         }
 
-        public TDistance Distance(double x, double y)
-        {
-            return null;
-        }
+        public TDistance Distance(double x, double y) => null;
     }
 }

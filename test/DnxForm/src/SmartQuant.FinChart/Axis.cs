@@ -23,6 +23,15 @@ namespace SmartQuant.FinChart
         Centre,
         None
     }
+
+    public interface IAxesMarked
+    {
+        Color Color { get; }
+        double LastValue { get; }
+        bool IsMarkEnable { get; }
+        int LabelDigitsCount { get; }
+    }
+
     public class Axis
     {
         protected Chart chart;

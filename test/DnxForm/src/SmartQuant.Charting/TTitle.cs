@@ -25,6 +25,13 @@ namespace SmartQuant.Charting
             Color = color;
         }
     }
+
+    public enum ETitleStrategy
+    {
+        Smart,
+        None,
+    }
+
     [Serializable]
     public class TTitle
     {
@@ -78,18 +85,9 @@ namespace SmartQuant.Charting
             Y = 0;
         }
 
-        public void Add(string Text, Color Color)
-        {
-            Items.Add(new TTitleItem(Text, Color));
-        }
+        public void Add(string Text, Color Color) => Items.Add(new TTitleItem(Text, Color));
 
-        private string GetText()
-        {
-            string str = Text;
-            foreach (TTitleItem item in Items)
-                str = str + " " + item.Text;
-            return str;
-        }
+        private string GetText() => Text + string.Join(" ", Items.ToArray().Select(i => ((TTitleItem)i).Text));
 
         public void Paint()
         {

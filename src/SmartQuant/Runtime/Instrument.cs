@@ -123,6 +123,10 @@ namespace SmartQuant
         [Category("Display"), DefaultValue("F2"), Description("C# price format string (example: F4 - show four decimal numbers for Forex contracts)")]
         public string PriceFormat { get; set; } = "F2";
 
+        public IDataProvider DataProvider { get; set; }
+
+        public IExecutionProvider ExecutionProvider { get; set; }
+
         public Instrument()
         {
         }
@@ -166,15 +170,15 @@ namespace SmartQuant
             this.v3 = v3;
         }
 
-        internal int GetId() => Id;
-        internal string GetName => Symbol;
+//        internal int GetId() => Id;
+//        internal string GetName() => Symbol;
 
         #endregion
     }
 
     public class InstrumentList : IEnumerable<Instrument>
     {
-        private GetByList<Instrument> list = new GetByList<Instrument>();
+        private GetByList<Instrument> list = new GetByList<Instrument>("Id", "Symbol");
 
         public int Count => this.list.Count;
 
@@ -183,6 +187,8 @@ namespace SmartQuant
         public bool Contains(string symbol) => this.list.Contains(symbol);
 
         public bool Contains(Instrument instrument) => this.list.Contains(instrument);
+
+        public bool Contains(int id) => this.list.Contains(id);
 
         public Instrument Get(string symbol) => this.list.GetByName(symbol);
 

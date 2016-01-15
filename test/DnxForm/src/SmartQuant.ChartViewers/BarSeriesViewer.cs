@@ -33,13 +33,7 @@ namespace SmartQuant.ChartViewers
 
         public int DrawWidth { get; set; }
 
-        public override bool IsZoomable
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool IsZoomable => true;
 
         public BarSeriesViewer()
         {
@@ -56,10 +50,7 @@ namespace SmartQuant.ChartViewers
             BarColor = Color.Black;
         }
 
-        public override PadRange GetPadRangeX(object obj, Pad pad)
-        {
-            return null;
-        }
+        public override PadRange GetPadRangeX(object obj, Pad pad) => null;
 
         public override PadRange GetPadRangeY(object obj, Pad pad)
         {

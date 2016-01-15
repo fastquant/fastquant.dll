@@ -13,9 +13,43 @@ namespace SmartQuant
             this.bus = bus;
         }
 
-        internal void OnProviderStatusChanged(Provider provider)
+        public void OnProviderAdded(IProvider provider)
         {
-            throw new NotImplementedException();
+            OnEvent(new OnProviderAdded(provider));
+        }
+
+        public void OnProviderRemoved(Provider provider)
+        {
+            OnEvent(new OnProviderRemoved(provider));
+        }
+
+        public void OnProviderConnected(Provider provider)
+        {
+            OnEvent(new OnProviderConnected(this.framework.Clock.DateTime, provider));
+        }
+
+        public void OnProviderDisconnected(Provider provider)
+        {
+            OnEvent(new OnProviderDisconnected(this.framework.Clock.DateTime, provider));
+        }
+
+        public void OnProviderError(ProviderError error)
+        {
+            OnEvent(error);
+        }
+
+        public void OnProviderStatusChanged(Provider provider)
+        {
+            switch (provider.Status)
+            {
+                case ProviderStatus.Connected:
+                    OnProviderConnected(provider);
+                    break;
+                case ProviderStatus.Disconnected:
+                    OnProviderDisconnected(provider);
+                    break;
+            }
+            OnEvent(new OnProviderStatusChanged(provider));
         }
 
         internal void OnPortfolioParentChanged(Portfolio portfolio, bool v)
@@ -36,14 +70,16 @@ namespace SmartQuant
 
         public void OnInstrumentDeleted(Instrument instrument) => OnEvent(new OnInstrumentDeleted(instrument));
 
+        public void OnStrategyAdded(Strategy strategy) => OnEvent(new OnStrategyAdded(strategy));
+
         internal void OnPositionChanged(Portfolio portfolio, Position position, bool queued)
         {
             throw new NotImplementedException();
         }
 
-        internal void OnLog(Group group)
+        public void OnLog(Event e)
         {
-            throw new NotImplementedException();
+            OnEvent(e);
         }
 
         internal void OnPositionOpened(Portfolio portfolio, Position position, bool queued)

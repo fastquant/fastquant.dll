@@ -24,13 +24,7 @@ namespace SmartQuant.Charting.Draw3D
         private int n;
         private double lastVal;
 
-        public int nTicks
-        {
-            get
-            {
-                return this.n;
-            }
-        }
+        public int nTicks => this.n;
 
         public TAxisCalc(TVec3 origin, TVec3 end, double valO, double valEnd, int nTicks)
         {
@@ -46,15 +40,9 @@ namespace SmartQuant.Charting.Draw3D
 
         }
 
-        public double TickVal(int i)
-        {
-            return this.ticks[i].Value;
-        }
+        public double TickVal(int i) => this.ticks[i].Value;
 
-        public TVec3 TickPos(int i)
-        {
-            return new TVec3(this.ticks[i].Position);
-        }
+        public TVec3 TickPos(int i) => new TVec3(this.ticks[i].Position);
 
         public bool TickPassed(ref TTick tick, double val)
         {
@@ -118,8 +106,8 @@ namespace SmartQuant.Charting.Draw3D
 
         public struct TTick
         {
-            public double Value;
-            public TVec3 Position;
+            public double Value { get; set; }
+            public TVec3 Position { get; set; }
         }
     }
 }
