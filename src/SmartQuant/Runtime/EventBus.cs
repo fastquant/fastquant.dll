@@ -37,9 +37,9 @@ namespace SmartQuant
 
         internal EventPipe CommandPipe { get; }
         public EventPipe DataPipe { get; }
-        public EventPipe HistoricalPipe { get; }
         public EventPipe ExecutionPipe { get; }
         public EventPipe ServicePipe { get; }
+        public EventPipe HistoricalPipe { get; }
 
         public EventBus(Framework framework)
         {
@@ -60,7 +60,8 @@ namespace SmartQuant
             ServicePipe.Clear();
             HistoricalPipe.Clear();
             ExecutionPipe.Clear();
-            Parallel.ForEach(queues.Take(this.queueCount), queue => queue = null);
+            for (int i = 0; i < this.queueCount; i++)
+                this.queues[i] = null;
             this.queueCount = 0;
         }
 
@@ -71,12 +72,14 @@ namespace SmartQuant
 
         public void Attach(EventBus bus)
         {
-            var q = new EventQueue(EventQueueId.Data, EventQueueType.Master, EventQueuePriority.Normal, 25600, null);
-            q.IsSynched = true;
-            q.Name = $"attached {bus.framework.Name}";
+            var q = new EventQueue(EventQueueId.Data, EventQueueType.Master, EventQueuePriority.Normal, 25600, null)
+            {
+                IsSynched = true,
+                Name = $"attached {bus.framework.Name}"
+            };
             q.Enqueue(new OnQueueOpened(q));
-            this.queues[this.queueCount++] = q;
             bus.DataPipe.Add(q);
+            this.queues[this.queueCount++] = q;
         }
 
         public void Detach(EventBus bus)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,12 +37,13 @@ namespace SmartQuant
         private byte stepEvent = EventType.Bar;
         private volatile bool exiting;
         private Thread thread;
-        private long eventCount;
+
+        private Stopwatch stopwatch_0 = new Stopwatch();
         private delegate void Delegate(Event e);
         private IdArray<Delegate> gates = new IdArray<Delegate>(256);
+        public IdArray<bool> Enabled { get; } = new IdArray<bool>(256);
 
-        public EventManagerStatus Status { get; private set; }
-
+        public EventManagerStatus Status { get; private set; } = EventManagerStatus.Stopped;
         public BarFactory BarFactory { get; set; }
         public BarSliceFactory BarSliceFactory { get; set; }
         public EventDispatcher Dispatcher { get; set; }
@@ -51,7 +53,6 @@ namespace SmartQuant
         public long EventCount { get; private set; }
         public long DataEventCount { get; private set; }
 
-        public IdArray<bool> Enabled { get; } = new IdArray<bool>(256);
         public EventManager(Framework framework, EventBus bus)
         {
             this.framework = framework;
@@ -61,9 +62,11 @@ namespace SmartQuant
             Dispatcher = new EventDispatcher(this.framework);
 
             this.gates[EventType.Bid] = new Delegate(OnBid);
+            this.gates[EventType.OnException] = new Delegate(OnException);
 
             // Enable all events by defaults
-            Parallel.ForEach(Enumerable.Range(0, 255), i => Enabled[i] = true);
+            for (int i = 0; i < byte.MaxValue; i++)
+                Enabled[i] = true;
 
             if (bus != null)
             {
@@ -81,7 +84,7 @@ namespace SmartQuant
             if (disposing)
             {
                 this.exiting = true;
-                //this.thread.Abort();
+                this.thread.Join();
             }
         }
 
@@ -91,12 +94,19 @@ namespace SmartQuant
             GC.SuppressFinalize(this);
         }
 
+        public void Clear()
+        {
+            EventCount = DataEventCount = 0;
+            BarFactory.Clear();
+            BarSliceFactory.Clear();
+        }
+
         // Thread Worker
         private void Run()
         {
             Console.WriteLine($"{DateTime.Now} Event manager thread started: Framework = {this.framework.Name} Clock = {this.framework.Clock.GetModeAsString()}");
             Status = EventManagerStatus.Running;
-            while (exiting)
+            while (this.exiting)
             {
                 if (Status == EventManagerStatus.Running || (Status == EventManagerStatus.Paused && this.stepping))
                     OnEvent(this.bus.Dequeue());
@@ -164,12 +174,6 @@ namespace SmartQuant
             OnEvent(new OnEventManagerStep());
         }
 
-        public void Clear()
-        {
-            EventCount = DataEventCount = 0;
-            BarFactory.Clear();
-            BarSliceFactory.Clear();
-        }
 
         // The entry point of comsumer-side of events, may be recursively called.
         public void OnEvent(Event e)
@@ -219,11 +223,11 @@ namespace SmartQuant
             }
             catch (Exception ex)
             {
-                this.OnEvent(new OnException("EventLogger", e, ex));
+                OnEvent(new OnException("EventLogger", e, ex));
             }
         }
 
-        #region eventhandlers
+        #region EventHandlers
 
         private void OnBid(Event e)
         {
@@ -247,7 +251,14 @@ namespace SmartQuant
             this.framework.ProviderManager.ExecutionSimulator.OnBid(bid);
             this.framework.StrategyManager.OnBid(bid);
         }
-        
+
+        public void OnException(Event e)
+        {
+            var ex = (OnException)e;
+            Console.WriteLine($"EventManager::OnException Exception occured in {ex.Source} - {ex.Event} - {ex.Exception}");
+            this.framework.StrategyManager.method_46(ex.Source, ex.Event, ex.Exception);
+        }
+
         #endregion
 
         private void AdjustClock(Tick tick)

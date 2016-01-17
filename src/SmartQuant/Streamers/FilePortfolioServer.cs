@@ -4,7 +4,7 @@ namespace SmartQuant
 {
     public class FilePortfolioServer : PortfolioServer
     {
-        public FilePortfolioServer(Framework framework, string fileName, string host = null, int port = -1):base(framework)
+        public FilePortfolioServer(Framework framework, string fileName, string host = null, int port = -1) : base(framework)
         {
         }
 

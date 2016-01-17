@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace SmartQuant
@@ -74,6 +75,11 @@ namespace SmartQuant
         private byte routeId;
         private double price;
         private double stopPx;
+        private IExecutionProvider provider;
+        private Portfolio portfolio;
+
+        private Instrument instrument;
+        internal int InstrumentId { get; set; }
 
         public override byte TypeId => DataObjectType.Order;
 
@@ -85,7 +91,18 @@ namespace SmartQuant
 
         public double CumQty { get; }
 
-        public Instrument Instrument { get; set; }
+        public Instrument Instrument
+        {
+            get
+            {
+                return this.instrument;
+            }
+            set
+            {
+                this.instrument = value;
+                InstrumentId = this.instrument?.Id ?? -1;
+            }
+        }
 
 
         public int Id { get; internal set; }
@@ -164,14 +181,13 @@ namespace SmartQuant
             }
         }
 
-
         public OrderStatus Status
         {
             get
             {
                 return this.status;
             }
-            private set
+            internal set
             {
                 this.status = value;
             }
@@ -204,6 +220,41 @@ namespace SmartQuant
                 this.routeId = value;
             }
         }
+
+        public byte ProviderId { get; set; }
+
+        public IExecutionProvider Provider
+        {
+            get
+            {
+                return this.provider;
+            }
+            set
+            {
+                this.provider = value;
+                ProviderId = this.provider?.Id ?? 0;
+            }
+        }
+
+        public int PortfolioId { get; set; }
+
+        [Browsable(false)]
+        public Portfolio Portfolio
+        {
+            get
+            {
+                return this.portfolio;
+            }
+            set
+            {
+                this.portfolio = value;
+                PortfolioId = this.portfolio?.Id ?? -1;
+            }
+        }
+
+        [Category("Message"), Description("Messages")]
+        public List<ExecutionMessage> Messages { get; set; }
+
 
         [Browsable(false)]
         public bool IsFilled => Status == OrderStatus.Filled;
@@ -297,6 +348,16 @@ namespace SmartQuant
                 default:
                     return "Undefined";
             }
+        }
+
+        public void OnExecutionCommand(ExecutionCommand command)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnExecutionReport(ExecutionReport report)
+        {
+            throw new NotImplementedException();
         }
 
         public string GetTypeAsString()

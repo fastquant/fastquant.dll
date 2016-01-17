@@ -2,7 +2,7 @@
 {
     public class FileOrderServer : OrderServer
     {
-        public FileOrderServer(Framework framework) : base(framework)
+        public FileOrderServer(Framework framework, string fileName, string host = null, int port = -1) : base(framework)
         {
         }
     }

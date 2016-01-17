@@ -11,7 +11,7 @@ namespace SmartQuant
     {
         private Framework framework;
         private int counter;
-        private StrategyMode mode;
+        private StrategyMode mode = StrategyMode.Backtest;
         private Dictionary<IDataProvider, InstrumentList> dictionary_0 = new Dictionary<IDataProvider, InstrumentList>();
 
         public Global Global { get; } = new Global();
@@ -292,6 +292,12 @@ namespace SmartQuant
         {
             if (Strategy?.Status == StrategyStatus.Running)
                 Strategy.vmethod_9(bid);
+        }
+
+        internal void method_46(string source, Event e, Exception ex)
+        {
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.vmethod_42(source, e, ex);
         }
 
         internal void method_0(IDataProvider provider, InstrumentList instruments)

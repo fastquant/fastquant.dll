@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System;
+using System.Linq;
 
 namespace SmartQuant
 {
@@ -10,9 +11,9 @@ namespace SmartQuant
         private DataFile dataFile;
         private bool opened;
 
-        private IdArray<IdArray<DataSeries>> idArray_1 = new IdArray<IdArray<DataSeries>>();
-        private IdArray<IdArray<Dictionary<long, DataSeries>>> idArray_2 = new IdArray<IdArray<Dictionary<long, DataSeries>>>();
-        private IdArray<DataSeries>[] idArray_0;
+        private IdArray<IdArray<DataSeries>> byIId_BSize = new IdArray<IdArray<DataSeries>>();
+        private IdArray<IdArray<Dictionary<long, DataSeries>>> byType_IId_BSize = new IdArray<IdArray<Dictionary<long, DataSeries>>>();
+        private IdArray<DataSeries>[] byType;
 
         public FileDataServer(Framework framework, string fileName, string host = null, int port = -1) : base(framework)
         {
@@ -25,9 +26,9 @@ namespace SmartQuant
             if (!this.opened)
             {
                 this.dataFile.Open(FileMode.OpenOrCreate);
-                this.idArray_0 = new IdArray<DataSeries>[128];
-                for (int i = 0; i < this.idArray_0.Length; i++)
-                    this.idArray_0[i] = new IdArray<DataSeries>();
+                this.byType = new IdArray<DataSeries>[128];
+                for (int i = 0; i < this.byType.Length; i++)
+                    this.byType[i] = new IdArray<DataSeries>();
                 this.opened = true;
             }
         }
@@ -48,95 +49,64 @@ namespace SmartQuant
         public override DataSeries GetDataSeries(Instrument instrument, byte type, BarType barType = BarType.Time, long barSize = 60)
         {
             if (type == DataObjectType.Bar)
-            {
-                return this.method_0(instrument, barType, barSize, false);
-            }
-            var dataSeries = this.idArray_0[type][instrument.Id];
-            if (dataSeries == null)
+                return GetBarDataSeriesInCache(instrument, barType, barSize, false);
+
+            var series = this.byType[type][instrument.Id];
+            if (series == null)
             {
                 string name = DataSeriesNameHelper.GetName(instrument, type);
-                dataSeries = (this.dataFile.Get(name) as DataSeries);
-                this.idArray_0[type][instrument.Id] = dataSeries;
+                series = (this.dataFile.Get(name) as DataSeries);
+                this.byType[type][instrument.Id] = series;
             }
-            return dataSeries;
+            return series;
         }
 
         public override List<DataSeries> GetDataSeriesList(Instrument instrument = null, string pattern = null)
         {
-            var list = new List<DataSeries>();
-            foreach (var key in this.dataFile.Keys.Values)
-            {
-                if (key.TypeId == ObjectType.DataSeries  && (instrument == null || !(DataSeriesNameHelper.GetSymbol(key.Name) != instrument.Symbol)) && (pattern == null || key.Name.Contains(pattern)))
-                {
-                    list.Add(GetDataSeries(key.Name));
-                }
-            }
-            return list;
+            var keys = this.dataFile.Keys.Values.TakeWhile(k => k.TypeId == ObjectType.DataSeries && (instrument == null || DataSeriesNameHelper.GetSymbol(k.Name) == instrument.Symbol) && (pattern == null || k.Name.Contains(pattern)));
+            return keys.Select(k => GetDataSeries(k.Name)).ToList();
         }
 
         public override DataSeries AddDataSeries(string name)
         {
-            DataSeries dataSeries = GetDataSeries(name);
-            if (dataSeries == null)
+            var series = GetDataSeries(name);
+            if (series == null)
             {
-                if (this.host == null)
-                {
-                    dataSeries = new DataSeries(name);
-                }
-                else
-                {
-                    throw new NotImplementedException();
-                    //dataSeries = new NetDataSeries(name);
-                }
-                this.dataFile.Write(name, dataSeries);
+                series = CreateDataSeries(name);
+                this.dataFile.Write(name, series);
             }
-            return dataSeries;
+            return series;
         }
 
         public override DataSeries AddDataSeries(Instrument instrument, byte type, BarType barType = BarType.Time, long barSize = 60)
         {
             if (type == DataObjectType.Bar)
-            {
-                return this.method_0(instrument, barType, barSize, true);
-            }
-            DataSeries dataSeries = this.idArray_0[type][instrument.Id];
-            if (dataSeries == null)
+                return GetBarDataSeriesInCache(instrument, barType, barSize, true);
+
+            var series = this.byType[type][instrument.Id];
+            if (series == null)
             {
                 string name = DataSeriesNameHelper.GetName(instrument, type);
-                dataSeries = GetDataSeries(name);
-                if (dataSeries == null)
+                series = GetDataSeries(name);
+                if (series == null)
                 {
-                    if (this.host == null)
-                    {
-                        dataSeries = new DataSeries(name);
-                    }
-                    else
-                    {
-                        throw new NotImplementedException();
-                        //dataSeries = new NetDataSeries(name);
-                    }
-                    this.dataFile.Write(name, dataSeries);
+                    series = CreateDataSeries(name);
+                    this.dataFile.Write(name, series);
                 }
-                this.idArray_0[type][instrument.Id] = dataSeries;
+                this.byType[type][instrument.Id] = series;
             }
-            return dataSeries;
+            return series;
         }
 
         public override void DeleteDataSeries(string name)
         {
-            DataSeries dataSeries = GetDataSeries(name);
-            if (dataSeries != null)
+            var series = GetDataSeries(name);
+            if (series != null)
             {
-                for (int i = 0; i < this.idArray_0.Length; i++)
-                {
-                    for (int j = 0; j < this.idArray_0[i].Size; j++)
-                    {
-                        if (this.idArray_0[i][j] == dataSeries)
-                        {
-                            this.idArray_0[i].Remove(j);
-                        }
-                    }
-                }
+                for (int i = 0; i < this.byType.Length; i++)
+                    for (int j = 0; j < this.byType[i].Size; j++)
+                        if (this.byType[i][j] == series)
+                            this.byType[i].Remove(j);
                 this.dataFile.Delete(name);
             }
         }
@@ -147,32 +117,27 @@ namespace SmartQuant
             if (type == DataObjectType.Bar)
             {
                 var iId = instrument.Id;
-                dataSeries = this.method_0(instrument, barType, barSize, false);
-                if (barType == BarType.Time && barSize <= 86400L)
+                dataSeries = GetBarDataSeriesInCache(instrument, barType, barSize, false);
+                if (barType == BarType.Time && barSize <= TimeSpan.TicksPerDay / TimeSpan.TicksPerSecond)
                 {
-                    DataSeries dataSeries2 = this.idArray_1[iId][(int)barSize] = null;
+                    this.byIId_BSize[iId][(int)barSize] = null;
                 }
                 else
                 {
-                    if (this.idArray_2[(int)type] == null)
-                    {
-                        this.idArray_2[(int)type] = new IdArray<Dictionary<long, DataSeries>>();
-                    }
-                    if (this.idArray_2[(int)type][iId] == null)
-                    {
-                        this.idArray_2[(int)type][iId] = new Dictionary<long, DataSeries>();
-                    }
-                    this.idArray_2[(int)type][iId].Remove(barSize);
+                    this.byType_IId_BSize[type] = this.byType_IId_BSize[type] ?? new IdArray<Dictionary<long, DataSeries>>();
+                    this.byType_IId_BSize[type][iId] = this.byType_IId_BSize[type][iId] ?? new Dictionary<long, DataSeries>();
+                    this.byType_IId_BSize[type][iId].Remove(barSize);
                 }
                 this.dataFile.Delete(DataSeriesNameHelper.GetName(instrument, barType, barSize));
-                return;
             }
-            dataSeries = this.idArray_0[(int)type][instrument.Id];
-            if (dataSeries != null)
+            else
             {
-                this.idArray_0[(int)type].Remove(instrument.Id);
+                dataSeries = this.byType[type][instrument.Id];
+                if (dataSeries != null)
+                    this.byType[type].Remove(instrument.Id);
+                this.dataFile.Delete(DataSeriesNameHelper.GetName(instrument, type));
             }
-            this.dataFile.Delete(DataSeriesNameHelper.GetName(instrument, type));
+
         }
 
         public override void Save(Instrument instrument, DataObject obj, SaveMode option = SaveMode.Add)
@@ -180,61 +145,46 @@ namespace SmartQuant
             throw new NotImplementedException();
         }
 
-        private DataSeries method_0(Instrument instrument_0, BarType barType_0, long long_0, bool bool_1)
+        private DataSeries GetBarDataSeriesInCache(Instrument instrument, BarType barType, long barSize, bool createNotExist)
         {
+            var iId = instrument.Id;
             DataSeries dataSeries;
-            var iId = instrument_0.Id;
-            if (barType_0 == BarType.Time && long_0 <= TimeSpan.TicksPerDay/TimeSpan.TicksPerSecond)
+            if (barType == BarType.Time && barSize <= TimeSpan.TicksPerDay / TimeSpan.TicksPerSecond)
             {
-                if (this.idArray_1[iId] == null)
-                {
-                    this.idArray_1[iId] = new IdArray<DataSeries>();
-                }
-                dataSeries = this.idArray_1[iId][(int)long_0];
+                this.byIId_BSize[iId] = this.byIId_BSize[iId] ?? new IdArray<DataSeries>();
+                dataSeries = this.byIId_BSize[iId][(int)barSize];
             }
             else
             {
-                if (this.idArray_2[(int)barType_0] == null)
-                {
-                    this.idArray_2[(int)barType_0] = new IdArray<Dictionary<long, DataSeries>>(1000);
-                }
-                if (this.idArray_2[(int)barType_0][iId] == null)
-                {
-                    this.idArray_2[(int)barType_0][iId] = new Dictionary<long, DataSeries>();
-                }
-                this.idArray_2[(int)barType_0][iId].TryGetValue(long_0, out dataSeries);
+                this.byType_IId_BSize[(int)barType] = this.byType_IId_BSize[(int)barType] ?? new IdArray<Dictionary<long, DataSeries>>();
+                this.byType_IId_BSize[(int)barType][iId] = this.byType_IId_BSize[(int)barType][iId] ?? new Dictionary<long, DataSeries>();
+                this.byType_IId_BSize[(int)barType][iId].TryGetValue(barSize, out dataSeries);
             }
-            if (dataSeries == null)
+            if (dataSeries != null)
+                return dataSeries;
+
+            string name = DataSeriesNameHelper.GetName(instrument, barType, barSize);
+            dataSeries = GetDataSeries(name);
+            if (dataSeries == null && createNotExist)
             {
-                string name = DataSeriesNameHelper.GetName(instrument_0, barType_0, long_0);
-                dataSeries = GetDataSeries(name);
-                if (dataSeries == null & bool_1)
-                {
-                    if (this.host == null)
-                    {
-                        dataSeries = new DataSeries(name);
-                    }
-                    else
-                    {
-                        throw new NotImplementedException();
-                        //dataSeries = new NetDataSeries(name);
-                    }
-                    this.dataFile.Write(name, dataSeries);
-                    this.dataFile.Flush();
-                }
-                if (dataSeries != null)
-                {
-                    if (barType_0 == BarType.Time && long_0 <= TimeSpan.TicksPerDay/TimeSpan.TicksPerSecond)
-                    {
-                        this.idArray_1[iId][(int)long_0] = dataSeries;
-                    }
-                    else
-                    {
-                        this.idArray_2[(int)barType_0][iId][long_0] = dataSeries;
-                    }
-                }
+                dataSeries = CreateDataSeries(name);
+                this.dataFile.Write(name, dataSeries);
+                this.dataFile.Flush();
             }
+
+            // Save to cache
+            if (barType == BarType.Time && barSize <= TimeSpan.TicksPerDay / TimeSpan.TicksPerSecond)
+                this.byIId_BSize[iId][(int)barSize] = dataSeries;
+            else
+                this.byType_IId_BSize[(int)barType][iId][barSize] = dataSeries;
+
             return dataSeries;
+        }
+
+        private DataSeries CreateDataSeries(string name)
+        {
+            var s = this.host == null ? new DataSeries(name) : new NetDataSeries(name);
+            return s;
         }
     }
 }

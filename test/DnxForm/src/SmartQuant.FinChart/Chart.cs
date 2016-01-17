@@ -263,9 +263,9 @@ namespace SmartQuant.FinChart
             set
             {
                 if (value)
-                    this.ShowVolumePad();
+                    ShowVolumePad();
                 else
-                    this.HideVolumePad();
+                    HideVolumePad();
             }
         }
 
@@ -745,8 +745,8 @@ namespace SmartQuant.FinChart
                 this.scaleStyle = value;
                 this.pads[0].ScaleStyle = value;
                 this.contentUpdated = true;
-                this.Invalidate();
-                this.EmitScaleStyleChanged();
+                Invalidate();
+                EmitScaleStyleChanged();
             }
         }
 
@@ -1081,7 +1081,7 @@ namespace SmartQuant.FinChart
                 }
                 foreach (Pad pad in this.pads)
                 {
-                    if (pad.X1 <= e.X && pad.X2 >= e.X && (pad.Y1 <= e.Y && pad.Y2 >= e.Y))
+                    if (pad.X1 <= e.X && e.X <= pad.X2 && pad.Y1 <= e.Y && e.Y <= pad.Y2)
                         pad.MouseDown(e);
                 }
             }
@@ -1098,7 +1098,7 @@ namespace SmartQuant.FinChart
                     this.padSplit = false;
                 foreach (Pad pad in this.pads)
                 {
-                    if (pad.X1 <= e.X && pad.X2 >= e.X && (pad.Y1 <= e.Y && pad.Y2 >= e.Y))
+                    if (pad.X1 <= e.X && e.X <= pad.X2 && pad.Y1 <= e.Y && e.Y <= pad.Y2)
                         pad.MouseUp(e);
                 }
                 Invalidate();
@@ -1404,7 +1404,7 @@ namespace SmartQuant.FinChart
         }
         #endif
 
-        public void OnItemAdedd(DateTime dateTime)
+        public void OnItemAdded()
         {
             bool flag = false;
             lock (this.lockObject)

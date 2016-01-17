@@ -48,10 +48,10 @@ namespace SmartQuant
 
     public class ObjectKey : IComparable<ObjectKey>
     {
-        private static string LABEL = "OKey";
-        internal static int LABEL_SIZE = 5;
-        internal static int HEADER_SIZE = 37;
-        internal static int EMPTYNAME_KEY_SIZE = HEADER_SIZE + 1;  // 38
+        private const string LABEL = "OKey";
+        internal const int LABEL_SIZE = 5;
+        internal const int HEADER_SIZE = 37;
+        internal const int EMPTYNAME_KEY_SIZE = HEADER_SIZE + 1;  // 38
 
         public ObjectKey()
         {

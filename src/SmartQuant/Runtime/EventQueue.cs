@@ -174,7 +174,7 @@ namespace SmartQuant
         {
             get
             {
-                throw new NotImplementedException("Not implemented in SortedEventQueue");
+                throw new NotImplementedException($"Not implemented in {nameof(SortedEventQueue)}");
             }
         }
 
@@ -182,7 +182,7 @@ namespace SmartQuant
         {
             get
             {
-                throw new NotImplementedException("Not implemented in SortedEventQueue");
+                throw new NotImplementedException($"Not implemented in {nameof(SortedEventQueue)}");
             }
         }
 
@@ -208,19 +208,18 @@ namespace SmartQuant
 
         public Event Read()
         {
-            Event e;
             lock (this)
             {
-                e = this.events[0];
+                var e = this.events[0];
                 if (this.events.Count > 0)
-                    this.dateTime = this.events[0].DateTime;
+                    this.dateTime = e.DateTime;
+                return e;
             }
-            return e;
         }
 
         public void Write(Event e)
         {
-            throw new NotImplementedException("Not implemented in SortedEventQueue");
+            throw new NotImplementedException($"Not implemented in {nameof(SortedEventQueue)}");
         }
 
         public Event Dequeue()

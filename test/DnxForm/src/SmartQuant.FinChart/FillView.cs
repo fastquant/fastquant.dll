@@ -1,10 +1,4 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: SmartQuant.FinChart.FillView
-// Assembly: SmartQuant.FinChart, Version=1.0.5424.18125, Culture=neutral, PublicKeyToken=null
-// MVID: 8A140279-ED2D-4F5A-B7EB-2662861D60C1
-// Assembly location: C:\Program Files\SmartQuant Ltd\OpenQuant 2014\SmartQuant.FinChart.dll
-
-using SmartQuant;
+﻿using SmartQuant;
 using System;
 using System.ComponentModel;
 using System.Drawing;

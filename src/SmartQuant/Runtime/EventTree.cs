@@ -9,28 +9,28 @@ namespace SmartQuant
     {
         public EventTreeItem(IEventQueue queue)
         {
-            this.queue = queue;
-            this.head = this;
+            EventQueue = queue;
+            Head = this;
         }
 
-        internal DateTime dateTime;
+        internal DateTime DateTime { get; set; }
 
-        internal EventTreeItem left;
+        internal EventTreeItem Left { get; set; }
 
-        internal EventTreeItem right;
+        internal EventTreeItem Right { get; set; }
 
-        internal EventTreeItem next;
+        internal EventTreeItem Next { get; set; }
 
-        internal EventTreeItem prev;
+        internal EventTreeItem Prev { get; set; }
 
-        internal EventTreeItem head;
+        internal EventTreeItem Head { get; set; }
 
-        internal IEventQueue queue;
+        internal IEventQueue EventQueue { get; set; }
     }
 
     public class EventTree
     {
-        internal EventTreeItem first;
+        internal EventTreeItem root;
         internal EventTreeItem last;
 
         public void Add(IEventQueue queue)
@@ -39,86 +39,84 @@ namespace SmartQuant
                 throw new Exception($"{nameof(EventTree)}::{nameof(Add)} Can not add queue, the queue is empty : {queue.Name}");
 
             var item = new EventTreeItem(queue);
-            this.method_0(item);
+            Arrange(item);
         }
 
         public void Clear()
         {
-            this.first = this.last = null;
+            this.root = this.last = null;
         }
 
         public bool IsEmpty()
         {
-            if (this.first == null && this.last == null)
-            {
+            if (this.root == null && this.last == null)
                 return true;
-            }
+
             if (this.last == null)
-            {
                 return false;
-            }
-            if (this.last.queue.IsEmpty())
-            {
+
+            if (this.last.EventQueue.IsEmpty())
                 return true;
-            }
-            this.method_0(this.last);
+
+            Arrange(this.last);
             this.last = null;
             return false;
         }
 
-        private void method_0(EventTreeItem item)
+        private void Arrange(EventTreeItem item)
         {
-            if (this.first == null)
+            item.Right = item.Left = item.Next = item.Prev = null;
+            item.Head = item;
+            item.DateTime = item.EventQueue.PeekDateTime();
+
+            if (this.root == null)
             {
-                this.first = item;
+                this.root = item;
                 return;
             }
 
-            item.right = item.left = item.next = item.prev = null;
-            item.head = item;
-            item.dateTime = item.queue.PeekDateTime();
-
-            EventTreeItem current = this.first;
+            EventTreeItem current = this.root;
             EventTreeItem last_current = null;
-            while (current.dateTime != item.dateTime)
+            while (item.DateTime != current.DateTime)
             {
-                if (item.dateTime > current.dateTime)
+                if (item.DateTime > current.DateTime)
                 {
-                    if (current.right == null)
+                    if (current.Right == null)
                     {
-                        current.right = item;
+                        current.Right = item;
                         return;
                     }
                     last_current = current;
-                    current = current.right;
+                    current = current.Right;
                 }
                 else
                 {
-                    if (current.left == null)
+                    if (current.Left == null)
                     {
-                        current.left = item;
+                        current.Left = item;
                         return;
                     }
                     last_current = current;
-                    current = current.left;
+                    current = current.Left;
                 }
             }
 
-            item.prev = current;
-            current.next = item;
-            item.head = current.head;
-            item.right = current.right;
-            item.left = current.left;
+            item.Prev = current;
+            current.Next = item;
+            item.Head = current.Head;
+            item.Right = current.Right;
+            item.Left = current.Left;
+
             if (last_current == null)
             {
-                this.first = item;
+                this.root = item;
                 return;
             }
 
-            if (item.dateTime > last_current.dateTime)
-                last_current.right = item;
+            if (last_current.DateTime < item.DateTime)
+                last_current.Right = item;
             else 
-                last_current.left = item;
+                last_current.Left = item;
         }
 
         public Event Read()
@@ -127,58 +125,48 @@ namespace SmartQuant
                 throw new Exception("EventTree::Read Can not read from a tree with empty queue");
 
             // Move to the last two items
-            EventTreeItem current = this.first;
+            EventTreeItem current = this.root;
             EventTreeItem last_current = null;
-            while (current.left != null)
+            
+            // find the leftmost node
+            while (current.Left != null)
             {
                 last_current = current;
-                current = current.left;
+                current = current.Left;
             }
 
-            if (current.prev != null)
+            if (current.Prev != null)
             {
-                EventTreeItem eventTreeItem_ = current.head;
-                current.head.next.prev = null;
-                current.head = current.head.next;
-                current = eventTreeItem_;
+                var temp = current.Head;
+                current.Head.Next.Prev = null;
+                current.Head = current.Head.Next;
+                current = temp;
             }
             else
             {
                 if (last_current != null)
-                {
-                    last_current.left = current.right;
-                }
+                    last_current.Left = current.Right;
                 else
-                {
-                    this.first = current.right;
-                }
-                current.right = null;
+                    this.root = current.Right;
+                current.Right = null;
             }
 
-            Event @event = current.queue.Read();
-            if (@event.TypeId == EventType.OnQueueClosed)
+            var e = current.EventQueue.Read();
+            if (e.TypeId == EventType.OnQueueClosed)
             {
-                if (this.first == null)
-                {
-                    @event = new OnSimulatorStop();
-                }
+                if (this.root == null)
+                    e = new OnSimulatorStop();
             }
-            else if (current.queue.IsEmpty())
-            {
+            else if (current.EventQueue.IsEmpty())
                 this.last = current;
-            }
             else
-            {
-                this.method_0(current);
-            }
-            return @event;
+                this.Arrange(current);
+            return e;
         }
 
         public void Remove(IEventQueue queue)
         {
             Console.WriteLine("EventTree::Remove is called");
         }
-
     }
-
 }

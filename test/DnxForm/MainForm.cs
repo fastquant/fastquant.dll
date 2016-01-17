@@ -70,7 +70,7 @@ namespace Demo
                 this.chart3.UpdateStyle = ChartUpdateStyle.WholeRange;
                 performance.Updated += (sender, e) =>
                 {
-                    this.chart3.OnItemAdedd(this.portfolio.Performance.EquitySeries.LastDateTime);
+                    this.chart3.OnItemAdded();
                 };
             });
         }

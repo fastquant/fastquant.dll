@@ -719,33 +719,33 @@ namespace SmartQuant.FinChart
         {
             var solidBrush1 = new SolidBrush(TitleColor);
             var solidBrush2 = new SolidBrush(LabelColor);
-            var Pen1 = new Pen(this.titleColor);
-            var Pen2 = new Pen(this.gridColor);
-            var pen1 = new Pen(this.minorGridColor);
-            var pen2 = new Pen(this.minorTicksColor);
-            var pen3 = new Pen(this.majorTicksColor);
-            Pen2.Width = this.gridWidth;
-            Pen2.DashStyle = this.gridDashStyle;
-            pen1.Width = this.minorGridWidth;
-            pen1.DashStyle = this.minorGridDashStyle;
+            var Pen1 = new Pen(TitleColor);
+            var Pen2 = new Pen(GridColor);
+            var pen1 = new Pen(MinorGridColor);
+            var pen2 = new Pen(MinorTicksColor);
+            var pen3 = new Pen(MajorTicksColor);
+            Pen2.Width = GridWidth;
+            Pen2.DashStyle = GridDashStyle;
+            pen1.Width = MinorGridWidth;
+            pen1.DashStyle = MinorGridDashStyle;
             long ticks1 = minDate.Ticks;
             long ticks2 = maxDate.Ticks;
-            DateTime dateTime1 = new DateTime(Math.Max(0L, ticks1));
-            EGridSize egridSize = AxisBottom.CalculateSize((double)(ticks2 - ticks1));
-            long num1 = 0L;
-            long gridDivision = this.GetGridDivision(dateTime1, egridSize);
+            var dateTime1 = new DateTime(Math.Max(0, ticks1));
+            var egridSize = CalculateSize(ticks2 - ticks1);
+            long num1 = 0;
+            long gridDivision = GetGridDivision(dateTime1, egridSize);
             int num2 = 0;
             long num3 = gridDivision;
-            long num4 = 0L;
+            long num4 = 0;
             int num5 = 0;
             long num6 = ticks2;
             int num7 = -1;
             while (num3 < num6)
             {
                 if (num5 != 0)
-                    num3 = AxisBottom.GetNextMajor(num4, egridSize);
+                    num3 = GetNextMajor(num4, egridSize);
                 long num8 = num3;
-                int index = this.chart.MainSeries.GetIndex(new DateTime(num3 - 1L), IndexOption.Next);
+                int index = this.chart.MainSeries.GetIndex(new DateTime(num3 - 1), IndexOption.Next);
                 if (num7 == index)
                 {
                     num4 = num3;
@@ -760,16 +760,16 @@ namespace SmartQuant.FinChart
                         long ticks3 = dateTime2.Ticks;
                         if (ticks3 < num6)
                         {
-                            if (this.gridEnabled)
+                            if (GridEnabled)
                                 this.chart.DrawVerticalGrid(Pen2, ticks3);
-                            if (this.majorTicksEnabled)
+                            if (MajorTicksEnabled)
                                 this.chart.DrawVerticalTick(Pen1, ticks3, -5);
-                            if (this.labelEnabled)
+                            if (LabelEnabled)
                             {
                                 string format;
                                 if (ticks3 % 864000000000L == this.chart.SessionStart.Ticks || ticks3 % 864000000000L == this.chart.SessionEnd.Ticks)
-                                    format = num4 != 0L ? (new DateTime(num4).Year == new DateTime(ticks3).Year ? "MMM dd" : "yyyy MMM dd") : "yyy MMM dd";
-                                else if (num4 == 0L)
+                                    format = num4 != 0 ? (new DateTime(num4).Year == new DateTime(ticks3).Year ? "MMM dd" : "yyyy MMM dd") : "yyy MMM dd";
+                                else if (num4 == 0)
                                 {
                                     format = "yyy MMM dd HH:mm";
                                 }
@@ -780,20 +780,20 @@ namespace SmartQuant.FinChart
                                     format = dateTime3.Year == dateTime4.Year ? (dateTime3.Month == dateTime4.Month ? (dateTime3.Day == dateTime4.Day ? (dateTime3.Minute != dateTime4.Minute || dateTime3.Hour != dateTime4.Hour ? "HH:mm" : "HH:mm:ss") : "MMM dd HH:mm") : "MMM dd HH:mm") : "yyy MMM dd HH:mm";
                                 }
                                 string str = new DateTime(ticks3).ToString(format);
-                                SizeF sizeF = this.chart.Graphics.MeasureString(str, this.labelFont);
+                                SizeF sizeF = this.chart.Graphics.MeasureString(str, LabelFont);
                                 int num9 = (int)sizeF.Width;
                                 int num10 = (int)sizeF.Height;
-                                if (this.labelAlignment == EAxisLabelAlignment.Right)
-                                    this.chart.Graphics.DrawString(str, this.labelFont, (Brush)solidBrush2, (float)this.chart.ClientX(new DateTime(ticks3)), (float)(int)(this.y + (double)this.labelOffset));
-                                if (this.labelAlignment == EAxisLabelAlignment.Left)
-                                    this.chart.Graphics.DrawString(str, this.labelFont, (Brush)solidBrush2, (float)(this.chart.ClientX(new DateTime(ticks3)) - num9), (float)(int)(this.y + (double)this.labelOffset));
-                                if (this.labelAlignment == EAxisLabelAlignment.Centre)
+                                if (LabelAlignment == EAxisLabelAlignment.Right)
+                                    this.chart.Graphics.DrawString(str, this.labelFont, solidBrush2, (float)this.chart.ClientX(new DateTime(ticks3)), (float)(int)(Y + LabelOffset));
+                                if (LabelAlignment == EAxisLabelAlignment.Left)
+                                    this.chart.Graphics.DrawString(str, this.labelFont, solidBrush2, (float)(this.chart.ClientX(new DateTime(ticks3)) - num9), (float)(int)(Y + LabelOffset));
+                                if (LabelAlignment == EAxisLabelAlignment.Centre)
                                 {
                                     int num11 = this.chart.ClientX(new DateTime(ticks3)) - num9 / 2;
-                                    int num12 = (int)(this.y + (double)this.labelOffset);
+                                    int num12 = (int)(Y + LabelOffset);
                                     if (num5 == 0 || num11 - num2 >= 1)
                                     {
-                                        this.chart.Graphics.DrawString(str, this.labelFont, (Brush)solidBrush2, (float)num11, (float)num12);
+                                        this.chart.Graphics.DrawString(str, LabelFont, solidBrush2, num11, num12);
                                         num2 = num11 + num9;
                                     }
                                 }
@@ -815,17 +815,17 @@ namespace SmartQuant.FinChart
             }
             if (!this.titleEnabled)
                 return;
-            int num13 = (int)this.chart.Graphics.MeasureString("Example", this.labelFont).Height;
-            int num14 = (int)this.chart.Graphics.MeasureString(ticks2.ToString("F1"), this.labelFont).Width;
-            double num15 = (double)this.chart.Graphics.MeasureString(this.title, this.titleFont).Height;
-            int num16 = (int)this.chart.Graphics.MeasureString(this.title, this.titleFont).Width;
+            int num13 = (int)this.chart.Graphics.MeasureString("Example", LabelFont).Height;
+            int num14 = (int)this.chart.Graphics.MeasureString(ticks2.ToString("F1"), LabelFont).Width;
+            double num15 = (double)this.chart.Graphics.MeasureString(Title, TitleFont).Height;
+            int num16 = (int)this.chart.Graphics.MeasureString(Title, TitleFont).Width;
             if (this.titlePosition == EAxisTitlePosition.Left)
-                this.chart.Graphics.DrawString(this.title, this.titleFont, (Brush)solidBrush1, (float)(int)this.x1, (float)(int)(this.y + (double)this.labelOffset + (double)num13 + (double)this.titleOffset));
+                this.chart.Graphics.DrawString(Title, TitleFont, solidBrush1, (float)(int)this.x1, (float)(int)(this.y + (double)this.labelOffset + (double)num13 + (double)this.titleOffset));
             if (this.titlePosition == EAxisTitlePosition.Right)
-                this.chart.Graphics.DrawString(this.title, this.titleFont, (Brush)solidBrush1, (float)((int)this.x2 - num16), (float)(int)(this.y + (double)this.labelOffset + (double)num13 + (double)this.titleOffset));
+                this.chart.Graphics.DrawString(Title, TitleFont, solidBrush1, (float)((int)this.x2 - num16), (float)(int)(this.y + (double)this.labelOffset + (double)num13 + (double)this.titleOffset));
             if (this.titlePosition != EAxisTitlePosition.Centre)
                 return;
-            this.chart.Graphics.DrawString(this.title, this.titleFont, (Brush)solidBrush1, (float)(int)(this.x1 + (this.x2 - this.x1 - (double)num16) / 2.0), (float)(int)(this.y + (double)this.labelOffset + (double)num13 + (double)this.titleOffset));
+            this.chart.Graphics.DrawString(Title, TitleFont, solidBrush1, (float)(int)(this.x1 + (this.x2 - this.x1 - (double)num16) / 2.0), (float)(int)(this.y + (double)this.labelOffset + (double)num13 + (double)this.titleOffset));
         }
 
         public static EGridSize CalculateSize(double ticks)

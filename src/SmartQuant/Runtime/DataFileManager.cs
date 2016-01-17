@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) FastQuant Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -26,8 +29,7 @@ namespace SmartQuant
 
         public void Close(string name)
         {
-            DataFile dataFile;
-            this.dataFiles.TryGetValue(name, out dataFile);
+            var dataFile = GetFromCache(name);
             if (dataFile != null)
             {
                 dataFile.Close();
@@ -43,33 +45,37 @@ namespace SmartQuant
 
         public DataFile GetFile(string name, FileMode mode = FileMode.OpenOrCreate)
         {
-            DataFile result;
             lock (this)
             {
-                DataFile dataFile;
-                this.dataFiles.TryGetValue(name, out dataFile);
+                var dataFile = GetFromCache(name);
                 if (dataFile == null)
                 {
-                    Console.WriteLine(DateTime.Now + " Opening file : " + name);
+                    Console.WriteLine($"{DateTime.Now} Opening file : {name}");
                     dataFile = new DataFile(Path.Combine(this.path, name), this.smanager);
                     dataFile.Open(mode);
                     this.dataFiles.Add(name, dataFile);
                 }
-                result = dataFile;
+                return dataFile;
             }
-            return result;
         }
 
         public DataSeries GetSeries(string fileName, string seriesName)
         {
             var file = GetFile(fileName, FileMode.OpenOrCreate);
-            var dataSeries = (DataSeries)file.Get(seriesName);
-            if (dataSeries == null)
+            var series = (DataSeries)file.Get(seriesName);
+            if (series == null)
             {
-                dataSeries = new DataSeries(seriesName);
-                file.Write(seriesName, dataSeries);
+                series = new DataSeries(seriesName);
+                file.Write(seriesName, series);
             }
-            return dataSeries;
+            return series;
+        }
+
+        private DataFile GetFromCache(string name)
+        {
+            DataFile dataFile;
+            this.dataFiles.TryGetValue(name, out dataFile);
+            return dataFile;
         }
     }
 }

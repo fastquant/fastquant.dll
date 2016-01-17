@@ -6,12 +6,28 @@ namespace SmartQuant
     {
         private Framework framework;
         private EventBus bus;
+        private EventQueue queue = new EventQueue();
 
         public EventServer(Framework framework, EventBus bus)
         {
             this.framework = framework;
             this.bus = bus;
         }
+
+        public void Clear()
+        {
+            this.queue?.Clear();
+        }
+
+        public void EmitQueued()
+        {
+            while (!this.queue.IsEmpty())
+                OnEvent(this.queue.Read());
+        }
+
+        public void OnEvent(Event e) => this.framework.EventManager.OnEvent(e);
+
+        public void OnData(DataObject data)=> OnEvent(data);
 
         public void OnProviderAdded(IProvider provider)
         {
@@ -57,11 +73,6 @@ namespace SmartQuant
             throw new NotImplementedException();
         }
 
-        public void OnEvent(Event e)
-        {
-            this.framework.EventManager.OnEvent(e);
-        }
-
         public void OnInstrumentAdded(Instrument instrument) => OnEvent(new OnInstrumentAdded(instrument));
 
         public void OnInstrumentDefinition(InstrumentDefinition definition) => OnEvent(new OnInstrumentDefinition(definition));
@@ -105,11 +116,6 @@ namespace SmartQuant
         public void OnFrameworkCleared(Framework framework)
         {
             OnEvent(new OnFrameworkCleared(framework));
-        }
-
-        public void Clear()
-        {
-            throw new NotImplementedException();
         }
     }
 }

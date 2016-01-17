@@ -36,5 +36,10 @@ namespace SmartQuant
         {
             throw new NotImplementedException();
         }
+
+        public void Replace(Order order, double price, double stopPx, double qty)
+        {
+                throw new NotImplementedException();
+        }
     }
 }

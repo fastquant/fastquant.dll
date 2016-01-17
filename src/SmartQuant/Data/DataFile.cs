@@ -7,11 +7,11 @@ namespace SmartQuant
 {
     public class DataKey : ObjectKey
     {
-        internal static string LABEL = "DKey";
-        private static int LABEL_SIZE = 5;
-        internal static int HEADER_SIZE = 77;
-        internal static int PREV_OFFSET = 61;
-        internal static int NEXT_OFFSET = 69;
+        internal const string LABEL = "DKey";
+        private const int LABEL_SIZE = 5;
+        internal const int HEADER_SIZE = 77;
+        internal const int PREV_OFFSET = 61;
+        internal const int NEXT_OFFSET = 69;
 
         public DataKey(DataFile dataFile, object obj = null, long prev = -1, long next = -1) : base(dataFile, "", obj)
         {
@@ -28,6 +28,7 @@ namespace SmartQuant
                 Console.WriteLine("DataKey::Add Can not add object. Buffer is full.");
                 return;
             }
+
             if (this.objs == null)
                 this.objs = new DataObject[this.capcity];
 
@@ -49,26 +50,18 @@ namespace SmartQuant
                 {
                     this.objs[index] = this.objs[index - 1];
                     if (obj.DateTime >= this.objs[index].DateTime)
-                    {
                         break;
-                    }
                     if (index == 1)
-                    {
                         break;
-                    }
                     index--;
                 }
                 this.objs[index - 1] = obj;
                 if (index == 1)
-                {
                     this.dateTime1 = obj.DateTime;
-                }
                 this.count++;
             }
             if (this.count > 1)
-            {
                 this.index2 += 1;
-            }
             this.changed = true;
         }
 
@@ -78,32 +71,28 @@ namespace SmartQuant
             this.changed = true;
         }
 
-        public void Remove(long long_5)
+        public void Remove(long index)
         {
             if (this.objs == null)
                 LoadDataObjects();
 
-            for (long num = long_5; num < (long)(this.count - 1); num += 1)
+            for (long i = index; i < this.count - 1; i++)
             {
                 checked
                 {
-                    this.objs[(int)((IntPtr)num)] = this.objs[(int)((IntPtr)(unchecked(num + 1L)))];
+                    this.objs[(int)((IntPtr)i)] = this.objs[(int)((IntPtr)(unchecked(i + 1)))];
                 }
             }
             this.count--;
             this.changed = true;
             if (this.count == 0)
-            {
                 return;
-            }
-            if (long_5 == 0)
-            {
+
+            if (index == 0)
                 this.dateTime1 = this.objs[0].DateTime;
-            }
-            if (long_5 == (long)this.count)
-            {
+
+            if (index == this.count)
                 this.dateTime2 = this.objs[this.count - 1].DateTime;
-            }
         }
 
         public DataObject[] LoadDataObjects()
@@ -113,26 +102,30 @@ namespace SmartQuant
 
             this.objs = new DataObject[this.capcity];
             if (this.contentSize == -1)
-            {
                 return this.objs;
+
+            using (var input = new MemoryStream(ReadObjectData(true)))
+            {
+                using (var reader = new BinaryReader(input))
+                {
+                    for (int i = 0; i < this.count; i++)
+                        this.objs[i] = (DataObject)this.dataFile.StreamerManager.Deserialize(reader);
+                    return this.objs;
+                }
             }
-            var input = new MemoryStream(ReadObjectData(true));
-            var reader = new BinaryReader(input);
-            for (int i = 0; i < this.count; i++)
-                this.objs[i] = (DataObject)this.dataFile.StreamerManager.Deserialize(reader);
-            return this.objs;
         }
 
         public DataObject Get(int index)
         {
-            return LoadDataObjects()[index];
+            if (this.objs == null)
+                LoadDataObjects();
+            return this.objs[index];
         }
 
         public DataObject Get(DateTime dateTime)
         {
             if (this.objs == null)
                 LoadDataObjects();
-
             return this.objs.FirstOrDefault(d => d.DateTime >= dateTime);
         }
 
@@ -150,17 +143,9 @@ namespace SmartQuant
                         case SearchOption.Next:
                             return i;
                         case SearchOption.Prev:
-                            if (this.objs[i].DateTime == dateTime)
-                            {
-                                return i;
-                            }
-                            return i - 1;
+                            return this.objs[i].DateTime == dateTime ? i : i - 1;
                         case SearchOption.ExactFirst:
-                            if (this.objs[i].DateTime != dateTime)
-                            {
-                                return -1;
-                            }
-                            return i;
+                            return this.objs[i].DateTime != dateTime ? -1 : i;
                         default:
                             Console.WriteLine($"DataKey::GetIndex Unknown search option: {option}");
                             break;
@@ -220,10 +205,12 @@ namespace SmartQuant
             var mstream = new MemoryStream();
             var writer = new BinaryWriter(mstream);
             var smanager = this.dataFile.StreamerManager;
+
             byte typeId = this.objs[0].TypeId;
             var streamer = smanager.Get(typeId);
             for (int i = 0; i < this.count; i++)
             {
+                // don't search for streamer if not needed
                 if (this.objs[i].TypeId != typeId)
                 {
                     typeId = this.objs[i].TypeId;
@@ -361,26 +348,25 @@ namespace SmartQuant
             {
                 this.label = reader.ReadString();
                 if (!this.label.StartsWith("FK"))
-                {
                     Console.WriteLine($"FreeKey::ReadKey This is not FreeKey! version = {this.label}");
-                }
             }
             this.position = reader.ReadInt64();
             this.size = reader.ReadInt32();
         }
 
-        internal DataFile dataFile;
+        private DataFile dataFile;
 
         internal int size = -1;
 
         internal long position = -1;
 
-        internal string label = "FK01";
+        private string label = "FK01";
     }
 
     public class DataFile
     {
         private static int HEAD_SIZE = 62;
+
         public StreamerManager StreamerManager { get; }
 
         public DataFile(string name, StreamerManager streamerManager)
@@ -389,6 +375,66 @@ namespace SmartQuant
             StreamerManager = streamerManager;
             this.mstream = new MemoryStream();
             this.writer = new BinaryWriter(this.mstream);
+        }
+
+        ~DataFile()
+        {
+            Dispose(false);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (this.disposed)
+                return;
+            if (disposing)
+                Close();
+            this.disposed = true;
+        }
+
+        public void Dispose()
+        {
+            Console.WriteLine("DataFile::Dispose");
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        public virtual void Open(FileMode mode = FileMode.OpenOrCreate)
+        {
+            if (mode != FileMode.OpenOrCreate && mode != FileMode.Create)
+            {
+                Console.WriteLine($"DataFile::Open Can not open file in {mode} mode. DataFile suppports FileMode.OpenOrCreate and FileMode.Create modes.");
+                return;
+            }
+            if (this.opened)
+            {
+                Console.WriteLine($"DataFile::Open File is already open: {this.name}");
+                return;
+            }
+
+            this.mode = mode;
+            if (!OpenFileStream(this.name, mode))
+            {
+                // when it is empty
+                this.headSize = HEAD_SIZE;
+                this.newKeyPosition = HEAD_SIZE;
+                Reset();
+            }
+            else
+            {
+                if (!ReadHeader())
+                {
+                    Console.WriteLine($"DataFile::Open Error opening file {this.name}");
+                    return;
+                }
+                if (this.oKeysKeyPosition == -1 || this.fKeysKeyPosition == -1)
+                {
+                    Console.WriteLine("DataFile::Open The file was not properly closed and needs to be recovered!");
+                    Recover();
+                }
+                ReadKeys();
+                ReadFree();
+            }
+            this.opened = true;
         }
 
         public virtual void Close()
@@ -401,16 +447,17 @@ namespace SmartQuant
             Flush();
             CloseFileStream();
             this.opened = false;
+       }
+
+       protected virtual bool OpenFileStream(string name, FileMode mode)
+        {
+            this.stream = new FileStream(name, mode);
+            return this.stream.Length != 0;
         }
 
         protected virtual void CloseFileStream()
         {
-#if DNXCORE50
-            this.stream.Flush();
             this.stream.Dispose();
-#else
-            this.stream.Close();
-#endif
         }
 
         public virtual void Delete(string name)
@@ -418,16 +465,7 @@ namespace SmartQuant
             ObjectKey key;
             Keys.TryGetValue(name, out key);
             if (key != null)
-            {
                 DeleteObjectKey(key, true, true);
-            }
-        }
-
-        public void Dispose()
-        {
-            Console.WriteLine("DataFile::Dispose");
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         public void Dump()
@@ -445,11 +483,6 @@ namespace SmartQuant
             }
         }
 
-        ~DataFile()
-        {
-            Dispose(false);
-        }
-
         public virtual void Flush()
         {
             if (!this.opened)
@@ -457,6 +490,7 @@ namespace SmartQuant
                 Console.WriteLine($"DataFile::Flush Can not flush file which is not open {this.name}");
                 return;
             }
+
             if (this.changed)
             {
                 foreach (var k in Keys.Values)
@@ -465,13 +499,11 @@ namespace SmartQuant
                     {
                         var dataSeries = (DataSeries)k.obj;
                         if (dataSeries.changed)
-                        {
                             dataSeries.Flush();
-                        }
                     }
                 }
-                this.SaveOKeys();
-                this.SaveFKeys();
+                SaveOKeys();
+                SaveFKeys();
                 WriteHeader();
                 this.stream.Flush();
             }
@@ -538,15 +570,6 @@ namespace SmartQuant
                     WriteBuffer(buf, 0, buf.Length);
                 }
             }
-        }
-
-        private void Dispose(bool disposing)
-        {
-            if (this.disposed)
-                return;
-            if (disposing)
-                Close();
-            this.disposed = true;
         }
 
         internal void Reset()
@@ -630,7 +653,7 @@ namespace SmartQuant
             key.Write(this.writer);
             if (key.position != -1)
             {
-                if (this.mstream.Length > (long)key.totalSize)
+                if (this.mstream.Length > key.totalSize)
                 {
                     DeleteObjectKey(key, false, true);
                     key.totalSize = (int)this.mstream.Length;
@@ -689,51 +712,6 @@ namespace SmartQuant
             this.fKeysKeySize = this.fKeysKey.headSize + this.fKeysKey.contentSize;
         }
 
-        public virtual void Open(FileMode mode = FileMode.OpenOrCreate)
-        {
-            if (mode != FileMode.OpenOrCreate && mode != FileMode.Create)
-            {
-                Console.WriteLine($"DataFile::Open Can not open file in {mode} mode. DataFile suppports FileMode.OpenOrCreate and FileMode.Create modes.");
-                return;
-            }
-            if (this.opened)
-            {
-                Console.WriteLine($"DataFile::Open File is already open: {this.name}");
-                return;
-            }
-
-            this.mode = mode;
-            if (!OpenFileStream(this.name, mode))
-            {
-                // when it is empty
-                this.headSize = HEAD_SIZE;
-                this.newKeyPosition = HEAD_SIZE;
-                Reset();
-            }
-            else
-            {
-                if (!ReadHeader())
-                {
-                    Console.WriteLine($"DataFile::Open Error opening file {this.name}");
-                    return;
-                }
-                if (this.oKeysKeyPosition == -1 || this.fKeysKeyPosition == -1)
-                {
-                    Console.WriteLine("DataFile::Open The file was not properly closed and needs to be recovered!");
-                    Recover();
-                }
-                ReadKeys();
-                ReadFree();
-            }
-            this.opened = true;
-        }
-
-        protected virtual bool OpenFileStream(string name, FileMode mode)
-        {
-            this.stream = new FileStream(name, mode);
-            return this.stream.Length != 0;
-        }
-
         protected internal virtual void ReadBuffer(byte[] buffer, long position, int length)
         {
             lock (this)
@@ -750,9 +728,7 @@ namespace SmartQuant
                 this.stream.Seek(position, SeekOrigin.Begin);
                 this.stream.Write(buffer, 0, length);
                 if (!this.changed)
-                {
                     Reset();
-                }
             }
         }
 
@@ -877,6 +853,8 @@ namespace SmartQuant
 
         public Dictionary<string, ObjectKey> Keys { get; private set; } = new Dictionary<string, ObjectKey>();
 
+        private List<FreeKey> freeKeys = new List<FreeKey>();
+
         private BinaryWriter writer;
 
         private bool opened;
@@ -896,8 +874,6 @@ namespace SmartQuant
         private int oKeysCount;
 
         private int fKeysCount;
-
-        private List<FreeKey> freeKeys = new List<FreeKey>();
 
         private long headSize;
 

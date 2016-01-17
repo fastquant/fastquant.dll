@@ -89,7 +89,7 @@ namespace SmartQuant
                 if (this.type == ClockType.Exchange)
                     return this.dateTime;
 
-                if (Mode == ClockMode.Simulation)
+                if (this.mode == ClockMode.Simulation)
                     return this.dateTime;
 
                 if (Resolution == ClockResolution.Normal)
@@ -110,7 +110,7 @@ namespace SmartQuant
                 }
                 else
                 {
-                    if (Mode != ClockMode.Simulation)
+                    if (this.mode != ClockMode.Simulation)
                     {
                         Console.WriteLine("Clock::DateTime Can not set dateTime because Clock is not in the Simulation mode");
                         return;
@@ -124,12 +124,13 @@ namespace SmartQuant
                         }
                         if (this.isStandalone)
                         {
-                            while (!ReminderEventQueue.IsEmpty() && ReminderEventQueue.PeekDateTime() < value)
-                            {
-                                var reminder = (Reminder)ReminderEventQueue.Read();
-                                this.dateTime = reminder.DateTime;
-                                reminder.Execute();
-                            }
+                            throw new NotImplementedException();
+                            //while (!ReminderEventQueue.IsEmpty() && ReminderEventQueue.PeekDateTime() < value)
+                            //{
+                            //    var reminder = (Reminder)ReminderEventQueue.Read();
+                            //    this.dateTime = reminder.DateTime;
+                            //    reminder.Execute();
+                            //}
                         }
                         this.dateTime = value;
                     }
@@ -141,7 +142,7 @@ namespace SmartQuant
         {
             get
             {
-                if (Mode == ClockMode.Simulation)
+                if (this.mode == ClockMode.Simulation)
                     return DateTime.Ticks;
 
                 if (Resolution == ClockResolution.Normal)
@@ -157,15 +158,52 @@ namespace SmartQuant
             this.type = type;
             this.isStandalone = isStandalone;
             this.dateTime = DateTime.MinValue;
-            Mode = this.framework.Mode == FrameworkMode.Realtime ? ClockMode.Realtime : ClockMode.Simulation;
+            this.mode = this.framework.Mode == FrameworkMode.Realtime ? ClockMode.Realtime : ClockMode.Simulation;
             this.initTicks = DateTime.Now.Ticks;
             this.stopwatch = Stopwatch.StartNew();
             if (this.isStandalone)
             {
-                this.thread = new Thread(new ThreadStart(Run));
-                this.thread.Name = "Clock Thread";
-                this.thread.IsBackground = true;
-                this.thread.Start();
+                throw new NotImplementedException("don't know when to use it");
+                //this.thread = new Thread(() => {
+                //    Console.WriteLine($"{DateTime.Now} Clock thread started");
+                //    bool imminent = false;
+                //    while (true)
+                //    {
+                //        if (Mode == ClockMode.Realtime)
+                //        {
+                //            if (!ReminderEventQueue.IsEmpty())
+                //            {
+                //                long ticks1 = ReminderEventQueue.PeekDateTime().Ticks;
+                //                long ticks2 = this.framework.Clock.Ticks;
+                //                if (ticks1 <= ticks2)
+                //                {
+                //                    ((Reminder)ReminderEventQueue.Read()).Execute();
+                //                }
+                //                else if (ticks1 - ticks2 < 15000)
+                //                {
+                //                    imminent = true;
+                //                }
+                //            }
+                //            if (imminent)
+                //            {
+                //                Thread.Sleep(0);
+                //                //Thread.SpinWait(1);Thread.Sleep(1);
+                //                //System.Threading.Tasks.Task.Delay(3000).Wait()
+                //            }
+                //            else
+                //            {
+                //                Thread.Sleep(1);
+                //            }
+                //        }
+                //        else
+                //        {
+                //            Thread.Sleep(10);
+                //        }
+                //    }
+                //});
+                //this.thread.Name = "Clock Thread";
+                //this.thread.IsBackground = true;
+                //this.thread.Start();
             }
         }
 
@@ -203,44 +241,5 @@ namespace SmartQuant
         }
 
         public string GetModeAsString() => this.mode == ClockMode.Realtime ? "Realtime" : this.mode == ClockMode.Simulation ? "Simulation" : "Undefined";
-
-        private void Run()
-        {
-            Console.WriteLine($"{DateTime.Now} Clock thread started");
-            bool imminent = false;
-            while (true)
-            {
-                if (Mode == ClockMode.Realtime)
-                {
-                    if (!ReminderEventQueue.IsEmpty())
-                    {
-                        long ticks1 = ReminderEventQueue.PeekDateTime().Ticks;
-                        long ticks2 = this.framework.Clock.Ticks;
-                        if (ticks1 <= ticks2)
-                        {
-                            ((Reminder)ReminderEventQueue.Read()).Execute();
-                        }
-                        else if (ticks1 - ticks2 < 15000)
-                        {
-                            imminent = true;
-                        }
-                    }
-                    if (imminent)
-                    {
-                        Thread.Sleep(0);
-                        //Thread.SpinWait(1);Thread.Sleep(1);
-                        //System.Threading.Tasks.Task.Delay(3000).Wait()
-                    }
-                    else
-                    {
-                        Thread.Sleep(1);
-                    }
-                }
-                else
-                {
-                    Thread.Sleep(10);
-                }
-            }
-        }
     }
 }

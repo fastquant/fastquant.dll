@@ -174,18 +174,18 @@ namespace Demo
         public override void Run()
         {
             Instrument instrument1 = InstrumentManager.Instruments["AAPL"];
-            Instrument instrument2 = InstrumentManager.Instruments["MSFT"];
-            InstrumentManager.Dump();
+            //Instrument instrument2 = InstrumentManager.Instruments["MSFT"];
+
             strategy = new MyStrategy(framework, "BollingerBands");
 
             strategy.AddInstrument(instrument1);
-            strategy.AddInstrument(instrument2);
+            //strategy.AddInstrument(instrument2);
 
             DataSimulator.DateTime1 = new DateTime(2013, 01, 01);
             DataSimulator.DateTime2 = new DateTime(2013, 12, 31);
 
             BarFactory.Add(instrument1, BarType.Time, barSize);
-            BarFactory.Add(instrument2, BarType.Time, barSize);
+            //BarFactory.Add(instrument2, BarType.Time, barSize);
 
             StartStrategy();
         }

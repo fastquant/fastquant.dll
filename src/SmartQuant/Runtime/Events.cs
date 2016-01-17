@@ -5,17 +5,17 @@ namespace SmartQuant
 {
     public class OnException : Event
     {
-        private Event ev;
-        private Exception exception;
-        private string source;
-
         public override byte TypeId => EventType.OnException;
+
+        internal Event Event { get; }
+        internal Exception Exception { get; }
+        internal string Source { get; }
 
         public OnException(string source, Event ev, Exception exception)
         {
-            this.source = source;
-            this.ev = ev;
-            this.exception = exception;
+            Source = source;
+            Event = ev;
+            Exception = exception;
         }
     }
 
@@ -135,8 +135,8 @@ namespace SmartQuant
 
     public class OnPositionOpened : Event
     {
-        internal Portfolio Portfolio { get; }
-        internal Position Position { get; }
+        public Portfolio Portfolio { get; }
+        public Position Position { get; }
 
         public override byte TypeId => EventType.OnPositionOpened;
 
@@ -151,8 +151,8 @@ namespace SmartQuant
 
     public class OnPositionClosed : Event
     {
-        internal Portfolio Portfolio { get; }
-        internal Position Position { get; }
+        public Portfolio Portfolio { get; }
+        public Position Position { get; }
 
         public override byte TypeId => EventType.OnPositionClosed;
 
@@ -167,8 +167,8 @@ namespace SmartQuant
 
     public class OnPositionChanged : Event
     {
-        internal Portfolio Portfolio { get; }
-        internal Position Position { get; }
+        public Portfolio Portfolio { get; }
+        public Position Position { get; }
 
         public override byte TypeId => EventType.OnPositionChanged;
 
@@ -323,7 +323,6 @@ namespace SmartQuant
         }
     }
 
-
     public class OnPortfolioRemoved : Event
     {
         public Portfolio Portfolio { get; private set; }
@@ -335,6 +334,20 @@ namespace SmartQuant
             Portfolio = portfolio;
         }
     }
+
+    public class OnPortfolioParentChanged : Event
+    {
+        public OnPortfolioParentChanged(Portfolio portfolio)
+        {
+            Portfolio = portfolio;
+        }
+
+        public Portfolio Portfolio { get; }
+
+        public override byte TypeId => EventType.OnPortfolioParentChanged;
+
+    }
+
 
     public class OnProviderAdded : Event
     {

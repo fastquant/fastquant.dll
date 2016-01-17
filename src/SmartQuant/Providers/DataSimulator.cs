@@ -6,9 +6,10 @@ namespace SmartQuant
 {
     public class DataSimulator : Provider, IDataSimulator
     {
-        private volatile bool exit;
-        private volatile bool running;
+        private bool exit;
+        private bool running;
         private long objCount;
+        private Thread thread;
 
         public BarFilter BarFilter { get; } = new BarFilter();
 
@@ -99,7 +100,7 @@ namespace SmartQuant
 
         public void Run()
         {
-            new Thread(() =>
+            this.thread = new Thread(() =>
             {
                 Console.WriteLine($"{DateTime.Now} Data simulator thread started");
                 if (!IsConnected)
@@ -150,7 +151,8 @@ namespace SmartQuant
             {
                 Name = "Data Simulator Thread",
                 IsBackground = true
-            }.Start();
+            };
+            this.thread.Start();
         }
 
         public override void Subscribe(InstrumentList instruments)
@@ -269,7 +271,6 @@ namespace SmartQuant
         //{
         //    if (this.dataQueue.IsFull())
         //        return false;
-
         //    DataObject obj;
         //    while (this.queue.IsEmpty())
         //    {
@@ -301,26 +302,42 @@ namespace SmartQuant
         //    goto IL_B3;
         //}
 
+
         internal bool Emit()
         {
             if (this.dataQueue.IsFull())
                 return false;
 
-            DataObject obj =null;
-            if (!this.queue.IsEmpty())
-                obj = (DataObject)this.queue.Read();
-            if (obj==null && this.current > this.index2)
+            DataObject obj;
+            while (this.queue.IsEmpty())
             {
-                Done = true;
-                return false;
-            }
-            this.obj = this.series[this.current];
-            this.obj = this.processor.Process(this);
-            this.current += 1;
-            this.long_3 += 1;
+                if (this.obj != null)
+                {
+                    obj = this.obj;
+                    this.obj = null;
 
-            obj = this.obj;
-            this.obj = null;
+                    this.dataQueue.Write(obj);
+                    if (this.long_3 == this.count)
+                    {
+                        this.count += this.step;
+                        this.percent++;
+                        this.dataQueue.Enqueue(new OnSimulatorProgress(this.count, this.percent));
+                    }
+                    return true;
+                }
+                if (this.current > this.index2)
+                {
+                    Done = true;
+                    return false;
+                }
+                this.obj = this.series[this.current];
+                this.obj = this.processor.Process(this);
+                this.current++;
+                this.long_3++;
+            }
+
+            obj = (DataObject)this.queue.Read();
+
             this.dataQueue.Write(obj);
             if (this.long_3 == this.count)
             {
@@ -330,7 +347,6 @@ namespace SmartQuant
             }
             return true;
         }
-
 
         internal bool Done { get; set; }
 

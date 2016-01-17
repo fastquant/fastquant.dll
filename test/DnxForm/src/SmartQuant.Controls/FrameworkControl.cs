@@ -1,10 +1,8 @@
-﻿// Licensed under the Apache License, Version 2.0. 
-// Copyright (c) Alex Lee. All rights reserved.
-
-using System;
+﻿using System;
 using SmartQuant;
 using System.ComponentModel;
 using System.Collections.Generic;
+using System.Globalization;
 
 #if GTK
 using Compatibility.Gtk;
@@ -18,11 +16,13 @@ namespace SmartQuant.Controls
     {
         protected internal void SetValue(string key, string value) => this[key] = value;
 
-        protected internal void SetEnumValue<T>(string key, T value) where T : struct => SetValue(key, value.ToString());
-
         protected internal void SetValue(string key, bool value) => SetValue(key, value.ToString());
 
         protected internal void SetValue(string key, byte value) => SetValue(key, value.ToString());
+
+        protected internal void SetValue(string key, double value) => SetValue(key, value.ToString(CultureInfo.InvariantCulture));
+
+        protected internal void SetEnumValue<T>(string key, T value) where T : struct => SetValue(key, value.ToString());
 
         protected internal string GetStringValue(string key, string defaultValue)
         {
@@ -47,6 +47,13 @@ namespace SmartQuant.Controls
             byte result;
             return byte.TryParse(GetStringValue(key, defaultValue.ToString()), out result) ? result : defaultValue;
         }
+
+        protected internal double GetDoubleValue(string key, double defaultValue)
+        {
+            string stringValue = GetStringValue(key, defaultValue.ToString(CultureInfo.InvariantCulture));
+            double result;
+            return double.TryParse(stringValue, NumberStyles.None, CultureInfo.InvariantCulture, out result) ? result : defaultValue;
+        }
     }
 
     public class ShowPropertiesEventArgs : EventArgs
@@ -63,7 +70,7 @@ namespace SmartQuant.Controls
     public class FrameworkControl : NoPaintUserControl
 #else
     public class FrameworkControl : UserControl
-    #endif
+#endif
     {
         protected Framework framework;
         protected ControlSettings settings;
@@ -75,7 +82,7 @@ namespace SmartQuant.Controls
 
         public event EventHandler<ShowPropertiesEventArgs> ShowProperties;
 
-        protected FrameworkControl() : base()
+        protected FrameworkControl()
         {
         }
 
@@ -122,8 +129,7 @@ namespace SmartQuant.Controls
 
         protected void OnShowProperties(bool focus)
         {
-            if (ShowProperties != null)
-                ShowProperties(this, new ShowPropertiesEventArgs(focus));
+            ShowProperties?.Invoke(this, new ShowPropertiesEventArgs(focus));
         }
 
         protected void InvokeAction(Action action)

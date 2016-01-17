@@ -8,6 +8,8 @@ namespace SmartQuant
 
         public PortfolioServer Server { get; set; }
 
+        public Portfolio this[string name] => Portfolios[name];
+
         public PortfolioManager(Framework framework, PortfolioServer portfolioServer)
         {
             this.framework = framework;
@@ -44,6 +46,16 @@ namespace SmartQuant
                 Console.WriteLine($"PortfolioManager::Load Can not load portfolio {name } Server is null.");
                 return null;
             }
+        }
+
+        public void Add(Portfolio portfolio, bool emitEvent = true)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Remove(string name)
+        {
+            throw new NotImplementedException();
         }
     }
 }

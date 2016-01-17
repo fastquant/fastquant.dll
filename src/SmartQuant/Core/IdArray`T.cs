@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using System.Threading.Tasks;
 
 namespace SmartQuant
 {
@@ -36,7 +35,8 @@ namespace SmartQuant
 
         public void Clear()
         {
-            Parallel.ForEach(this.array, elem => elem = default(T));
+            for (int i = 0; i < this.array.Length; i++)
+                this.array[i] = default(T);
         }
 
         public void Add(int id, T value)
@@ -52,7 +52,7 @@ namespace SmartQuant
 
         private void Resize(int id)
         {
-            Console.WriteLine("IdArray::Resize index = {0}", id);
+            Console.WriteLine($"IdArray::Resize index = {id}");
             var length = id + this.reserved;
             Array.Resize(ref this.array, length);
             this.size = length;
@@ -60,7 +60,8 @@ namespace SmartQuant
 
         public void CopyTo(IdArray<T> array)
         {
-            Parallel.For(0, array.Size, i => array[i] = i > Size - 1 ? default(T) : this.array[i]);
+            for (int i = 0; i < array.Size; i++)
+                array[i] = i < Size ? this.array[i] : default(T);
         }
 
         private void EnsureSize(int id)

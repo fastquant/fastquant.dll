@@ -44,24 +44,23 @@ namespace SmartQuant.FinChart
             }
             set
             {
-                this.Disconnect();
+                Disconnect();
                 this.chart = value;
-                this.Connect();
-                this.ChangeActionType();
-                this.ChangeBarSeriesStyle();
-                this.ChangeUpdateStyle();
-                this.ChangeVolumeVisible();
-                this.ChangeScaleStyle();
+                Connect();
+                ChangeActionType();
+                ChangeBarSeriesStyle();
+                ChangeUpdateStyle();
+                ChangeVolumeVisible();
+                ChangeScaleStyle();
             }
         }
 
         public ToolBar()
         {
-            this.InitializeComponent();
+            InitializeComponent();
         }
 
-        public ToolBar(Chart chart)
-            : this()
+        public ToolBar(Chart chart) : this()
         {
             this.Chart = chart;
         }
@@ -75,8 +74,8 @@ namespace SmartQuant.FinChart
 
         private void InitializeComponent()
         {
-            this.components = (IContainer)new Container();
-            ResourceManager resourceManager = new ResourceManager(typeof(ToolBar));
+            this.components = new Container();
+            var resourceManager = new ResourceManager(typeof(ToolBar));
             this.chartToolBar = new System.Windows.Forms.ToolBar();
             this.btnCursor = new ToolBarButton();
             this.btnCrosshair = new ToolBarButton();

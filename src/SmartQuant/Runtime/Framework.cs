@@ -2,9 +2,11 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Threading;
+using System.Linq;
 
 namespace SmartQuant
 {
@@ -83,11 +85,7 @@ namespace SmartQuant
         private FrameworkMode mode;
         private EventBus bus;
         private bool disposed;
-        private bool isDisposable;
-        private bool bool_1;
-        private bool bool_2;
-        private bool bool_3;
-        private bool bool_4;
+
         private DataServer dataServer;
         private OrderServer orderServer;
         private InstrumentServer instrumentServer;
@@ -99,66 +97,15 @@ namespace SmartQuant
 
         public bool IsExternalDataQueue { get; set; }
 
-        public bool IsDisposable { get; set; }
+        public bool IsDisposable { get; set; } = true;
+        private bool bool_1 { get; set; } = true;
+        private bool bool_2 { get; set; } = true;
+        private bool bool_3 { get; set; } = true;
+        private bool bool_4 { get; set; } = true;
 
         public Clock Clock { get; }
 
         public Clock ExchangeClock { get; }
-
-        public Configuration Configuration { get; private set; }
-
-        public AccountDataManager AccountDataManager { get; }
-
-        public StreamerManager StreamerManager { get; }
-
-        public Controller Controller { get; set; }
-
-        public DataFileManager DataFileManager { get; }
-
-        public DataManager DataManager { get; }
-
-        public EventManager EventManager { get; }
-
-        public EventLoggerManager EventLoggerManager { get; }
-
-        public SubscriptionManager SubscriptionManager { get; }
-
-        public ScenarioManager ScenarioManager { get; }
-
-        public GroupManager GroupManager { get; }
-
-        public GroupDispatcher GroupDispatcher { get; set; }
-
-        public InstrumentManager InstrumentManager { get; set; }
-
-        public InstrumentServer InstrumentServer
-        {
-            get { return this.instrumentServer; }
-            set
-            {
-                this.instrumentServer = value;
-                InstrumentManager.Server = value;
-            }
-        }
-
-        public ICurrencyConverter CurrencyConverter { get; set; }
-
-        public IDataProvider DataProvider => ProviderManager.GetDataProvider(Configuration.DefaultDataProvider);
-
-        public IExecutionProvider ExecutionProvider => ProviderManager.GetExecutionProvider(Configuration.DefaultExecutionProvider);
-
-        public DataServer DataServer
-        {
-            get
-            {
-                return this.dataServer;
-            }
-            set
-            {
-                this.dataServer = value;
-                DataManager.Server = value;
-            }
-        }
 
         public FrameworkMode Mode
         {
@@ -196,7 +143,61 @@ namespace SmartQuant
             }
         }
 
-        public OrderManager OrderManager { get; }
+        public Configuration Configuration { get; private set; }
+
+        public AccountDataManager AccountDataManager { get; }
+
+        public StreamerManager StreamerManager { get; }
+
+        public Controller Controller { get; set; }
+
+        public DataFileManager DataFileManager { get; }
+
+        public DataManager DataManager { get; }
+
+        public EventManager EventManager { get; }
+
+        public EventLoggerManager EventLoggerManager { get; }
+
+        public SubscriptionManager SubscriptionManager { get; }
+
+        public ScenarioManager ScenarioManager { get; }
+
+        public GroupManager GroupManager { get; }
+
+        public GroupDispatcher GroupDispatcher { get; set; }
+
+        public InstrumentManager InstrumentManager { get; set; }
+
+
+        public ICurrencyConverter CurrencyConverter { get; set; }
+
+        public IDataProvider DataProvider => ProviderManager.GetDataProvider(Configuration.DefaultDataProvider);
+
+        public IExecutionProvider ExecutionProvider => ProviderManager.GetExecutionProvider(Configuration.DefaultExecutionProvider);
+
+        public InstrumentServer InstrumentServer
+        {
+            get { return this.instrumentServer; }
+            set
+            {
+                this.instrumentServer = value;
+                InstrumentManager.Server = value;
+            }
+        }
+
+        public DataServer DataServer
+        {
+            get
+            {
+                return this.dataServer;
+            }
+            set
+            {
+                this.dataServer = value;
+                DataManager.Server = value;
+            }
+        }
 
         public OrderServer OrderServer
         {
@@ -210,6 +211,21 @@ namespace SmartQuant
                 OrderManager.Server = value;
             }
         }
+
+        public PortfolioServer PortfolioServer
+        {
+            get
+            {
+                return this.portfolioServer;
+            }
+            set
+            {
+                this.portfolioServer = value;
+                PortfolioManager.Server = value;
+            }
+        }
+
+        public OrderManager OrderManager { get; }
 
         public ProviderManager ProviderManager { get; }
 
@@ -231,22 +247,7 @@ namespace SmartQuant
 
         public OutputManager OutputManager { get; private set; }
 
-        public PortfolioServer PortfolioServer
-        {
-            get
-            {
-                return this.portfolioServer;
-            }
-            set
-            {
-                this.portfolioServer = value;
-                PortfolioManager.Server = value;
-            }
-        }
-
         public EventBus EventBus { get; }
-
-        internal IServerFactory ServerFactory { get; }
 
         public Framework(string name = "", FrameworkMode mode = FrameworkMode.Simulation, bool createServers = true) : this(name, mode, createServers, externalBus: null, instrumentServer: null, dataServer: null)
         {
@@ -263,57 +264,46 @@ namespace SmartQuant
         private Framework(string name, FrameworkMode mode, bool createServers, EventBus externalBus, InstrumentServer instrumentServer, DataServer dataServer)
         {
             Name = name;
+            this.mode = mode;
             LoadConfiguration();
 
             // Setup events compoents setup
             EventBus = new EventBus(this);
-            Clock = new Clock(this, ClockType.Local, false);
+            OutputManager = new OutputManager(this);
+            Clock = new Clock(this, ClockType.Local);
             EventBus.LocalClockEventQueue = Clock.ReminderEventQueue;
-            ExchangeClock = new Clock(this, ClockType.Exchange, false);
+            ExchangeClock = new Clock(this, ClockType.Exchange);
             EventBus.ExchangeClockEventQueue = ExchangeClock.ReminderEventQueue;
             if (externalBus != null)
                 externalBus.Attach(EventBus);
             EventServer = new EventServer(this, EventBus);
             EventManager = new EventManager(this, EventBus);
 
-            // Now we can setup Mode since the Clock is all set
-            Mode = mode;
-
             // Setup streamers
             StreamerManager = new StreamerManager();
             StreamerManager.AddDefaultStreamers();
-            //foreach (var streamer in Configuration.Streamers)
-            //{
-            //    var type = Type.GetType(streamer.TypeName);
-            //    var s = (ObjectStreamer)Activator.CreateInstance(type);
-            //    StreamerManager.Add(s);
-            //}
 
             // Create Servers
-            //ServerFactory = (IServerFactory)Activator.CreateInstance(Type.GetType("SmartQuant.DefaultServerFactory,FastQuant.Servers"));
-            //ServerFactory = new DefaultServerFactory();
-
-            //InstrumentServer = instrumentServer ?? ServerFactory.CreateInstrumentServer();
             var iServer = instrumentServer ?? new FileInstrumentServer(this, "d:\\instruments.quant");
+            var dServer = dataServer ?? new FileDataServer(this, "d:\\data.quant");
+            var oServer = new FileOrderServer(this, "d:\\orders.quant");
+            var pServer = new FilePortfolioServer(this, "d:\\portfolios.quant");
+
             InstrumentManager = new InstrumentManager(this, iServer);
             InstrumentServer = iServer;
             InstrumentManager.Load();
-            //, "instruments.quant", "", this.configuration_0.InstrumentFilePort);
-            DataServer = dataServer ?? new FileDataServer(this, "d:\\data.quant");
-            //OrderServer = ServerFactory.CreateOrderServer();
-            //PortfolioServer = ServerFactory.CreatePortfolioServer();
-            //UserServer = ServerFactory.CreateUserServer();
-            //InstrumentManager.Load();
-            DataManager = new DataManager(this, DataServer);
-            //UserManager = new UserManager(this, UserServer);
-            //UserManager.Load();
-            OrderManager = new OrderManager(this, OrderServer);
-            PortfolioManager = new PortfolioManager(this, PortfolioServer);
+            DataManager = new DataManager(this, dServer);
+            DataServer = dServer;
+            OrderManager = new OrderManager(this, oServer);
+            OrderServer = oServer;
+            PortfolioManager = new PortfolioManager(this, pServer);
+            PortfolioServer = pServer;
+            UserServer = new XmlUserServer(this);
+            UserManager = new UserManager(this, UserServer);
+            UserManager.Load();
 
             // Create Providers
             ProviderManager = new ProviderManager(this);
-            //ProviderManager.DataSimulator = (IDataSimulator)Activator.CreateInstance(Type.GetType(Configuration.DefaultDataSimulator));
-            //ProviderManager.ExecutionSimulator = (IExecutionSimulator)Activator.CreateInstance(Type.GetType(Configuration.DefaultExecutionSimulator));
 
             // Other stuff
             EventLoggerManager = new EventLoggerManager();
@@ -327,7 +317,7 @@ namespace SmartQuant
             CurrencyConverter = new CurrencyConverter(this);
             DataFileManager = new DataFileManager(Installation.DataDir.FullName);
 
-            Framework.instance = Framework.instance ?? this;
+            instance = instance ?? this;
         }
 
         ~Framework()
@@ -417,9 +407,77 @@ namespace SmartQuant
 
     public class FrameworkServer : IDisposable
     {
-        public void Dispose()
+        private Dictionary<string, string> dictionary = new Dictionary<string, string>();
+
+        private string connectionString;
+
+        public Framework Framework { get; internal set; }
+
+        public string ConnectionString
         {
-            throw new NotImplementedException();
+            get
+            {
+                return this.connectionString;
+            }
+            set
+            {
+                this.connectionString = value;
+                this.Update();
+            }
+        }
+
+        protected FrameworkServer()
+        {
+        }
+
+        public virtual void Close()
+        {
+            // do nothing
+        }
+
+        public void Dispose() => Close();
+
+
+        public virtual void Flush()
+        {
+            // noop
+        }
+
+        protected bool GetBooleanValue(string key, bool defaultValue)
+        {
+            bool result;
+            return bool.TryParse(GetStringValue(key, string.Empty), out result) ? result : defaultValue;
+        }
+
+        protected int GetInt32Value(string key, int defaultValue)
+        {
+            int result;
+            return int.TryParse(GetStringValue(key, string.Empty), out result) ? result : defaultValue;
+        }
+
+        protected string GetStringValue(string key, string defaultValue)
+        {
+            string result;
+            return this.dictionary.TryGetValue(key.ToUpper(), out result) ? result : defaultValue;
+        }
+
+        public virtual void Open()
+        {
+            // noop
+        }
+
+        private void Update()
+        {
+            this.dictionary.Clear();
+            if (this.connectionString != null)
+            {
+                foreach(var text in this.connectionString.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    string[] comps = text.Split(new char[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
+                    if (comps.Length == 2)
+                        this.dictionary[comps[0].Trim().ToUpper()] = comps[1].Trim();
+                }
+            }
         }
     }
 }

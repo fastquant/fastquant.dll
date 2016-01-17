@@ -38,13 +38,15 @@ namespace SmartQuant.Controls.BarChart
             Queue = new PermanentQueue<Event>();
             Queue.AddReader(this);
             Reset(true);
-            this.framework.EventManager.Dispatcher.FrameworkCleared += new FrameworkEventHandler(OnFrameworkCleared);
+            this.framework.EventManager.Dispatcher.FrameworkCleared += OnFrameworkCleared;
             this.framework.GroupDispatcher.AddListener(this);
             this.eventsBySelectorKey[""] = new List<GroupEvent>();
         }
 
         protected override void OnClosing(CancelEventArgs args)
         {
+            this.framework.EventManager.Dispatcher.FrameworkCleared -= OnFrameworkCleared;
+            this.framework.GroupDispatcher.RemoveListener(this);
             Queue.RemoveReader(this);
         }
 
@@ -141,7 +143,7 @@ namespace SmartQuant.Controls.BarChart
 
         public void UpdateGUI()
         {
-            if (FrameworkControl.UpdatedSuspened && this.framework.Mode == FrameworkMode.Simulation)
+            if (UpdatedSuspened && this.framework.Mode == FrameworkMode.Simulation)
                 return;
             var evnts = Queue.DequeueAll(this);
             if (evnts == null)
@@ -177,15 +179,9 @@ namespace SmartQuant.Controls.BarChart
             this.chart.ActionType = isChecked ? ChartActionType.None : ChartActionType.Cross;
         }
 
-        public void ZoomIn()
-        {
-            this.chart.ZoomIn();
-        }
+        public void ZoomIn() => this.chart.ZoomIn();
 
-        public void ZoomOut()
-        {
-            this.chart.ZoomOut();
-        }
+        public void ZoomOut() => this.chart.ZoomOut();
 
         private void ProcessEvent(GroupEvent groupEvent, bool lastEvent)
         {
@@ -281,20 +277,20 @@ namespace SmartQuant.Controls.BarChart
             ShowAll();
             #else
             this.cbxSelector = new ComboBox();
-            this.SuspendLayout();
+            SuspendLayout();
             this.cbxSelector.Dock = DockStyle.Top;
             this.cbxSelector.DropDownStyle = ComboBoxStyle.DropDownList;
             this.cbxSelector.FormattingEnabled = true;
             this.cbxSelector.TabIndex = 1;
-            this.cbxSelector.SelectedIndexChanged += new EventHandler(OnSelectorValueChanged);
+            this.cbxSelector.SelectedIndexChanged += OnSelectorValueChanged;
             this.chart.Dock = DockStyle.Fill;
             this.chart.AutoScroll = true;
             this.chart.TabIndex = 0;
             InitChartCommon();
-            this.AutoScaleMode = AutoScaleMode.Font;
-            this.Controls.Add(this.chart);
-            this.Controls.Add(this.cbxSelector);
-            this.ResumeLayout(false);
+            AutoScaleMode = AutoScaleMode.Font;
+            Controls.Add(this.chart);
+            Controls.Add(this.cbxSelector);
+            ResumeLayout(false);
             #endif
         }
 

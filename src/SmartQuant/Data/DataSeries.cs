@@ -14,11 +14,10 @@ namespace SmartQuant
 
         internal bool readOpened;
         internal bool writeOpened;
-
         internal bool changed;
+
         internal IdArray<DataKey> dataKeys;
 
-        internal long count;
         internal long position1;
         internal long position2;
         internal long dKeysKeyPosition;
@@ -43,6 +42,10 @@ namespace SmartQuant
 
         public DateTime DateTime2 { get; private set; }
 
+        public DataSeries()
+        {
+        }
+
         public DataSeries(string name)
         {
             Name = name;
@@ -59,14 +62,14 @@ namespace SmartQuant
             if (!this.writeOpened)
                 OpenWrite();
 
-            if (this.count == 0)
+            if (Count == 0)
             {
                 DateTime1 = obj.DateTime;
                 DateTime2 = obj.DateTime;
             }
             else
             {
-                if (obj.DateTime < this.DateTime2)
+                if (obj.DateTime < DateTime2)
                 {
                     SaveDataObject(obj);
                     return;
@@ -77,19 +80,18 @@ namespace SmartQuant
             {
                 SaveWriteDKey(this.lastReadDKey);
                 if (!CacheObjects && this.lastReadDKey != this.lastUpdateDKey && this.lastReadDKey != this.lastWriteDKey && this.lastReadDKey != this.lastDeleteDKey)
-                {
                     this.lastReadDKey.objs = null;
-                }
+
                 this.lastReadDKey = new DataKey(this.dataFile, null, this.lastReadDKey.position, -1);
                 this.lastReadDKey.number = this.bufferCount;
-                this.lastReadDKey.index1 = this.count - 1;
-                this.lastReadDKey.index2 = this.count - 1;
+                this.lastReadDKey.index1 = Count - 1;
+                this.lastReadDKey.index2 = Count - 1;
                 this.lastReadDKey.changed = true;
                 this.bufferCount++;
                 this.dataKeys[this.lastReadDKey.number] = this.lastReadDKey;
             }
             this.lastReadDKey.Add(obj);
-            this.count += 1L;
+            Count++;
             this.changed = true;
             this.dataFile.changed = true;
         }
@@ -110,7 +112,7 @@ namespace SmartQuant
                     key = GetDataKey(key.next);
                 }
             }
-            this.count = 0;
+            Count = 0;
             this.bufferCount = 0;
             DateTime1 = new DateTime(0);
             DateTime2 = new DateTime(0);
@@ -135,30 +137,29 @@ namespace SmartQuant
             if (!this.readOpened)
                 OpenRead();
 
-            if (this.count == 0)
+            if (Count == 0)
             {
                 Console.WriteLine($"DataSeries::GetIndex Error, data series has no elements {Name}");
                 return -1;
             }
+
             if (dateTime <= DateTime1)
                 return 0;
+
             if (dateTime >= DateTime2)
-                return this.count - 1;
+                return Count - 1;
 
             var key = GetKey(dateTime, this.lastUpdateDKey, IndexOption.Null);
             if (key == null)
-            {
                 return -1;
-            }
+
             if (key != this.lastUpdateDKey)
             {
                 if (!CacheObjects && this.lastUpdateDKey != null && this.lastUpdateDKey != this.lastReadDKey && this.lastUpdateDKey != this.lastWriteDKey && this.lastUpdateDKey != this.lastDeleteDKey)
-                {
                     this.lastUpdateDKey.objs = null;
-                }
                 this.lastUpdateDKey = key;
             }
-            return this.lastUpdateDKey.index1 + (long)this.lastUpdateDKey.GetIndex(dateTime, option);
+            return this.lastUpdateDKey.index1 + this.lastUpdateDKey.GetIndex(dateTime, option);
         }
 
         public void Remove(long index)
@@ -171,19 +172,14 @@ namespace SmartQuant
                 return;
 
             if (this.lastDeleteDKey == null)
-            {
                 this.lastDeleteDKey = key;
-            }
             else if (this.lastDeleteDKey != key)
             {
                 if (this.lastDeleteDKey.changed)
-                {
-                    this.SaveWriteDKey(this.lastDeleteDKey);
-                }
+                    SaveWriteDKey(this.lastDeleteDKey);
+
                 if (!CacheObjects && this.lastDeleteDKey != this.lastUpdateDKey && this.lastDeleteDKey != this.lastReadDKey && this.lastDeleteDKey != this.lastWriteDKey)
-                {
                     this.lastDeleteDKey.objs = null;
-                }
                 this.lastDeleteDKey = key;
             }
             key.Remove(index - key.index1);
@@ -208,13 +204,14 @@ namespace SmartQuant
                 Delete(key);
                 this.lastDeleteDKey = null;
             }
-            this.count -= 1;
-            if (this.count != 0)
+
+            Count--;
+            if (Count != 0)
             {
                 if (index == 0)
                     DateTime1 = Get(0).DateTime;
-                if (index == this.count)
-                    DateTime2 = Get(this.count - 1L).DateTime;
+                if (index == Count)
+                    DateTime2 = Get(Count - 1).DateTime;
             }
             this.changed = true;
             this.dataFile.changed = true;
@@ -233,6 +230,7 @@ namespace SmartQuant
                 Console.WriteLine("DataSeries::Update Can not update object with different datetime");
                 return;
             }
+
             bool changed = this.lastUpdateDKey.changed;
             this.lastUpdateDKey.Update((int)(index - this.lastUpdateDKey.index1), obj);
             if (!changed)
@@ -252,9 +250,7 @@ namespace SmartQuant
             if (key != this.lastUpdateDKey)
             {
                 if (!CacheObjects && this.lastUpdateDKey != null && this.lastUpdateDKey != this.lastReadDKey && this.lastUpdateDKey != this.lastWriteDKey && this.lastUpdateDKey != this.lastDeleteDKey)
-                {
                     this.lastUpdateDKey.objs = null;
-                }
                 this.lastUpdateDKey = key;
             }
             return key.LoadDataObjects()[(int)(checked((IntPtr)(unchecked(index - key.index1))))];
@@ -265,25 +261,23 @@ namespace SmartQuant
             if (!this.readOpened)
                 OpenRead();
 
-            if (this.count == 0 || dateTime > DateTime2)
+            if (Count == 0 || dateTime > DateTime2)
             {
                 Console.WriteLine($"DataSeries::Get dateTime is out of range : {Name} {dateTime}");
                 return null;
             }
+
             if (dateTime <= DateTime1)
                 return Get(0);
 
             var key = GetKey(dateTime, this.lastUpdateDKey, IndexOption.Null);
             if (key == null)
-            {
                 return null;
-            }
+
             if (key != this.lastUpdateDKey)
             {
                 if (!CacheObjects && this.lastUpdateDKey != null && this.lastUpdateDKey != this.lastReadDKey && this.lastUpdateDKey != this.lastWriteDKey && this.lastUpdateDKey != this.lastDeleteDKey)
-                {
                     this.lastUpdateDKey.objs = null;
-                }
                 this.lastUpdateDKey = key;
             }
             return this.lastUpdateDKey.Get(dateTime);
@@ -292,7 +286,7 @@ namespace SmartQuant
         public void Dump()
         {
             Console.WriteLine("Data series " + Name);
-            Console.WriteLine("Count = " + this.count);
+            Console.WriteLine("Count = " + Count);
             Console.WriteLine("Position1 = " + this.position1);
             Console.WriteLine("Position2 = " + this.position2);
             Console.WriteLine("DateTime1 = " + DateTime1.Ticks);
@@ -321,25 +315,16 @@ namespace SmartQuant
                 {
                     Console.WriteLine(key);
                     if (key.next == -1)
-                    {
                         break;
-                    }
                     key = GetDataKey(key.next);
                 }
             }
             Console.WriteLine();
             if (this.lastReadDKey != null)
-            {
                 Console.WriteLine("Write Key : " + this.changed);
-            }
             else
-            {
                 Console.WriteLine("Write Key : null");
-            }
-            Console.WriteLine();
-            Console.WriteLine("End dump");
-            Console.WriteLine();
-
+            Console.WriteLine("\nEnd dump\n");
         }
 
         #region Extra
@@ -432,9 +417,8 @@ namespace SmartQuant
                 this.dataKeys[this.lastReadDKey.number] = this.lastReadDKey;
             }
             if (this.dataKeysKey.position != -1)
-            {
                 this.dataFile.DeleteObjectKey(this.dataKeysKey, false, false);
-            }
+
             this.dKeysKeyPosition = -1;
             this.dataFile.WriteObjectKey(this.oKey);
             this.writeOpened = true;
@@ -465,8 +449,8 @@ namespace SmartQuant
 
         private void SaveDataObject(DataObject obj)
         {
-            this.count += 1;
-            if (obj.DateTime >= this.lastReadDKey.dateTime1 && obj.DateTime <= this.lastReadDKey.dateTime2)
+            Count++;
+            if (this.lastReadDKey.dateTime1 <= obj.DateTime && obj.DateTime <= this.lastReadDKey.dateTime2)
             {
                 this.lastReadDKey.Add(obj);
                 if (this.lastReadDKey.count >= this.lastReadDKey.capcity)
@@ -474,8 +458,8 @@ namespace SmartQuant
                     SaveWriteDKey(this.lastReadDKey);
                     this.lastReadDKey = new DataKey(this.dataFile, null, this.lastReadDKey.position, -1L);
                     this.lastReadDKey.number = this.bufferCount;
-                    this.lastReadDKey.index1 = this.count;
-                    this.lastReadDKey.index2 = this.count;
+                    this.lastReadDKey.index1 = Count;
+                    this.lastReadDKey.index2 = Count;
                     this.lastReadDKey.changed = true;
                     this.bufferCount++;
                     this.dataKeys[this.lastReadDKey.number] = this.lastReadDKey;
@@ -487,6 +471,7 @@ namespace SmartQuant
                 this.dataFile.changed = true;
                 return;
             }
+
             var key = GetKey(obj.DateTime, this.lastWriteDKey, IndexOption.Prev);
             if (this.lastWriteDKey == null)
             {
@@ -495,13 +480,9 @@ namespace SmartQuant
             else if (this.lastWriteDKey != key)
             {
                 if (this.lastWriteDKey.changed)
-                {
-                    this.SaveWriteDKey(this.lastWriteDKey);
-                }
+                    SaveWriteDKey(this.lastWriteDKey);
                 if (!CacheObjects && this.lastWriteDKey != this.lastUpdateDKey && this.lastWriteDKey != this.lastReadDKey && this.lastWriteDKey != this.lastDeleteDKey)
-                {
                     this.lastWriteDKey.objs = null;
-                }
                 this.lastWriteDKey = key;
             }
             this.lastWriteDKey.LoadDataObjects();
@@ -509,9 +490,7 @@ namespace SmartQuant
             {
                 this.lastWriteDKey.Add(obj);
                 if (this.lastWriteDKey.count == this.lastWriteDKey.capcity)
-                {
                     SaveWriteDKey(this.lastWriteDKey);
-                }
             }
             else
             {
@@ -529,11 +508,9 @@ namespace SmartQuant
                         this.lastWriteDKey.objs[i] = null;
                     }
                     this.lastWriteDKey.count = num;
-                    this.lastWriteDKey.index2 = this.lastWriteDKey.index1 + (long)this.lastWriteDKey.count - 1;
+                    this.lastWriteDKey.index2 = this.lastWriteDKey.index1 + this.lastWriteDKey.count - 1;
                     if (this.lastWriteDKey.count != 0)
-                    {
                         this.lastWriteDKey.dateTime2 = this.lastWriteDKey.objs[this.lastWriteDKey.count - 1].DateTime;
-                    }
                     this.lastWriteDKey.Add(obj);
                 }
                 this.Insert(key, this.lastWriteDKey);
@@ -558,22 +535,20 @@ namespace SmartQuant
             this.dataFile.changed = true;
         }
 
-        private void Insert(DataKey class19_4, DataKey class19_5)
+        private void Insert(DataKey key, DataKey keyAt)
         {
-            for (int i = this.bufferCount; i > class19_5.number + 1; i--)
+            for (int i = this.bufferCount; i > keyAt.number + 1; i--)
             {
                 this.dataKeys[i] = this.dataKeys[i - 1];
                 if (this.dataKeys[i] != null)
-                {
                     this.dataKeys[i].number = i;
-                }
             }
             this.bufferCount++;
-            class19_4.number = class19_5.number + 1;
-            this.dataKeys[class19_4.number] = class19_4;
-            class19_4.prev = class19_5.position;
-            class19_4.next = class19_5.next;
-            SaveWriteDKey(class19_4);
+            key.number = keyAt.number + 1;
+            this.dataKeys[key.number] = key;
+            key.prev = keyAt.position;
+            key.next = keyAt.next;
+            SaveWriteDKey(key);
             this.dataFile.WriteObjectKey(this.oKey);
         }
 
@@ -585,45 +560,33 @@ namespace SmartQuant
             {
                 DataKey @class = null;
                 if (key.number != 0)
-                {
                     @class = this.dataKeys[key.number - 1];
-                }
                 if (@class != null)
                 {
                     @class.next = key.position;
                     if (!@class.changed)
-                    {
                         WriteDKeyNext(key.prev, key.position);
-                    }
                 }
                 else if (key.prev != -1)
-                {
                     WriteDKeyNext(key.prev, key.position);
-                }
+
                 DataKey class2 = null;
                 if (key.number != this.bufferCount - 1)
-                {
                     class2 = this.dataKeys[key.number + 1];
-                }
+
                 if (class2 != null)
                 {
                     class2.prev = key.position;
                     if (!class2.changed)
-                    {
-                        this.WriteDKeyPrev(key.next, key.position);
-                    }
+                        WriteDKeyPrev(key.next, key.position);
                 }
                 else if (key.next != -1)
-                {
-                    this.WriteDKeyPrev(key.next, key.position);
-                }
+                    WriteDKeyPrev(key.next, key.position);
             }
             if (key == this.lastReadDKey)
             {
                 if (this.position1 == -1)
-                {
                     this.position1 = this.lastReadDKey.position;
-                }
                 this.position2 = this.lastReadDKey.position;
             }
             this.dataFile.WriteObjectKey(this.oKey);
@@ -665,13 +628,13 @@ namespace SmartQuant
             }
         }
 
-        private void Delete(DataKey class19_4)
+        private void Delete(DataKey key)
         {
-            if (class19_4.position == this.position2)
+            if (key.position == this.position2)
             {
-                if (class19_4.prev != -1)
+                if (key.prev != -1)
                 {
-                    this.position2 = class19_4.prev;
+                    this.position2 = key.prev;
                 }
                 else
                 {
@@ -679,46 +642,40 @@ namespace SmartQuant
                     this.position2 = -1;
                 }
             }
-            this.dataFile.DeleteObjectKey(class19_4, false, true);
-            if (class19_4.prev != -1)
+            this.dataFile.DeleteObjectKey(key, false, true);
+            if (key.prev != -1)
             {
-                var k = this.dataKeys[class19_4.number - 1];
+                var k = this.dataKeys[key.number - 1];
                 if (k != null)
                 {
-                    k.next = class19_4.next;
+                    k.next = key.next;
                     if (!k.changed)
-                    {
-                        this.WriteDKeyNext(class19_4.prev, class19_4.next);
-                    }
+                        WriteDKeyNext(key.prev, key.next);
                 }
                 else
                 {
-                    this.WriteDKeyNext(class19_4.prev, class19_4.next);
+                    WriteDKeyNext(key.prev, key.next);
                 }
             }
-            if (class19_4.next != -1)
+            if (key.next != -1)
             {
-                var k = this.dataKeys[class19_4.number + 1];
+                var k = this.dataKeys[key.number + 1];
                 if (k != null)
                 {
-                    k.prev = class19_4.prev;
+                    k.prev = key.prev;
                     if (!k.changed)
-                    {
-                        WriteDKeyPrev(class19_4.next, class19_4.prev);
-                    }
+                        WriteDKeyPrev(key.next, key.prev);
                 }
                 else
                 {
-                    WriteDKeyPrev(class19_4.next, class19_4.prev);
+                    WriteDKeyPrev(key.next, key.prev);
                 }
             }
-            for (int i = class19_4.number; i < this.bufferCount - 1; i++)
+            for (int i = key.number; i < this.bufferCount - 1; i++)
             {
                 this.dataKeys[i] = this.dataKeys[i + 1];
                 if (this.dataKeys[i] != null)
-                {
                     this.dataKeys[i].number = i;
-                }
             }
             this.bufferCount--;
             this.dataFile.WriteObjectKey(this.oKey);
@@ -726,10 +683,10 @@ namespace SmartQuant
 
         private DataKey GetDataKey(long position)
         {
-            var buffer = new byte[79];
+            var buffer = new byte[DataKey.HEADER_SIZE]; // why 79?
             var input = new MemoryStream(buffer);
             var reader = new BinaryReader(input);
-            this.dataFile.ReadBuffer(buffer, position, 77);
+            this.dataFile.ReadBuffer(buffer, position, buffer.Length);
             var key = new DataKey(this.dataFile, null, -1, -1);
             key.Read(reader, true);
             key.position = position;
@@ -740,13 +697,10 @@ namespace SmartQuant
         {
             var key = this.dataKeys[0];
             if (key == null)
-            {
-                key = GetDataKey(this.position1);
-                this.dataKeys[0] = key;
-            }
+                this.dataKeys[0] = key = GetDataKey(this.position1);
             key.number = 0;
             key.index1 = 0;
-            key.index2 = (long)(key.count - 1);
+            key.index2 = key.count - 1;
             return key;
         }
 
@@ -759,30 +713,27 @@ namespace SmartQuant
             if (nextKey == null)
             {
                 if (key.next == -1)
-                {
                     Console.WriteLine("DataSeries::GetNextKey Error: key.next is not set");
-                }
                 nextKey = GetDataKey(key.next);
                 nextKey.number = key.number + 1;
                 this.dataKeys[nextKey.number] = nextKey;
             }
             nextKey.index1 = key.index2 + 1;
-            nextKey.index2 = nextKey.index1 + (long)nextKey.count - 1;
+            nextKey.index2 = nextKey.index1 + nextKey.count - 1;
             return nextKey;
         }
 
+        // TODO: rewrite it!
         internal DataKey GetKey(long index, DataKey key = null)
         {
-            if (index >= 0 && index < this.count)
+            if (0 <= index && index < Count)
             {
                 if (key == null)
-                {
                     key = this.lastUpdateDKey;
-                }
                 DataKey @class = null;
                 if (key != null)
                 {
-                    if (index >= key.index1 && index <= key.index2)
+                    if (key.index1 <= index && index <= key.index2)
                     {
                         return key;
                     }
@@ -807,40 +758,36 @@ namespace SmartQuant
 
         internal DataKey GetKey(DateTime dateTime, DataKey key = null, IndexOption option = IndexOption.Null)
         {
-            if (this.count == 0L || dateTime > DateTime2)
+            if (Count == 0 || dateTime > DateTime2)
             {
                 Console.WriteLine($"DataSeries::GetKey dateTime is out of range : {dateTime}");
                 return null;
             }
             if (key == null)
-            {
                 key = this.lastUpdateDKey;
-            }
+
             DataKey @class = null;
             DataKey class2 = null;
             if (dateTime <= DateTime1)
-            {
-                return this.GetFirstKey();
-            }
+                return GetFirstKey();
+
             if (key != null)
             {
-                if (dateTime >= key.dateTime1 && dateTime <= key.dateTime2)
-                {
+                if (key.dateTime1 <= dateTime && dateTime <= key.dateTime2)
                     return key;
-                }
+
                 if (dateTime > key.dateTime2)
                 {
                     class2 = key;
-                    @class = this.GetNextKey(class2);
+                    @class = GetNextKey(class2);
                 }
             }
             if (@class == null)
-            {
                 @class = GetFirstKey();
-            }
+
             while (option == IndexOption.Null || class2 == null || !(dateTime > class2.dateTime2) || !(dateTime < @class.dateTime1))
             {
-                if (dateTime >= @class.dateTime1 && dateTime <= @class.dateTime2)
+                if (@class.dateTime1 <= dateTime && dateTime <= @class.dateTime2)
                 {
                     return @class;
                 }
@@ -859,23 +806,19 @@ namespace SmartQuant
             if (this.changed)
             {
                 if (this.lastWriteDKey != null && this.lastWriteDKey.changed)
-                {
                     SaveWriteDKey(this.lastWriteDKey);
-                }
+
                 if (this.lastReadDKey != null && this.lastReadDKey.changed)
-                {
                     SaveWriteDKey(this.lastReadDKey);
-                }
+
                 if (this.lastDeleteDKey != null && this.lastDeleteDKey.changed)
-                {
                     this.SaveWriteDKey(this.lastDeleteDKey);
-                }
+
                 SaveDataKeysKey();
                 this.dataFile.WriteObjectKey(this.oKey);
                 this.changed = false;
             }
         }
-
     }
 
     public class DataSeriesIterator
@@ -903,6 +846,14 @@ namespace SmartQuant
         public DataSeriesListEventArgs(params DataSeries[] seriesList)
         {
             SeriesList = seriesList;
+        }
+    }
+
+    public class NetDataSeries : DataSeries
+    {
+        public NetDataSeries(string name)
+        {
+            throw new NotImplementedException();
         }
     }
 }

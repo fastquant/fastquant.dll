@@ -327,6 +327,14 @@ namespace SmartQuant
             }
         }
 
+        internal void vmethod_42(string source, Event ev, Exception exception)
+        {
+            if (this.raiseEvents)
+                OnException(source, ev, exception);
+            for (var s = Strategies.First; s != null; s = s.Next)
+                s.Data.vmethod_42(source, ev, exception);
+        }
+
         internal virtual void vmethod_9(Bid bid)
         {
             if (!Enabled)
@@ -736,6 +744,10 @@ namespace SmartQuant
         }
 
         protected virtual void OnStopStatusChanged(Stop stop)
+        {
+        }
+
+        protected virtual void OnException(string source, Event ev, Exception exception)
         {
         }
 

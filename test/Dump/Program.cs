@@ -13,7 +13,17 @@ namespace HelloWorldSample
             var wr = new BinaryWriter(ms);
             wr.Write("FKey");
             Console.WriteLine(ms.ToArray().Length);
-         
+            var f = Framework.Current;
+            var ds = f.DataManager.GetDataSeries("AAPL.0.Bid");
+            ds.Dump();
+            for (long i = 0; i < ds.Count; i++)
+                Console.WriteLine(ds.Get(i));
+
+            // DumpInstrument();
+            Console.ReadLine();
+		}
+        static void DumpDataFile()
+        {
             var f = Framework.Current;
             var df = new DataFile("d:\\data.quant", f.StreamerManager);
             df.Open();
@@ -28,14 +38,11 @@ namespace HelloWorldSample
                 Console.WriteLine(key.CompressionMethod);
                 var obj = (DataSeries)key.GetObject();
                 obj.Dump();
-                for (long i= 0;i < obj.Count;i++)
+                for (long i = 0; i < obj.Count; i++)
                     Console.WriteLine(obj.Get(i));
             }
             df.Close();
-           // DumpInstrument();
-            Console.ReadLine();
-		}
-
+        }
         static void DumpInstrument()
         {
             var f = Framework.Current;

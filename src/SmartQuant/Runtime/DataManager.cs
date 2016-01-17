@@ -13,6 +13,7 @@ namespace SmartQuant
         {
             this.framework = framework;
             Server = server;
+            Server?.Open();
         }
 
         public void Dispose()

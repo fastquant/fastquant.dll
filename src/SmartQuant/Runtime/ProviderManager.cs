@@ -98,29 +98,33 @@ namespace SmartQuant
             //{
             //    this.providerList_6.Add(provider);
             //}
-            //this.LoadSettings(provider);
+            LoadSettings(provider);
             this.framework.EventServer.OnProviderAdded(provider);
         }
 
-        public IDataProvider GetDataProvider(int id)
-        {
-            throw new NotImplementedException();
-        }
+        public IDataProvider GetDataProvider(int id) => GetProvider(id) as IDataProvider;
 
-        public IDataProvider GetDataProvider(string name)
-        {
-            throw new NotImplementedException();
-        }
+        public IDataProvider GetDataProvider(string name) => GetProvider(name) as IDataProvider;
 
-        public IExecutionProvider GetExecutionProvider(int id)
-        {
-            throw new NotImplementedException();
-        }
+        public IExecutionProvider GetExecutionProvider(int id) => GetProvider(id) as IExecutionProvider;
 
-        public IExecutionProvider GetExecutionProvider(string name)
-        {
-            throw new NotImplementedException();
-        }
+        public IExecutionProvider GetExecutionProvider(string name) => GetProvider(name) as IExecutionProvider;
+
+        public IFundamentalProvider GetFundamentalProvider(int id) => GetProvider(id) as IFundamentalProvider;
+ 
+        public IFundamentalProvider GetFundamentalProvider(string name) => GetProvider(name) as IFundamentalProvider;
+
+        public IHistoricalDataProvider GetHistoricalDataProvider(int id) => GetProvider(id) as IHistoricalDataProvider;
+
+        public IHistoricalDataProvider GetHistoricalDataProvider(string name) => GetProvider(name) as IHistoricalDataProvider;
+
+        public IInstrumentProvider GetInstrumentProvider(int id) => GetProvider(id) as IInstrumentProvider;
+
+        public IInstrumentProvider GetInstrumentProvider(string name) => GetProvider(name) as IInstrumentProvider;
+
+        public INewsProvider GetNewsProvider(int id) => GetProvider(id) as INewsProvider;
+
+        public INewsProvider GetNewsProvider(string name) => GetProvider(name) as INewsProvider;
 
         public void SetDataSimulator(string name) => this.dataSimulator = GetProvider(name) as IDataSimulator;
 
@@ -140,12 +144,12 @@ namespace SmartQuant
 
         public void SaveSettings(IProvider provider)
         {
-            throw new NotImplementedException();
+            //TODO: do something
         }
 
         public void LoadSettings(IProvider provider)
         {
-            throw new NotImplementedException();
+            //TODO: do something
         }
     }
 }
