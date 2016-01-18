@@ -540,4 +540,202 @@ namespace SmartQuant
 
         public override byte TypeId => EventType.OnHeartbeat;
     }
+
+    public class OnPendingNewOrder : Event
+    {
+        internal Order Order { get; }
+
+        public OnPendingNewOrder(Order order)
+        {
+            Order = order;
+        }
+
+        public override byte TypeId => EventType.OnPendingNewOrder;
+    }
+
+    public class OnPropertyChanged : Event
+    {
+        public override byte TypeId => EventType.OnPropertyChanged;
+
+        public int ObjectId { get; }
+
+        public byte ObjectType { get; }
+
+        public string Property { get; }
+
+        public OnPropertyChanged(byte type, int objectId, string property)
+        {
+
+            ObjectType = type;
+            ObjectId = objectId;
+            Property = property;
+        }
+    }
+
+    public class OnNewOrder : Event
+    {
+        public override byte TypeId => EventType.OnNewOrder;
+
+        internal Order Order { get; }
+
+        public OnNewOrder(Order order)
+        {
+            Order = order;
+        }
+    }
+
+    public class OnSendOrder : Event
+    {
+        public override byte TypeId => EventType.OnSendOrder;
+
+        internal Order Order { get; }
+
+        public OnSendOrder(Order order)
+        {
+            Order = order;
+        }
+    }
+
+    public class OnOrderStatusChanged : Event
+    {
+        public override byte TypeId => EventType.OnOrderStatusChanged;
+
+        internal Order Order { get; }
+
+        public OnOrderStatusChanged(Order order)
+        {
+            Order = order;
+        }
+    }
+
+    public class OnOrderCancelled : Event
+    {
+        public override byte TypeId => EventType.OnOrderCancelled;
+
+        internal Order Order { get; }
+
+        public OnOrderCancelled(Order order)
+        {
+            Order = order;
+        }
+    }
+
+    public class OnOrderCancelRejected : Event
+    {
+        public override byte TypeId => EventType.OnOrderCancelRejected;
+
+        internal Order Order { get; }
+
+        public OnOrderCancelRejected(Order order)
+        {
+            Order = order;
+        }
+    }
+
+    public class OnOrderDone : Event
+    {
+        public override byte TypeId => EventType.OnOrderDone;
+
+        internal Order Order { get; }
+
+        public OnOrderDone(Order order)
+        {
+            Order = order;
+        }
+    }
+
+    public class OnOrderExpired : Event
+    {
+        public override byte TypeId => EventType.OnOrderExpired;
+
+        internal Order Order { get; }
+
+        public OnOrderExpired(Order order)
+        {
+            Order = order;
+        }
+    }
+
+    public class OnOrderFilled : Event
+    {
+        public override byte TypeId => EventType.OnOrderFilled;
+
+        internal Order Order { get; }
+
+        public OnOrderFilled(Order order)
+        {
+            Order = order;
+        }
+    }
+
+    public class OnOrderManagerCleared : Event
+    {
+        public override byte TypeId => EventType.OnOrderManagerCleared;
+    }
+
+    public class OnOrderPartiallyFilled : Event
+    {
+        public override byte TypeId => EventType.OnOrderPartiallyFilled;
+
+        internal Order Order { get; }
+
+        public OnOrderPartiallyFilled(Order order)
+        {
+            Order = order;
+        }
+    }
+
+    public class OnOrderRejected : Event
+    {
+        public override byte TypeId => EventType.OnOrderRejected;
+
+        internal Order Order { get; }
+
+        public OnOrderRejected(Order order)
+        {
+            Order = order;
+        }
+    }
+
+    public class OnOrderReplaced : Event
+    {
+        public override byte TypeId => EventType.OnOrderReplaced;
+
+        internal Order Order { get; }
+
+        public OnOrderReplaced(Order order)
+        {
+            Order = order;
+        }
+    }
+
+    public class OnOrderReplaceRejected : Event
+    {
+        public override byte TypeId => EventType.OnOrderReplaceRejected;
+
+        internal Order Order { get; }
+
+        public OnOrderReplaceRejected(Order order)
+        {
+            Order = order;
+        }
+    }
+
+    public class OnFill : Event
+    {
+        public override byte TypeId => EventType.OnFill;
+
+        public Fill Fill { get; }
+
+        public Portfolio Portfolio { get; }
+
+        public OnFill(Portfolio portfolio, Fill fill)
+        {
+            Portfolio = portfolio;
+            Fill = fill;
+        }
+
+        public override string ToString()=>$"{nameof(OnFill)} {Fill.ToString()}";
+    }
+
 }

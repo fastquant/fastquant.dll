@@ -17,5 +17,10 @@ namespace SmartQuant
         {
             throw new NotImplementedException();
         }
+
+        internal void method_1(AccountData data_)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

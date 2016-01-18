@@ -104,7 +104,7 @@ namespace SmartQuant
             }
         }
 
-        public bool IsLoaded { get; private set; }
+        public bool IsLoaded { get; internal set; }
 
         public Portfolio(string name)
         {

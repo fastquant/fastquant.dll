@@ -327,6 +327,11 @@ namespace SmartQuant
             }
         }
 
+        internal void vmethod_13(Bar bar_0)
+        {
+            throw new NotImplementedException();
+        }
+
         internal void vmethod_42(string source, Event ev, Exception exception)
         {
             if (this.raiseEvents)
@@ -366,6 +371,16 @@ namespace SmartQuant
                     node.Data.vmethod_9(bid);
                 }
             }
+        }
+
+        internal void vmethod_12(Level2Update level2Update_0)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void vmethod_11(Level2Snapshot level2Snapshot_0)
+        {
+            throw new NotImplementedException();
         }
 
         private void method_3(Strategy strategy, InstrumentList instruments, int strategyId)
@@ -442,6 +457,15 @@ namespace SmartQuant
             if (dataProvider is SellSideStrategy)
                 return dataProvider;
             return this.framework.ProviderManager.DataSimulator;
+        }
+
+        internal void vmethod_6(Provider provider)
+        {
+            if (this.raiseEvents)
+                OnProviderConnected(provider);
+
+            for (var s = Strategies.First; s != null; s = s.Next)
+                s.Data.vmethod_6(provider);
         }
 
         #endregion
@@ -748,6 +772,10 @@ namespace SmartQuant
         }
 
         protected virtual void OnException(string source, Event ev, Exception exception)
+        {
+        }
+
+        protected virtual void OnProviderConnected(Provider provider)
         {
         }
 

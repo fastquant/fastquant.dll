@@ -68,10 +68,7 @@ namespace Demo
                 this.chart3.AddPad();
                 this.chart3.DrawSeries(performance.DrawdownSeries, 2, Color.White, SimpleDSStyle.Line, SearchOption.ExactFirst, SmoothingMode.HighSpeed);
                 this.chart3.UpdateStyle = ChartUpdateStyle.WholeRange;
-                performance.Updated += (sender, e) =>
-                {
-                    this.chart3.OnItemAdded();
-                };
+                performance.Updated += (sender, e) => this.chart3.OnItemAdded();
             });
         }
     }

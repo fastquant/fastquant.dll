@@ -57,5 +57,15 @@ namespace SmartQuant
         {
             throw new NotImplementedException();
         }
+
+        internal void method_1(AccountReport report)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void method_0(ExecutionReport report)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

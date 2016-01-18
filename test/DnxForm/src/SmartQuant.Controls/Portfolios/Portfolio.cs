@@ -551,7 +551,7 @@ namespace SmartQuant.Controls.Portfolios
       this.ctxSettings_ExportToXLS.Click += new EventHandler(this.ctxReportsSettings_ExportToXLS_Click);
       this.lblSettings.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       this.lblSettings.ContextMenuStrip = this.ctxSettings;
-      this.lblSettings.Image = (Image) Resources.settings;
+ //     this.lblSettings.Image = (Image) Resources.settings;
       this.lblSettings.Location = new Point(601, 0);
       this.lblSettings.Name = "lblSettings";
       this.lblSettings.Size = new Size(16, 16);

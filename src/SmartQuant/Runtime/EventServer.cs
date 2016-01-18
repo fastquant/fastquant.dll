@@ -88,10 +88,7 @@ namespace SmartQuant
             throw new NotImplementedException();
         }
 
-        public void OnLog(Event e)
-        {
-            OnEvent(e);
-        }
+        public void OnLog(Event e) => OnEvent(e);
 
         internal void OnPositionOpened(Portfolio portfolio, Position position, bool queued)
         {

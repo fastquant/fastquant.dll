@@ -437,7 +437,16 @@ namespace SmartQuant
 
         protected virtual void OnDisconnected()
         {
-            throw new NotImplementedException();
+            if (this is IDataProvider && this.dataQueue != null)
+            {
+                this.dataQueue.Enqueue(new OnQueueClosed(this.dataQueue));
+                this.dataQueue = null;
+            }
+            if (this is IExecutionProvider && this.executionQueue != null)
+            {
+                this.executionQueue.Enqueue(new OnQueueClosed(this.executionQueue));
+                this.executionQueue = null;
+            }
         }
     }
 

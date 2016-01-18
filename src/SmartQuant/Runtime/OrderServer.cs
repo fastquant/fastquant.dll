@@ -11,7 +11,7 @@ namespace SmartQuant
         protected string seriesName = "messages";
         protected int seriesId;
         protected bool isOpen;
-        protected IdArray<string> nameById = new IdArray<string>(1024);
+        protected IdArray<string> nameById = new IdArray<string>();
         protected Dictionary<string, int> idByName = new Dictionary<string, int>();
 
         public virtual string SeriesName

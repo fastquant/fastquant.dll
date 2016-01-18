@@ -447,9 +447,9 @@ namespace SmartQuant
             Flush();
             CloseFileStream();
             this.opened = false;
-       }
+        }
 
-       protected virtual bool OpenFileStream(string name, FileMode mode)
+        protected virtual bool OpenFileStream(string name, FileMode mode)
         {
             this.stream = new FileStream(name, mode);
             return this.stream.Length != 0;
@@ -902,5 +902,13 @@ namespace SmartQuant
             return Keys.TryGetValue(name, out key) ? key : null;
         }
         #endregion
+    }
+
+    public class NetDataFile : DataFile
+    {
+        public NetDataFile(string name, string host, int port, StreamerManager streamerManager = null) : base(name, streamerManager)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -175,7 +175,7 @@ namespace SmartQuant
 
         public List<Group> GroupList { get; } = new List<Group>();
 
-        public IdArray<Group> Groups { get; } = new IdArray<Group>(1024);
+        public IdArray<Group> Groups { get; } = new IdArray<Group>();
 
         public GroupManager(Framework framework)
         {
@@ -196,6 +196,14 @@ namespace SmartQuant
             GroupList.Add(group);
             group.Framework = this.framework;
             this.framework.EventServer.OnLog(group);
+        }
+
+        internal void OnGroupEvent(GroupEvent e)
+        {
+        }
+
+        internal void OnGroup(Group e)
+        {
         }
     }
 }

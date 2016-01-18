@@ -279,14 +279,14 @@ namespace SmartQuant.Controls.Portfolios
       this.ctxPortfolios_View.Click += new EventHandler(this.ctxPortfolios_View_Click);
       this.toolStripSeparator3.Name = "toolStripSeparator3";
       this.toolStripSeparator3.Size = new Size(126, 6);
-      this.ctxPortfolios_Delete.Image = (Image) Resources.delete;
+ //     this.ctxPortfolios_Delete.Image = (Image) Resources.delete;
       this.ctxPortfolios_Delete.Name = "ctxPortfolios_Delete";
       this.ctxPortfolios_Delete.Size = new Size(129, 22);
       this.ctxPortfolios_Delete.Text = "Delete";
       this.ctxPortfolios_Delete.Click += new EventHandler(this.ctxPortfolios_Delete_Click);
       this.toolStripSeparator2.Name = "toolStripSeparator2";
       this.toolStripSeparator2.Size = new Size(126, 6);
-      this.ctxPortfolios_Properties.Image = (Image) Resources.properties;
+ //     this.ctxPortfolios_Properties.Image = (Image) Resources.properties;
       this.ctxPortfolios_Properties.Name = "ctxPortfolios_Properties";
       this.ctxPortfolios_Properties.Size = new Size(129, 22);
       this.ctxPortfolios_Properties.Text = "Properties";

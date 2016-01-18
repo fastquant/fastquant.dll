@@ -5,7 +5,7 @@ namespace SmartQuant
     public class ExecutionMessage : DataObject
     {
         private Instrument instrument;
-        //private int instrumentId;
+
         private ObjectTable fields;
         private Order order;
         private int orderId;
@@ -14,7 +14,7 @@ namespace SmartQuant
 
         public int ClientId { get; set; } = -1;
 
-        public bool IsLoaded { get; private set; }
+        public bool IsLoaded { get; internal set; }
 
         public Order Order
         {

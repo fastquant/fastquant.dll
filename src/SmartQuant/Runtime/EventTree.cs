@@ -63,6 +63,7 @@ namespace SmartQuant
             return false;
         }
 
+        // TODO: need more comments
         private void Arrange(EventTreeItem item)
         {
             item.Right = item.Left = item.Next = item.Prev = null;
@@ -119,6 +120,7 @@ namespace SmartQuant
                 last_current.Left = item;
         }
 
+        // TODO: need more comments
         public Event Read()
         {
             if (this.last != null)
@@ -164,9 +166,6 @@ namespace SmartQuant
             return e;
         }
 
-        public void Remove(IEventQueue queue)
-        {
-            Console.WriteLine("EventTree::Remove is called");
-        }
+        public void Remove(IEventQueue queue) => Console.WriteLine("EventTree::Remove is called");
     }
 }

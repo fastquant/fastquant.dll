@@ -59,7 +59,6 @@ namespace SmartQuant
         private ClockMode mode;
 
         private Framework framework;
-        private ClockType type;
         private bool isStandalone;
         private long initTicks;
         private Stopwatch stopwatch;
@@ -82,11 +81,13 @@ namespace SmartQuant
             }
         }
 
+        internal ClockType Type { get; set; }
+
         public DateTime DateTime
         {
             get
             {
-                if (this.type == ClockType.Exchange)
+                if (Type == ClockType.Exchange)
                     return this.dateTime;
 
                 if (this.mode == ClockMode.Simulation)
@@ -99,7 +100,7 @@ namespace SmartQuant
             }
             internal set
             {
-                if (this.type == ClockType.Exchange && value != this.dateTime)
+                if (Type == ClockType.Exchange && value != this.dateTime)
                 {
                     if (value < this.dateTime)
                     {
@@ -155,7 +156,7 @@ namespace SmartQuant
         public Clock(Framework framework, ClockType type = ClockType.Local, bool isStandalone = false)
         {
             this.framework = framework;
-            this.type = type;
+            Type = type;
             this.isStandalone = isStandalone;
             this.dateTime = DateTime.MinValue;
             this.mode = this.framework.Mode == FrameworkMode.Realtime ? ClockMode.Realtime : ClockMode.Simulation;
@@ -222,7 +223,7 @@ namespace SmartQuant
         {
             if (reminder.DateTime < this.dateTime)
             {
-                Console.WriteLine($"Clock::AddReminder ({this.type}) Can not set reminder to the past. Clock datetime = {DateTime.ToString("dd.MM.yyyy HH:mm:ss.ffff")} Reminder datetime = {reminder.DateTime.ToString("dd.MM.yyyy HH: mm:ss.ffff")} Reminder object = {reminder.Data}");
+                Console.WriteLine($"Clock::AddReminder ({Type}) Can not set reminder to the past. Clock datetime = {DateTime.ToString("dd.MM.yyyy HH:mm:ss.ffff")} Reminder datetime = {reminder.DateTime.ToString("dd.MM.yyyy HH: mm:ss.ffff")} Reminder object = {reminder.Data}");
                 return false;
             }
             reminder.Clock = this;

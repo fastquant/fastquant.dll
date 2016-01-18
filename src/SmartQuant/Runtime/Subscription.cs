@@ -4,8 +4,6 @@ using System.Collections.Generic;
 
 namespace SmartQuant
 {
-    using SubMap = Dictionary<int, Dictionary<Instrument, int>>;
-
     public class Subscription
     {
         [Parameter]
@@ -118,8 +116,10 @@ namespace SmartQuant
     public class SubscriptionManager
     {
         private Framework framework;
+
         public bool ConnectOnSubscribe { get; private set; } = true;
-        private SubMap submap = new SubMap();
+
+        private Dictionary<int, Dictionary<Instrument, int>> submap = new Dictionary<int, Dictionary<Instrument, int>>();
 
         public SubscriptionManager(Framework framework)
         {
@@ -245,6 +245,26 @@ namespace SmartQuant
         public void Unsubscribe(IDataProvider provider, InstrumentList instruments)
         {
             throw new NotImplementedException();
+        }
+
+        internal void OnProviderConnected(IDataProvider dataProvider)
+        {
+            if (this.submap.ContainsKey(dataProvider.Id))
+            {
+                foreach (Instrument i in this.submap[dataProvider.Id].Keys)
+                {
+                    if (this.submap[dataProvider.Id][i] != 0)
+                    {
+                        Console.WriteLine($"SubscriptionManager::OnProviderConnected {dataProvider.Name} resubscribing {i.Symbol}");
+                        dataProvider.Subscribe(i);
+                    }
+                }
+            }
+        }
+
+        internal void OnProviderDisconnected(IDataProvider idataProvider_0)
+        {
+            // noop
         }
     }
 }

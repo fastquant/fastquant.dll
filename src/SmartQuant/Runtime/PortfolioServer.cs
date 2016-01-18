@@ -38,7 +38,5 @@
         public virtual void Save(Portfolio portfolio)
         {
         }
-
     }
-
 }

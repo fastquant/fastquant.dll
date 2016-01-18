@@ -16,7 +16,6 @@ namespace SmartQuant
             Server = orderServer;
         }
 
-
         public void Cancel(Order stopLossOrder)
         {
             throw new NotImplementedException();
@@ -39,7 +38,22 @@ namespace SmartQuant
 
         public void Replace(Order order, double price, double stopPx, double qty)
         {
-                throw new NotImplementedException();
+            throw new NotImplementedException();
+        }
+
+        internal void method_0(ExecutionReport report)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void method_1(AccountReport report)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void method_5(ExecutionReport report)
+        {
+            throw new NotImplementedException();
         }
     }
 }

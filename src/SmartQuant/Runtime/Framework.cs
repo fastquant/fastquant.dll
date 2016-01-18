@@ -98,9 +98,13 @@ namespace SmartQuant
         public bool IsExternalDataQueue { get; set; }
 
         public bool IsDisposable { get; set; } = true;
+
         private bool bool_1 { get; set; } = true;
+
         private bool bool_2 { get; set; } = true;
+
         private bool bool_3 { get; set; } = true;
+
         private bool bool_4 { get; set; } = true;
 
         public Clock Clock { get; }
@@ -168,7 +172,6 @@ namespace SmartQuant
         public GroupDispatcher GroupDispatcher { get; set; }
 
         public InstrumentManager InstrumentManager { get; set; }
-
 
         public ICurrencyConverter CurrencyConverter { get; set; }
 

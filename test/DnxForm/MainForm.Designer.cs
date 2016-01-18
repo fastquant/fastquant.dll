@@ -132,7 +132,7 @@ namespace Demo
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(624, 362);
+            this.ClientSize = new System.Drawing.Size(800, 600);
             this.Controls.Add(this.tabControl1);
             this.Name = "MainForm";
             this.Text = "SmartQuant Charts Demo";

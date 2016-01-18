@@ -15,7 +15,6 @@ namespace SmartQuant
 
     public class Reminder : DataObject
     {
-
         public override byte TypeId => DataObjectType.Reminder;
 
         public ReminderCallback Callback { get; }
@@ -24,8 +23,7 @@ namespace SmartQuant
 
         public object Data { set; get; }
 
-        public Reminder(ReminderCallback callback, DateTime dateTime, object data)
-            : base(dateTime)
+        public Reminder(ReminderCallback callback, DateTime dateTime, object data) : base(dateTime)
         {
             Callback = callback;
             Data = data;

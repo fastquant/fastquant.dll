@@ -288,10 +288,21 @@ namespace SmartQuant
                 Strategy.UxFbinsqFw(ask);
         }
 
+        internal void OnTrade(Trade trade)
+        {
+            throw new NotImplementedException();
+        }
+
         internal void OnBid(Bid bid)
         {
             if (Strategy?.Status == StrategyStatus.Running)
                 Strategy.vmethod_9(bid);
+        }
+
+        internal void OnBar(Bar bar_0)
+        {
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.vmethod_13(bar_0);
         }
 
         internal void method_46(string source, Event e, Exception ex)
@@ -319,5 +330,185 @@ namespace SmartQuant
             }
         }
 
+        internal void method_10(Level2Snapshot level2Snapshot_0)
+        {
+            if (Strategy?.Status == StrategyStatus.Running)
+            {
+                Strategy.vmethod_11(level2Snapshot_0);
+            }
+        }
+        internal void method_11(Level2Update level2Update_0)
+        {
+            if (Strategy?.Status == StrategyStatus.Running)
+            {
+                Strategy.vmethod_12(level2Update_0);
+            }
+        }
+
+        internal void method_30(OnFill e)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void method_31(OnTransaction e)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void method_29(AccountReport report)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void method_37(AccountData data)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void method_28(Order order)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void method_27(Order order)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void method_26(Order order)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void method_25(Order order)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void method_24(Order order)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void method_22(Order order)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void method_23(Order order)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void method_20(Order order)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void method_21(Order order)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void method_19(Order order)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void method_18(Order order)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void method_16(Order order)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void method_38(Command e)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void method_15(News news)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void gudLdqclqe(Fundamental fundamental)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void IbsLpdRkc3(ExecutionReport report)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void method_6(ProviderError e)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void method_34(Portfolio portfolio)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void method_36(Portfolio portfolio)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void method_35(Portfolio portfolio)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void method_40(OnPropertyChanged e)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void method_14(BarSlice barSlice)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void vMaLxjraoe(Portfolio portfolio, Position position)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void method_32(Portfolio portfolio, Position position)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void method_33(Portfolio portfolio, Position position)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void method_17(Order order)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void method_45(object data)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void method_4(Provider provider)
+        {
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.vmethod_6(provider);
+        }
+
+        internal void method_5(Provider p)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

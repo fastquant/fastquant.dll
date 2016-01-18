@@ -93,7 +93,7 @@ namespace SmartQuant
             private LinkedListNode<T1> node;
             private int pos;
 
-            public T1 Current=> this.node.Data;
+            public T1 Current => this.node.Data;
 
             object IEnumerator.Current => Current;
 

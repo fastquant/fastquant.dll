@@ -6,8 +6,8 @@ namespace SmartQuant
 {
     public class DataSimulator : Provider, IDataSimulator
     {
-        private bool exit;
-        private bool running;
+        private volatile bool exit;
+        private volatile bool running;
         private long objCount;
         private Thread thread;
 

@@ -26,7 +26,7 @@ namespace SmartQuant
 
             public double CumQty { get; }
         }
-
+        private List<Order> list_0 = new List<Order>();
         private List<Order> list_1 = new List<Order>();
         private IdArray<List<Order>> idArray_0= new IdArray<List<Order>>(10240);
         private IdArray<ExecutionSimulator.Class43> idArray_1 = new IdArray<ExecutionSimulator.Class43>(10240);
@@ -112,6 +112,23 @@ namespace SmartQuant
 
         public void OnBid(Bid bid)
         {
+            var iId = bid.InstrumentId;
+            if (this.idArray_0[iId] == null)
+                return;
+
+            if (FillOnQuote)
+            {
+                for (int i = 0; i < this.idArray_0[iId].Count; i++)
+                {
+                    var order = this.idArray_0[iId][i];
+                    this.method_12(order, bid);
+                }
+                this.method_11();
+            }
+        }
+
+        private void method_12(Order order, Bid bid)
+        {
             throw new NotImplementedException();
         }
 
@@ -137,8 +154,19 @@ namespace SmartQuant
         private void Cancel(Order order)
         {
         }
+
         private void Replace(ExecutionCommand command)
         {
+        }
+
+        private void method_11()
+        {
+            if (this.list_0.Count > 0)
+            {
+                foreach (var order in this.list_0)
+                    this.idArray_0[order.InstrumentId].Remove(order);
+                this.list_0.Clear();
+            }
         }
     }
 }
