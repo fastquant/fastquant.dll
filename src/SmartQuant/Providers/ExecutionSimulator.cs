@@ -26,9 +26,13 @@ namespace SmartQuant
 
             public double CumQty { get; }
         }
+
         private List<Order> list_0 = new List<Order>();
+
         private List<Order> list_1 = new List<Order>();
+
         private IdArray<List<Order>> idArray_0= new IdArray<List<Order>>(10240);
+
         private IdArray<ExecutionSimulator.Class43> idArray_1 = new IdArray<ExecutionSimulator.Class43>(10240);
 
         public TimeSpan Auction1 { get; set; }
@@ -97,17 +101,17 @@ namespace SmartQuant
 
         public void OnAsk(Ask ask)
         {
-            throw new NotImplementedException();
+        //    throw new NotImplementedException();
         }
 
         public void OnBar(Bar bar)
         {
-            throw new NotImplementedException();
+         //   throw new NotImplementedException();
         }
 
         public void OnBarOpen(Bar bar)
         {
-            throw new NotImplementedException();
+        //    throw new NotImplementedException();
         }
 
         public void OnBid(Bid bid)
@@ -144,7 +148,7 @@ namespace SmartQuant
 
         public void OnTrade(Trade trade)
         {
-            throw new NotImplementedException();
+        //    throw new NotImplementedException();
         }
 
         private void Send(Order order)

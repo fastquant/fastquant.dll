@@ -111,6 +111,11 @@ namespace SmartQuant
             Name = name;
         }
 
+        internal void method_1(ExecutionReport report, bool v)
+        {
+            throw new NotImplementedException();
+        }
+
         public Portfolio(Framework framework, string name = "") : this(name)
         {
             Init(framework);
@@ -129,6 +134,11 @@ namespace SmartQuant
         public void Add(ExecutionReport report)
         {
             Add(report, false);
+        }
+
+        public void Add(AccountReport report)
+        {
+            Account.Add(report);
         }
 
         internal void Add(ExecutionReport report, bool bool_0 = true)
@@ -343,70 +353,29 @@ namespace SmartQuant
     {
         private GetByList<Portfolio> list = new GetByList<Portfolio>("Id", "Name");
 
-        public int Count
-        {
-            get
-            {
-                return this.list.Count;
-            }
-        }
+        public int Count => this.list.Count;
 
-        public Portfolio this[string name]
-        {
-            get
-            {
-                return GetByName(name);
-            }
-        }
+        public Portfolio this[string name] => GetByName(name);
 
         public PortfolioList()
         {
         }
+        public bool Contains(int id) => this.list.Contains(id);
 
-        public void Add(Portfolio portfolio)
-        {
-            this.list.Add(portfolio);
-        }
+        public void Add(Portfolio portfolio) => this.list.Add(portfolio);
 
-        public Portfolio GetByName(string name)
-        {
-            return this.list.GetByName(name);
-        }
+        public Portfolio GetByName(string name) => this.list.GetByName(name);
 
-        public Portfolio GetByIndex(int index)
-        {
-            return this.list.GetByIndex(index);
-        }
+        public Portfolio GetByIndex(int index) => this.list.GetByIndex(index);
 
-        public Portfolio GetById(int id)
-        {
-            return this.list.GetById(id);
-        }
+        public Portfolio GetById(int id) => this.list.GetById(id);
 
-        internal void Remove(Portfolio portfolio)
-        {
-            this.list.Remove(portfolio);
-        }
+        internal void Remove(Portfolio portfolio) => this.list.Remove(portfolio);
 
-        public void Clear()
-        {
-            this.list.Clear();
-        }
+        public void Clear() => this.list.Clear();
 
-        public IEnumerator<Portfolio> GetEnumerator()
-        {
-            return this.list.GetEnumerator();
-        }
+        public IEnumerator<Portfolio> GetEnumerator() => this.list.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.list.GetEnumerator();
-        }
-
-        IEnumerator<Portfolio> IEnumerable<Portfolio>.GetEnumerator()
-        {
-            return this.list.GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
-
 }

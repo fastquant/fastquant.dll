@@ -183,9 +183,9 @@ namespace SmartQuant
             }
         }
 
-        public Portfolio Portfolio { get; private set; }
+        public Portfolio Portfolio { get; internal set; }
 
-        public IExecutionProvider Provider { get; private set; }
+        public IExecutionProvider Provider { get; internal set; }
 
         public int AlgoId { get; internal set; }
 

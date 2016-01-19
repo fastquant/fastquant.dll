@@ -290,7 +290,8 @@ namespace SmartQuant
 
         internal void OnTrade(Trade trade)
         {
-            throw new NotImplementedException();
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.EmitOnTrade(trade);
         }
 
         internal void OnBid(Bid bid)
@@ -508,7 +509,7 @@ namespace SmartQuant
 
         internal void method_5(Provider p)
         {
-            throw new NotImplementedException();
+        //    throw new NotImplementedException();
         }
     }
 }

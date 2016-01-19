@@ -57,19 +57,19 @@ namespace Demo
 
         private void Reset()
         {
-            Invoke((Action)delegate
-            {
-                this.portfolio = Framework.Current.PortfolioManager.Portfolios.GetByIndex(0);
-                if (this.portfolio == null)
-                    return;
-                var performance = this.portfolio.Performance;
-                this.chart3.Reset();
-                this.chart3.SetMainSeries(performance.EquitySeries, false, Color.White);
-                this.chart3.AddPad();
-                this.chart3.DrawSeries(performance.DrawdownSeries, 2, Color.White, SimpleDSStyle.Line, SearchOption.ExactFirst, SmoothingMode.HighSpeed);
-                this.chart3.UpdateStyle = ChartUpdateStyle.WholeRange;
-                performance.Updated += (sender, e) => this.chart3.OnItemAdded();
-            });
+            //Invoke((Action)delegate
+            //{
+            //    this.portfolio = Framework.Current.PortfolioManager.Portfolios.GetByIndex(0);
+            //    if (this.portfolio == null)
+            //        return;
+            //    var performance = this.portfolio.Performance;
+            //    this.chart3.Reset();
+            //    this.chart3.SetMainSeries(performance.EquitySeries, false, Color.White);
+            //    this.chart3.AddPad();
+            //    this.chart3.DrawSeries(performance.DrawdownSeries, 2, Color.White, SimpleDSStyle.Line, SearchOption.ExactFirst, SmoothingMode.HighSpeed);
+            //    this.chart3.UpdateStyle = ChartUpdateStyle.WholeRange;
+            //    performance.Updated += (sender, e) => this.chart3.OnItemAdded();
+            //});
         }
     }
 }

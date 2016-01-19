@@ -39,7 +39,7 @@ namespace SmartQuant
 
     public class AccountDataSnapshot
     {
-        public AccountDataEntry[] Entries { get; private set; }
+        public AccountDataEntry[] Entries { get; }
 
         internal AccountDataSnapshot(AccountDataEntry[] entries)
         {
@@ -85,11 +85,11 @@ namespace SmartQuant
         public const string PRICE = "Price";
         public const string STOP_PX = "StopPx";
 
-        public string Name { get; private set; }
+        public string Name { get; }
 
-        public string Currency { get; private set; }
+        public string Currency { get; }
 
-        public object Value { get; private set; }
+        public object Value { get; }
 
         public AccountDataField(string name, string currency, object value)
         {
@@ -98,8 +98,7 @@ namespace SmartQuant
             Value = value;
         }
 
-        public AccountDataField(string name, object value)
-            : this(name, string.Empty, value)
+        public AccountDataField(string name, object value) : this(name, string.Empty, value)
         {
         }
     }
@@ -131,7 +130,7 @@ namespace SmartQuant
             }
         }
 
-        public object this[string name]=> this[name, string.Empty];
+        public object this[string name] => this[name, string.Empty];
 
         internal AccountDataFieldList()
         {
@@ -148,20 +147,14 @@ namespace SmartQuant
             logger.Add(currency, value);
         }
 
-        public void Add(string name, object value)
-        {
-            Add(name, string.Empty, value);
-        }
+        public void Add(string name, object value) => Add(name, string.Empty, value);
 
-        public void Clear()
-        {
-            fields.Clear();
-        }
+        public void Clear() => this.fields.Clear();
 
         public AccountDataField[] ToArray()
         {
             var list = new List<AccountDataField>();
-            foreach (var logger in fields)
+            foreach (var logger in this.fields)
                 foreach (var field in logger.Value)
                     list.Add(new AccountDataField(logger.Key, field.Key, field.Value));
             return list.ToArray();

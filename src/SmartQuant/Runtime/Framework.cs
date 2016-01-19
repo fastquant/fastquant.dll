@@ -68,7 +68,7 @@ namespace SmartQuant
             {
                 this.queue = new EventQueue(EventQueueId.Service, EventQueueType.Master, EventQueuePriority.Normal, 100000, null);
                 this.queue.Enqueue(new OnQueueOpened(this.queue));
-                this.framework.Bus.CommandPipe.Add(this.queue);
+                this.framework.EventBus.CommandPipe.Add(this.queue);
             }
             this.queue.Enqueue(e);
         }
@@ -83,15 +83,12 @@ namespace SmartQuant
     {
         private static Framework instance;
         private FrameworkMode mode;
-        private EventBus bus;
         private bool disposed;
 
         private DataServer dataServer;
         private OrderServer orderServer;
         private InstrumentServer instrumentServer;
         private PortfolioServer portfolioServer;
-
-        internal EventBus Bus => bus;
 
         public string Name { get; }
 
@@ -127,17 +124,17 @@ namespace SmartQuant
                     {
                         case FrameworkMode.Simulation:
                             Clock.Mode = ClockMode.Simulation;
-                            if (this.bus != null)
+                            if (EventBus != null)
                             {
-                                this.bus.Mode = EventBusMode.Simulation;
+                                EventBus.Mode = EventBusMode.Simulation;
                                 return;
                             }
                             break;
                         case FrameworkMode.Realtime:
                             Clock.Mode = ClockMode.Realtime;
-                            if (this.bus != null)
+                            if (EventBus != null)
                             {
-                                this.bus.Mode = EventBusMode.Realtime;
+                                EventBus.Mode = EventBusMode.Realtime;
                             }
                             break;
                         default:

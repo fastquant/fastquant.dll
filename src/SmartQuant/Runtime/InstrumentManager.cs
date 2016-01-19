@@ -6,7 +6,7 @@ namespace SmartQuant
     public class InstrumentManager
     {
         private Framework framework;
-        private int count;
+        private int counter;
 
         private InstrumentList deletedInstruments = new InstrumentList();
 
@@ -33,7 +33,7 @@ namespace SmartQuant
             }
             else
             {
-                instrument.Id = this.count++;
+                instrument.Id = this.counter++;
             }
             Instruments.Add(instrument);
             if (instrument.Framework == null)
@@ -107,29 +107,25 @@ namespace SmartQuant
         public void Load()
         {
             Server.Open();
-            this.count = -1;
+            this.counter = -1;
             var instrumentList = Server.Load();
             foreach (var i in instrumentList)
             {
                 i.Init(this.framework);
                 i.Loaded = true;
                 if (i.DeleteCached)
-                {
                     this.deletedInstruments.Add(i);
-                }
                 else
-                {
                     Instruments.Add(i);
-                }
-                this.count = Math.Max(this.count, i.Id);
+                this.counter = Math.Max(this.counter, i.Id);
             }
-            this.count++;
+            this.counter++;
         }
 
         public void Save(Instrument instrument)
         {
-            if (Server != null && instrument.Loaded)
-                 Server.Save(instrument);
+            if (instrument.Loaded)
+                 Server?.Save(instrument);
         }
 
         public Instrument Get(string symbol) => Instruments.Get(symbol);

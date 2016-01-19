@@ -29,6 +29,16 @@ namespace SmartQuant
 
         public void OnData(DataObject data)=> OnEvent(data);
 
+        internal void OnAccountReport(AccountReport report)
+        {
+            OnEvent(report);
+        }
+
+        internal void OnExecutionReport(ExecutionReport report)
+        {
+            OnEvent(report);
+        }
+
         public void OnProviderAdded(IProvider provider)
         {
             OnEvent(new OnProviderAdded(provider));
@@ -42,6 +52,11 @@ namespace SmartQuant
         public void OnProviderConnected(Provider provider)
         {
             OnEvent(new OnProviderConnected(this.framework.Clock.DateTime, provider));
+        }
+
+        internal void OnOrderManagerCleared()
+        {
+            OnEvent(new OnOrderManagerCleared());
         }
 
         public void OnProviderDisconnected(Provider provider)
@@ -71,6 +86,16 @@ namespace SmartQuant
         internal void OnPortfolioParentChanged(Portfolio portfolio, bool v)
         {
             throw new NotImplementedException();
+        }
+
+        public void OnPortfolioAdded(Portfolio portfolio)
+        {
+            OnEvent(new OnPortfolioAdded(portfolio));
+        }
+
+        public void OnPortfolioRemoved(Portfolio portfolio)
+        {
+            OnEvent(new OnPortfolioRemoved(portfolio));
         }
 
         public void OnInstrumentAdded(Instrument instrument) => OnEvent(new OnInstrumentAdded(instrument));
@@ -113,6 +138,25 @@ namespace SmartQuant
         public void OnFrameworkCleared(Framework framework)
         {
             OnEvent(new OnFrameworkCleared(framework));
+        }
+
+        internal void OnSendOrder(Order order)
+        {
+            OnEvent(new OnSendOrder(order));
+        }
+
+        internal void OnExecutionCommand(ExecutionCommand command)
+        {
+            OnEvent(command);
+        }
+
+        internal void OnPendingNewOrder(Order order, bool queued = true)
+        {
+            var e = new OnPendingNewOrder(order);
+            if (queued)
+                this.queue.Enqueue(e);
+            else
+                OnEvent(e);
         }
     }
 }

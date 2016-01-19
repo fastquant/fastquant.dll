@@ -2,74 +2,28 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Runtime.InteropServices;
 
 namespace SmartQuant
 {
+#if QUICKLZ_CSHARP
     public class QuickLZ
     {
-        public uint QLZ_COMPRESSION_LEVEL
-        {
-            get
-            {
-                return 1;
-            }
-        }
+        public uint QLZ_COMPRESSION_LEVEL => 1;
 
-        public bool QLZ_MEMORY_SAFE
-        {
-            get
-            {
-                return Stolen.QuickLZ.QLZ_MEMORY_SAFE == 1;
-            }
-        }
+        public bool QLZ_MEMORY_SAFE => Stolen.QuickLZ.QLZ_MEMORY_SAFE == 1;
 
-        public uint QLZ_SCRATCH_COMPRESS
-        {
-            get
-            {
-                return 1;
-            }
-        }
+        public uint QLZ_SCRATCH_COMPRESS => 1;
 
-        public uint QLZ_SCRATCH_DECOMPRESS
-        {
-            get
-            {
-                return 1;
-            }
-        }
+        public uint QLZ_SCRATCH_DECOMPRESS => 1;
 
-        public uint QLZ_STREAMING_BUFFER
-        {
-            get
-            {
-                return Stolen.QuickLZ.QLZ_STREAMING_BUFFER;
-            }
-        }
+        public uint QLZ_STREAMING_BUFFER => Stolen.QuickLZ.QLZ_STREAMING_BUFFER;
 
-        public uint QLZ_VERSION_MAJOR
-        {
-            get
-            {
-                return Stolen.QuickLZ.QLZ_VERSION_MAJOR;
-            }
-        }
+        public uint QLZ_VERSION_MAJOR => Stolen.QuickLZ.QLZ_VERSION_MAJOR;
 
-        public uint QLZ_VERSION_MINOR
-        {
-            get
-            {
-                return Stolen.QuickLZ.QLZ_VERSION_MINOR;
-            }
-        }
+        public uint QLZ_VERSION_MINOR => Stolen.QuickLZ.QLZ_VERSION_MINOR;
 
-        public int QLZ_VERSION_REVISION
-        {
-            get
-            {
-                return Stolen.QuickLZ.QLZ_VERSION_REVISION;
-            }
-        }
+        public int QLZ_VERSION_REVISION => Stolen.QuickLZ.QLZ_VERSION_REVISION;
 
         public static IntPtr qlz_compress(byte[] source, byte[] destination, IntPtr size, byte[] scratch)
         {
@@ -101,20 +55,11 @@ namespace SmartQuant
             return Stolen.QuickLZ.decompress(source);
         }
 
-        public byte[] Compress(byte[] source)
-        {
-            return Stolen.QuickLZ.compress(source, (int)this.QLZ_COMPRESSION_LEVEL);
-        }
+        public byte[] Compress(byte[] source) => Stolen.QuickLZ.compress(source, (int)QLZ_COMPRESSION_LEVEL);
 
-        public uint SizeDecompressed(byte[] source)
-        {
-            return (uint)Stolen.QuickLZ.sizeDecompressed(source);
-        }
+        public uint SizeDecompressed(byte[] source) => (uint)Stolen.QuickLZ.sizeDecompressed(source);
 
-        public uint SizeCompressed(byte[] source)
-        {
-            return (uint)Stolen.QuickLZ.sizeCompressed(source);
-        }
+        public uint SizeCompressed(byte[] source) => (uint)Stolen.QuickLZ.sizeCompressed(source);
     }
 
     // stolen from QuickLZ source, http://www.quicklz.com/QuickLZ.cs
@@ -602,4 +547,68 @@ namespace SmartQuant
             }
         }
     }
+#else
+    public class QuickLZ
+    {
+        private byte[] compress_scratch;
+        private byte[] decompress_scratch;
+
+        public QuickLZ()
+        {
+            this.compress_scratch = new byte[QLZ_SCRATCH_COMPRESS];
+            this.decompress_scratch = QLZ_STREAMING_BUFFER == 0 ? this.compress_scratch : new byte[QLZ_SCRATCH_DECOMPRESS];
+        }
+
+        public byte[] Compress(byte[] source)
+        {
+            var data = new byte[source.Length + 400]; // why 400? 
+            var size = (ulong)qlz_compress(source, data, (UIntPtr)source.Length, this.compress_scratch);
+            var result = new byte[size];
+            Array.Copy(data, result, (int)size);
+            return result;
+        }
+
+        public byte[] Decompress(byte[] source)
+        {
+            var buffer = new byte[(int)qlz_size_decompressed(source)];
+            qlz_decompress(source, buffer, this.decompress_scratch);
+            return buffer;
+        }
+
+        [DllImport("libquicklz")]
+        public static extern UIntPtr qlz_compress(byte[] source, byte[] destination, UIntPtr size, byte[] scratch);
+
+        [DllImport("libquicklz")]
+        public static extern UIntPtr qlz_decompress(byte[] source, byte[] destination, byte[] scratch);
+
+        [DllImport("libquicklz")]
+        public static extern int qlz_get_setting(int setting);
+
+        [DllImport("libquicklz")]
+        public static extern UIntPtr qlz_size_compressed(byte[] source);
+
+        [DllImport("libquicklz")]
+        public static extern UIntPtr qlz_size_decompressed(byte[] source);
+
+        public uint SizeCompressed(byte[] Source) => (uint)qlz_size_compressed(Source);
+
+        public uint SizeDecompressed(byte[] Source) => (uint)qlz_size_decompressed(Source);
+
+        public uint QLZ_COMPRESSION_LEVEL => (uint)qlz_get_setting(0);
+
+        public bool QLZ_MEMORY_SAFE => qlz_get_setting(6) == 1;
+
+        public uint QLZ_SCRATCH_COMPRESS => (uint)qlz_get_setting(1);
+
+        public uint QLZ_SCRATCH_DECOMPRESS => (uint)qlz_get_setting(2);
+
+        public uint QLZ_STREAMING_BUFFER => (uint)qlz_get_setting(3);
+
+        public uint QLZ_VERSION_MAJOR => (uint)qlz_get_setting(7);
+
+        public uint QLZ_VERSION_MINOR => (uint)qlz_get_setting(8);
+
+        public uint QLZ_VERSION_REVISION => (uint)qlz_get_setting(9);
+    }
+#endif
 }

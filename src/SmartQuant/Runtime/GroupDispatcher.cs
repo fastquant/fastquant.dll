@@ -55,7 +55,7 @@ namespace SmartQuant
 
         private Dictionary<IGroupListener, List<int>> dictionary_0= new Dictionary<IGroupListener, List<int>>();
 
-        private IdArray<List<IGroupListener>> idArray_0 = new IdArray<List<IGroupListener>>(1024);
+        private IdArray<List<IGroupListener>> idArray_0 = new IdArray<List<IGroupListener>>();
 
         private List<IGroupListener> list_0 = new List<IGroupListener>();
 

@@ -244,7 +244,7 @@ namespace SmartQuant
 
         public void Unsubscribe(IDataProvider provider, InstrumentList instruments)
         {
-            throw new NotImplementedException();
+          //  throw new NotImplementedException();
         }
 
         internal void OnProviderConnected(IDataProvider dataProvider)

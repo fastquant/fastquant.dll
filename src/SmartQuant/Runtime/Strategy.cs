@@ -329,7 +329,7 @@ namespace SmartQuant
 
         internal void vmethod_13(Bar bar_0)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         internal void vmethod_42(string source, Event ev, Exception exception)
@@ -371,6 +371,10 @@ namespace SmartQuant
                     node.Data.vmethod_9(bid);
                 }
             }
+        }
+
+        internal virtual void EmitOnTrade(Trade trade)
+        {
         }
 
         internal void vmethod_12(Level2Update level2Update_0)

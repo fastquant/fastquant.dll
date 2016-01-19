@@ -81,6 +81,8 @@ namespace SmartQuant
         private Instrument instrument;
         internal int InstrumentId { get; set; }
 
+        public string ClOrderId { get; set; }
+
         public override byte TypeId => DataObjectType.Order;
 
         public string Text { get; set; }

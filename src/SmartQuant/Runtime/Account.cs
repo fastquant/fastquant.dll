@@ -2,6 +2,9 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+
 using CId = SmartQuant.CurrencyId;
 
 namespace SmartQuant
@@ -10,18 +13,24 @@ namespace SmartQuant
     {
         private Framework framework;
 
-        public byte CurrencyId { get; set; }
+        private IdArray<AccountPosition> positionsByCId = new IdArray<AccountPosition>();
+
+        public byte CurrencyId { get; set; } = CId.USD;
+
+        public bool UpdateParent { get; set; } = true;
+
+        public double Value => Positions.Sum(p => this.framework.CurrencyConverter.Convert(p.Value, p.CurrencyId, CurrencyId));
+
+        public Account Parent { get; internal set; }
+
+        public List<AccountPosition> Positions = new List<AccountPosition>();
+
+        public List<AccountTransaction> Transactions = new List<AccountTransaction>();
 
         public Account(Framework framework)
         {
             this.framework = framework;
         }
-
-        public bool UpdateParent { get; set; }
-
-        public double Value { get; internal set; }
-
-        public Account Parent { get; internal set; }
 
         public void Add(AccountReport report)
         {
@@ -30,17 +39,31 @@ namespace SmartQuant
 
         public void Add(AccountTransaction transaction, bool updateParent = true)
         {
-            throw new NotImplementedException();
+            var position = this.positionsByCId[transaction.CurrencyId];
+            if (position == null)
+            {
+                position = new AccountPosition(transaction);
+                this.positionsByCId[position.CurrencyId] = position;
+                Positions.Add(position);
+            }
+            else
+            {
+                position.Add(transaction);
+            }
+
+            Transactions.Add(transaction);
+            if (Parent != null && updateParent && UpdateParent)
+                Parent.Add(transaction.DateTime, transaction.Value, transaction.CurrencyId, transaction.Text, updateParent);
         }
 
         public void Add(DateTime dateTime, double value, byte currencyId = CId.USD, string text = null, bool updateParent = true)
         {
-            throw new NotImplementedException();
+            Add(new AccountTransaction(dateTime, value, currencyId, text), updateParent);
         }
 
         public void Add(double value, byte currencyId = CId.USD, string text = null, bool updateParent = true)
         {
-            throw new NotImplementedException();
+            Add(new AccountTransaction(this.framework.Clock.DateTime, value, currencyId, text), updateParent);
         }
 
         public void Deposit(DateTime dateTime, double value, byte currencyId = CId.USD, string text = null, bool updateParent = true)
@@ -62,6 +85,10 @@ namespace SmartQuant
         {
             Add(dateTime, -value, currencyId, text, updateParent);
         }
+
+        public AccountPosition GetByCurrencyId(byte currencyId) => this.positionsByCId[currencyId];
+
+        public double GetValue(byte currencyId) => this.positionsByCId[currencyId]?.Value ?? 0;
     }
 
     public class AccountPosition
@@ -99,7 +126,7 @@ namespace SmartQuant
 
         public AccountTransaction(DateTime dateTime, double value, byte currencyId, string text)
         {
-            this.DateTime = dateTime;
+            DateTime = dateTime;
             Value = value;
             CurrencyId = currencyId;
             Text = text;

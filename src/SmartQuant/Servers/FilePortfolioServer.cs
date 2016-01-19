@@ -54,7 +54,6 @@ namespace SmartQuant
             return portfolio;
         }
 
-
         public override void Save(Portfolio portfolio)
         {
             foreach (var p in portfolio.Children)

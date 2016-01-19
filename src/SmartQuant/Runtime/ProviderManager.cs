@@ -74,30 +74,6 @@ namespace SmartQuant
                 return;
             }
             Providers.Add(provider);
-            //if (provider is IDataProvider)
-            //{
-            //    this.providerList_1.Add(provider);
-            //}
-            //if (provider is GInterface3)
-            //{
-            //    this.providerList_2.Add(provider);
-            //}
-            //if (provider is IHistoricalDataProvider)
-            //{
-            //    this.providerList_4.Add(provider);
-            //}
-            //if (provider is GInterface5)
-            //{
-            //    this.providerList_3.Add(provider);
-            //}
-            //if (provider is INewsProvider)
-            //{
-            //    this.providerList_5.Add(provider);
-            //}
-            //if (provider is GInterface1)
-            //{
-            //    this.providerList_6.Add(provider);
-            //}
             LoadSettings(provider);
             this.framework.EventServer.OnProviderAdded(provider);
         }

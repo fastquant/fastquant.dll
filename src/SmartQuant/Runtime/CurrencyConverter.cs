@@ -1,8 +1,10 @@
 ﻿// Copyright (c) FastQuant Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Linq;
 
 namespace SmartQuant
 {
@@ -183,19 +185,15 @@ namespace SmartQuant
         static CurrencyId()
         {
             mapping = new Dictionary<byte, string>();
-            foreach (var info in typeof(CurrencyId).GetFields(BindingFlags.Static | BindingFlags.Public))
-            {
-                if (info.FieldType == typeof(byte))
-                {
-                    mapping.Add((byte)info.GetValue(null), info.Name);
-                }
-            }
+            var fields = typeof(CurrencyId).GetFields(BindingFlags.Static | BindingFlags.Public).TakeWhile(f => f.FieldType == typeof(byte));
+            foreach (var f in fields)
+                mapping.Add(Convert.ToByte(f.GetValue(null)), f.Name);
         }
 
         public static byte GetId(string name)
         {
             var info = typeof(CurrencyId).GetField(name, BindingFlags.Static | BindingFlags.Public);
-            return info != null ? (byte)info.GetValue(null) : (byte)0;
+            return info != null ? Convert.ToByte(info.GetValue(null)) : (byte)0;
         }
 
         public static string GetName(byte id) => mapping[id] ?? id.ToString();
@@ -251,14 +249,14 @@ namespace SmartQuant
             if (instrument != null)
             {
                 double price = GetPrice(instrument);
-                return price != 0.0 ? amount*price : amount;
+                return price != 0 ? amount*price : amount;
             }
 
             instrument = this.mappings[toCurrencyId]?[fromCurrencyId];
             if (instrument != null)
             {
                 double price = GetPrice(instrument);
-                return price != 0.0 ? amount/price : amount;
+                return price != 0 ? amount/price : amount;
             }
 
             return amount;

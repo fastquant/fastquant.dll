@@ -367,6 +367,8 @@ namespace SmartQuant
     {
         private static int HEAD_SIZE = 62;
 
+        public object Sync { get; } = new object();
+
         public StreamerManager StreamerManager { get; }
 
         public DataFile(string name, StreamerManager streamerManager)
@@ -516,6 +518,100 @@ namespace SmartQuant
             Keys.TryGetValue(name, out key);
             return key?.GetObject();
         }
+
+        protected void StreamFlush()
+        {
+            try
+            {
+                this.stream.Flush();
+            }
+            catch (Exception)
+            {
+                Console.WriteLine($"DataFile::StreamFlush Can not flush stream of file {this.name}");
+            }
+        }
+
+        protected int StreamRead(byte[] buffer, int offset, int count)
+        {
+            int result;
+            try
+            {
+                int num = this.stream.Read(buffer, offset, count);
+                result = num;
+            }
+            catch (Exception)
+            {
+                Console.WriteLine($"DataFile::StreamRead Can not read from file {this.name}");
+                result = 0;
+            }
+            return result;
+        }
+
+        protected long StreamSeek(long offset, SeekOrigin origin)
+        {
+            long result;
+            try
+            {
+                long num = this.stream.Seek(offset, origin);
+                result = num;
+            }
+            catch (Exception)
+            {
+                Console.WriteLine($"DataFile::StreamSeek Can not seek in file {this.name}");
+                result = 0L;
+            }
+            return result;
+        }
+
+        protected void StreamWrite(byte[] buffer, int offset, int count)
+        {
+            try
+            {
+                this.stream.Write(buffer, offset, count);
+            }
+            catch (Exception)
+            {
+                Console.WriteLine($"DataFile::StreamWrite Can not write to file {this.name}");
+            }
+        }
+
+        protected void StreamWriteByte(byte value)
+        {
+            try
+            {
+                this.stream.WriteByte(value);
+            }
+            catch (Exception)
+            {
+                Console.WriteLine($"DataFile::StreamWriteByte Can not write to file {this.name}");
+            }
+        }
+
+        //public virtual void Write(string name, object obj)
+        //{
+        //    lock (Sync)
+        //    {
+        //        ObjectKey key;
+        //        Keys.TryGetValue(name, out key);
+        //        if (key != null)
+        //        {
+        //            key.obj = obj;
+        //            key.Init(this);
+        //        }
+        //        else
+        //        {
+        //            key = new ObjectKey(this, name, obj);
+        //            Keys.Add(name, key);
+        //            this.oKeysCount++;
+        //        }
+        //        key.DateTime = DateTime.Now;
+        //        if (key.TypeId == ObjectType.DataSeries)
+        //        {
+        //            ((DataSeries)obj).Init(this, key);
+        //        }
+        //        WriteObjectKey(key);
+        //    }
+        //}
 
         internal bool ReadHeader()
         {

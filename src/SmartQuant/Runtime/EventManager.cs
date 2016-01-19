@@ -33,7 +33,7 @@ namespace SmartQuant
     {
         private Framework framework;
         private EventBus bus;
-        private bool stepping;
+        private volatile bool stepping;
         private byte stepEvent = EventType.Bar;
         private volatile bool exiting;
         private Thread thread;
@@ -280,23 +280,7 @@ namespace SmartQuant
             DataEventCount++;
             var bid = (Bid)e;
             SyncLocalClockWithDataObject(bid);
-            //if (this.framework.Clock.Mode == ClockMode.Simulation)
-            //{
-            //    this.framework.Clock.DateTime = bid.DateTime;
-            //}
-            //else
-            //{
-            //    bid.dateTime = this.framework.Clock.DateTime;
-            //}
             SyncExchangeClockWithTick(bid, nameof(OnBid));
-            //if (bid.ExchangeDateTime > this.framework.ExchangeClock.DateTime)
-            //{
-            //    this.framework.ExchangeClock.DateTime = bid.ExchangeDateTime;
-            //}
-            //else if (bid.ExchangeDateTime > this.framework.ExchangeClock.DateTime)
-            //{
-            //    Console.WriteLine($"EventManager::OnBid Exchange datetime is out of synch : bid datetime = {bid.ExchangeDateTime} clock datetime = {this.framework.ExchangeClock.DateTime}");
-            //}
             BarFactory.OnData(bid);
             this.framework.DataManager.OnBid(bid);
             this.framework.InstrumentManager.GetById(bid.InstrumentId).Bid = bid;
@@ -309,26 +293,7 @@ namespace SmartQuant
             DataEventCount++;
             var ask = (Ask)e;
             SyncLocalClockWithDataObject(ask);
-
-            //if (this.framework.Clock.Mode == ClockMode.Simulation)
-            //{
-            //    this.framework.Clock.DateTime = ask.DateTime;
-            //}
-            //else
-            //{
-            //    ask.dateTime = this.framework.Clock.DateTime;
-            //}
             SyncExchangeClockWithTick(ask, nameof(OnAsk));
-
-            //if (ask.ExchangeDateTime > this.framework.ExchangeClock.DateTime)
-            //{
-            //    this.framework.ExchangeClock.DateTime = ask.ExchangeDateTime;
-            //}
-            //else if (ask.ExchangeDateTime > this.framework.ExchangeClock.DateTime)
-            //{
-            //    Console.WriteLine($"EventManager::OnAsk Exchange datetime is out of synch : ask datetime = {ask.ExchangeDateTime} clock datetime = {this.framework.ExchangeClock.DateTime}");
-            //}
-
             BarFactory.OnData(ask);
             this.framework.DataManager.OnAsk(ask);
             this.framework.InstrumentManager.GetById(ask.InstrumentId).Ask = ask;
@@ -341,21 +306,7 @@ namespace SmartQuant
             DataEventCount++;
             var trade = (Trade)e;
             SyncLocalClockWithDataObject(trade);
-
-            //if (this.framework.Clock.Mode == ClockMode.Simulation)
-            //    this.framework.Clock.DateTime = trade.DateTime;
-            //else
-            //    trade.DateTime = this.framework.Clock.DateTime;
             SyncExchangeClockWithTick(trade, nameof(OnTrade));
-
-            //if (trade.ExchangeDateTime > this.framework.ExchangeClock.DateTime)
-            //{
-            //    this.framework.ExchangeClock.DateTime = trade.ExchangeDateTime;
-            //}
-            //else if (trade.ExchangeDateTime > this.framework.ExchangeClock.DateTime)
-            //{
-            //    Console.WriteLine($"EventManager::OnTrade Exchange datetime is out of synch : trade datetime = {trade.ExchangeDateTime} clock datetime = {this.framework.ExchangeClock.DateTime}");
-            //}
             BarFactory.OnData(trade);
             this.framework.DataManager.OnTrade(trade);
             this.framework.InstrumentManager.GetById(trade.InstrumentId).Trade = trade;
@@ -413,14 +364,6 @@ namespace SmartQuant
             DataEventCount++;
             var l2s = (Level2Snapshot)e;
             SyncLocalClockWithDataObject(l2s);
-            //if (this.framework.Clock.Mode == ClockMode.Simulation)
-            //{
-            //    this.framework.Clock.DateTime = l2s.dateTime;
-            //}
-            //else
-            //{
-            //    l2s.dateTime = this.framework.Clock.DateTime;
-            //}
             this.framework.DataManager.method_4(l2s);
             this.framework.ProviderManager.ExecutionSimulator.OnLevel2(l2s);
             this.framework.StrategyManager.method_10(l2s);
@@ -431,15 +374,6 @@ namespace SmartQuant
             DataEventCount++;
             var l2u = (Level2Update)e;
             SyncLocalClockWithDataObject(l2u);
-
-            //if (this.framework.Clock.Mode == ClockMode.Simulation)
-            //{
-            //    this.framework.Clock.DateTime = l2u.dateTime;
-            //}
-            //else
-            //{
-            //    l2u.dateTime = this.framework.Clock.DateTime;
-            //}
             this.framework.DataManager.method_5(l2u);
             this.framework.ProviderManager.ExecutionSimulator.OnLevel2(l2u);
             this.framework.StrategyManager.method_11(l2u);
@@ -450,16 +384,7 @@ namespace SmartQuant
             DataEventCount++;
             var news = (News)e;
             SyncLocalClockWithDataObject(news);
-
-            //if (this.framework.Clock.Mode == ClockMode.Simulation)
-            //{
-            //    this.framework.Clock.DateTime = news.dateTime;
-            //}
-            //else
-            //{
-            //    news.dateTime = this.framework.Clock.DateTime;
-            //}
-            this.framework.DataManager.method_6(news);
+            this.framework.DataManager.OnNews(news);
             this.framework.StrategyManager.method_15(news);
         }
 
@@ -468,15 +393,7 @@ namespace SmartQuant
             DataEventCount++;
             var fundamental = (Fundamental)e;
             SyncLocalClockWithDataObject(fundamental);
-            //if (this.framework.Clock.Mode == ClockMode.Simulation)
-            //{
-            //    this.framework.Clock.DateTime = fundamental.dateTime;
-            //}
-            //else
-            //{
-            //    fundamental.dateTime = this.framework.Clock.DateTime;
-            //}
-            this.framework.DataManager.nBvFytknIm(fundamental);
+            this.framework.DataManager.OnFundamental(fundamental);
             this.framework.StrategyManager.gudLdqclqe(fundamental);
         }
 
@@ -494,7 +411,7 @@ namespace SmartQuant
         {
             var report = (AccountReport)e;
             this.framework.OrderManager.method_1(report);
-            this.framework.PortfolioManager.method_1(report);
+            this.framework.PortfolioManager.OnAccountReport(report);
             this.framework.StrategyManager.method_29(report);
         }
 
@@ -507,12 +424,12 @@ namespace SmartQuant
 
         private void OnHistoricalDataEnd(Event e)
         {
-            this.framework.DataManager.method_8((HistoricalDataEnd)e);
+            this.framework.DataManager.method_9((HistoricalDataEnd)e);
         }
 
         private void OnHistoricalData(Event e)
         {
-            this.framework.DataManager.method_7((HistoricalData)e);
+            this.framework.DataManager.method_8((HistoricalData)e);
         }
 
         private void OnOrderDone(Event e)
@@ -590,7 +507,6 @@ namespace SmartQuant
             this.framework.GroupManager.OnGroup((Group)e);
         }
 
-
         private void OnExecutionReport(Event e)
         {
             var report = (ExecutionReport)e;
@@ -601,7 +517,7 @@ namespace SmartQuant
                     report.dateTime = this.framework.Clock.DateTime;
                 }
                 this.framework.OrderManager.method_0(report);
-                this.framework.PortfolioManager.method_0(report);
+                this.framework.PortfolioManager.OnExecutionReport(report);
                 this.framework.StrategyManager.IbsLpdRkc3(report);
                 this.framework.EventServer.EmitQueued();
                 return;
@@ -609,7 +525,7 @@ namespace SmartQuant
             this.framework.OrderManager.method_5(report);
             if (report.Order != null && report.Order.Portfolio != null)
             {
-                this.framework.PortfolioManager.method_0(report);
+                this.framework.PortfolioManager.OnExecutionReport(report);
             }
             this.framework.StrategyManager.IbsLpdRkc3(report);
             this.framework.EventServer.EmitQueued();

@@ -25,6 +25,6 @@ namespace SmartQuant
 
         public PortfolioStatisticsItem Clone(int type) => (PortfolioStatisticsItem)Activator.CreateInstance(Get(type).GetType());
 
-        public List<PortfolioStatisticsItem> CloneAll() =>Statistics.Select(item => (PortfolioStatisticsItem)Activator.CreateInstance(item.GetType())).ToList();
+        public List<PortfolioStatisticsItem> CloneAll() => Statistics.Select(item => (PortfolioStatisticsItem)Activator.CreateInstance(item.GetType())).ToList();
     }
 }

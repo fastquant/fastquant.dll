@@ -136,7 +136,7 @@ namespace SmartQuant
         {
             mapping = new Dictionary<string, byte>();
             foreach (var field in Enum.GetNames(typeof(BarData)))
-                AddField(field, (byte)Enum.Parse(typeof(BarData), field));
+                AddField(field, Convert.ToByte(Enum.Parse(typeof(BarData), field)));
         }
 
         public Bar(DateTime openDateTime, DateTime closeDateTime, int instrumentId, BarType type, long size, double open = 0.0, double high = 0.0, double low = 0.0, double close = 0.0, long volume = 0, long openInt = 0)
@@ -181,13 +181,7 @@ namespace SmartQuant
         }
 
         #region Extra
-        public IdArray<double> Fields
-        {
-            get
-            {
-                return this.fields;
-            }
-        }
+        public IdArray<double> Fields => this.fields;
         #endregion
     }
 }

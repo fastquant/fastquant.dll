@@ -58,6 +58,7 @@ namespace SmartQuant
         public event BidEventHandler Bid;
         public event AskEventHandler Ask;
         public event BarEventHandler Bar;
+        public event AccountDataEventHandler AccountData;
 
         public EventDispatcher()
         {

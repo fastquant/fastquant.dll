@@ -3,142 +3,16 @@
   "version": 2,
   "targets": {
     "DNX,Version=v4.5.1": {
-      "FastQuant.Config/1.0.0": {
+      "SmartQuant/1.0.0": {
         "type": "project",
         "framework": "DNX,Version=v4.5.1",
         "frameworkAssemblies": [
+          "System.Drawing",
           "System.Xml"
         ]
-      },
-      "FastQuant.Core/1.0.0": {
-        "type": "project",
-        "framework": "DNX,Version=v4.5.1"
-      },
-      "FastQuant.Data/1.0.0": {
-        "type": "project",
-        "framework": "DNX,Version=v4.5.1",
-        "dependencies": {
-          "FastQuant.Core": null
-        }
-      },
-      "FastQuant.Indicators/1.0.0": {
-        "type": "project",
-        "framework": "DNX,Version=v4.5.1",
-        "dependencies": {
-          "FastQuant.Core": null
-        }
-      },
-      "FastQuant.Providers/1.0.0": {
-        "type": "project",
-        "framework": "DNX,Version=v4.5.1",
-        "dependencies": {
-          "FastQuant.Runtime": null
-        }
-      },
-      "FastQuant.Runtime/1.0.0": {
-        "type": "project",
-        "framework": "DNX,Version=v4.5.1",
-        "dependencies": {
-          "FastQuant.Config": null,
-          "FastQuant.Core": null,
-          "FastQuant.Data": null
-        },
-        "frameworkAssemblies": [
-          "System.Drawing"
-        ]
-      },
-      "FastQuant.Statistics/1.0.0": {
-        "type": "project",
-        "framework": "DNX,Version=v4.5.1",
-        "dependencies": {
-          "FastQuant.Runtime": null
-        }
       }
     },
     "DNXCore,Version=v5.0": {
-      "FastQuant.Config/1.0.0": {
-        "type": "project",
-        "framework": "DNXCore,Version=v5.0",
-        "dependencies": {
-          "System.Console": "4.0.0-beta",
-          "System.IO.FileSystem": "4.0.1-beta",
-          "System.Runtime.Extensions": "4.0.11-beta",
-          "System.Xml.ReaderWriter": "4.0.11-beta",
-          "System.Xml.XmlDocument": "4.0.1-beta",
-          "System.Xml.XmlSerializer": "4.0.11-beta"
-        }
-      },
-      "FastQuant.Core/1.0.0": {
-        "type": "project",
-        "framework": "DNXCore,Version=v5.0",
-        "dependencies": {
-          "netcoreshim": null,
-          "System.ComponentModel.TypeConverter": "4.0.1-beta",
-          "System.Console": "4.0.0-beta",
-          "System.IO.FileSystem": "4.0.1-beta",
-          "System.Linq": "4.0.1-beta",
-          "System.Reflection.Extensions": "4.0.1-beta",
-          "System.Reflection.TypeExtensions": "4.1.0-beta",
-          "System.Threading.Tasks.Parallel": "4.0.1-beta"
-        }
-      },
-      "FastQuant.Data/1.0.0": {
-        "type": "project",
-        "framework": "DNXCore,Version=v5.0",
-        "dependencies": {
-          "FastQuant.Core": null,
-          "System.Runtime.Extensions": "4.0.11-beta"
-        }
-      },
-      "FastQuant.Indicators/1.0.0": {
-        "type": "project",
-        "framework": "DNXCore,Version=v5.0",
-        "dependencies": {
-          "FastQuant.Core": null,
-          "System.Console": "4.0.0-beta",
-          "System.IO.FileSystem": "4.0.1-beta",
-          "System.Runtime.Extensions": "4.0.11-beta"
-        }
-      },
-      "FastQuant.Providers/1.0.0": {
-        "type": "project",
-        "framework": "DNXCore,Version=v5.0",
-        "dependencies": {
-          "FastQuant.Runtime": null,
-          "System.Console": "4.0.0-beta",
-          "System.IO.FileSystem": "4.0.1-beta",
-          "System.Runtime.Extensions": "4.0.11-beta",
-          "System.Threading.Thread": "4.0.0-beta"
-        }
-      },
-      "FastQuant.Runtime/1.0.0": {
-        "type": "project",
-        "framework": "DNXCore,Version=v5.0",
-        "dependencies": {
-          "FastQuant.Config": null,
-          "FastQuant.Core": null,
-          "FastQuant.Data": null,
-          "netcoreshim": null,
-          "System.Collections": "4.0.11-beta",
-          "System.Console": "4.0.0-beta",
-          "System.Net.Sockets": "4.0.10-beta",
-          "System.Reflection.Extensions": "4.0.1-beta",
-          "System.Reflection.TypeExtensions": "4.1.0-beta",
-          "System.Runtime.Extensions": "4.0.11-beta",
-          "System.Threading.Tasks.Parallel": "4.0.1-beta",
-          "System.Threading.Thread": "4.0.0-beta"
-        }
-      },
-      "FastQuant.Statistics/1.0.0": {
-        "type": "project",
-        "framework": "DNXCore,Version=v5.0",
-        "dependencies": {
-          "FastQuant.Runtime": null,
-          "System.Console": "4.0.0-beta",
-          "System.IO.FileSystem": "4.0.1-beta",
-          "System.Runtime.Extensions": "4.0.11-beta"
-        }
-      },
       "Microsoft.Win32.Primitives/4.0.0": {
         "type": "package",
         "dependencies": {
@@ -157,6 +31,24 @@
         "framework": "DNXCore,Version=v5.0",
         "dependencies": {
           "System.Console": "4.0.0-beta"
+        }
+      },
+      "SmartQuant/1.0.0": {
+        "type": "project",
+        "framework": "DNXCore,Version=v5.0",
+        "dependencies": {
+          "netcoreshim": null,
+          "System.Collections": "4.0.11-beta",
+          "System.ComponentModel.TypeConverter": "4.0.1-beta",
+          "System.Console": "4.0.0-beta",
+          "System.Linq": "4.0.1-beta",
+          "System.Net.Sockets": "4.0.10-beta",
+          "System.Reflection.Extensions": "4.0.1-beta",
+          "System.Reflection.TypeExtensions": "4.1.0-beta",
+          "System.Runtime.Extensions": "4.0.11-beta",
+          "System.Threading.Tasks.Parallel": "4.0.1-beta",
+          "System.Threading.Thread": "4.0.0-beta",
+          "System.Xml.XmlSerializer": "4.0.11-beta"
         }
       },
       "System.Collections/4.0.11-beta-23516": {
@@ -330,18 +222,28 @@
           "lib/DNXCore50/System.IO.dll": {}
         }
       },
-      "System.IO.FileSystem/4.0.1-beta-23516": {
+      "System.IO.FileSystem/4.0.0": {
         "type": "package",
         "dependencies": {
-          "System.IO": "4.0.0",
+          "System.Collections": "4.0.10",
+          "System.IO": "4.0.10",
           "System.IO.FileSystem.Primitives": "4.0.0",
-          "System.Runtime": "4.0.0",
+          "System.Resources.ResourceManager": "4.0.0",
+          "System.Runtime": "4.0.20",
+          "System.Runtime.Extensions": "4.0.10",
           "System.Runtime.Handles": "4.0.0",
-          "System.Text.Encoding": "4.0.0",
-          "System.Threading.Tasks": "4.0.0"
+          "System.Runtime.InteropServices": "4.0.20",
+          "System.Text.Encoding": "4.0.10",
+          "System.Text.Encoding.Extensions": "4.0.10",
+          "System.Threading": "4.0.10",
+          "System.Threading.Overlapped": "4.0.0",
+          "System.Threading.Tasks": "4.0.10"
         },
         "compile": {
-          "ref/dotnet5.4/System.IO.FileSystem.dll": {}
+          "ref/dotnet/System.IO.FileSystem.dll": {}
+        },
+        "runtime": {
+          "lib/DNXCore50/System.IO.FileSystem.dll": {}
         }
       },
       "System.IO.FileSystem.Primitives/4.0.0": {
@@ -559,13 +461,21 @@
           "lib/DNXCore50/System.Text.Encoding.Extensions.dll": {}
         }
       },
-      "System.Text.RegularExpressions/4.0.0": {
+      "System.Text.RegularExpressions/4.0.10": {
         "type": "package",
         "dependencies": {
-          "System.Runtime": "4.0.0"
+          "System.Collections": "4.0.10",
+          "System.Globalization": "4.0.10",
+          "System.Resources.ResourceManager": "4.0.0",
+          "System.Runtime": "4.0.20",
+          "System.Runtime.Extensions": "4.0.10",
+          "System.Threading": "4.0.10"
         },
         "compile": {
           "ref/dotnet/System.Text.RegularExpressions.dll": {}
+        },
+        "runtime": {
+          "lib/dotnet/System.Text.RegularExpressions.dll": {}
         }
       },
       "System.Threading/4.0.10": {
@@ -637,7 +547,7 @@
           "lib/DNXCore50/System.Threading.Thread.dll": {}
         }
       },
-      "System.Xml.ReaderWriter/4.0.11-beta-23516": {
+      "System.Xml.ReaderWriter/4.0.10": {
         "type": "package",
         "dependencies": {
           "System.Collections": "4.0.10",
@@ -652,35 +562,14 @@
           "System.Runtime.InteropServices": "4.0.20",
           "System.Text.Encoding": "4.0.10",
           "System.Text.Encoding.Extensions": "4.0.10",
-          "System.Text.RegularExpressions": "4.0.0",
+          "System.Text.RegularExpressions": "4.0.10",
           "System.Threading.Tasks": "4.0.10"
         },
         "compile": {
-          "ref/dotnet5.4/System.Xml.ReaderWriter.dll": {}
+          "ref/dotnet/System.Xml.ReaderWriter.dll": {}
         },
         "runtime": {
-          "lib/dotnet5.4/System.Xml.ReaderWriter.dll": {}
-        }
-      },
-      "System.Xml.XmlDocument/4.0.1-beta-23516": {
-        "type": "package",
-        "dependencies": {
-          "System.Collections": "4.0.10",
-          "System.Diagnostics.Debug": "4.0.10",
-          "System.Globalization": "4.0.10",
-          "System.IO": "4.0.10",
-          "System.Resources.ResourceManager": "4.0.0",
-          "System.Runtime": "4.0.20",
-          "System.Runtime.Extensions": "4.0.10",
-          "System.Text.Encoding": "4.0.10",
-          "System.Threading": "4.0.10",
-          "System.Xml.ReaderWriter": "4.0.10"
-        },
-        "compile": {
-          "ref/dotnet5.1/System.Xml.XmlDocument.dll": {}
-        },
-        "runtime": {
-          "lib/dotnet5.4/System.Xml.XmlDocument.dll": {}
+          "lib/dotnet/System.Xml.ReaderWriter.dll": {}
         }
       },
       "System.Xml.XmlSerializer/4.0.11-beta-23516": {
@@ -696,195 +585,26 @@
       }
     },
     "DNX,Version=v4.5.1/win7-x86": {
-      "FastQuant.Config/1.0.0": {
+      "SmartQuant/1.0.0": {
         "type": "project",
         "framework": "DNX,Version=v4.5.1",
         "frameworkAssemblies": [
+          "System.Drawing",
           "System.Xml"
         ]
-      },
-      "FastQuant.Core/1.0.0": {
-        "type": "project",
-        "framework": "DNX,Version=v4.5.1"
-      },
-      "FastQuant.Data/1.0.0": {
-        "type": "project",
-        "framework": "DNX,Version=v4.5.1",
-        "dependencies": {
-          "FastQuant.Core": null
-        }
-      },
-      "FastQuant.Indicators/1.0.0": {
-        "type": "project",
-        "framework": "DNX,Version=v4.5.1",
-        "dependencies": {
-          "FastQuant.Core": null
-        }
-      },
-      "FastQuant.Providers/1.0.0": {
-        "type": "project",
-        "framework": "DNX,Version=v4.5.1",
-        "dependencies": {
-          "FastQuant.Runtime": null
-        }
-      },
-      "FastQuant.Runtime/1.0.0": {
-        "type": "project",
-        "framework": "DNX,Version=v4.5.1",
-        "dependencies": {
-          "FastQuant.Config": null,
-          "FastQuant.Core": null,
-          "FastQuant.Data": null
-        },
-        "frameworkAssemblies": [
-          "System.Drawing"
-        ]
-      },
-      "FastQuant.Statistics/1.0.0": {
-        "type": "project",
-        "framework": "DNX,Version=v4.5.1",
-        "dependencies": {
-          "FastQuant.Runtime": null
-        }
       }
     },
     "DNX,Version=v4.5.1/win7-x64": {
-      "FastQuant.Config/1.0.0": {
+      "SmartQuant/1.0.0": {
         "type": "project",
         "framework": "DNX,Version=v4.5.1",
         "frameworkAssemblies": [
+          "System.Drawing",
           "System.Xml"
         ]
-      },
-      "FastQuant.Core/1.0.0": {
-        "type": "project",
-        "framework": "DNX,Version=v4.5.1"
-      },
-      "FastQuant.Data/1.0.0": {
-        "type": "project",
-        "framework": "DNX,Version=v4.5.1",
-        "dependencies": {
-          "FastQuant.Core": null
-        }
-      },
-      "FastQuant.Indicators/1.0.0": {
-        "type": "project",
-        "framework": "DNX,Version=v4.5.1",
-        "dependencies": {
-          "FastQuant.Core": null
-        }
-      },
-      "FastQuant.Providers/1.0.0": {
-        "type": "project",
-        "framework": "DNX,Version=v4.5.1",
-        "dependencies": {
-          "FastQuant.Runtime": null
-        }
-      },
-      "FastQuant.Runtime/1.0.0": {
-        "type": "project",
-        "framework": "DNX,Version=v4.5.1",
-        "dependencies": {
-          "FastQuant.Config": null,
-          "FastQuant.Core": null,
-          "FastQuant.Data": null
-        },
-        "frameworkAssemblies": [
-          "System.Drawing"
-        ]
-      },
-      "FastQuant.Statistics/1.0.0": {
-        "type": "project",
-        "framework": "DNX,Version=v4.5.1",
-        "dependencies": {
-          "FastQuant.Runtime": null
-        }
       }
     },
     "DNXCore,Version=v5.0/win7-x86": {
-      "FastQuant.Config/1.0.0": {
-        "type": "project",
-        "framework": "DNXCore,Version=v5.0",
-        "dependencies": {
-          "System.Console": "4.0.0-beta",
-          "System.IO.FileSystem": "4.0.1-beta",
-          "System.Runtime.Extensions": "4.0.11-beta",
-          "System.Xml.ReaderWriter": "4.0.11-beta",
-          "System.Xml.XmlDocument": "4.0.1-beta",
-          "System.Xml.XmlSerializer": "4.0.11-beta"
-        }
-      },
-      "FastQuant.Core/1.0.0": {
-        "type": "project",
-        "framework": "DNXCore,Version=v5.0",
-        "dependencies": {
-          "netcoreshim": null,
-          "System.ComponentModel.TypeConverter": "4.0.1-beta",
-          "System.Console": "4.0.0-beta",
-          "System.IO.FileSystem": "4.0.1-beta",
-          "System.Linq": "4.0.1-beta",
-          "System.Reflection.Extensions": "4.0.1-beta",
-          "System.Reflection.TypeExtensions": "4.1.0-beta",
-          "System.Threading.Tasks.Parallel": "4.0.1-beta"
-        }
-      },
-      "FastQuant.Data/1.0.0": {
-        "type": "project",
-        "framework": "DNXCore,Version=v5.0",
-        "dependencies": {
-          "FastQuant.Core": null,
-          "System.Runtime.Extensions": "4.0.11-beta"
-        }
-      },
-      "FastQuant.Indicators/1.0.0": {
-        "type": "project",
-        "framework": "DNXCore,Version=v5.0",
-        "dependencies": {
-          "FastQuant.Core": null,
-          "System.Console": "4.0.0-beta",
-          "System.IO.FileSystem": "4.0.1-beta",
-          "System.Runtime.Extensions": "4.0.11-beta"
-        }
-      },
-      "FastQuant.Providers/1.0.0": {
-        "type": "project",
-        "framework": "DNXCore,Version=v5.0",
-        "dependencies": {
-          "FastQuant.Runtime": null,
-          "System.Console": "4.0.0-beta",
-          "System.IO.FileSystem": "4.0.1-beta",
-          "System.Runtime.Extensions": "4.0.11-beta",
-          "System.Threading.Thread": "4.0.0-beta"
-        }
-      },
-      "FastQuant.Runtime/1.0.0": {
-        "type": "project",
-        "framework": "DNXCore,Version=v5.0",
-        "dependencies": {
-          "FastQuant.Config": null,
-          "FastQuant.Core": null,
-          "FastQuant.Data": null,
-          "netcoreshim": null,
-          "System.Collections": "4.0.11-beta",
-          "System.Console": "4.0.0-beta",
-          "System.Net.Sockets": "4.0.10-beta",
-          "System.Reflection.Extensions": "4.0.1-beta",
-          "System.Reflection.TypeExtensions": "4.1.0-beta",
-          "System.Runtime.Extensions": "4.0.11-beta",
-          "System.Threading.Tasks.Parallel": "4.0.1-beta",
-          "System.Threading.Thread": "4.0.0-beta"
-        }
-      },
-      "FastQuant.Statistics/1.0.0": {
-        "type": "project",
-        "framework": "DNXCore,Version=v5.0",
-        "dependencies": {
-          "FastQuant.Runtime": null,
-          "System.Console": "4.0.0-beta",
-          "System.IO.FileSystem": "4.0.1-beta",
-          "System.Runtime.Extensions": "4.0.11-beta"
-        }
-      },
       "Microsoft.Win32.Primitives/4.0.0": {
         "type": "package",
         "dependencies": {
@@ -954,30 +674,6 @@
           "runtimes/win7/lib/dotnet5.4/System.Console.dll": {}
         }
       },
-      "runtime.win7.System.IO.FileSystem/4.0.1-beta-23516": {
-        "type": "package",
-        "dependencies": {
-          "System.Collections": "4.0.10",
-          "System.IO": "4.0.10",
-          "System.IO.FileSystem.Primitives": "4.0.0",
-          "System.Resources.ResourceManager": "4.0.0",
-          "System.Runtime": "4.0.20",
-          "System.Runtime.Extensions": "4.0.10",
-          "System.Runtime.Handles": "4.0.0",
-          "System.Runtime.InteropServices": "4.0.20",
-          "System.Text.Encoding": "4.0.10",
-          "System.Text.Encoding.Extensions": "4.0.10",
-          "System.Threading": "4.0.10",
-          "System.Threading.Overlapped": "4.0.0",
-          "System.Threading.Tasks": "4.0.10"
-        },
-        "compile": {
-          "ref/dotnet/_._": {}
-        },
-        "runtime": {
-          "runtimes/win7/lib/dotnet5.4/System.IO.FileSystem.dll": {}
-        }
-      },
       "runtime.win7.System.Private.Uri/4.0.1-beta-23516": {
         "type": "package",
         "compile": {
@@ -994,6 +690,24 @@
         },
         "runtime": {
           "lib/DNXCore50/System.Runtime.Extensions.dll": {}
+        }
+      },
+      "SmartQuant/1.0.0": {
+        "type": "project",
+        "framework": "DNXCore,Version=v5.0",
+        "dependencies": {
+          "netcoreshim": null,
+          "System.Collections": "4.0.11-beta",
+          "System.ComponentModel.TypeConverter": "4.0.1-beta",
+          "System.Console": "4.0.0-beta",
+          "System.Linq": "4.0.1-beta",
+          "System.Net.Sockets": "4.0.10-beta",
+          "System.Reflection.Extensions": "4.0.1-beta",
+          "System.Reflection.TypeExtensions": "4.1.0-beta",
+          "System.Runtime.Extensions": "4.0.11-beta",
+          "System.Threading.Tasks.Parallel": "4.0.1-beta",
+          "System.Threading.Thread": "4.0.0-beta",
+          "System.Xml.XmlSerializer": "4.0.11-beta"
         }
       },
       "System.Collections/4.0.11-beta-23516": {
@@ -1167,18 +881,28 @@
           "lib/DNXCore50/System.IO.dll": {}
         }
       },
-      "System.IO.FileSystem/4.0.1-beta-23516": {
+      "System.IO.FileSystem/4.0.0": {
         "type": "package",
         "dependencies": {
-          "System.IO": "4.0.0",
+          "System.Collections": "4.0.10",
+          "System.IO": "4.0.10",
           "System.IO.FileSystem.Primitives": "4.0.0",
-          "System.Runtime": "4.0.0",
+          "System.Resources.ResourceManager": "4.0.0",
+          "System.Runtime": "4.0.20",
+          "System.Runtime.Extensions": "4.0.10",
           "System.Runtime.Handles": "4.0.0",
-          "System.Text.Encoding": "4.0.0",
-          "System.Threading.Tasks": "4.0.0"
+          "System.Runtime.InteropServices": "4.0.20",
+          "System.Text.Encoding": "4.0.10",
+          "System.Text.Encoding.Extensions": "4.0.10",
+          "System.Threading": "4.0.10",
+          "System.Threading.Overlapped": "4.0.0",
+          "System.Threading.Tasks": "4.0.10"
         },
         "compile": {
-          "ref/dotnet5.4/System.IO.FileSystem.dll": {}
+          "ref/dotnet/System.IO.FileSystem.dll": {}
+        },
+        "runtime": {
+          "lib/DNXCore50/System.IO.FileSystem.dll": {}
         }
       },
       "System.IO.FileSystem.Primitives/4.0.0": {
@@ -1512,7 +1236,7 @@
           "lib/DNXCore50/System.Threading.Thread.dll": {}
         }
       },
-      "System.Xml.ReaderWriter/4.0.11-beta-23516": {
+      "System.Xml.ReaderWriter/4.0.10": {
         "type": "package",
         "dependencies": {
           "System.Collections": "4.0.10",
@@ -1527,17 +1251,17 @@
           "System.Runtime.InteropServices": "4.0.20",
           "System.Text.Encoding": "4.0.10",
           "System.Text.Encoding.Extensions": "4.0.10",
-          "System.Text.RegularExpressions": "4.0.0",
+          "System.Text.RegularExpressions": "4.0.10",
           "System.Threading.Tasks": "4.0.10"
         },
         "compile": {
-          "ref/dotnet5.4/System.Xml.ReaderWriter.dll": {}
+          "ref/dotnet/System.Xml.ReaderWriter.dll": {}
         },
         "runtime": {
-          "lib/dotnet5.4/System.Xml.ReaderWriter.dll": {}
+          "lib/dotnet/System.Xml.ReaderWriter.dll": {}
         }
       },
-      "System.Xml.XmlDocument/4.0.1-beta-23516": {
+      "System.Xml.XmlDocument/4.0.0": {
         "type": "package",
         "dependencies": {
           "System.Collections": "4.0.10",
@@ -1552,10 +1276,10 @@
           "System.Xml.ReaderWriter": "4.0.10"
         },
         "compile": {
-          "ref/dotnet5.1/System.Xml.XmlDocument.dll": {}
+          "ref/dotnet/System.Xml.XmlDocument.dll": {}
         },
         "runtime": {
-          "lib/dotnet5.4/System.Xml.XmlDocument.dll": {}
+          "lib/dotnet/System.Xml.XmlDocument.dll": {}
         }
       },
       "System.Xml.XmlSerializer/4.0.11-beta-23516": {
@@ -1571,89 +1295,6 @@
       }
     },
     "DNXCore,Version=v5.0/win7-x64": {
-      "FastQuant.Config/1.0.0": {
-        "type": "project",
-        "framework": "DNXCore,Version=v5.0",
-        "dependencies": {
-          "System.Console": "4.0.0-beta",
-          "System.IO.FileSystem": "4.0.1-beta",
-          "System.Runtime.Extensions": "4.0.11-beta",
-          "System.Xml.ReaderWriter": "4.0.11-beta",
-          "System.Xml.XmlDocument": "4.0.1-beta",
-          "System.Xml.XmlSerializer": "4.0.11-beta"
-        }
-      },
-      "FastQuant.Core/1.0.0": {
-        "type": "project",
-        "framework": "DNXCore,Version=v5.0",
-        "dependencies": {
-          "netcoreshim": null,
-          "System.ComponentModel.TypeConverter": "4.0.1-beta",
-          "System.Console": "4.0.0-beta",
-          "System.IO.FileSystem": "4.0.1-beta",
-          "System.Linq": "4.0.1-beta",
-          "System.Reflection.Extensions": "4.0.1-beta",
-          "System.Reflection.TypeExtensions": "4.1.0-beta",
-          "System.Threading.Tasks.Parallel": "4.0.1-beta"
-        }
-      },
-      "FastQuant.Data/1.0.0": {
-        "type": "project",
-        "framework": "DNXCore,Version=v5.0",
-        "dependencies": {
-          "FastQuant.Core": null,
-          "System.Runtime.Extensions": "4.0.11-beta"
-        }
-      },
-      "FastQuant.Indicators/1.0.0": {
-        "type": "project",
-        "framework": "DNXCore,Version=v5.0",
-        "dependencies": {
-          "FastQuant.Core": null,
-          "System.Console": "4.0.0-beta",
-          "System.IO.FileSystem": "4.0.1-beta",
-          "System.Runtime.Extensions": "4.0.11-beta"
-        }
-      },
-      "FastQuant.Providers/1.0.0": {
-        "type": "project",
-        "framework": "DNXCore,Version=v5.0",
-        "dependencies": {
-          "FastQuant.Runtime": null,
-          "System.Console": "4.0.0-beta",
-          "System.IO.FileSystem": "4.0.1-beta",
-          "System.Runtime.Extensions": "4.0.11-beta",
-          "System.Threading.Thread": "4.0.0-beta"
-        }
-      },
-      "FastQuant.Runtime/1.0.0": {
-        "type": "project",
-        "framework": "DNXCore,Version=v5.0",
-        "dependencies": {
-          "FastQuant.Config": null,
-          "FastQuant.Core": null,
-          "FastQuant.Data": null,
-          "netcoreshim": null,
-          "System.Collections": "4.0.11-beta",
-          "System.Console": "4.0.0-beta",
-          "System.Net.Sockets": "4.0.10-beta",
-          "System.Reflection.Extensions": "4.0.1-beta",
-          "System.Reflection.TypeExtensions": "4.1.0-beta",
-          "System.Runtime.Extensions": "4.0.11-beta",
-          "System.Threading.Tasks.Parallel": "4.0.1-beta",
-          "System.Threading.Thread": "4.0.0-beta"
-        }
-      },
-      "FastQuant.Statistics/1.0.0": {
-        "type": "project",
-        "framework": "DNXCore,Version=v5.0",
-        "dependencies": {
-          "FastQuant.Runtime": null,
-          "System.Console": "4.0.0-beta",
-          "System.IO.FileSystem": "4.0.1-beta",
-          "System.Runtime.Extensions": "4.0.11-beta"
-        }
-      },
       "Microsoft.Win32.Primitives/4.0.0": {
         "type": "package",
         "dependencies": {
@@ -1723,30 +1364,6 @@
           "runtimes/win7/lib/dotnet5.4/System.Console.dll": {}
         }
       },
-      "runtime.win7.System.IO.FileSystem/4.0.1-beta-23516": {
-        "type": "package",
-        "dependencies": {
-          "System.Collections": "4.0.10",
-          "System.IO": "4.0.10",
-          "System.IO.FileSystem.Primitives": "4.0.0",
-          "System.Resources.ResourceManager": "4.0.0",
-          "System.Runtime": "4.0.20",
-          "System.Runtime.Extensions": "4.0.10",
-          "System.Runtime.Handles": "4.0.0",
-          "System.Runtime.InteropServices": "4.0.20",
-          "System.Text.Encoding": "4.0.10",
-          "System.Text.Encoding.Extensions": "4.0.10",
-          "System.Threading": "4.0.10",
-          "System.Threading.Overlapped": "4.0.0",
-          "System.Threading.Tasks": "4.0.10"
-        },
-        "compile": {
-          "ref/dotnet/_._": {}
-        },
-        "runtime": {
-          "runtimes/win7/lib/dotnet5.4/System.IO.FileSystem.dll": {}
-        }
-      },
       "runtime.win7.System.Private.Uri/4.0.1-beta-23516": {
         "type": "package",
         "compile": {
@@ -1763,6 +1380,24 @@
         },
         "runtime": {
           "lib/DNXCore50/System.Runtime.Extensions.dll": {}
+        }
+      },
+      "SmartQuant/1.0.0": {
+        "type": "project",
+        "framework": "DNXCore,Version=v5.0",
+        "dependencies": {
+          "netcoreshim": null,
+          "System.Collections": "4.0.11-beta",
+          "System.ComponentModel.TypeConverter": "4.0.1-beta",
+          "System.Console": "4.0.0-beta",
+          "System.Linq": "4.0.1-beta",
+          "System.Net.Sockets": "4.0.10-beta",
+          "System.Reflection.Extensions": "4.0.1-beta",
+          "System.Reflection.TypeExtensions": "4.1.0-beta",
+          "System.Runtime.Extensions": "4.0.11-beta",
+          "System.Threading.Tasks.Parallel": "4.0.1-beta",
+          "System.Threading.Thread": "4.0.0-beta",
+          "System.Xml.XmlSerializer": "4.0.11-beta"
         }
       },
       "System.Collections/4.0.11-beta-23516": {
@@ -1936,18 +1571,28 @@
           "lib/DNXCore50/System.IO.dll": {}
         }
       },
-      "System.IO.FileSystem/4.0.1-beta-23516": {
+      "System.IO.FileSystem/4.0.0": {
         "type": "package",
         "dependencies": {
-          "System.IO": "4.0.0",
+          "System.Collections": "4.0.10",
+          "System.IO": "4.0.10",
           "System.IO.FileSystem.Primitives": "4.0.0",
-          "System.Runtime": "4.0.0",
+          "System.Resources.ResourceManager": "4.0.0",
+          "System.Runtime": "4.0.20",
+          "System.Runtime.Extensions": "4.0.10",
           "System.Runtime.Handles": "4.0.0",
-          "System.Text.Encoding": "4.0.0",
-          "System.Threading.Tasks": "4.0.0"
+          "System.Runtime.InteropServices": "4.0.20",
+          "System.Text.Encoding": "4.0.10",
+          "System.Text.Encoding.Extensions": "4.0.10",
+          "System.Threading": "4.0.10",
+          "System.Threading.Overlapped": "4.0.0",
+          "System.Threading.Tasks": "4.0.10"
         },
         "compile": {
-          "ref/dotnet5.4/System.IO.FileSystem.dll": {}
+          "ref/dotnet/System.IO.FileSystem.dll": {}
+        },
+        "runtime": {
+          "lib/DNXCore50/System.IO.FileSystem.dll": {}
         }
       },
       "System.IO.FileSystem.Primitives/4.0.0": {
@@ -2281,7 +1926,7 @@
           "lib/DNXCore50/System.Threading.Thread.dll": {}
         }
       },
-      "System.Xml.ReaderWriter/4.0.11-beta-23516": {
+      "System.Xml.ReaderWriter/4.0.10": {
         "type": "package",
         "dependencies": {
           "System.Collections": "4.0.10",
@@ -2296,17 +1941,17 @@
           "System.Runtime.InteropServices": "4.0.20",
           "System.Text.Encoding": "4.0.10",
           "System.Text.Encoding.Extensions": "4.0.10",
-          "System.Text.RegularExpressions": "4.0.0",
+          "System.Text.RegularExpressions": "4.0.10",
           "System.Threading.Tasks": "4.0.10"
         },
         "compile": {
-          "ref/dotnet5.4/System.Xml.ReaderWriter.dll": {}
+          "ref/dotnet/System.Xml.ReaderWriter.dll": {}
         },
         "runtime": {
-          "lib/dotnet5.4/System.Xml.ReaderWriter.dll": {}
+          "lib/dotnet/System.Xml.ReaderWriter.dll": {}
         }
       },
-      "System.Xml.XmlDocument/4.0.1-beta-23516": {
+      "System.Xml.XmlDocument/4.0.0": {
         "type": "package",
         "dependencies": {
           "System.Collections": "4.0.10",
@@ -2321,10 +1966,10 @@
           "System.Xml.ReaderWriter": "4.0.10"
         },
         "compile": {
-          "ref/dotnet5.1/System.Xml.XmlDocument.dll": {}
+          "ref/dotnet/System.Xml.XmlDocument.dll": {}
         },
         "runtime": {
-          "lib/dotnet5.4/System.Xml.XmlDocument.dll": {}
+          "lib/dotnet/System.Xml.XmlDocument.dll": {}
         }
       },
       "System.Xml.XmlSerializer/4.0.11-beta-23516": {
@@ -2341,37 +1986,13 @@
     }
   },
   "libraries": {
-    "FastQuant.Config/1.0.0": {
-      "type": "project",
-      "path": "../../src/FastQuant.Config/project.json"
-    },
-    "FastQuant.Core/1.0.0": {
-      "type": "project",
-      "path": "../../src/FastQuant.Core/project.json"
-    },
-    "FastQuant.Data/1.0.0": {
-      "type": "project",
-      "path": "../../src/FastQuant.Data/project.json"
-    },
-    "FastQuant.Indicators/1.0.0": {
-      "type": "project",
-      "path": "../../src/FastQuant.Indicators/project.json"
-    },
-    "FastQuant.Providers/1.0.0": {
-      "type": "project",
-      "path": "../../src/FastQuant.Providers/project.json"
-    },
-    "FastQuant.Runtime/1.0.0": {
-      "type": "project",
-      "path": "../../src/FastQuant.Runtime/project.json"
-    },
-    "FastQuant.Statistics/1.0.0": {
-      "type": "project",
-      "path": "../../src/FastQuant.Statistics/project.json"
-    },
     "netcoreshim/1.0.0": {
       "type": "project",
       "path": "../../src/netcoreshim/project.json"
+    },
+    "SmartQuant/1.0.0": {
+      "type": "project",
+      "path": "../../src/SmartQuant/project.json"
     },
     "Microsoft.Win32.Primitives/4.0.0": {
       "type": "package",
@@ -2438,23 +2059,6 @@
         "runtime.win7.System.Console.nuspec",
         "runtimes/win7/lib/dotnet5.4/System.Console.dll",
         "runtimes/win7/lib/net/_._"
-      ]
-    },
-    "runtime.win7.System.IO.FileSystem/4.0.1-beta-23516": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "PwsqcwAui7Ld6Ad32RjoHF3wBSEkEzvv5ka605IsaWxHSCfmmwevJnIbNgwJgBTao/uR+wSO9yoyvfrB109BfQ==",
-      "files": [
-        "ref/dotnet/_._",
-        "runtime.win7.System.IO.FileSystem.4.0.1-beta-23516.nupkg",
-        "runtime.win7.System.IO.FileSystem.4.0.1-beta-23516.nupkg.sha512",
-        "runtime.win7.System.IO.FileSystem.nuspec",
-        "runtimes/win7/lib/dotnet5.4/System.IO.FileSystem.dll",
-        "runtimes/win7/lib/net/_._",
-        "runtimes/win7/lib/netcore50/System.IO.FileSystem.dll",
-        "runtimes/win7/lib/win8/_._",
-        "runtimes/win7/lib/wp8/_._",
-        "runtimes/win7/lib/wpa81/_._"
       ]
     },
     "runtime.win7.System.Private.Uri/4.0.1-beta-23516": {
@@ -2907,35 +2511,36 @@
         "System.IO.nuspec"
       ]
     },
-    "System.IO.FileSystem/4.0.1-beta-23516": {
+    "System.IO.FileSystem/4.0.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "xggWMgLzKnBisYTx5HW3og8qRR7TjmorQAdsAQOaMcY4I9CQA6JUxw0r2AvCC1+ToXh0CuO7J6dymX33pkmwbA==",
+      "sha512": "eo05SPWfG+54UA0wxgRIYOuOslq+2QrJLXZaJDDsfLXG15OLguaItW39NYZTqUb4DeGOkU4R0wpOLOW4ynMUDQ==",
       "files": [
+        "lib/DNXCore50/System.IO.FileSystem.dll",
         "lib/MonoAndroid10/_._",
         "lib/MonoTouch10/_._",
         "lib/net46/System.IO.FileSystem.dll",
+        "lib/netcore50/System.IO.FileSystem.dll",
         "lib/xamarinios10/_._",
         "lib/xamarinmac20/_._",
-        "ref/dotnet5.4/de/System.IO.FileSystem.xml",
-        "ref/dotnet5.4/es/System.IO.FileSystem.xml",
-        "ref/dotnet5.4/fr/System.IO.FileSystem.xml",
-        "ref/dotnet5.4/it/System.IO.FileSystem.xml",
-        "ref/dotnet5.4/ja/System.IO.FileSystem.xml",
-        "ref/dotnet5.4/ko/System.IO.FileSystem.xml",
-        "ref/dotnet5.4/ru/System.IO.FileSystem.xml",
-        "ref/dotnet5.4/System.IO.FileSystem.dll",
-        "ref/dotnet5.4/System.IO.FileSystem.xml",
-        "ref/dotnet5.4/zh-hans/System.IO.FileSystem.xml",
-        "ref/dotnet5.4/zh-hant/System.IO.FileSystem.xml",
+        "ref/dotnet/de/System.IO.FileSystem.xml",
+        "ref/dotnet/es/System.IO.FileSystem.xml",
+        "ref/dotnet/fr/System.IO.FileSystem.xml",
+        "ref/dotnet/it/System.IO.FileSystem.xml",
+        "ref/dotnet/ja/System.IO.FileSystem.xml",
+        "ref/dotnet/ko/System.IO.FileSystem.xml",
+        "ref/dotnet/ru/System.IO.FileSystem.xml",
+        "ref/dotnet/System.IO.FileSystem.dll",
+        "ref/dotnet/System.IO.FileSystem.xml",
+        "ref/dotnet/zh-hans/System.IO.FileSystem.xml",
+        "ref/dotnet/zh-hant/System.IO.FileSystem.xml",
         "ref/MonoAndroid10/_._",
         "ref/MonoTouch10/_._",
         "ref/net46/System.IO.FileSystem.dll",
         "ref/xamarinios10/_._",
         "ref/xamarinmac20/_._",
-        "runtime.json",
-        "System.IO.FileSystem.4.0.1-beta-23516.nupkg",
-        "System.IO.FileSystem.4.0.1-beta-23516.nupkg.sha512",
+        "System.IO.FileSystem.4.0.0.nupkg",
+        "System.IO.FileSystem.4.0.0.nupkg.sha512",
         "System.IO.FileSystem.nuspec"
       ]
     },
@@ -3567,54 +3172,6 @@
         "System.Text.Encoding.Extensions.nuspec"
       ]
     },
-    "System.Text.RegularExpressions/4.0.0": {
-      "type": "package",
-      "sha512": "D2CHm8LBIymJK9+1E3sn4cUEzMd6B+quQUrCGUluv9QFBNOdL3XqNu548QKeNplEXFOmF5aKXMxXbTrjbEUNMw==",
-      "files": [
-        "lib/MonoAndroid10/_._",
-        "lib/MonoTouch10/_._",
-        "lib/net45/_._",
-        "lib/win8/_._",
-        "lib/wp80/_._",
-        "lib/wpa81/_._",
-        "lib/xamarinios10/_._",
-        "lib/xamarinmac20/_._",
-        "License.rtf",
-        "ref/dotnet/de/System.Text.RegularExpressions.xml",
-        "ref/dotnet/es/System.Text.RegularExpressions.xml",
-        "ref/dotnet/fr/System.Text.RegularExpressions.xml",
-        "ref/dotnet/it/System.Text.RegularExpressions.xml",
-        "ref/dotnet/ja/System.Text.RegularExpressions.xml",
-        "ref/dotnet/ko/System.Text.RegularExpressions.xml",
-        "ref/dotnet/ru/System.Text.RegularExpressions.xml",
-        "ref/dotnet/System.Text.RegularExpressions.dll",
-        "ref/dotnet/System.Text.RegularExpressions.xml",
-        "ref/dotnet/zh-hans/System.Text.RegularExpressions.xml",
-        "ref/dotnet/zh-hant/System.Text.RegularExpressions.xml",
-        "ref/MonoAndroid10/_._",
-        "ref/MonoTouch10/_._",
-        "ref/net45/_._",
-        "ref/netcore50/de/System.Text.RegularExpressions.xml",
-        "ref/netcore50/es/System.Text.RegularExpressions.xml",
-        "ref/netcore50/fr/System.Text.RegularExpressions.xml",
-        "ref/netcore50/it/System.Text.RegularExpressions.xml",
-        "ref/netcore50/ja/System.Text.RegularExpressions.xml",
-        "ref/netcore50/ko/System.Text.RegularExpressions.xml",
-        "ref/netcore50/ru/System.Text.RegularExpressions.xml",
-        "ref/netcore50/System.Text.RegularExpressions.dll",
-        "ref/netcore50/System.Text.RegularExpressions.xml",
-        "ref/netcore50/zh-hans/System.Text.RegularExpressions.xml",
-        "ref/netcore50/zh-hant/System.Text.RegularExpressions.xml",
-        "ref/win8/_._",
-        "ref/wp80/_._",
-        "ref/wpa81/_._",
-        "ref/xamarinios10/_._",
-        "ref/xamarinmac20/_._",
-        "System.Text.RegularExpressions.4.0.0.nupkg",
-        "System.Text.RegularExpressions.4.0.0.nupkg.sha512",
-        "System.Text.RegularExpressions.nuspec"
-      ]
-    },
     "System.Text.RegularExpressions/4.0.10": {
       "type": "package",
       "serviceable": true,
@@ -3812,96 +3369,67 @@
         "System.Threading.Thread.nuspec"
       ]
     },
-    "System.Xml.ReaderWriter/4.0.11-beta-23516": {
+    "System.Xml.ReaderWriter/4.0.10": {
       "type": "package",
       "serviceable": true,
-      "sha512": "mwgbLuly/czDoPbPwNV3C8Rniecok7A7GU5qUBmwjTFvnZzVKj/UraIzoHf1td3GiWOL7hnwTVU+mTt5xnLzhA==",
+      "sha512": "VdmWWMH7otrYV7D+cviUo7XjX0jzDnD/lTGSZTlZqfIQ5PhXk85j+6P0TK9od3PnOd5ZIM+pOk01G/J+3nh9/w==",
       "files": [
-        "lib/dotnet5.4/System.Xml.ReaderWriter.dll",
+        "lib/dotnet/System.Xml.ReaderWriter.dll",
         "lib/MonoAndroid10/_._",
         "lib/MonoTouch10/_._",
-        "lib/net45/_._",
-        "lib/netcore50/System.Xml.ReaderWriter.dll",
-        "lib/win8/_._",
-        "lib/wp80/_._",
-        "lib/wpa81/_._",
+        "lib/net46/_._",
         "lib/xamarinios10/_._",
         "lib/xamarinmac20/_._",
-        "ref/dotnet5.1/de/System.Xml.ReaderWriter.xml",
-        "ref/dotnet5.1/es/System.Xml.ReaderWriter.xml",
-        "ref/dotnet5.1/fr/System.Xml.ReaderWriter.xml",
-        "ref/dotnet5.1/it/System.Xml.ReaderWriter.xml",
-        "ref/dotnet5.1/ja/System.Xml.ReaderWriter.xml",
-        "ref/dotnet5.1/ko/System.Xml.ReaderWriter.xml",
-        "ref/dotnet5.1/ru/System.Xml.ReaderWriter.xml",
-        "ref/dotnet5.1/System.Xml.ReaderWriter.dll",
-        "ref/dotnet5.1/System.Xml.ReaderWriter.xml",
-        "ref/dotnet5.1/zh-hans/System.Xml.ReaderWriter.xml",
-        "ref/dotnet5.1/zh-hant/System.Xml.ReaderWriter.xml",
-        "ref/dotnet5.4/de/System.Xml.ReaderWriter.xml",
-        "ref/dotnet5.4/es/System.Xml.ReaderWriter.xml",
-        "ref/dotnet5.4/fr/System.Xml.ReaderWriter.xml",
-        "ref/dotnet5.4/it/System.Xml.ReaderWriter.xml",
-        "ref/dotnet5.4/ja/System.Xml.ReaderWriter.xml",
-        "ref/dotnet5.4/ko/System.Xml.ReaderWriter.xml",
-        "ref/dotnet5.4/ru/System.Xml.ReaderWriter.xml",
-        "ref/dotnet5.4/System.Xml.ReaderWriter.dll",
-        "ref/dotnet5.4/System.Xml.ReaderWriter.xml",
-        "ref/dotnet5.4/zh-hans/System.Xml.ReaderWriter.xml",
-        "ref/dotnet5.4/zh-hant/System.Xml.ReaderWriter.xml",
+        "ref/dotnet/de/System.Xml.ReaderWriter.xml",
+        "ref/dotnet/es/System.Xml.ReaderWriter.xml",
+        "ref/dotnet/fr/System.Xml.ReaderWriter.xml",
+        "ref/dotnet/it/System.Xml.ReaderWriter.xml",
+        "ref/dotnet/ja/System.Xml.ReaderWriter.xml",
+        "ref/dotnet/ko/System.Xml.ReaderWriter.xml",
+        "ref/dotnet/ru/System.Xml.ReaderWriter.xml",
+        "ref/dotnet/System.Xml.ReaderWriter.dll",
+        "ref/dotnet/System.Xml.ReaderWriter.xml",
+        "ref/dotnet/zh-hans/System.Xml.ReaderWriter.xml",
+        "ref/dotnet/zh-hant/System.Xml.ReaderWriter.xml",
         "ref/MonoAndroid10/_._",
         "ref/MonoTouch10/_._",
-        "ref/net45/_._",
-        "ref/netcore50/de/System.Xml.ReaderWriter.xml",
-        "ref/netcore50/es/System.Xml.ReaderWriter.xml",
-        "ref/netcore50/fr/System.Xml.ReaderWriter.xml",
-        "ref/netcore50/it/System.Xml.ReaderWriter.xml",
-        "ref/netcore50/ja/System.Xml.ReaderWriter.xml",
-        "ref/netcore50/ko/System.Xml.ReaderWriter.xml",
-        "ref/netcore50/ru/System.Xml.ReaderWriter.xml",
-        "ref/netcore50/System.Xml.ReaderWriter.dll",
-        "ref/netcore50/System.Xml.ReaderWriter.xml",
-        "ref/netcore50/zh-hans/System.Xml.ReaderWriter.xml",
-        "ref/netcore50/zh-hant/System.Xml.ReaderWriter.xml",
-        "ref/win8/_._",
-        "ref/wp80/_._",
-        "ref/wpa81/_._",
+        "ref/net46/_._",
         "ref/xamarinios10/_._",
         "ref/xamarinmac20/_._",
-        "System.Xml.ReaderWriter.4.0.11-beta-23516.nupkg",
-        "System.Xml.ReaderWriter.4.0.11-beta-23516.nupkg.sha512",
+        "System.Xml.ReaderWriter.4.0.10.nupkg",
+        "System.Xml.ReaderWriter.4.0.10.nupkg.sha512",
         "System.Xml.ReaderWriter.nuspec"
       ]
     },
-    "System.Xml.XmlDocument/4.0.1-beta-23516": {
+    "System.Xml.XmlDocument/4.0.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "4gaHGHF5YfchhO6pqz2LtfcejCd+XpsVc1m9js78JequgYT6UihV+j6T0hZN/xb8rloHsAJTf8jZaFOLDY8msw==",
+      "sha512": "H5qTx2+AXgaKE5wehU1ZYeYPFpp/rfFh69/937NvwCrDqbIkvJRmIFyKKpkoMI6gl9hGfuVizfIudVTMyowCXw==",
       "files": [
-        "lib/dotnet5.4/System.Xml.XmlDocument.dll",
+        "lib/dotnet/System.Xml.XmlDocument.dll",
         "lib/MonoAndroid10/_._",
         "lib/MonoTouch10/_._",
         "lib/net46/System.Xml.XmlDocument.dll",
         "lib/xamarinios10/_._",
         "lib/xamarinmac20/_._",
-        "ref/dotnet5.1/de/System.Xml.XmlDocument.xml",
-        "ref/dotnet5.1/es/System.Xml.XmlDocument.xml",
-        "ref/dotnet5.1/fr/System.Xml.XmlDocument.xml",
-        "ref/dotnet5.1/it/System.Xml.XmlDocument.xml",
-        "ref/dotnet5.1/ja/System.Xml.XmlDocument.xml",
-        "ref/dotnet5.1/ko/System.Xml.XmlDocument.xml",
-        "ref/dotnet5.1/ru/System.Xml.XmlDocument.xml",
-        "ref/dotnet5.1/System.Xml.XmlDocument.dll",
-        "ref/dotnet5.1/System.Xml.XmlDocument.xml",
-        "ref/dotnet5.1/zh-hans/System.Xml.XmlDocument.xml",
-        "ref/dotnet5.1/zh-hant/System.Xml.XmlDocument.xml",
+        "ref/dotnet/de/System.Xml.XmlDocument.xml",
+        "ref/dotnet/es/System.Xml.XmlDocument.xml",
+        "ref/dotnet/fr/System.Xml.XmlDocument.xml",
+        "ref/dotnet/it/System.Xml.XmlDocument.xml",
+        "ref/dotnet/ja/System.Xml.XmlDocument.xml",
+        "ref/dotnet/ko/System.Xml.XmlDocument.xml",
+        "ref/dotnet/ru/System.Xml.XmlDocument.xml",
+        "ref/dotnet/System.Xml.XmlDocument.dll",
+        "ref/dotnet/System.Xml.XmlDocument.xml",
+        "ref/dotnet/zh-hans/System.Xml.XmlDocument.xml",
+        "ref/dotnet/zh-hant/System.Xml.XmlDocument.xml",
         "ref/MonoAndroid10/_._",
         "ref/MonoTouch10/_._",
         "ref/net46/System.Xml.XmlDocument.dll",
         "ref/xamarinios10/_._",
         "ref/xamarinmac20/_._",
-        "System.Xml.XmlDocument.4.0.1-beta-23516.nupkg",
-        "System.Xml.XmlDocument.4.0.1-beta-23516.nupkg.sha512",
+        "System.Xml.XmlDocument.4.0.0.nupkg",
+        "System.Xml.XmlDocument.4.0.0.nupkg.sha512",
         "System.Xml.XmlDocument.nuspec"
       ]
     },
@@ -3968,10 +3496,7 @@
   },
   "projectFileDependencyGroups": {
     "": [
-      "FastQuant.Core ",
-      "FastQuant.Providers ",
-      "FastQuant.Statistics ",
-      "FastQuant.Indicators "
+      "SmartQuant "
     ],
     "DNX,Version=v4.5.1": [],
     "DNXCore,Version=v5.0": [
