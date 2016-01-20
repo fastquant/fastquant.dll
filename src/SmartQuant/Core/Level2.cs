@@ -21,13 +21,7 @@ namespace SmartQuant
 
     public class Level2 : Tick
     {
-        public override byte TypeId
-        {
-            get
-            {
-                return DataObjectType.Level2;
-            }
-        }
+        public override byte TypeId => DataObjectType.Level2;
 
         public Level2Side Side { get; set; }
 

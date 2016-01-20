@@ -25,12 +25,12 @@ namespace SmartQuant
 
         public int QLZ_VERSION_REVISION => Stolen.QuickLZ.QLZ_VERSION_REVISION;
 
-        public static IntPtr qlz_compress(byte[] source, byte[] destination, IntPtr size, byte[] scratch)
+        public static UIntPtr qlz_compress(byte[] source, byte[] destination, UIntPtr size, byte[] scratch)
         {
             throw new NotSupportedException();
         }
 
-        public static IntPtr qlz_decompress(byte[] source, byte[] destination, byte[] scratch)
+        public static UIntPtr qlz_decompress(byte[] source, byte[] destination, byte[] scratch)
         {
             throw new NotSupportedException();
         }
@@ -40,20 +40,17 @@ namespace SmartQuant
             throw new NotSupportedException();
         }
 
-        public static IntPtr qlz_size_compressed(byte[] source)
+        public static UIntPtr qlz_size_compressed(byte[] source)
         {
             throw new NotSupportedException();
         }
 
-        public static IntPtr qlz_size_decompressed(byte[] source)
+        public static UIntPtr qlz_size_decompressed(byte[] source)
         {
             throw new NotSupportedException();
         }
 
-        public byte[] Decompress(byte[] source)
-        {
-            return Stolen.QuickLZ.decompress(source);
-        }
+        public byte[] Decompress(byte[] source) => Stolen.QuickLZ.decompress(source);
 
         public byte[] Compress(byte[] source) => Stolen.QuickLZ.compress(source, (int)QLZ_COMPRESSION_LEVEL);
 
@@ -608,7 +605,7 @@ namespace SmartQuant
 
         public uint QLZ_VERSION_MINOR => (uint)qlz_get_setting(8);
 
-        public uint QLZ_VERSION_REVISION => (uint)qlz_get_setting(9);
+        public int QLZ_VERSION_REVISION => qlz_get_setting(9);
     }
 #endif
 }
