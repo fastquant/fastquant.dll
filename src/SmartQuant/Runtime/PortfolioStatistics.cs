@@ -215,7 +215,7 @@ namespace SmartQuant
     {
         private Portfolio portfolio;
         internal IdArray<TradeDetector> detectors = new IdArray<TradeDetector>(8192);
-        internal IdArray<List<int>> idArray_1 = new IdArray<List<int>>(1024);
+        internal IdArray<List<int>> idArray_1 = new IdArray<List<int>>();
 
         public PortfolioStatisticsItemList Items { get; } = new PortfolioStatisticsItemList();
 

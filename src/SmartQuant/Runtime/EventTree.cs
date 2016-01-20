@@ -162,7 +162,7 @@ namespace SmartQuant
             else if (current.EventQueue.IsEmpty())
                 this.last = current;
             else
-                this.Arrange(current);
+                Arrange(current);
             return e;
         }
 

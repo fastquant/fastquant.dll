@@ -14,11 +14,11 @@ namespace SmartQuant
 
     public class PositionEventArgs : PortfolioEventArgs
     {
-        public Position Position { get; private set; }
+        public Position Position { get; }
 
         public PositionEventArgs(Portfolio portfolio, Position position) : base(portfolio)
         {
-            this.Position = position;
+            Position = position;
         }
     }
 

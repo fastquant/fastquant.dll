@@ -12,7 +12,7 @@ namespace SmartQuant
         private Framework framework;
         private int counter;
         private StrategyMode mode = StrategyMode.Backtest;
-        private Dictionary<IDataProvider, InstrumentList> dictionary_0 = new Dictionary<IDataProvider, InstrumentList>();
+        private Dictionary<IDataProvider, InstrumentList> subscriptions = new Dictionary<IDataProvider, InstrumentList>();
 
         public Global Global { get; } = new Global();
 
@@ -62,7 +62,7 @@ namespace SmartQuant
             lock (this)
             {
                 this.counter = 101;
-                this.dictionary_0.Clear();
+                this.subscriptions.Clear();
                 Global.Clear();
             }
         }
@@ -94,7 +94,7 @@ namespace SmartQuant
         {
             lock (this)
             {
-                this.dictionary_0.Clear();
+                this.subscriptions.Clear();
                 Strategy = strategy;
                 Mode = mode;
                 if (this.framework.Mode == FrameworkMode.Simulation)
@@ -105,23 +105,17 @@ namespace SmartQuant
                 if (this.framework.EventManager.Status != EventManagerStatus.Running)
                     this.framework.EventManager.Start();
 
-                var info = new StrategyStatusInfo(this.framework.Clock.DateTime, StrategyStatusType.Started)
-                {
-                    Solution = strategy.Name ?? "Solution",
-                    Mode = mode.ToString()
-                };
-                this.framework.EventServer.OnLog(new GroupEvent(info, null));
-
-                if (Persistence == StrategyPersistence.Full || Persistence == StrategyPersistence.Save)
-                {
-                    this.framework.OrderServer.SeriesName = strategy.Name;
-                    this.framework.OrderManager.IsPersistent = true;
-                }
-
+                SetStatusType(StrategyStatusType.Started);
                 if (Persistence == StrategyPersistence.Full || Persistence == StrategyPersistence.Load)
                 {
                     this.framework.PortfolioManager.Load(strategy.Name);
                     this.framework.OrderManager.Load(strategy.Name, -1);
+                    this.framework.OrderServer.SeriesName = strategy.Name;
+                    this.framework.OrderManager.IsPersistent = true;
+                }
+                else
+                {
+                    this.framework.OrderManager.IsPersistent = false;
                 }
 
                 strategy.Init();
@@ -134,10 +128,10 @@ namespace SmartQuant
                 if (!this.framework.IsExternalDataQueue)
                 {
                     var dictionary = new Dictionary<IDataProvider, InstrumentList>();
-                    while (this.dictionary_0.Count != 0)
+                    while (this.subscriptions.Count != 0)
                     {
-                        var dictionary2 = new Dictionary<IDataProvider, InstrumentList>(this.dictionary_0);
-                        this.dictionary_0.Clear();
+                        var dictionary2 = new Dictionary<IDataProvider, InstrumentList>(this.subscriptions);
+                        this.subscriptions.Clear();
                         foreach (var current in dictionary2)
                         {
                             InstrumentList instrumentList = null;
@@ -161,17 +155,17 @@ namespace SmartQuant
                             }
                         }
                     }
-                    this.method_1();
+                    this.SetParametersGroup();
                     Status = StrategyStatus.Running;
-                    this.dictionary_0 = dictionary;
-                    if (this.dictionary_0.Count == 0 && mode == StrategyMode.Backtest)
+                    this.subscriptions = dictionary;
+                    if (this.subscriptions.Count == 0 && mode == StrategyMode.Backtest)
                     {
                         Console.WriteLine($"{DateTime.Now } StrategyManager::StartStrategy {strategy.Name} has no data requests in backtest mode, stopping...");
                         StopStrategy();
                     }
                     else
                     {
-                        foreach (var current3 in this.dictionary_0)
+                        foreach (var current3 in this.subscriptions)
                         {
                             if (!(current3.Key is SellSideStrategy))
                                 this.framework.SubscriptionManager?.Subscribe(current3.Key, current3.Value);
@@ -182,66 +176,20 @@ namespace SmartQuant
                 }
                 else
                 {
-                    this.method_1();
+                    this.SetParametersGroup();
                     Status = StrategyStatus.Running;
                 }
             }
         }
-
-        internal void method_1()
-        {
-            Group group = this.method_44("StrategyParameters");
-            if (group == null)
-            {
-                group = new Group("StrategyParameters");
-                this.framework.GroupManager.Add(group);
-            }
-            else
-            {
-                this.framework.EventServer.OnLog(group);
-            }
-            this.method_2(Strategy, "", group);
-        }
-
-        private void method_2(Strategy strategy_1, string string_0, Group group_0)
-        {
-            string_0 += ((string_0 == "") ? strategy_1.Name : ("\\" + strategy_1.Name));
-            ParameterList parameters = strategy_1.GetParameters();
-            parameters.Name = string_0;
-            this.framework.EventServer.OnLog(new GroupEvent(parameters, group_0));
-            foreach (Strategy current in strategy_1.Strategies)
-            {
-                this.method_2(current, string_0, group_0);
-            }
-        }
-
-        private Group method_44(string string_0)
-        {
-            foreach (Group current in this.framework.GroupManager.GroupList)
-            {
-                if (current.Name == string_0)
-                {
-                    return current;
-                }
-            }
-            return null;
-        }
-
 
         private void StopStrategy()
         {
             lock (this)
             {
                 Console.WriteLine($"{DateTime.Now} StrategyManager::StopStrategy {Strategy.Name}");
-                var info = new StrategyStatusInfo(this.framework.Clock.DateTime, StrategyStatusType.Stopped)
-                {
-                    Solution = Strategy.Name ?? "Solution",
-                    Mode = Mode.ToString()
-                };
-                this.framework.EventServer.OnLog(new GroupEvent(info, null));
-
+                SetStatusType(StrategyStatusType.Stopped);
                 if (!this.framework.IsExternalDataQueue)
-                    this.dictionary_0.ToList().ForEach(p => this.framework.SubscriptionManager?.Unsubscribe(p.Key, p.Value));
+                    this.subscriptions.ToList().ForEach(p => this.framework.SubscriptionManager?.Unsubscribe(p.Key, p.Value));
 
                 if (Strategy.Status == StrategyStatus.Stopped)
                 {
@@ -263,23 +211,93 @@ namespace SmartQuant
 
         public void RegisterMarketDataRequest(IDataProvider dataProvider, InstrumentList instrumentList)
         {
-            InstrumentList instrumentList2 = null;
-            if (!this.dictionary_0.TryGetValue(dataProvider, out instrumentList2))
+            InstrumentList alreadyRegistered = null;
+            if (!this.subscriptions.TryGetValue(dataProvider, out alreadyRegistered))
             {
-                instrumentList2 = new InstrumentList();
-                this.dictionary_0[dataProvider] = instrumentList2;
+                alreadyRegistered = new InstrumentList();
+                this.subscriptions[dataProvider] = alreadyRegistered;
             }
+
             foreach (var current in instrumentList)
-            {
-                if (!instrumentList2.Contains(current.Id))
-                {
-                    instrumentList2.Add(current);
-                }
-            }
+                if (!alreadyRegistered.Contains(current.Id))
+                    alreadyRegistered.Add(current);
+
             if (Status == StrategyStatus.Running)
-            {
                 this.framework.SubscriptionManager?.Subscribe(dataProvider, instrumentList);
+        }
+
+        internal void UnregisterMarketDataRequest(IDataProvider dataProvider, InstrumentList instruments)
+        {
+            if (Status == StrategyStatus.Running && instruments.Count > 0)
+                this.framework.SubscriptionManager?.Unsubscribe(dataProvider, instruments);
+
+            var list = this.subscriptions[dataProvider];
+            if (list != null)
+            {
+                foreach (var i in instruments)
+                    if (!this.framework.SubscriptionManager.IsSubscribed(dataProvider, i))
+                        list.Remove(i);
             }
+        }
+
+        internal void SetParametersGroup()
+        {
+            var group = FindOrCreateGroup("StrategyParameters");
+            CorrectParametersName(Strategy, "", group);
+        }
+
+        private void CorrectParametersName(Strategy strategy, string name, Group group)
+        {
+            name += string.IsNullOrEmpty(name) ? strategy.Name : "\\" + strategy.Name;
+            var parameters = strategy.GetParameters();
+            parameters.Name = name;
+            parameters.DateTime = DateTime.Now;
+            this.framework.EventServer.OnLog(new GroupEvent(parameters, group));
+            foreach (Strategy s in strategy.Strategies)
+                CorrectParametersName(s, name, group);
+        }
+
+        private Group FindOrCreateGroup(string name)
+        {
+            var group = FindGroup(name);
+            if (group == null)
+            {
+                group = new Group(name);
+                group.dateTime = DateTime.Now;
+                this.framework.GroupManager.Add(group);
+            }
+            else
+            {
+                this.framework.EventServer.OnLog(group);
+            }
+            return group;
+        }
+
+        private Group FindGroup(string name) => this.framework.GroupManager.GroupList.Find(g => g.Name == name);
+
+        private void SetStatusType(StrategyStatusType type)
+        {
+            var group = FindOrCreateGroup("SolutionStatus");
+            var info = new StrategyStatusInfo(this.framework.Clock.DateTime, type)
+            {
+                Solution = Strategy.Name ?? "Solution",
+                Mode = Mode.ToString(),
+                DateTime = DateTime.Now
+            };
+            this.framework.EventServer.OnLog(new GroupEvent(info, group));
+        }
+
+        #region EventHandlers
+        internal void OnException(string source, Event e, Exception ex)
+        {
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.vmethod_42(source, e, ex);
+        }
+
+        internal void OnBid(Bid bid)
+        {
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.vmethod_9(bid);
         }
 
         internal void OnAsk(Ask ask)
@@ -294,10 +312,10 @@ namespace SmartQuant
                 Strategy.EmitOnTrade(trade);
         }
 
-        internal void OnBid(Bid bid)
+        internal void OnBarOpen(Bar bar)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_9(bid);
+                Strategy.vmethod_13(bar);
         }
 
         internal void OnBar(Bar bar_0)
@@ -306,210 +324,214 @@ namespace SmartQuant
                 Strategy.vmethod_13(bar_0);
         }
 
-        internal void method_46(string source, Event e, Exception ex)
+        internal void OnBarSlice(BarSlice barSlice)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_42(source, e, ex);
+                Strategy.vmethod_17(barSlice);
         }
 
-        internal void method_0(IDataProvider provider, InstrumentList instruments)
-        {
-            if (Status == StrategyStatus.Running && instruments.Count > 0 && this.framework.SubscriptionManager != null)
-            {
-                this.framework.SubscriptionManager.Unsubscribe(provider, instruments);
-            }
-            InstrumentList instrumentList = this.dictionary_0[provider];
-            if (instrumentList != null)
-            {
-                foreach (var current in instruments)
-                {
-                    if (!this.framework.SubscriptionManager.IsSubscribed(provider, current))
-                    {
-                        instrumentList.Remove(current);
-                    }
-                }
-            }
-        }
-
-        internal void method_10(Level2Snapshot level2Snapshot_0)
+        internal void OnLevel2(Level2Snapshot l2s)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-            {
-                Strategy.vmethod_11(level2Snapshot_0);
-            }
+                Strategy.vmethod_11(l2s);
         }
-        internal void method_11(Level2Update level2Update_0)
+
+        internal void OnLevel2(Level2Update l2u)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-            {
-                Strategy.vmethod_12(level2Update_0);
-            }
+                Strategy.vmethod_12(l2u);
         }
 
-        internal void method_30(OnFill e)
+
+        internal void OnNews(News news)
         {
-            throw new NotImplementedException();
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.vmethod_18(news);
         }
 
-        internal void method_31(OnTransaction e)
+        internal void OnFundamental(Fundamental fundamental)
         {
-            throw new NotImplementedException();
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.vmethod_19(fundamental);
         }
 
-        internal void method_29(AccountReport report)
+        internal void OnFill(OnFill e)
         {
-            throw new NotImplementedException();
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.vmethod_35(e);
         }
 
-        internal void method_37(AccountData data)
+        internal void OnTransaction(OnTransaction e)
         {
-            throw new NotImplementedException();
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.vmethod_36(e);
         }
 
-        internal void method_28(Order order)
+        internal void OnAccountReport(AccountReport report)
         {
-            throw new NotImplementedException();
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.vmethod_21(report);
         }
 
-        internal void method_27(Order order)
+        internal void OnExecutionReport(ExecutionReport report)
         {
-            throw new NotImplementedException();
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.vmethod_20(report);
         }
 
-        internal void method_26(Order order)
+        internal void OnCommand(Command command)
         {
-            throw new NotImplementedException();
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.vmethod_40(command);
         }
 
-        internal void method_25(Order order)
+        internal void OnAccountData(AccountData data)
         {
-            throw new NotImplementedException();
+            if (Strategy != null && Strategy.Status == StrategyStatus.Running && Mode != StrategyMode.Backtest)
+                Strategy.vmethod_45(data);
         }
 
-        internal void method_24(Order order)
+        internal void OnOrderDone(Order order)
         {
-            throw new NotImplementedException();
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.vmethod_34(order);
         }
 
-        internal void method_22(Order order)
+        internal void OnOrderReplaceRejected(Order order)
         {
-            throw new NotImplementedException();
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.vmethod_34(order);
         }
 
-        internal void method_23(Order order)
+        internal void OnOrderCancelRejected(Order order)
         {
-            throw new NotImplementedException();
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.vmethod_34(order);
         }
 
-        internal void method_20(Order order)
+        internal void OnOrderExpired(Order order)
         {
-            throw new NotImplementedException();
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.vmethod_34(order);
         }
 
-        internal void method_21(Order order)
+        internal void OnOrderRejected(Order order)
         {
-            throw new NotImplementedException();
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.vmethod_34(order);
         }
 
-        internal void method_19(Order order)
+        internal void OnOrderCancelled(Order order)
         {
-            throw new NotImplementedException();
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.vmethod_34(order);
         }
 
-        internal void method_18(Order order)
+        internal void OnOrderReplaced(Order order)
         {
-            throw new NotImplementedException();
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.vmethod_34(order);
         }
 
-        internal void method_16(Order order)
+        internal void OnOrderFilled(Order order)
         {
-            throw new NotImplementedException();
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.vmethod_34(order);
         }
 
-        internal void method_38(Command e)
+        internal void OnOrderPartiallyFilled(Order order)
         {
-            throw new NotImplementedException();
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.vmethod_34(order);
         }
 
-        internal void method_15(News news)
+        internal void OnOrderStatusChanged(Order order)
         {
-            throw new NotImplementedException();
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.vmethod_34(order);
         }
 
-        internal void gudLdqclqe(Fundamental fundamental)
+        internal void OnNewOrder(Order order)
         {
-            throw new NotImplementedException();
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.vmethod_34(order);
         }
 
-        internal void IbsLpdRkc3(ExecutionReport report)
+        internal void OnSendOrder(Order order)
         {
-            throw new NotImplementedException();
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.vmethod_34(order);
         }
 
-        internal void method_6(ProviderError e)
+        internal void OnPendingNewOrder(Order order)
         {
-            throw new NotImplementedException();
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.vmethod_34(order);
         }
 
-        internal void method_34(Portfolio portfolio)
+        internal void OnProviderError(ProviderError error)
         {
-            throw new NotImplementedException();
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.vmethod_100(error);
         }
 
-        internal void method_36(Portfolio portfolio)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void method_35(Portfolio portfolio)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void method_40(OnPropertyChanged e)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void method_14(BarSlice barSlice)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void vMaLxjraoe(Portfolio portfolio, Position position)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void method_32(Portfolio portfolio, Position position)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void method_33(Portfolio portfolio, Position position)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void method_17(Order order)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void method_45(object data)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void method_4(Provider provider)
+        internal void OnProviderConnected(Provider provider)
         {
             if (Strategy?.Status == StrategyStatus.Running)
                 Strategy.vmethod_6(provider);
         }
 
-        internal void method_5(Provider p)
+        internal void OnProviderDisconnected(Provider provider)
         {
-        //    throw new NotImplementedException();
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.vmethod_6(provider);
         }
+
+        internal void OnPortfolioAdded(Portfolio portfolio)
+        {
+            // noop
+        }
+
+        internal void OnPortfolioParentChanged(Portfolio portfolio)
+        {
+            // noop
+        }
+
+        internal void OnPortfolioRemoved(Portfolio portfolio)
+        {
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.vmethod_622(portfolio);
+        }
+
+        internal void OnPropertyChanged(OnPropertyChanged e)
+        {
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.vmethod_46(e);
+        }
+
+        internal void OnPositionOpened(Portfolio portfolio, Position position)
+        {
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.vmethod_62(position);
+        }
+
+        internal void OnPositionClosed(Portfolio portfolio, Position position)
+        {
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.vmethod_62(position);
+        }
+
+        internal void OnPositionChanged(Portfolio portfolio, Position position)
+        {
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.vmethod_62(position);
+        }
+
+        internal void OnStrategyEvent(object data)
+        {
+            if (Strategy?.Status == StrategyStatus.Running)
+                Strategy.vmethod_43(data);
+        }
+        #endregion
     }
 }

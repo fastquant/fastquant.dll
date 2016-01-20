@@ -105,10 +105,10 @@ namespace SmartQuant
                     switch (typeId)
                     {
                         case EventType.HistoricalData:
-                            this.method_8((HistoricalData)e);
+                            this.OnHistoricalData((HistoricalData)e);
                             break;
                         case EventType.HistoricalDataEnd:
-                            this.method_9((HistoricalDataEnd)e);
+                            this.OnHistoricalDataEnd((HistoricalDataEnd)e);
                             break;
                         case EventType.OnQueueOpened:
                         case EventType.OnQueueClosed:
@@ -592,7 +592,7 @@ namespace SmartQuant
             this.djtaJvnAjO[bar.InstrumentId] = bar;
         }
 
-        internal void method_4(Level2Snapshot level2Snapshot_0)
+        internal void OnLevel2(Level2Snapshot level2Snapshot_0)
         {
             //if (this.idArray_10[(int)(level2Snapshot_0.byte_0 + 1)] == null)
             //{
@@ -607,7 +607,7 @@ namespace SmartQuant
             //orderBook.method_0(level2Snapshot_0);
         }
 
-        internal void method_5(Level2Update level2Update_0)
+        internal void OnLevel2(Level2Update level2Update_0)
         {
             //if (this.idArray_10[(int)(level2Update_0.byte_0 + 1)] == null)
             //{
@@ -622,7 +622,7 @@ namespace SmartQuant
             //orderBook.method_1(level2Update_0);
         }
 
-        internal void method_8(HistoricalData historicalData_0)
+        internal void OnHistoricalData(HistoricalData historicalData_0)
         {
             //DataManager.Class21 @class;
             //bool flag2;
@@ -636,7 +636,7 @@ namespace SmartQuant
             //}
         }
 
-        internal void method_9(HistoricalDataEnd historicalDataEnd_0)
+        internal void OnHistoricalDataEnd(HistoricalDataEnd historicalDataEnd_0)
         {
             //DataManager.Class21 @class;
             //bool flag2;

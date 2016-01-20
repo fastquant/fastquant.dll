@@ -14,7 +14,6 @@ namespace SmartQuant.Component
         public double Value { get; }
     }
 
-
     public class StrategyComponent
     {
         protected internal Framework framework;
@@ -54,60 +53,105 @@ namespace SmartQuant.Component
 
         public bool HasShortPosition()
         {
-            return this.strategy.HasShortPosition(this.Instrument);
+            return this.strategy.HasShortPosition(Instrument);
         }
 
         public bool HasShortPosition(double qty)
         {
-            return this.strategy.HasShortPosition(this.Instrument, qty);
+            return this.strategy.HasShortPosition(Instrument, qty);
         }
 
         public void Buy(double qty)
         {
-            throw new NotImplementedException();
+            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument, OrderType.Market, OrderSide.Buy, qty, 0, 0, TimeInForce.Day, 0, "");
+            order.StrategyId = this.strategy.Id;
+            this.strategy.ExecutionComponent.OnOrder(order);
         }
+
         public void Buy(double qty, string text)
         {
-            throw new NotImplementedException();
+            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument, OrderType.Market, OrderSide.Buy, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
+            order.Text = text;
+            order.StrategyId = this.strategy.Id;
+            this.strategy.ExecutionComponent.OnOrder(order);
+        }
+
+        public void BuyLimit(double qty, double price)
+        {
+            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument, OrderType.Limit, OrderSide.Buy, qty, price, 0, TimeInForce.Day, 0, "");
+            order.StrategyId = this.strategy.Id;
+            this.strategy.ExecutionComponent.OnOrder(order);
         }
 
         public void BuyLimit(double qty, double price, string text)
         {
-            throw new NotImplementedException();
+            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument, OrderType.Limit, OrderSide.Buy, qty, price, 0, TimeInForce.Day, 0, text);
+            order.StrategyId = this.strategy.Id;
+            this.strategy.ExecutionComponent.OnOrder(order);
+        }
+
+        public void BuyStop(double qty, double stopPx)
+        {
+            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument, OrderType.Stop, OrderSide.Buy, qty, 0.0, stopPx, TimeInForce.Day, 0, "");
+            order.StrategyId = this.strategy.Id;
+            this.strategy.ExecutionComponent.OnOrder(order);
         }
 
         public void BuyStop(double qty, double stopPx, string text)
         {
-            throw new NotImplementedException();
+            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument, OrderType.Stop, OrderSide.Buy, qty, 0, stopPx, TimeInForce.Day, 0, text);
+            order.StrategyId = this.strategy.Id;
+            this.strategy.ExecutionComponent.OnOrder(order);
         }
 
         public void Sell(double qty)
         {
-            throw new NotImplementedException();
+            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument, OrderType.Market, OrderSide.Sell, qty, 0, 0, TimeInForce.Day, 0, "");
+            order.StrategyId = this.strategy.Id;
+            this.strategy.ExecutionComponent.OnOrder(order);
         }
+
         public void Sell(double qty, string text)
         {
-            throw new NotImplementedException();
+            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument, OrderType.Market, OrderSide.Sell, qty, 0, 0, TimeInForce.Day, 0, "");
+            order.Text = text;
+            order.StrategyId = this.strategy.Id;
+            this.strategy.ExecutionComponent.OnOrder(order);
+        }
+
+        public void SellLimit(double qty, double price)
+        {
+            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument, OrderType.Limit, OrderSide.Sell, qty, price, 0, TimeInForce.Day, 0, "");
+            order.StrategyId = this.strategy.Id;
+            this.strategy.ExecutionComponent.OnOrder(order);
         }
 
         public void SellLimit(double qty, double price, string text)
         {
-            throw new NotImplementedException();
+            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument, OrderType.Limit, OrderSide.Sell, qty, price, 0, TimeInForce.Day, 0, text);
+            order.StrategyId = this.strategy.Id;
+            this.strategy.ExecutionComponent.OnOrder(order);
         }
 
         public void SellStop(double qty, double stopPx)
         {
-            throw new NotImplementedException();
+            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument, OrderType.Stop, OrderSide.Sell, qty, 0, stopPx, TimeInForce.Day, 0, "");
+            order.StrategyId = this.strategy.Id;
+            this.strategy.ExecutionComponent.OnOrder(order);
         }
 
         public void SellStop(double qty, double stopPx, string text)
         {
-            throw new NotImplementedException();
+            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument, OrderType.Stop, OrderSide.Sell, qty, 0, stopPx, TimeInForce.Day, 0, text);
+            order.StrategyId = this.strategy.Id;
+            this.strategy.ExecutionComponent.OnOrder(order);
         }
 
         public Stop SetStop(double level, StopType type = StopType.Fixed, StopMode mode = StopMode.Absolute)
         {
-            throw new NotImplementedException();
+            var stop = new Stop(this.strategy, this.Position, level, type, mode);
+            this.strategy.AddStop(stop);
+            return stop;
         }
 
         public void Log(DataObject data, Group group)
@@ -120,12 +164,54 @@ namespace SmartQuant.Component
             this.strategy.Log(value, group);
         }
 
+        public void Log(DateTime dateTime, double value, Group group)
+        {
+            this.strategy.Log(dateTime, value, group);
+        }
+
+        public void Log(DateTime dateTime, double value, int groupId)
+        {
+            this.strategy.Log(dateTime, value, groupId);
+        }
+
+        public void Log(DateTime dateTime, string text, int groupId)
+        {
+            this.strategy.Log(dateTime, text, groupId);
+        }
+
+        public void Log(DateTime dateTime, string text, Group group)
+        {
+            this.strategy.Log(dateTime, text, group);
+        }
+
+        public void Log(string text, int groupId)
+        {
+            this.strategy.Log(text, groupId);
+        }
+
+        public void Log(string text, Group group)
+        {
+            this.strategy.Log(text, group);
+        }
+
+        public void Log(double value, int groupId)
+        {
+            this.strategy.Log(value, groupId);
+        }
+
+        public void Log(DataObject data, int groupId)
+        {
+            this.strategy.Log(data, groupId);
+        }
+
         public virtual void OnReminder(DateTime dateTime, object data)
         {
+            // noop
         }
 
         public virtual void OnStrategyStart()
         {
+            // noop
         }
     }
 
@@ -133,18 +219,22 @@ namespace SmartQuant.Component
     {
         public virtual void OnAsk(Ask ask)
         {
+            // noop
         }
 
         public virtual void OnBar(Bar bar)
         {
+            // noop
         }
 
         public virtual void OnBid(Bid bid)
         {
+            // noop
         }
 
         public virtual void OnTrade(Trade trade)
         {
+            // noop
         }
     }
 
@@ -152,18 +242,22 @@ namespace SmartQuant.Component
     {
         public virtual void OnAsk(Ask ask)
         {
+            // noop
         }
 
         public virtual void OnBar(Bar bar)
         {
+            // noop
         }
 
         public virtual void OnBid(Bid bid)
         {
+            // noop
         }
 
         public virtual void OnTrade(Trade trade)
         {
+            // noop
         }
     }
 
@@ -171,42 +265,52 @@ namespace SmartQuant.Component
     {
         public virtual void OnAsk(Ask ask)
         {
+            // noop
         }
 
         public virtual void OnBar(Bar bar)
         {
+            // noop
         }
 
         public virtual void OnBid(Bid bid)
         {
+            // noop
         }
 
         public virtual void OnPositionChanged(Position position)
         {
+            // noop
         }
 
         public virtual void OnPositionClosed(Position position)
         {
+            // noop
         }
 
         public virtual void OnPositionOpened(Position position)
         {
+            // noop
         }
 
         public virtual void OnSignal(Signal signal)
         {
+            // noop
         }
 
         public virtual void OnStopCancelled(Stop stop)
         {
+            // noop
         }
 
         public virtual void OnStopExecuted(Stop stop)
         {
+            // noop
         }
 
         public virtual void OnTrade(Trade trade)
         {
+            // noop
         }
     }
 
@@ -214,14 +318,17 @@ namespace SmartQuant.Component
     {
         public virtual void OnPositionChanged(Position position)
         {
+            // noop
         }
 
         public virtual void OnPositionClosed(Position position)
         {
+            // noop
         }
 
         public virtual void OnPositionOpened(Position position)
         {
+            // noop
         }
     }
 
@@ -229,15 +336,19 @@ namespace SmartQuant.Component
     {
         public virtual void OnExecutionReport(ExecutionReport report)
         {
+            // noop
         }
 
         public virtual void OnOrder(Order order)
         {
-            throw new NotImplementedException();
+            order.Provider = this.strategy.method_5(Instrument);
+            order.StrategyId = this.strategy.Id;
+            this.strategy.framework.OrderManager.Send(order);
         }
 
         public virtual void OnOrderFilled(Order order)
         {
+            // noop
         }
     }
 
@@ -245,22 +356,27 @@ namespace SmartQuant.Component
     {
         public virtual void OnAsk(Ask ask)
         {
+            // noop
         }
 
         public virtual void OnBar(Bar bar)
         {
+            // noop
         }
 
         public virtual void OnBid(Bid bid)
         {
+            // noop
         }
 
         public virtual void OnFill(Fill fill)
         {
+            // noop
         }
 
         public virtual void OnTrade(Trade trade)
         {
+            // noop
         }
     }
 

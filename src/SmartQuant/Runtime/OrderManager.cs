@@ -31,14 +31,64 @@ namespace SmartQuant
             this.counter = 0;
         }
 
-        public void Cancel(Order stopLossOrder)
+        public void Cancel(Order order)
         {
-            throw new NotImplementedException();
+            if (order.IsNotSent)
+                throw new ArgumentException($"Can not cancel order that is not sent {order}");
+
+            var command = new ExecutionCommand(ExecutionCommandType.Cancel, order);
+            command.DateTime = this.framework.Clock.DateTime;
+            command.OrderId = order.Id;
+            command.ClOrderId = order.ClOrderId;
+            command.ProviderOrderId = order.ProviderOrderId;
+            command.ProviderId = order.ProviderId;
+            command.RouteId = order.RouteId;
+            command.PortfolioId = order.PortfolioId;
+            command.DateTime = order.DateTime;
+            command.Instrument = order.Instrument;
+            command.InstrumentId = order.InstrumentId;
+            command.Provider = order.Provider;
+            command.Portfolio = order.Portfolio;
+            command.Side = order.Side;
+            command.OrdType = order.Type;
+            command.TimeInForce = order.TimeInForce;
+            command.Price = order.Price;
+            command.StopPx = order.StopPx;
+            command.Qty = order.Qty;
+            command.OCA = order.OCA;
+            command.Text = order.Text;
+            command.Account = order.Account;
+            command.ClientID = order.ClientID;
+            command.ClientId = order.ClientId;
+            Messages.Add(command);
+            order.OnExecutionCommand(command);
+            this.framework.EventServer.OnExecutionCommand(command);
+            if (IsPersistent)
+                Server?.Save(command, -1);
+            order.Provider.Send(command);
         }
 
         public void Register(Order order)
         {
-            throw new NotImplementedException();
+            if (order.Id != -1)
+            {
+                Console.WriteLine($"OrderManager::Register Error Order is already registered : id = {order.Id}");
+                return;
+            }
+
+            lock (this.obj)
+                order.Id = this.counter++;
+
+            if (this.framework.Mode == FrameworkMode.Realtime && string.IsNullOrEmpty(order.ClOrderId))
+                order.ClOrderId = $"{this.framework.Clock.DateTime} { order.Id}";
+        }
+
+        public void Delete(string name)
+        {
+            if (Server != null)
+                Server.Delete(name);
+            else
+                Console.WriteLine($"OrderManager::Delete Can not delete order series {name} Server is null.");
         }
 
         public void Clear()
@@ -143,6 +193,20 @@ namespace SmartQuant
             return result;
         }
 
+        public void Send(Order order)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Reject(Order order)
+        {
+            order.Status = OrderStatus.Rejected;
+        }
+
+        public void Replace(Order order, double price)
+        {
+            this.Replace(order, price, order.StopPx, order.Qty);
+        }
 
         public void Replace(Order order, double price, double stopPx, double qty)
         {
@@ -154,7 +218,7 @@ namespace SmartQuant
             throw new NotImplementedException();
         }
 
-        internal void method_1(AccountReport report)
+        internal void OnAccountReport(AccountReport report)
         {
             throw new NotImplementedException();
         }
@@ -163,5 +227,7 @@ namespace SmartQuant
         {
             throw new NotImplementedException();
         }
+
+
     }
 }

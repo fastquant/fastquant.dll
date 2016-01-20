@@ -362,6 +362,8 @@ namespace SmartQuant
         }
         public bool Contains(int id) => this.list.Contains(id);
 
+        public bool Contains(string name) => this.list.Contains(name);
+
         public void Add(Portfolio portfolio) => this.list.Add(portfolio);
 
         public Portfolio GetByName(string name) => this.list.GetByName(name);

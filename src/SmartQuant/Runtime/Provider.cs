@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Threading;
 using System.Linq;
+using System.Diagnostics;
 
 namespace SmartQuant
 {
@@ -109,9 +110,11 @@ namespace SmartQuant
 
         bool IsDisconnecting { get; }
 
-        byte Id { get; }
+        byte Id { get; set; }
 
-        string Name { get; }
+        string Name { get; set; }
+
+        bool Enabled { get; set; }
 
         void Connect();
 
@@ -254,6 +257,7 @@ namespace SmartQuant
 
         protected internal Framework framework;
         private ProviderStatus status;
+        protected internal bool enabled;
 
         protected EventQueue dataQueue;
         protected EventQueue executionQueue;
@@ -261,10 +265,30 @@ namespace SmartQuant
         protected EventQueue instrumentQueue;
 
         [Category("Information")]
-        public byte Id => this.id;
+        public byte Id
+        {
+            get
+            {
+                return this.id;
+            }
+            set
+            {
+                this.id = value;
+            }
+        }
 
         [Category("Information")]
-        public string Name => this.name;
+        public string Name
+        {
+            get
+            {
+                return this.name;
+            }
+            set
+            {
+                this.name = value;
+            }
+        }
 
         [Category("Information")]
         public string Description => this.description;
@@ -283,6 +307,19 @@ namespace SmartQuant
 
         [Category("Status")]
         public bool IsDisconnecting => Status == ProviderStatus.Disconnecting;
+
+        [Category("Status")]
+        public bool Enabled
+        {
+            get
+            {
+                return this.enabled;
+            }
+            set
+            {
+                this.enabled = value;
+            }
+        }
 
         public ProviderStatus Status
         {
@@ -317,6 +354,7 @@ namespace SmartQuant
 
         public virtual void Clear()
         {
+            // noop
         }
 
         public virtual void Connect()
@@ -355,12 +393,14 @@ namespace SmartQuant
 
         protected virtual void Dispose(bool disposing)
         {
+            // noop
         }
 
         public override string ToString() => $"provider id = {Id} {Name} ({Description}) {Url}";
 
         public virtual void Subscribe(Instrument instrument)
         {
+            // noop
         }
 
         public virtual void Subscribe(InstrumentList instruments)
@@ -371,6 +411,7 @@ namespace SmartQuant
 
         public virtual void Unsubscribe(Instrument instrument)
         {
+            // noop
         }
 
         public virtual void Unsubscribe(InstrumentList instruments)
@@ -398,19 +439,87 @@ namespace SmartQuant
             }
         }
 
+        public virtual void RequestHistoricalData(HistoricalDataRequest request)
+        {
+            // noop
+        }
+
+        public virtual void RequestInstrumentDefinitions(InstrumentDefinitionRequest request)
+        {
+            // noop
+        }
+
         public virtual void Send(ExecutionCommand command)
         {
             Console.WriteLine("Provider::Send is not implemented in the base class");
         }
 
+        public virtual void Send(HistoricalDataRequest request)
+        {
+            // noop
+        }
+
+        public virtual void Send(InstrumentDefinitionRequest request)
+        {
+            // noop
+        }
+
+        protected void Reject(ExecutionCommand command, string format, params object[] args)
+        {
+            var report = new ExecutionReport();
+            report.DateTime = this.framework.Clock.DateTime;
+            report.Order = command.Order;
+            report.OrderId = command.OrderId;
+            report.Instrument = command.Instrument;
+            report.InstrumentId = command.InstrumentId;
+            report.CurrencyId = command.Instrument.CurrencyId;
+            report.OrdType = command.Order.Type;
+            report.Side = command.Order.Side;
+            report.OrdQty = command.Order.Qty;
+            report.Price = command.Order.Price;
+            report.StopPx = command.Order.StopPx;
+            report.TimeInForce = command.Order.TimeInForce;
+            report.AvgPx = command.Order.AvgPx;
+            report.CumQty = command.Order.CumQty;
+            report.LeavesQty = command.Order.LeavesQty;
+            switch (command.Type)
+            {
+                case ExecutionCommandType.Send:
+                    report.ExecType = ExecType.ExecRejected;
+                    report.OrdStatus = OrderStatus.Rejected;
+                    break;
+                case ExecutionCommandType.Cancel:
+                    report.ExecType = ExecType.ExecCancelReject;
+                    report.OrdStatus = command.Order.Status;
+                    break;
+                case ExecutionCommandType.Replace:
+                    report.ExecType = ExecType.ExecReplaceReject;
+                    report.OrdStatus = command.Order.Status;
+                    break;
+            }
+            report.Text = format != null ? string.Format(format, args) : report.Text;
+            EmitExecutionReport(report, true);
+        }
+
         protected void WriteDebugInfo(string format, params object[] args)
         {
+            // noop
         }
 
         protected internal virtual void SetProperties(ProviderPropertyList properties)
         {
-            throw new NotImplementedException();
-        }
+            foreach(var p in GetType().GetProperties().TakeWhile(p => p.CanRead && p.CanWrite))
+            {
+                var converter = TypeDescriptor.GetConverter(p.PropertyType);
+                if (converter != null && converter.CanConvertFrom(typeof(string)))
+                {
+                    string value = properties.GetStringValue(p.Name, null);
+                    //if (value != null && converter.IsValid(value))
+                    if (value != null)
+                        p.SetValue(this, converter.ConvertFromInvariantString(value), null);
+                }
+            }
+         }
 
         protected internal virtual ProviderPropertyList GetProperties()
         {
@@ -447,6 +556,155 @@ namespace SmartQuant
                 this.executionQueue.Enqueue(new OnQueueClosed(this.executionQueue));
                 this.executionQueue = null;
             }
+        }
+
+        #region Event Emitters
+
+        protected internal void EmitAccountData(AccountData data)
+        {
+            if (this.executionQueue != null)
+                this.executionQueue.Enqueue(data);
+            else
+                this.framework.EventServer.OnEvent(data);
+        }
+
+        protected internal void EmitAccountReport(AccountReport report, bool queued = true)
+        {
+            if (queued && this.executionQueue != null)
+                this.executionQueue.Enqueue(report);
+            else
+                this.framework.EventServer.OnAccountReport(report);
+        }
+
+        protected internal void EmitExecutionReport(ExecutionReport report, bool queued = true)
+        {
+            if (queued && this.executionQueue != null)
+                this.executionQueue.Enqueue(report);
+            else
+                this.framework.EventServer.OnExecutionReport(report);
+        }
+
+        protected internal void EmitData(DataObject data, bool queued = true)
+        {
+            if (queued && this.dataQueue != null)
+                this.dataQueue.Enqueue(data);
+            else
+                this.framework.EventServer.OnData(data);
+        }
+
+        protected internal void EmitHistoricalData(HistoricalData data)
+        {
+            OpenHistricalQueue();
+            this.historicalQueue.Enqueue(data);
+        }
+
+        protected internal void EmitHistoricalDataEnd(HistoricalDataEnd end)
+        {
+            OpenHistricalQueue();
+            this.historicalQueue.Enqueue(end);
+            CloseHistricalQueue();
+        }
+
+        protected internal void EmitHistoricalDataEnd(string requestId, RequestResult result, string text)
+        {
+            EmitHistoricalDataEnd(new HistoricalDataEnd { RequestId = requestId, Result = result, Text = text });
+        }
+
+        protected internal void EmitInstrumentDefinition(InstrumentDefinition definition)
+        {
+            OpenInstrumentQueue();
+            this.instrumentQueue.Enqueue(new OnInstrumentDefinition(definition));
+        }
+
+        protected internal void EmitInstrumentDefinitionEnd(InstrumentDefinitionEnd end)
+        {
+            OpenInstrumentQueue();
+            this.instrumentQueue.Enqueue(new OnInstrumentDefinitionEnd(end));
+            CloseInstrumentQueue();
+        }
+
+        protected internal void EmitInstrumentDefinitionEnd(string requestId, RequestResult result, string text)
+        {
+            EmitInstrumentDefinitionEnd(new InstrumentDefinitionEnd { RequestId = requestId, Result = result, Text = text });
+        }
+
+        protected internal void EmitProviderError(ProviderError error) => this.framework.EventServer.OnProviderError(error);
+
+        protected internal void EmitMessage(string text) => EmitMessage(-1, -1, text);
+
+        protected internal void EmitMessage(int id, int code, string text)
+        {
+            EmitProviderError(new ProviderError(this.framework.Clock.DateTime, ProviderErrorType.Message, this.id, id, code, text));
+        }
+
+        protected internal void EmitWarning(string text) => EmitWarning(-1, -1, text);
+
+        protected internal void EmitWarning(int id, int code, string text)
+        {
+            EmitProviderError(new ProviderError(this.framework.Clock.DateTime, ProviderErrorType.Warning, this.id, id, code, text));
+        }
+
+        protected internal void EmitError(string text) => EmitError(-1, -1, text);
+
+        protected internal void EmitError(Exception exception) => EmitError(exception.ToString());
+
+        protected internal void EmitError(string format, params object[] args) => EmitError(string.Format(format, args));
+
+        protected internal void EmitError(int id, int code, string text)
+        {
+            EmitProviderError(new ProviderError(this.framework.Clock.DateTime, ProviderErrorType.Error, this.id, id, code, text));
+        }
+
+        #endregion
+
+        #region Pipe Management
+
+        private void OpenHistricalQueue()
+        {
+            if (this.historicalQueue == null)
+            {
+                this.historicalQueue = new EventQueue(EventQueueId.All, EventQueueType.Master, EventQueuePriority.Normal, 1024, this.framework.EventBus);
+                this.historicalQueue.Name = $"{this.name} historical queue";
+                this.historicalQueue.Enqueue(new OnQueueOpened(this.historicalQueue));
+                this.framework.EventBus.HistoricalPipe.Add(this.historicalQueue);
+            }
+        }
+
+        private void CloseHistricalQueue()
+        {
+            if (this.historicalQueue != null)
+            {
+                this.historicalQueue.Enqueue(new OnQueueClosed(this.historicalQueue));
+                this.historicalQueue = null;
+            }
+        }
+
+        private void OpenInstrumentQueue()
+        {
+            if (this.instrumentQueue == null)
+            {
+                this.instrumentQueue = new EventQueue(EventQueueId.All, EventQueueType.Master, EventQueuePriority.Normal, 1024, this.framework.EventBus);
+                this.instrumentQueue.Name = $"{this.name} instrument queue";
+                this.instrumentQueue.Enqueue(new OnQueueOpened(this.instrumentQueue));
+                this.framework.EventBus.ServicePipe.Add(this.instrumentQueue);
+            }
+        }
+
+        private void CloseInstrumentQueue()
+        {
+            if (this.instrumentQueue != null)
+            {
+                this.instrumentQueue.Enqueue(new OnQueueClosed(this.instrumentQueue));
+                this.instrumentQueue = null;
+            }
+        }
+
+        #endregion
+
+        [Conditional("DEBUG")]
+        private void WriteDebugInfoInternal(string format, params object[] args)
+        {
+            Console.WriteLine($"[{Name}] {string.Format(format, args)}");
         }
     }
 

@@ -88,5 +88,10 @@ namespace SmartQuant
         public Level2Snapshot()
         {
         }
+
+        public Level2Snapshot(Level2Snapshot snapshot)
+            : this(snapshot.dateTime, snapshot.ProviderId, snapshot.InstrumentId, snapshot.Bids, snapshot.Asks)
+        {
+        }
     }
 }

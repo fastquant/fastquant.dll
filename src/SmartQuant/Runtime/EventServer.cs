@@ -29,15 +29,9 @@ namespace SmartQuant
 
         public void OnData(DataObject data)=> OnEvent(data);
 
-        internal void OnAccountReport(AccountReport report)
-        {
-            OnEvent(report);
-        }
+        internal void OnAccountReport(AccountReport report) => OnEvent(report);
 
-        internal void OnExecutionReport(ExecutionReport report)
-        {
-            OnEvent(report);
-        }
+        internal void OnExecutionReport(ExecutionReport report) => OnEvent(report);
 
         public void OnProviderAdded(IProvider provider)
         {

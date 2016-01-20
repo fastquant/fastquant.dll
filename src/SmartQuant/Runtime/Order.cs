@@ -75,6 +75,9 @@ namespace SmartQuant
         private byte routeId;
         private double price;
         private double stopPx;
+        private string account;
+        private string clientId;
+
         private IExecutionProvider provider;
         private Portfolio portfolio;
 
@@ -85,6 +88,32 @@ namespace SmartQuant
 
         public override byte TypeId => DataObjectType.Order;
 
+        public string Account
+        {
+            get
+            {
+                return this.account;
+            }
+            set
+            {
+                EnsureNotSent();
+                this.account = value;
+            }
+        }
+
+        public string ClientID
+        {
+            get
+            {
+                return this.clientId;
+            }
+            set
+            {
+                EnsureNotSent();
+                this.clientId = value;
+            }
+        }
+
         public string Text { get; set; }
 
         public double AvgPx { get; set; }
@@ -92,6 +121,8 @@ namespace SmartQuant
         public double LeavesQty { get; }
 
         public double CumQty { get; }
+
+        public string ProviderOrderId { get; set; }
 
         public Instrument Instrument
         {
@@ -382,7 +413,7 @@ namespace SmartQuant
 
         private void EnsureNotSent()
         {
-            if (Status != OrderStatus.NotSent)
+            if (!IsNotSent)
                 throw new InvalidOperationException("Cannot perform an operation, because order is already sent.");
         }
     }

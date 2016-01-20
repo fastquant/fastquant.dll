@@ -107,7 +107,7 @@ namespace SmartQuant
                 this.items.Clear();
         }
 
-        internal void method_1(AccountData data)
+        internal void OnAccountData(AccountData data)
         {
             Class4 @class = Get(data.ProviderId, data.Route, true);
             lock (@class)

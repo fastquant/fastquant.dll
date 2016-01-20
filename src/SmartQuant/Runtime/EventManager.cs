@@ -356,7 +356,7 @@ namespace SmartQuant
                 return;
             }
             this.framework.ProviderManager.ExecutionSimulator.OnBarOpen(bar);
-            this.framework.StrategyManager.OnBar(bar);
+            this.framework.StrategyManager.OnBarOpen(bar);
         }
 
         private void OnLevel2Snapshot(Event e)
@@ -364,9 +364,9 @@ namespace SmartQuant
             DataEventCount++;
             var l2s = (Level2Snapshot)e;
             SyncLocalClockWithDataObject(l2s);
-            this.framework.DataManager.method_4(l2s);
+            this.framework.DataManager.OnLevel2(l2s);
             this.framework.ProviderManager.ExecutionSimulator.OnLevel2(l2s);
-            this.framework.StrategyManager.method_10(l2s);
+            this.framework.StrategyManager.OnLevel2(l2s);
         }
 
         private void OnLevel2Update(Event e)
@@ -374,9 +374,9 @@ namespace SmartQuant
             DataEventCount++;
             var l2u = (Level2Update)e;
             SyncLocalClockWithDataObject(l2u);
-            this.framework.DataManager.method_5(l2u);
+            this.framework.DataManager.OnLevel2(l2u);
             this.framework.ProviderManager.ExecutionSimulator.OnLevel2(l2u);
-            this.framework.StrategyManager.method_11(l2u);
+            this.framework.StrategyManager.OnLevel2(l2u);
         }
 
         private void OnNews(Event e)
@@ -385,7 +385,7 @@ namespace SmartQuant
             var news = (News)e;
             SyncLocalClockWithDataObject(news);
             this.framework.DataManager.OnNews(news);
-            this.framework.StrategyManager.method_15(news);
+            this.framework.StrategyManager.OnNews(news);
         }
 
         private void OnFundamental(Event e)
@@ -394,107 +394,107 @@ namespace SmartQuant
             var fundamental = (Fundamental)e;
             SyncLocalClockWithDataObject(fundamental);
             this.framework.DataManager.OnFundamental(fundamental);
-            this.framework.StrategyManager.gudLdqclqe(fundamental);
+            this.framework.StrategyManager.OnFundamental(fundamental);
         }
 
         private void OnFill(Event e)
         {
-            this.framework.StrategyManager.method_30((OnFill)e);
+            this.framework.StrategyManager.OnFill((OnFill)e);
         }
 
         private void OnTransaction(Event e)
         {
-            this.framework.StrategyManager.method_31((OnTransaction)e);
+            this.framework.StrategyManager.OnTransaction((OnTransaction)e);
         }
 
         private void OnAccountReport(Event e)
         {
             var report = (AccountReport)e;
-            this.framework.OrderManager.method_1(report);
+            this.framework.OrderManager.OnAccountReport(report);
             this.framework.PortfolioManager.OnAccountReport(report);
-            this.framework.StrategyManager.method_29(report);
+            this.framework.StrategyManager.OnAccountReport(report);
         }
 
         private void OnAccountData(Event e)
         {
             var data = (AccountData)e;
-            this.framework.AccountDataManager.method_1(data);
-            this.framework.StrategyManager.method_37(data);
+            this.framework.AccountDataManager.OnAccountData(data);
+            this.framework.StrategyManager.OnAccountData(data);
         }
 
         private void OnHistoricalDataEnd(Event e)
         {
-            this.framework.DataManager.method_9((HistoricalDataEnd)e);
+            this.framework.DataManager.OnHistoricalDataEnd((HistoricalDataEnd)e);
         }
 
         private void OnHistoricalData(Event e)
         {
-            this.framework.DataManager.method_8((HistoricalData)e);
+            this.framework.DataManager.OnHistoricalData((HistoricalData)e);
         }
 
         private void OnOrderDone(Event e)
         {
-            this.framework.StrategyManager.method_28(((OnOrderDone)e).Order);
+            this.framework.StrategyManager.OnOrderDone(((OnOrderDone)e).Order);
         }
 
         private void OnOrderReplaceRejected(Event e)
         {
-            this.framework.StrategyManager.method_27(((OnOrderReplaceRejected)e).Order);
+            this.framework.StrategyManager.OnOrderReplaceRejected(((OnOrderReplaceRejected)e).Order);
         }
 
         private void OnOrderCancelRejected(Event e)
         {
-            this.framework.StrategyManager.method_26(((OnOrderCancelRejected)e).Order);
+            this.framework.StrategyManager.OnOrderCancelRejected(((OnOrderCancelRejected)e).Order);
         }
 
         private void OnOrderExpired(Event e)
         {
-            this.framework.StrategyManager.method_25(((OnOrderExpired)e).Order);
+            this.framework.StrategyManager.OnOrderExpired(((OnOrderExpired)e).Order);
         }
 
         private void OnOrderRejected(Event e)
         {
-            this.framework.StrategyManager.method_24(((OnOrderRejected)e).Order);
+            this.framework.StrategyManager.OnOrderRejected(((OnOrderRejected)e).Order);
         }
 
         private void OnOrderCancelled(Event e)
         {
-            this.framework.StrategyManager.method_22(((OnOrderCancelled)e).Order);
+            this.framework.StrategyManager.OnOrderCancelled(((OnOrderCancelled)e).Order);
         }
 
         private void OnOrderReplaced(Event e)
         {
-            this.framework.StrategyManager.method_23(((OnOrderReplaced)e).Order);
+            this.framework.StrategyManager.OnOrderReplaced(((OnOrderReplaced)e).Order);
         }
 
         private void OnOrderFilled(Event e)
         {
-            this.framework.StrategyManager.method_20(((OnOrderFilled)e).Order);
+            this.framework.StrategyManager.OnOrderFilled(((OnOrderFilled)e).Order);
         }
 
         private void OnOrderPartiallyFilled(Event e)
         {
-            this.framework.StrategyManager.method_21(((OnOrderPartiallyFilled)e).Order);
+            this.framework.StrategyManager.OnOrderPartiallyFilled(((OnOrderPartiallyFilled)e).Order);
         }
 
         private void OnOrderStatusChanged(Event e)
         {
-            this.framework.StrategyManager.method_19(((OnOrderStatusChanged)e).Order);
+            this.framework.StrategyManager.OnOrderStatusChanged(((OnOrderStatusChanged)e).Order);
         }
 
         private void OnNewOrder(Event e)
         {
-            this.framework.StrategyManager.method_18(((OnNewOrder)e).Order);
+            this.framework.StrategyManager.OnNewOrder(((OnNewOrder)e).Order);
         }
 
         private void OnSendOrder(Event e)
         {
-            this.framework.StrategyManager.method_16(((OnSendOrder)e).Order);
+            this.framework.StrategyManager.OnSendOrder(((OnSendOrder)e).Order);
         }
 
         private void OnCommand(Event e)
         {
-            this.framework.StrategyManager.method_38((Command)e);
+            this.framework.StrategyManager.OnCommand((Command)e);
         }
 
         private void OnGroupEvent(Event e)
@@ -518,7 +518,7 @@ namespace SmartQuant
                 }
                 this.framework.OrderManager.method_0(report);
                 this.framework.PortfolioManager.OnExecutionReport(report);
-                this.framework.StrategyManager.IbsLpdRkc3(report);
+                this.framework.StrategyManager.OnExecutionReport(report);
                 this.framework.EventServer.EmitQueued();
                 return;
             }
@@ -527,7 +527,7 @@ namespace SmartQuant
             {
                 this.framework.PortfolioManager.OnExecutionReport(report);
             }
-            this.framework.StrategyManager.IbsLpdRkc3(report);
+            this.framework.StrategyManager.OnExecutionReport(report);
             this.framework.EventServer.EmitQueued();
         }
 
@@ -542,69 +542,69 @@ namespace SmartQuant
 
         private void OnProviderError(Event e)
         {
-            this.framework.StrategyManager.method_6((ProviderError)e);
+            this.framework.StrategyManager.OnProviderError((ProviderError)e);
         }
 
         public void OnPortfolioAdded(Event e)
         {
-            this.framework.StrategyManager.method_34(((OnPortfolioAdded)e).Portfolio);
+            this.framework.StrategyManager.OnPortfolioAdded(((OnPortfolioAdded)e).Portfolio);
         }
 
         public void OnPortfolioParentChanged(Event e)
         {
-            this.framework.StrategyManager.method_36(((OnPortfolioParentChanged)e).Portfolio);
+            this.framework.StrategyManager.OnPortfolioParentChanged(((OnPortfolioParentChanged)e).Portfolio);
         }
 
         public void OnPortfolioRemoved(Event e)
         {
-            this.framework.StrategyManager.method_35(((OnPortfolioRemoved)e).Portfolio);
+            this.framework.StrategyManager.OnPortfolioRemoved(((OnPortfolioRemoved)e).Portfolio);
         }
 
         private void OnPropertyChanged(Event e)
         {
-            this.framework.StrategyManager.method_40((OnPropertyChanged)e);
+            this.framework.StrategyManager.OnPropertyChanged((OnPropertyChanged)e);
         }
 
         private void OnBarSlice(Event e)
         {
             BarSlice barSlice = (BarSlice)e;
             barSlice.DateTime = this.framework.Clock.DateTime;
-            this.framework.StrategyManager.method_14(barSlice);
+            this.framework.StrategyManager.OnBarSlice(barSlice);
         }
 
         private void OnPositionOpened(Event e)
         {
             var opened = (OnPositionOpened)e;
-            this.framework.StrategyManager.vMaLxjraoe(opened.Portfolio, opened.Position);
+            this.framework.StrategyManager.OnPositionOpened(opened.Portfolio, opened.Position);
         }
 
         private void OnPositionClosed(Event e)
         {
             var closed = (OnPositionClosed)e;
-            this.framework.StrategyManager.method_32(closed.Portfolio, closed.Position);
+            this.framework.StrategyManager.OnPositionClosed(closed.Portfolio, closed.Position);
         }
 
         private void OnPositionChanged(Event e)
         {
             var changed = (OnPositionChanged)e;
-            this.framework.StrategyManager.method_33(changed.Portfolio, changed.Position);
+            this.framework.StrategyManager.OnPositionChanged(changed.Portfolio, changed.Position);
         }
 
         public void OnException(Event e)
         {
             var ex = (OnException)e;
             Console.WriteLine($"EventManager::OnException Exception occured in {ex.Source} - {ex.Event} - {ex.Exception}");
-            this.framework.StrategyManager.method_46(ex.Source, ex.Event, ex.Exception);
+            this.framework.StrategyManager.OnException(ex.Source, ex.Event, ex.Exception);
         }
 
         private void OnPendingNewOrder(Event e)
         {
-            this.framework.StrategyManager.method_17(((OnPendingNewOrder)e).Order);
+            this.framework.StrategyManager.OnPendingNewOrder(((OnPendingNewOrder)e).Order);
         }
 
         private void OnStrategyEvent(Event e)
         {
-            this.framework.StrategyManager.method_45(((OnStrategyEvent)e).Data);
+            this.framework.StrategyManager.OnStrategyEvent(((OnStrategyEvent)e).Data);
         }
 
         private void OnProviderConnected(Event e)
@@ -612,7 +612,7 @@ namespace SmartQuant
             var p = ((OnProviderConnected)e).Provider;
             if (p is IDataProvider)
                 this.framework.SubscriptionManager.OnProviderConnected((IDataProvider)p);
-            this.framework.StrategyManager.method_4(p);
+            this.framework.StrategyManager.OnProviderConnected(p);
         }
 
         private void OnProviderDisconnected(Event e)
@@ -620,7 +620,7 @@ namespace SmartQuant
             var p = ((OnProviderDisconnected)e).Provider;
             if (p is IDataProvider)
                 this.framework.SubscriptionManager.OnProviderDisconnected((IDataProvider)p);
-            this.framework.StrategyManager.method_5(p);
+            this.framework.StrategyManager.OnProviderDisconnected(p);
         }
 
         private void OnSimulatorStart(Event e)
