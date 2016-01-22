@@ -2,13 +2,13 @@
 {
     public class ProfitablePercent : PortfolioStatisticsItem
     {
-        public override void OnInit()
+        protected internal override void OnInit()
         {
             Subscribe(PortfolioStatisticsType.NumOfWinTrades);
             Subscribe(PortfolioStatisticsType.NumOfTrades);
         }
 
-        public override void OnStatistics(PortfolioStatisticsItem statistics)
+        protected internal override void OnStatistics(PortfolioStatisticsItem statistics)
         {
             bool changed = false;
             if (statistics.Type == PortfolioStatisticsType.NumOfWinTrades)

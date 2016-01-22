@@ -40,7 +40,7 @@ namespace SmartQuant
     {
         internal int ProviderId { get; }
 
-        internal int InstrumentId { get; }
+        internal int InstrumentId { get; set; }
 
         internal ObjectTable Fields { get; set; } = new ObjectTable();
 

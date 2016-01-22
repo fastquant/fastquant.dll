@@ -52,18 +52,26 @@ namespace SmartQuant
         AUC
     }
 
-    public enum ExecType
+    public enum ExecType : byte
     {
         ExecNew,
+        ExecStopped,
         ExecRejected,
+        ExecExpired,
         ExecTrade,
         ExecPendingCancel,
         ExecCancelled,
         ExecCancelReject,
         ExecPendingReplace,
         ExecReplace,
-        ExecReplaceReject
+        ExecReplaceReject,
+        ExecTradeCorrect,
+        ExecTradeCancel,
+        ExecOrderStatus,
+        ExecPendingNew,
+        ExecClearingHold
     }
+
 
     public class Order : DataObject
     {
@@ -80,6 +88,13 @@ namespace SmartQuant
 
         private IExecutionProvider provider;
         private Portfolio portfolio;
+
+        internal List<ExecutionCommand> list_0;
+
+        internal List<ExecutionReport> list_1;
+
+        // Token: 0x040006B1 RID: 1713
+        internal List<ExecutionMessage> list_2;
 
         private Instrument instrument;
         internal int InstrumentId { get; set; }
@@ -118,7 +133,7 @@ namespace SmartQuant
 
         public double AvgPx { get; set; }
 
-        public double LeavesQty { get; }
+        public double LeavesQty { get; internal set; }
 
         public double CumQty { get; }
 
@@ -182,6 +197,7 @@ namespace SmartQuant
             }
         }
         public string OCA { get; set; }
+
         public int StrategyId { get; set; }
 
         public int ClientId { get; set; }
@@ -325,6 +341,11 @@ namespace SmartQuant
         [Browsable(false)]
         public bool IsDone => IsFilled || IsCancelled || IsRejected || IsExpired;
 
+        [Browsable(false)]
+        public bool IsOCA => !string.IsNullOrEmpty(OCA);
+
+        public DateTime TransactTime { get; set; }
+
         public Order()
         {
 
@@ -385,7 +406,8 @@ namespace SmartQuant
 
         public void OnExecutionCommand(ExecutionCommand command)
         {
-            throw new NotImplementedException();
+            this.list_0.Add(command);
+            this.list_2.Add(command);
         }
 
         public void OnExecutionReport(ExecutionReport report)

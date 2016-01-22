@@ -21,12 +21,12 @@ namespace SmartQuant.Statistics
             return ts.Count > 1 ? Sqrt(Enumerable.Range(0, ts.Count).Sum(i => Pow(ts[i] - avg, 2)) / (ts.Count - 1)) : 0;
         }
 
-        public override void OnInit()
+        protected internal override void OnInit()
         {
             Subscribe(this.type);
         }
 
-        public override void OnStatistics(PortfolioStatisticsItem statistics)
+        protected internal override void OnStatistics(PortfolioStatisticsItem statistics)
         {
             if (statistics.Type == this.type)
             {

@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Linq;
 using System.Collections;
 using System.Threading;
+using CId = SmartQuant.CurrencyId;
 
 namespace SmartQuant
 {
@@ -57,7 +58,7 @@ namespace SmartQuant
     public class Strategy
     {
         // FIXME: visibility
-        internal IdArray<LinkedList<Strategy>> idArray_0 = new IdArray<LinkedList<Strategy>>(10240);
+        internal IdArray<LinkedList<Strategy>> subStrategiesByInstrument = new IdArray<LinkedList<Strategy>>(10240);
         private IdArray<Strategy> idArray_1 = new IdArray<Strategy>(102400);
         private IdArray<int> idArray_2 = new IdArray<int>(10240);
         private IdArray<List<Stop>> idArray_3 = new IdArray<List<Stop>>(10240);
@@ -68,11 +69,11 @@ namespace SmartQuant
         protected internal bool initialized;
         protected internal Framework framework;
 
-        internal IDataProvider idataProvider_0;
-        internal IExecutionProvider ginterface3_0;
+        protected internal IDataProvider rawDataProvider;
+        protected internal IExecutionProvider rawExecutionProvider;
         private IFundamentalProvider ginterface1_0;
 
-        protected internal bool raiseEvents;
+        protected internal bool raiseEvents = true;
         private ParameterHelper parameterHelper = new ParameterHelper();
 
         [Parameter, Category("Information"), ReadOnly(true)]
@@ -82,9 +83,9 @@ namespace SmartQuant
 
         public int ClientId { get; set; }
         public string Name { get; set; }
-        public bool Enabled { get; set; }
+        public bool Enabled { get; set; } = true;
         public Strategy Parent { get; private set; }
-        public StrategyStatus Status { get; internal set; }
+        public StrategyStatus Status { get; internal set; } = StrategyStatus.Stopped;
         public Portfolio Portfolio { get; internal set; }
 
         #region Datapart
@@ -108,6 +109,8 @@ namespace SmartQuant
         public EventManager EventManager => this.framework.EventManager;
         public ProviderManager ProviderManager => this.framework.ProviderManager;
         public StrategyManager StrategyManager => this.framework.StrategyManager;
+        public PortfolioManager PortfolioManager => this.framework.PortfolioManager;
+
         public BarFactory BarFactory => this.framework.EventManager.BarFactory;
 
         #region Fetch Provider Section
@@ -116,13 +119,13 @@ namespace SmartQuant
         {
             get
             {
-                return this.method_6(this, null);
+                return DetermineDataProvider(this, null);
             }
             set
             {
-                this.idataProvider_0 = value;
-                for (var s = Strategies.First; s != null; s = s.Next)
-                    s.Data.DataProvider = this.idataProvider_0;
+                this.rawDataProvider = value;
+                foreach (var s in Strategies)
+                    s.DataProvider = this.rawDataProvider;
             }
         }
 
@@ -130,13 +133,13 @@ namespace SmartQuant
         {
             get
             {
-                return this.method_5(null);
+                return this.DetermineExecutionProvider(null);
             }
             set
             {
-                this.ginterface3_0 = value;
+                this.rawExecutionProvider = value;
                 for (var s = Strategies.First; s != null; s = s.Next)
-                    s.Data.ExecutionProvider = this.ginterface3_0;
+                    s.Data.ExecutionProvider = this.rawExecutionProvider;
             }
         }
 
@@ -175,12 +178,9 @@ namespace SmartQuant
                 Portfolio = GetOrCreatePortfolio(Name);
                 foreach (var instrument in Instruments)
                     Portfolio.Add(instrument);
-
                 OnStrategyInit();
-
-                for (var s = Strategies.First; s != null; s = s.Next)
-                    s.Data.Init();
-
+                foreach (var s in Strategies)
+                    s.Init();
                 this.initialized = true;
             }
         }
@@ -252,7 +252,7 @@ namespace SmartQuant
             {
                 this.method_3(strategy, strategy.Instruments, strategy.Id);
                 if (callOnStrategyStart)
-                    strategy.vmethod_0();
+                    strategy.EmitStrategyStart();
             }
             this.framework.EventServer.OnStrategyAdded(strategy);
         }
@@ -286,7 +286,7 @@ namespace SmartQuant
 
         public virtual void AddInstrument(Instrument instrument)
         {
-            AddInstrument(instrument, this.method_6(this, instrument));
+            AddInstrument(instrument, this.DetermineDataProvider(this, instrument));
         }
 
         public void AddInstrument(Instrument instrument, IDataProvider provider)
@@ -301,12 +301,10 @@ namespace SmartQuant
             if (!Instruments.Contains(instrument))
             {
                 Instruments.Add(instrument);
-                this.EmitInstrumentAdded(instrument);
+                EmitInstrumentAdded(instrument);
             }
             if (Status == StrategyStatus.Running)
-            {
                 this.method_2(instrument, provider);
-            }
         }
 
         public void AddInstruments(string[] symbols)
@@ -349,7 +347,7 @@ namespace SmartQuant
             Instruments.Remove(instrument);
             var instrumentList = new InstrumentList();
             instrumentList.Add(instrument);
-            StrategyManager.UnregisterMarketDataRequest(this.method_6(this, instrument), instrumentList);
+            StrategyManager.UnregisterMarketDataRequest(this.DetermineDataProvider(this, instrument), instrumentList);
             Parent?.method_4(this, instrumentList, Id);
             EmitInstrumentRemoved(instrument);
         }
@@ -383,17 +381,18 @@ namespace SmartQuant
         #endregion
 
         #region Money Management
-        public void Deposit(double value, byte currencyId = 148, string text = null, bool updateParent = true)
+
+        public void Deposit(double value, byte currencyId = CId.USD, string text = null, bool updateParent = true)
         {
             Portfolio.Account.Deposit(value, currencyId, text, updateParent);
         }
 
-        public void Deposit(DateTime dateTime, double value, byte currencyId = 148, string text = null, bool updateParent = true)
+        public void Deposit(DateTime dateTime, double value, byte currencyId = CId.USD, string text = null, bool updateParent = true)
         {
             Portfolio.Account.Deposit(dateTime, value, currencyId, text, updateParent);
         }
 
-        public void Withdraw(double value, byte currencyId = 148, string text = null, bool updateParent = true)
+        public void Withdraw(double value, byte currencyId = CId.USD, string text = null, bool updateParent = true)
         {
             Portfolio.Account.Withdraw(value, currencyId, text, updateParent);
         }
@@ -402,6 +401,7 @@ namespace SmartQuant
         {
             Portfolio.Account.Withdraw(dateTime, value, currencyId, text, updateParent);
         }
+
         #endregion
 
         #region Log Functions
@@ -480,7 +480,7 @@ namespace SmartQuant
 
         public Order Order(Instrument instrument, OrderType type, OrderSide side, double qty, double stopPx, double price, string text = "")
         {
-            var order = new Order(this.method_5(instrument), Portfolio, instrument, type, side, qty, 0, 0, TimeInForce.Day, 0, "");
+            var order = new Order(this.DetermineExecutionProvider(instrument), Portfolio, instrument, type, side, qty, 0, 0, TimeInForce.Day, 0, "");
             order.StrategyId = Id;
             order.ClientId = ClientId;
             order.Text = text;
@@ -581,7 +581,7 @@ namespace SmartQuant
 
         public Order BuyOrder(Instrument instrument, double qty, string text = "")
         {
-            var order = new Order(this.method_5(instrument), Portfolio, instrument, OrderType.Market, OrderSide.Buy, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
+            var order = new Order(this.DetermineExecutionProvider(instrument), Portfolio, instrument, OrderType.Market, OrderSide.Buy, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
             order.StrategyId = Id;
             order.ClientId = ClientId;
             order.Text = text;
@@ -591,7 +591,7 @@ namespace SmartQuant
 
         public Order SellOrder(Instrument instrument, double qty, string text = "")
         {
-            var order = new Order(this.method_5(instrument), Portfolio, instrument, OrderType.Market, OrderSide.Sell, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
+            var order = new Order(this.DetermineExecutionProvider(instrument), Portfolio, instrument, OrderType.Market, OrderSide.Sell, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
             order.StrategyId = Id;
             order.ClientId = ClientId;
             order.Text = text;
@@ -601,7 +601,7 @@ namespace SmartQuant
 
         public Order Buy(Instrument instrument, double qty, string text = "")
         {
-            return Buy(this.method_5(instrument), instrument, qty, text);
+            return Buy(this.DetermineExecutionProvider(instrument), instrument, qty, text);
         }
 
         public Order Buy(IExecutionProvider provider, Instrument instrument, double qty, string text = "")
@@ -621,7 +621,7 @@ namespace SmartQuant
 
         public Order Buy(Instrument instrument, OrderType type, double qty, double price, double stopPx, string text = "")
         {
-            return Buy(this.method_5(instrument), instrument, type, qty, price, stopPx, text);
+            return Buy(this.DetermineExecutionProvider(instrument), instrument, type, qty, price, stopPx, text);
         }
 
         public Order Buy(short providerId, Instrument instrument, OrderType type, double qty, double price, double stopPx, string text = "")
@@ -641,7 +641,7 @@ namespace SmartQuant
 
         public Order Sell(Instrument instrument, double qty, string text = "")
         {
-            return Sell(this.method_5(instrument), instrument, qty, text);
+            return Sell(this.DetermineExecutionProvider(instrument), instrument, qty, text);
         }
 
         public Order Sell(IExecutionProvider provider, Instrument instrument, double qty, string text = "")
@@ -661,7 +661,7 @@ namespace SmartQuant
 
         public Order Sell(Instrument instrument, OrderType type, double qty, double price, double stopPx, string text = "")
         {
-            return Sell(this.method_5(instrument), instrument, type, qty, price, stopPx, text);
+            return Sell(this.DetermineExecutionProvider(instrument), instrument, type, qty, price, stopPx, text);
         }
 
         public Order Sell(IExecutionProvider provider, Instrument instrument, OrderType type, double qty, double price, double stopPx, string text = "")
@@ -681,7 +681,7 @@ namespace SmartQuant
 
         public Order BuyLimitOrder(Instrument instrument, double qty, double price, string text = "")
         {
-            var order = new Order(this.method_5(instrument), Portfolio, instrument, OrderType.Limit, OrderSide.Buy, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
+            var order = new Order(this.DetermineExecutionProvider(instrument), Portfolio, instrument, OrderType.Limit, OrderSide.Buy, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
             order.StrategyId = Id;
             order.ClientId = ClientId;
             order.Text = text;
@@ -692,7 +692,7 @@ namespace SmartQuant
 
         public Order SellLimitOrder(Instrument instrument, double qty, double price, string text = "")
         {
-            Order order = new Order(this.method_5(instrument), Portfolio, instrument, OrderType.Limit, OrderSide.Sell, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
+            Order order = new Order(this.DetermineExecutionProvider(instrument), Portfolio, instrument, OrderType.Limit, OrderSide.Sell, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
             order.StrategyId = Id;
             order.ClientId = ClientId;
             order.Text = text;
@@ -703,7 +703,7 @@ namespace SmartQuant
 
         public Order BuyLimit(Instrument instrument, double qty, double price, string text = "")
         {
-            return this.BuyLimit(this.method_5(instrument), instrument, qty, price, text);
+            return this.BuyLimit(this.DetermineExecutionProvider(instrument), instrument, qty, price, text);
         }
 
         public Order BuyLimit(IExecutionProvider provider, Instrument instrument, double qty, double price, string text = "")
@@ -724,7 +724,7 @@ namespace SmartQuant
 
         public Order SellLimit(Instrument instrument, double qty, double price, string text = "")
         {
-            return this.SellLimit(this.method_5(instrument), instrument, qty, price, text);
+            return this.SellLimit(this.DetermineExecutionProvider(instrument), instrument, qty, price, text);
         }
 
         public Order SellLimit(IExecutionProvider provider, Instrument instrument, double qty, double price, string text = "")
@@ -745,7 +745,7 @@ namespace SmartQuant
 
         public Order BuyStopLimitOrder(Instrument instrument, double qty, double stopPx, double price, string text = "")
         {
-            Order order = new Order(this.method_5(instrument), Portfolio, instrument, OrderType.StopLimit, OrderSide.Buy, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
+            Order order = new Order(this.DetermineExecutionProvider(instrument), Portfolio, instrument, OrderType.StopLimit, OrderSide.Buy, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
             order.StrategyId = Id;
             order.ClientId = ClientId;
             order.Text = text;
@@ -757,7 +757,7 @@ namespace SmartQuant
 
         public Order SellStopLimitOrder(Instrument instrument, double qty, double stopPx, double price, string text = "")
         {
-            Order order = new Order(this.method_5(instrument), Portfolio, instrument, OrderType.StopLimit, OrderSide.Sell, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
+            Order order = new Order(this.DetermineExecutionProvider(instrument), Portfolio, instrument, OrderType.StopLimit, OrderSide.Sell, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
             order.StrategyId = Id;
             order.ClientId = ClientId;
             order.Text = text;
@@ -769,7 +769,7 @@ namespace SmartQuant
 
         public Order BuyStopLimit(Instrument instrument, double qty, double stopPx, double price, string text = "")
         {
-            return BuyStopLimit(this.method_5(instrument), instrument, qty, stopPx, price, text);
+            return BuyStopLimit(this.DetermineExecutionProvider(instrument), instrument, qty, stopPx, price, text);
         }
 
         public Order BuyStopLimit(IExecutionProvider provider, Instrument instrument, double qty, double stopPx, double price, string text = "")
@@ -791,7 +791,7 @@ namespace SmartQuant
 
         public Order SellStopLimit(Instrument instrument, double qty, double stopPx, double price, string text = "")
         {
-            return SellStopLimit(this.method_5(instrument), instrument, qty, stopPx, price, text);
+            return SellStopLimit(this.DetermineExecutionProvider(instrument), instrument, qty, stopPx, price, text);
         }
 
         public Order SellStopLimit(IExecutionProvider provider, Instrument instrument, double qty, double stopPx, double price, string text = "")
@@ -813,7 +813,7 @@ namespace SmartQuant
 
         public Order BuyStopOrder(Instrument instrument, double qty, double stopPx, string text = "")
         {
-            var order = new Order(this.method_5(instrument), Portfolio, instrument, OrderType.Stop, OrderSide.Buy, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
+            var order = new Order(this.DetermineExecutionProvider(instrument), Portfolio, instrument, OrderType.Stop, OrderSide.Buy, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
             order.StrategyId = Id;
             order.ClientId = ClientId;
             order.Text = text;
@@ -824,7 +824,7 @@ namespace SmartQuant
 
         public Order SellStopOrder(Instrument instrument, double qty, double stopPx, string text = "")
         {
-            Order order = new Order(this.method_5(instrument), Portfolio, instrument, OrderType.Stop, OrderSide.Sell, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
+            Order order = new Order(this.DetermineExecutionProvider(instrument), Portfolio, instrument, OrderType.Stop, OrderSide.Sell, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
             order.StrategyId = Id;
             order.ClientId = ClientId;
             order.Text = text;
@@ -835,7 +835,7 @@ namespace SmartQuant
 
         public Order BuyStop(Instrument instrument, double qty, double stopPx, string text = "")
         {
-            return BuyStop(this.method_5(instrument), instrument, qty, stopPx, text);
+            return BuyStop(this.DetermineExecutionProvider(instrument), instrument, qty, stopPx, text);
         }
 
         public Order BuyStop(IExecutionProvider provider, Instrument instrument, double qty, double stopPx, string text = "")
@@ -856,7 +856,7 @@ namespace SmartQuant
 
         public Order SellStop(Instrument instrument, double qty, double stopPx, string text = "")
         {
-            return this.SellStop(this.method_5(instrument), instrument, qty, stopPx, text);
+            return this.SellStop(this.DetermineExecutionProvider(instrument), instrument, qty, stopPx, text);
         }
 
         public Order SellStop(IExecutionProvider provider, Instrument instrument, double qty, double stopPx, string text = "")
@@ -877,7 +877,7 @@ namespace SmartQuant
 
         public Order BuyPegged(Instrument instrument, double qty, double offset, string text = "")
         {
-            return BuyPegged(this.method_5(instrument), instrument, qty, offset, text);
+            return BuyPegged(this.DetermineExecutionProvider(instrument), instrument, qty, offset, text);
         }
 
         public Order BuyPegged(IExecutionProvider provider, Instrument instrument, double qty, double offset, string text = "")
@@ -898,7 +898,7 @@ namespace SmartQuant
 
         public Order SellPegged(Instrument instrument, double qty, double offset, string text = "")
         {
-            return SellPegged(this.method_5(instrument), instrument, qty, offset, text);
+            return SellPegged(this.DetermineExecutionProvider(instrument), instrument, qty, offset, text);
         }
 
         public Order SellPegged(IExecutionProvider provider, Instrument instrument, double qty, double offset, string text = "")
@@ -918,280 +918,106 @@ namespace SmartQuant
         }
 
         #endregion
-
-        internal IExecutionProvider method_5(Instrument instrument = null)
+        // TODO: reduce it!
+        internal IDataProvider DetermineDataProvider(Strategy strategy, Instrument instrument = null)
         {
-            var gInterface = instrument?.ExecutionProvider ?? this.ginterface3_0;
+            IDataProvider dataProvider = null;
+            if (instrument != null && instrument.DataProvider != null)
+                dataProvider = instrument.DataProvider;
+            if (dataProvider == null && strategy != null && strategy.rawDataProvider != null)
+                dataProvider = strategy.rawDataProvider;
+            if (this.framework.Mode != FrameworkMode.Simulation)
+            {
+                if (dataProvider == null)
+                    dataProvider = this.framework.DataProvider;
+                return dataProvider;
+            }
+            if (dataProvider is SellSideStrategy)
+                return dataProvider;
+            return ProviderManager.DataSimulator;
+        }
+
+        // TODO: reduce it!
+        internal IExecutionProvider DetermineExecutionProvider(Instrument instrument = null)
+        {
+            IExecutionProvider executionProvider = null;
+            if (instrument != null && instrument.ExecutionProvider != null)
+                executionProvider = instrument.ExecutionProvider;
+            if (executionProvider == null && this.rawExecutionProvider != null)
+                executionProvider = this.rawExecutionProvider;
             if (Mode == StrategyMode.Live)
-                return gInterface = gInterface ?? this.framework.ExecutionProvider;
-            if (gInterface is SellSideStrategy)
-                return gInterface;
-            return this.framework.ProviderManager.ExecutionSimulator;
+            {
+                if (executionProvider == null)
+                    executionProvider = this.framework.ExecutionProvider;
+                return executionProvider;
+            }
+            if (executionProvider is SellSideStrategy)
+                return executionProvider;
+            return ProviderManager.ExecutionSimulator;
         }
 
         private IFundamentalProvider ViqNiQdFkq(Instrument instrument_0 = null) => this.framework.Mode == FrameworkMode.Simulation ? null : this.ginterface1_0;
 
-        internal IDataProvider method_6(Strategy strategy, Instrument instrument = null)
-        {
-            var dataProvider = instrument?.DataProvider;//?? strategy?.DataProvider;
-            if (this.framework.Mode != FrameworkMode.Simulation)
-                return dataProvider = dataProvider ?? this.framework.DataProvider;
-            if (dataProvider is SellSideStrategy)
-                return dataProvider;
-            return this.framework.ProviderManager.DataSimulator;
-        }
 
-        private void method_2(Instrument instrument_0, IDataProvider idataProvider_1)
+        private void method_2(Instrument instrument, IDataProvider dataProvider)
         {
             InstrumentList instrumentList = new InstrumentList();
-            instrumentList.Add(instrument_0);
-            IExecutionProvider gInterface = this.method_5(instrument_0);
-            if (idataProvider_1 != null && idataProvider_1.Status == ProviderStatus.Disconnected)
-                idataProvider_1.Connect();
+            instrumentList.Add(instrument);
+            IExecutionProvider gInterface = this.DetermineExecutionProvider(instrument);
+            if (dataProvider != null && dataProvider.Status == ProviderStatus.Disconnected)
+                dataProvider.Connect();
             if (gInterface != null && gInterface.Status == ProviderStatus.Disconnected)
                 gInterface.Connect();
-            StrategyManager.RegisterMarketDataRequest(idataProvider_1, instrumentList);
+            StrategyManager.RegisterMarketDataRequest(dataProvider, instrumentList);
             Parent?.method_3(this, instrumentList, Id);
         }
 
-        internal virtual void UxFbinsqFw(Ask ask)
-        {
-            if (!Enabled)
-                return;
-
-            var iId = ask.InstrumentId;
-            if (this.raiseEvents && ((Mode == StrategyMode.Backtest && SubscriptionList.Contains(iId)) || SubscriptionList.Contains(iId, ask.ProviderId)))
-            {
-                OnAsk(InstrumentManager.GetById(iId), ask);
-                List<Stop> list = this.idArray_3[iId];
-                if (list != null)
-                {
-                    for (int i = 0; i < list.Count; i++)
-                    {
-                        Stop stop = list[i];
-                        if (stop.Connected)
-                        {
-                            stop.method_6(ask);
-                        }
-                    }
-                }
-            }
-            LinkedList<Strategy> linkedList = this.idArray_0[iId];
-            if (linkedList != null)
-            {
-                for (var node = linkedList.First; node != null; node = node.Next)
-                {
-                    node.Data.UxFbinsqFw(ask);
-                }
-            }
-        }
-
-        internal void vmethod_17(BarSlice barSlice)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void vmethod_13(Bar bar_0)
-        {
-            //throw new NotImplementedException();
-        }
-
-        internal void vmethod_42(string source, Event ev, Exception exception)
-        {
-            if (this.raiseEvents)
-                OnException(source, ev, exception);
-            for (var s = Strategies.First; s != null; s = s.Next)
-                s.Data.vmethod_42(source, ev, exception);
-        }
-
-        internal virtual void vmethod_9(Bid bid)
-        {
-            if (!Enabled)
-                return;
-
-            var iId = bid.InstrumentId;
-
-            if (this.raiseEvents && ((Mode == StrategyMode.Backtest && SubscriptionList.Contains(iId)) || SubscriptionList.Contains(iId, bid.ProviderId)))
-            {
-                OnBid(InstrumentManager.GetById(iId), bid);
-                List<Stop> list = this.idArray_3[iId];
-                if (list != null)
-                {
-                    for (int i = 0; i < list.Count; i++)
-                    {
-                        Stop stop = list[i];
-                        if (stop.Connected)
-                        {
-                            stop.method_5(bid);
-                        }
-                    }
-                }
-            }
-            var linkedList = this.idArray_0[iId];
-            if (linkedList != null)
-            {
-                for (var node = linkedList.First; node != null; node = node.Next)
-                {
-                    node.Data.vmethod_9(bid);
-                }
-            }
-        }
-
-        internal void vmethod_34(Order order)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void vmethod_40(Command command)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void vmethod_20(ExecutionReport report)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void vmethod_21(AccountReport report)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void vmethod_36(OnTransaction e)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void vmethod_35(OnFill e)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void vmethod_45(AccountData data)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal virtual void EmitOnTrade(Trade trade)
-        {
-        }
-
-        internal void vmethod_12(Level2Update level2Update_0)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void vmethod_11(Level2Snapshot level2Snapshot_0)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void method_3(Strategy strategy, InstrumentList instruments, int strategyId)
+        internal void method_3(Strategy strategy, InstrumentList instruments, int strategyId)
         {
             strategy.Init();
             strategy.Portfolio.Parent = Portfolio;
-            foreach (Instrument current in instruments)
+            foreach (var instrument in instruments)
             {
-                LinkedList<Strategy> linkedList;
-                if (this.idArray_0[current.Id] == null)
-                {
-                    linkedList = new LinkedList<Strategy>();
-                    this.idArray_0[current.Id] = linkedList;
-                }
-                else
-                {
-                    linkedList = this.idArray_0[current.Id];
-                }
-                linkedList.Add(strategy);
-                IdArray<int> idArray;
-                int id;
-                (idArray = this.idArray_2)[id = current.Id] = idArray[id] + 1;
+                var list = this.subStrategiesByInstrument[instrument.Id] = this.subStrategiesByInstrument[instrument.Id] ?? new LinkedList<Strategy>();
+                list.Add(strategy);
+                this.idArray_2[instrument.Id] += 1; // count of subStrategiesby
             }
-            var dictionary = new Dictionary<IDataProvider, InstrumentList>();
-            foreach (Instrument current2 in instruments)
+
+            var subscriptions = new Dictionary<IDataProvider, InstrumentList>();
+            foreach (var instrument in instruments)
             {
-                InstrumentList instrumentList = null;
-                IDataProvider dataProvider = this.method_6(strategy, current2);
-                IExecutionProvider gInterface = strategy.method_5(current2);
+                // connect its provider for each instrument
+                var dataProvider = DetermineDataProvider(strategy, instrument);
+                var executionProvider = strategy.DetermineExecutionProvider(instrument);
                 if (dataProvider.Status == ProviderStatus.Disconnected)
-                {
                     dataProvider.Connect();
-                }
-                if (gInterface.Status == ProviderStatus.Disconnected)
-                {
-                    gInterface.Connect();
-                }
-                if (!dictionary.TryGetValue(dataProvider, out instrumentList))
+                if (executionProvider.Status == ProviderStatus.Disconnected)
+                    executionProvider.Connect();
+
+                InstrumentList instrumentList = null;
+                if (!subscriptions.TryGetValue(dataProvider, out instrumentList))
                 {
                     instrumentList = new InstrumentList();
-                    dictionary[dataProvider] = instrumentList;
+                    subscriptions[dataProvider] = instrumentList;
                 }
-                instrumentList.Add(current2);
+                instrumentList.Add(instrument);
             }
-            foreach (var current3 in dictionary)
-            {
-                StrategyManager.RegisterMarketDataRequest(current3.Key, current3.Value);
-            }
-            Strategy rootStrategy = GetRootStrategy();
+            foreach (var sub in subscriptions)
+                StrategyManager.RegisterMarketDataRequest(sub.Key, sub.Value);
+
+            var rootStrategy = GetRootStrategy();
             if (strategy.Id == strategyId)
                 rootStrategy.idArray_1[strategyId] = strategy;
 
             Parent?.method_3(this, instruments, strategyId);
-
         }
-
-        internal void vmethod_622(Portfolio portfolio)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void vmethod_46(OnPropertyChanged e)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void vmethod_100(ProviderError error)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void vmethod_19(Fundamental fundamental)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void vmethod_18(News news)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void vmethod_62(Position position)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void vmethod_43(object data)
-        {
-            throw new NotImplementedException();
-        }
-
-
-
-        internal void vmethod_6(Provider provider)
-        {
-            if (this.raiseEvents)
-                OnProviderConnected(provider);
-
-            for (var s = Strategies.First; s != null; s = s.Next)
-                s.Data.vmethod_6(provider);
-        }
-
-
-
-
-
 
         #region EventHandlers
+
+        protected virtual void OnStrategyEvent(object data)
+        {
+        }
+
         protected internal virtual void OnStrategyInit()
         {
         }
@@ -1240,6 +1066,22 @@ namespace SmartQuant
         {
         }
 
+        protected virtual void OnNews(Instrument instrument, News news)
+        {
+        }
+
+        protected virtual void OnFundamental(Instrument instrument, Fundamental fundamental)
+        {
+        }
+
+        protected virtual void OnLevel2(Instrument instrument, Level2Snapshot snapshot)
+        {
+        }
+
+        protected virtual void OnLevel2(Instrument instrument, Level2Update update)
+        {
+        }
+
         protected virtual void OnExecutionReport(ExecutionReport report)
         {
         }
@@ -1256,6 +1098,14 @@ namespace SmartQuant
         {
         }
 
+        protected virtual void OnCommand(Command command)
+        {
+        }
+
+        protected virtual void OnPropertyChanged(OnPropertyChanged onPropertyChanged)
+        {
+        }
+
         protected virtual void OnPositionOpened(Position position)
         {
         }
@@ -1265,6 +1115,14 @@ namespace SmartQuant
         }
 
         protected virtual void OnPositionClosed(Position position)
+        {
+        }
+
+        protected virtual void OnSendOrder(Order order)
+        {
+        }
+
+        protected virtual void OnPendingNewOrder(Order order)
         {
         }
 
@@ -1328,7 +1186,15 @@ namespace SmartQuant
         {
         }
 
+        protected virtual void OnProviderError(ProviderError error)
+        {
+        }
+
         protected virtual void OnProviderConnected(Provider provider)
+        {
+        }
+
+        protected virtual void OnProviderDisconnected(Provider provider)
         {
         }
 
@@ -1344,6 +1210,491 @@ namespace SmartQuant
 
         #region Event Emitters
 
+        internal virtual void EmitException(string source, Event ev, Exception exception)
+        {
+            if (this.raiseEvents)
+                OnException(source, ev, exception);
+            for (var s = Strategies.First; s != null; s = s.Next)
+                s.Data.EmitException(source, ev, exception);
+        }
+
+        internal virtual void EmitBid(Bid bid)
+        {
+            if (!Enabled)
+                return;
+
+            var iId = bid.InstrumentId;
+
+            if (this.raiseEvents && ((Mode == StrategyMode.Backtest && SubscriptionList.Contains(iId)) || SubscriptionList.Contains(iId, bid.ProviderId)))
+            {
+                OnBid(InstrumentManager.GetById(iId), bid);
+                var list = this.idArray_3[iId];
+                list?.ForEach(stop =>
+                {
+                    if (stop.Connected)
+                        stop.OnBid(bid);
+                });
+            }
+            var linkedList = this.subStrategiesByInstrument[iId];
+            if (linkedList != null)
+            {
+                for (var s = linkedList.First; s != null; s = s.Next)
+                    s.Data.EmitBid(bid);
+            }
+        }
+
+        internal virtual void EmitAsk(Ask ask)
+        {
+            if (!Enabled)
+                return;
+
+            var iId = ask.InstrumentId;
+            if (this.raiseEvents && ((Mode == StrategyMode.Backtest && SubscriptionList.Contains(iId)) || SubscriptionList.Contains(iId, ask.ProviderId)))
+            {
+                OnAsk(InstrumentManager.GetById(iId), ask);
+                var list = this.idArray_3[iId];
+                list?.ForEach(stop =>
+                {
+                    if (stop.Connected)
+                        stop.OnAsk(ask);
+                });
+            }
+            LinkedList<Strategy> linkedList = this.subStrategiesByInstrument[iId];
+            if (linkedList != null)
+            {
+                for (var s = linkedList.First; s != null; s = s.Next)
+                    s.Data.EmitAsk(ask);
+            }
+        }
+
+        internal virtual void EmitTrade(Trade trade)
+        {
+            if (!Enabled)
+                return;
+
+            if (this.raiseEvents && ((Mode == StrategyMode.Backtest && SubscriptionList.Contains(trade.InstrumentId)) || SubscriptionList.Contains(trade.InstrumentId, (int)trade.ProviderId)))
+            {
+                OnTrade(this.framework.InstrumentManager.GetById(trade.InstrumentId), trade);
+                var list = this.efBkyXtSiO[trade.InstrumentId];
+                list?.ForEach(stop =>
+                {
+                    if (stop.Connected)
+                        stop.OnTrade(trade);
+                });
+            }
+
+            var linkedList = this.subStrategiesByInstrument[trade.InstrumentId];
+            if (linkedList != null)
+            {
+                for (var s = linkedList.First; s != null; s = s.Next)
+                    s.Data.EmitTrade(trade);
+            }
+        }
+
+        internal virtual void EmitBarOpen(Bar bar)
+        {
+            if (!Enabled)
+                return;
+
+            var iId = bar.InstrumentId;
+            if (this.raiseEvents && Instruments.Contains(iId))
+            {
+                OnBarOpen(this.framework.InstrumentManager.GetById(iId), bar);
+                var list = this.efBkyXtSiO[iId];
+                list?.ForEach(stop =>
+                {
+                    if (stop.Connected)
+                        stop.OnBarOpen(bar);
+                });
+            }
+            var linkedList = this.subStrategiesByInstrument[iId];
+            if (linkedList != null)
+            {
+                for (var s = linkedList.First; s != null; s = s.Next)
+                    s.Data.EmitBarOpen(bar);
+            }
+        }
+
+        internal virtual void EmitBar(Bar bar)
+        {
+            if (!Enabled)
+                return;
+
+            var iId = bar.InstrumentId;
+
+            if (this.raiseEvents && Instruments.Contains(iId))
+            {
+                OnBar(this.framework.InstrumentManager.GetById(iId), bar);
+                var list = this.efBkyXtSiO[iId];
+                list?.ForEach(stop =>
+                {
+                    if (stop.Connected)
+                        stop.OnBar(bar);
+                });
+            }
+            var linkedList = this.subStrategiesByInstrument[iId];
+            if (linkedList != null)
+            {
+                for (var s = linkedList.First; s != null; s = s.Next)
+                    s.Data.EmitBar(bar);
+            }
+        }
+
+        internal virtual void EmitFundamental(Fundamental fundamental)
+        {
+            if (!Enabled)
+                return;
+
+            var iId = fundamental.InstrumentId;
+            if (iId == -1)
+            {
+                if (this.raiseEvents)
+                    OnFundamental(null, fundamental);
+                for (var s = Strategies.First; s != null; s = s.Next)
+                    s.Data.EmitFundamental(fundamental);
+                return;
+            }
+
+            if (this.raiseEvents && Instruments.Contains(iId))
+                OnFundamental(this.framework.InstrumentManager.GetById(iId), fundamental);
+
+            var linkedList = this.subStrategiesByInstrument[iId];
+            if (linkedList != null)
+                foreach (var s in linkedList)
+                    s.EmitFundamental(fundamental);
+        }
+
+        internal virtual void EmitNews(News news)
+        {
+            var iId = news.InstrumentId;
+            if (this.raiseEvents && Instruments.Contains(news.InstrumentId))
+                OnNews(this.framework.InstrumentManager.GetById(iId), news);
+
+            var list = this.subStrategiesByInstrument[iId];
+            if (list != null)
+                foreach (var s in list)
+                    s.EmitNews(news);
+        }
+
+        internal virtual void EmitBarSlice(BarSlice slice)
+        {
+            if (!Enabled)
+                return;
+
+            if (this.raiseEvents)
+                OnBarSlice(slice);
+            foreach (var s in Strategies)
+                s.EmitBarSlice(slice);
+        }
+
+        internal virtual void EmitLevel2(Level2Snapshot snapshot)
+        {
+            if (!Enabled)
+                return;
+
+            var iId = snapshot.InstrumentId;
+            if (this.raiseEvents && ((this.Mode == StrategyMode.Backtest && SubscriptionList.Contains(iId)) || SubscriptionList.Contains(iId, snapshot.ProviderId)))
+                OnLevel2(this.framework.InstrumentManager.GetById(iId), snapshot);
+
+            var linkedList = this.subStrategiesByInstrument[iId];
+            if (linkedList != null)
+            {
+                foreach (var s in linkedList)
+                    s.EmitLevel2(snapshot);
+            }
+        }
+
+        internal virtual void EmitLevel2(Level2Update update)
+        {
+            if (!Enabled)
+                return;
+            var iId = update.InstrumentId;
+
+            if (this.raiseEvents && ((this.Mode == StrategyMode.Backtest && SubscriptionList.Contains(iId)) || SubscriptionList.Contains(iId, update.ProviderId)))
+                this.OnLevel2(this.framework.InstrumentManager.GetById(iId), update);
+
+            var linkedList = this.subStrategiesByInstrument[iId];
+            if (linkedList != null)
+            {
+                foreach (var s in linkedList)
+                    s.EmitLevel2(update);
+            }
+        }
+
+        internal virtual void EmitFill(OnFill fill)
+        {
+            if (this.raiseEvents && fill.Portfolio == Portfolio)
+                OnFill(fill.Fill);
+
+            foreach (var s in Strategies)
+                s.EmitFill(fill);
+        }
+
+        internal virtual void EmitTransaction(OnTransaction transaction)
+        {
+            if (this.raiseEvents && transaction.Portfolio == Portfolio)
+                OnTransaction(transaction.Transaction);
+            foreach (var s in Strategies)
+                s.EmitTransaction(transaction);
+        }
+
+        internal virtual void EmitAccountReport(AccountReport report)
+        {
+            if (this.raiseEvents && Portfolio != null && Portfolio.Id == report.PortfolioId)
+                OnAccountReport(report);
+
+            foreach (var s in Strategies)
+                s.EmitAccountReport(report);
+        }
+
+        internal virtual void EmitAccountData(AccountData data)
+        {
+            if (this.raiseEvents)
+                this.OnAccountData(data);
+
+            foreach (var s in Strategies)
+                s.EmitAccountData(data);
+        }
+
+        internal virtual void EmitExecutionReport(ExecutionReport report)
+        {
+            if (report.Order.StrategyId == -1)
+                return;
+
+            if (this.raiseEvents)
+                OnExecutionReport(report);
+
+            var strategy = this.idArray_1[report.Order.StrategyId];
+            strategy?.EmitExecutionReport(report);
+        }
+
+        internal virtual void EmitCommand(Command command)
+        {
+            if (this.raiseEvents)
+                OnCommand(command);
+
+            foreach (var s in Strategies)
+                s.EmitCommand(command);
+        }
+
+        internal virtual void EmitPropertyChanged(OnPropertyChanged e)
+        {
+            if (this.raiseEvents)
+                OnPropertyChanged(e);
+
+            foreach (var s in Strategies)
+                s.EmitPropertyChanged(e);
+        }
+
+        internal virtual void EmitPositionOpened(Position position)
+        {
+            if (this.raiseEvents && position.Portfolio == Portfolio)
+                OnPositionOpened(position);
+
+            foreach (var s in Strategies)
+                s.EmitPositionOpened(position);
+        }
+
+        internal void EmitPositionClosed(Position position)
+        {
+            if (this.raiseEvents && position.Portfolio == Portfolio)
+            {
+                OnPositionClosed(position);
+                var list = this.efBkyXtSiO[position.Instrument.Id];
+                if (list != null)
+                    foreach (var stop in list.TakeWhile(s => s.Position == position))
+                        stop.Cancel();
+            }
+            foreach (var s in Strategies)
+                s.EmitPositionClosed(position);
+        }
+
+        internal void EmitPositionChanged(Position position)
+        {
+            if (this.raiseEvents && position.Portfolio == Portfolio)
+                OnPositionChanged(position);
+
+            foreach (var s in Strategies)
+                s.EmitPositionChanged(position);
+        }
+
+        internal virtual void EmitOrderDone(Order order)
+        {
+            if (order.StrategyId == -1)
+                return;
+
+            if (this.raiseEvents)
+                OnOrderDone(order);
+
+            var strategy = this.idArray_1[order.StrategyId];
+            strategy?.EmitOrderDone(order);
+        }
+
+        internal virtual void EmitOrderReplaceRejected(Order order)
+        {
+            if (order.StrategyId == -1)
+                return;
+
+            if (this.raiseEvents)
+                OnOrderReplaceRejected(order);
+
+            var strategy = this.idArray_1[order.StrategyId];
+            strategy?.EmitOrderReplaceRejected(order);
+        }
+
+        internal virtual void EmitOrderCancelRejected(Order order)
+        {
+            if (order.StrategyId == -1)
+                return;
+
+            if (this.raiseEvents)
+                OnOrderCancelRejected(order);
+
+            var strategy = this.idArray_1[order.StrategyId];
+            strategy?.EmitOrderCancelRejected(order);
+        }
+
+
+        internal virtual void EmitOrderRejected(Order order)
+        {
+            if (order.StrategyId == -1)
+                return;
+
+            if (this.raiseEvents)
+                OnOrderRejected(order);
+
+            var strategy = this.idArray_1[order.StrategyId];
+            strategy?.EmitOrderRejected(order);
+        }
+
+        internal virtual void EmitOrderExpired(Order order)
+        {
+            if (order.StrategyId == -1)
+                return;
+
+            if (this.raiseEvents)
+                OnOrderExpired(order);
+
+            var strategy = this.idArray_1[order.StrategyId];
+            strategy?.EmitOrderExpired(order);
+        }
+
+        internal virtual void EmitOrderCancelled(Order order)
+        {
+            if (order.StrategyId == -1)
+                return;
+
+            if (this.raiseEvents)
+                OnOrderCancelled(order);
+
+            var strategy = this.idArray_1[order.StrategyId];
+            strategy?.EmitOrderCancelled(order);
+        }
+
+        internal virtual void EmitOrderFilled(Order order)
+        {
+            if (order.StrategyId == -1)
+                return;
+
+            if (this.raiseEvents)
+                OnOrderFilled(order);
+
+            var strategy = this.idArray_1[order.StrategyId];
+            strategy?.EmitOrderFilled(order);
+        }
+
+        internal virtual void EmitOrderReplaced(Order order)
+        {
+            if (order.StrategyId == -1)
+                return;
+
+            if (this.raiseEvents)
+                OnOrderReplaced(order);
+
+            var strategy = this.idArray_1[order.StrategyId];
+            strategy?.EmitOrderReplaced(order);
+        }
+
+        internal virtual void EmitOrderPartiallyFilled(Order order)
+        {
+            if (order.StrategyId == -1)
+                return;
+
+            if (this.raiseEvents)
+                OnOrderPartiallyFilled(order);
+
+            var strategy = this.idArray_1[order.StrategyId];
+            strategy?.EmitOrderPartiallyFilled(order);
+        }
+
+        internal virtual void EmitOrderStatusChanged(Order order)
+        {
+            if (order.StrategyId == -1)
+                return;
+
+            if (this.raiseEvents)
+                OnOrderStatusChanged(order);
+
+            var strategy = this.idArray_1[order.StrategyId];
+            strategy?.EmitOrderStatusChanged(order);
+        }
+
+        internal virtual void EmitNewOrder(Order order)
+        {
+            if (order.StrategyId == -1)
+                return;
+
+            if (this.raiseEvents)
+                OnNewOrder(order);
+
+            var strategy = this.idArray_1[order.StrategyId];
+            strategy?.EmitNewOrder(order);
+        }
+
+        internal virtual void EmitPendingNewOrder(Order order)
+        {
+            if (order.StrategyId == -1)
+                return;
+
+            if (this.raiseEvents)
+                OnPendingNewOrder(order);
+
+            var strategy = this.idArray_1[order.StrategyId];
+            strategy?.EmitPendingNewOrder(order);
+        }
+
+        internal virtual void EmitSendOrder(Order order)
+        {
+            if (order.StrategyId == -1)
+                return;
+
+            if (this.raiseEvents)
+                OnSendOrder(order);
+
+            var strategy = this.idArray_1[order.StrategyId];
+            strategy?.EmitSendOrder(order);
+        }
+
+        // We use this function name to naming other functions. Clever!
+        protected internal virtual void EmitStopStatusChanged(Stop stop)
+        {
+            if (this.raiseEvents)
+            {
+                switch (stop.status)
+                {
+                    case StopStatus.Executed:
+                        OnStopExecuted(stop);
+                        break;
+                    case StopStatus.Canceled:
+                        OnStopCancelled(stop);
+                        break;
+                }
+                OnStopStatusChanged(stop);
+                this.list_0.Remove(stop);
+                this.efBkyXtSiO[stop.Instrument.Id].Remove(stop);
+            }
+        }
+
         internal virtual void EmitInstrumentAdded(Instrument instrument)
         {
             OnInstrumentAdded(instrument);
@@ -1354,6 +1705,68 @@ namespace SmartQuant
             OnInstrumentRemoved(instrument);
         }
 
+        internal virtual void EmitProviderError(ProviderError error)
+        {
+            if (this.raiseEvents)
+                OnProviderError(error);
+
+            foreach (var s in Strategies)
+                s.EmitProviderError(error);
+        }
+
+        internal virtual void EmitProviderDisconnected(Provider provider)
+        {
+            if (this.raiseEvents)
+                OnProviderConnected(provider);
+
+            foreach (var s in Strategies)
+                s.EmitProviderDisconnected(provider);
+        }
+
+        internal virtual void EmitProviderConnected(Provider provider)
+        {
+            if (this.raiseEvents)
+                OnProviderDisconnected(provider);
+
+            foreach (var s in Strategies)
+                s.EmitProviderConnected(provider);
+        }
+
+        internal virtual void EmitStrategyEvent(object data)
+        {
+            if (this.raiseEvents)
+                OnStrategyEvent(data);
+
+            foreach (var s in Strategies)
+                s.EmitStrategyEvent(data);
+        }
+
+        internal virtual void EmitStrategyStart()
+        {
+            Status = StrategyStatus.Running;
+            foreach (var current in SubscriptionList)
+                this.method_1(current);
+
+            if (this.raiseEvents)
+                OnStrategyStart();
+
+            foreach (var s in Strategies)
+            {
+                s.Status = StrategyStatus.Running;
+                this.method_3(s, s.Instruments, s.Id);
+                s.EmitStrategyStart();
+            }
+        }
+
+        internal virtual void EmitStrategyStop()
+        {
+            Status = StrategyStatus.Stopped;
+            if (this.raiseEvents)
+                OnStrategyStop();
+            foreach (var s in Strategies)
+                s.EmitStrategyStop();
+        }
+
         #endregion
 
         internal void method_4(Strategy strategy, InstrumentList instrumentList_1, int int_2)
@@ -1361,7 +1774,7 @@ namespace SmartQuant
             strategy.Portfolio.Parent = Portfolio;
             foreach (Instrument current in instrumentList_1)
             {
-                LinkedList<Strategy> linkedList = this.idArray_0[current.Id];
+                LinkedList<Strategy> linkedList = this.subStrategiesByInstrument[current.Id];
                 if (linkedList != null)
                 {
                     linkedList.Remove(strategy);
@@ -1375,7 +1788,7 @@ namespace SmartQuant
             foreach (Instrument current2 in instrumentList_1)
             {
                 InstrumentList instrumentList = null;
-                IDataProvider key = this.method_6(strategy, current2);
+                IDataProvider key = this.DetermineDataProvider(strategy, current2);
                 if (!dictionary.TryGetValue(key, out instrumentList))
                 {
                     instrumentList = new InstrumentList();
@@ -1391,52 +1804,18 @@ namespace SmartQuant
             Parent?.method_4(this, instrumentList_1, int_2);
         }
 
-        internal virtual void vmethod_0()
-        {
-            Status = StrategyStatus.Running;
-            foreach (var current in SubscriptionList)
-                this.method_1(current);
-
-            if (this.raiseEvents)
-                OnStrategyStart();
-
-            for (var s = Strategies.First; s != null; s = s.Next)
-            {
-                s.Data.Status = StrategyStatus.Running;
-                this.method_3(s.Data, s.Data.Instruments, s.Data.Id);
-                s.Data.vmethod_0();
-            }
-        }
-
-        internal virtual void vmethod_1()
-        {
-            Status = StrategyStatus.Stopped;
-            if (this.raiseEvents)
-                OnStrategyStop();
-
-            for (var s = Strategies.First; s != null; s = s.Next)
-                s.Data.vmethod_1();
-        }
 
         internal virtual void vmethod_2()
         {
             if (this.raiseEvents)
             {
-                if (this.DataProvider != null && (this.DataProvider.IsConnected || this.DataProvider.IsConnecting))
-                {
-                    this.DataProvider.Disconnect();
-                }
-                if (this.ExecutionProvider != null && (this.ExecutionProvider.IsConnected || this.ExecutionProvider.IsConnecting))
-                {
-                    this.ExecutionProvider.Disconnect();
-                }
-                if (this.FundamentalProvider != null && (this.FundamentalProvider.IsConnected || this.FundamentalProvider.IsConnecting))
-                {
-                    this.FundamentalProvider.Disconnect();
-                }
+                DisconnectProvider(DataProvider);
+                DisconnectProvider(ExecutionProvider);
+                DisconnectProvider(FundamentalProvider);
             }
-            for (var s = Strategies.First; s != null; s = s.Next)
-                s.Data.vmethod_2();
+
+            foreach(var s in Strategies)
+                s.vmethod_2();
         }
 
         private void method_1(Subscription subscription_0)
@@ -1451,548 +1830,32 @@ namespace SmartQuant
         protected Portfolio GetOrCreatePortfolio(string name)
         {
             Portfolio portfolio;
-            if (this.framework.PortfolioManager.Portfolios.Contains(name))
-            {
-                portfolio = this.framework.PortfolioManager.Portfolios.GetByName(name);
-            }
+            if (PortfolioManager.Portfolios.Contains(name))
+                portfolio = PortfolioManager.Portfolios.GetByName(name);
             else
             {
                 portfolio = new Portfolio(this.framework, name);
-                this.framework.PortfolioManager.Add(portfolio, true);
+                PortfolioManager.Add(portfolio, true);
             }
             return portfolio;
         }
 
-        public void SetRawDataProvider(IDataProvider provider)
+        protected void SetRawDataProvider(IDataProvider provider)
         {
-            this.idataProvider_0 = provider;
+            this.rawDataProvider = provider;
         }
 
-        public void SetRawExecutionProvider(IExecutionProvider provider)
+        protected void SetRawExecutionProvider(IExecutionProvider provider)
         {
-            this.ginterface3_0 = provider;
+            this.rawExecutionProvider = provider;
         }
 
-        #endregion
-    }
-
-    public class MetaStrategy : Strategy
-    {
-        internal List<Strategy> list_1 = new List<Strategy>();
-
-        private IdArray<List<Strategy>> idArray_3 = new IdArray<List<Strategy>>();
-
-        private IdArray<Strategy> idArray_4 = new IdArray<Strategy>();
-
-        private IdArray<Strategy> idArray_5 = new IdArray<Strategy>();
-
-        public MetaStrategy(Framework framework, string name) : base(framework, name)
+        private void DisconnectProvider(IProvider provider)
         {
-        }
-
-        public void Add(Strategy strategy)
-        {
-            this.list_1.Add(strategy);
-            strategy.Portfolio.Parent = Portfolio;
-            foreach (Instrument current in strategy.Instruments)
-            {
-                List<Strategy> list;
-                if (this.idArray_3[current.Id] == null)
-                {
-                    list = new List<Strategy>();
-                    this.idArray_3[current.Id] = list;
-                }
-                else
-                {
-                    list = this.idArray_3[current.Id];
-                }
-                list.Add(strategy);
-                if (!Instruments.Contains(current))
-                {
-                    Instruments.Add(current);
-                }
-            }
-        }
-    }
-
-    public class InstrumentStrategy : Strategy
-    {
-        public Instrument Instrument { get; private set; }
-
-        public bool IsInstance { get; private set; }
-
-        public Position Position => Portfolio.GetPosition(Instrument);
-
-        [Parameter, Category("Information"), ReadOnly(true)]
-        public override string Type => "InstrumentStrategy";
-
-        public override IDataProvider DataProvider
-        {
-            get
-            {
-                return base.method_6(this, Instrument);
-            }
-            set
-            {
-                SetRawDataProvider(value);
-                for (var s = Strategies.First; s != null; s = s.Next)
-                    s.Data.DataProvider = this.idataProvider_0;
-            }
-        }
-
-        public override IExecutionProvider ExecutionProvider
-        {
-            get
-            {
-                return base.method_5(Instrument);
-            }
-            set
-            {
-                SetRawExecutionProvider(value);
-                for (var s = Strategies.First; s != null; s = s.Next)
-                    s.Data.ExecutionProvider = this.ginterface3_0;
-            }
-        }
-
-        public InstrumentStrategy(Framework framework, string name) : base(framework, name)
-        {
-            this.raiseEvents = false;
-        }
-
-        public override void Init()
-        {
-            if (!this.initialized)
-            {
-                Portfolio = GetOrCreatePortfolio(Name);
-
-                if (!IsInstance)
-                {
-                    foreach (Instrument current in Instruments)
-                    {
-                        var strategy = this.method_9(current);
-                        base.AddStrategy(strategy, false);
-                        if (Strategies.Count == 1)
-                        {
-                            Bars = strategy.Bars;
-                            Equity = strategy.Equity;
-                        }
-                        strategy.OnStrategyInit();
-                    }
-                }
-                this.initialized = true;
-            }
-
-        }
-
-        public void AddInstance(Instrument instrument, InstrumentStrategy strategy)
-        {
-            strategy.Instrument = instrument;
-            strategy.Instruments.Add(instrument);
-            strategy.Portfolio.Add(instrument);
-            strategy.raiseEvents = true;
-            strategy.SetRawDataProvider(this.idataProvider_0);
-            strategy.SetRawExecutionProvider(this.ginterface3_0);
-            this.method_8(strategy);
-            if (Instruments.GetById(instrument.Id) == null)
-                Instruments.Add(instrument);
-            strategy.Status = StrategyStatus.Running;
-            strategy.OnStrategyInit();
-            strategy.OnStrategyStart();
-        }
-
-        public override void AddInstrument(Instrument instrument)
-        {
-            if (IsInstance)
-            {
-                Parent.AddInstrument(instrument);
-                return;
-            }
-
-            base.AddInstrument(instrument);
-            if (this.initialized)
-            {
-                var strategy = this.method_9(instrument);
-                base.AddStrategy(strategy, true);
-            }
-        }
-
-        private Strategy method_9(Instrument instrument_1)
-        {
-            var strategy = (InstrumentStrategy)Activator.CreateInstance(GetType(), new object[] { this.framework, $"{Name} ({instrument_1.Symbol})" });
-            strategy.Instrument = instrument_1;
-            strategy.Instruments.Add(instrument_1);
-            strategy.SubscriptionList.Add(instrument_1, base.method_6(this, instrument_1));
-            if (this.framework.PortfolioManager.Portfolios.Contains(strategy.Name))
-            {
-                strategy.Portfolio = this.framework.PortfolioManager.Portfolios.GetByName(strategy.Name);
-            }
-            else
-            {
-                strategy.Portfolio = new Portfolio(this.framework, strategy.Name);
-                this.framework.PortfolioManager.Add(strategy.Portfolio, true);
-            }
-            strategy.Portfolio.Add(instrument_1);
-            strategy.raiseEvents = true;
-            strategy.IsInstance = true;
-            strategy.SetRawDataProvider(DataProvider);
-            strategy.SetRawExecutionProvider(ExecutionProvider);
-            var fields = strategy.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            foreach(var f in fields.TakeWhile(f=> f.GetCustomAttributes(typeof(ParameterAttribute), true).Any()))
-                f.SetValue(strategy, f.GetValue(this));
-            return strategy;
-        }
-
-        private void method_8(InstrumentStrategy strategy)
-        {
-            base.AddStrategy(strategy, false);
-        }
-
-    }
-
-    public class SellSideStrategy : Strategy, IDataProvider, IExecutionProvider
-    {
-        [ReadOnly(true)]
-        public virtual int AlgoId => -1;
-
-        public bool IsConnected => true;
-
-        public bool IsDisconnected => false;
-
-        public new ProviderStatus Status { get; set; }
-
-        public bool IsInstance { get; }
-
-        byte IProvider.Id
-        {
-            get
-            {
-                return (byte)Id;
-            }
-            set
-            {
-                Id = (byte)value;
-            }
-        }
-
-        public bool IsConnecting => false;
-
-        public bool IsDisconnecting => false;
-
-        [Parameter, Category("Information"), ReadOnly(true)]
-        public override string Type => "SellSideStrategy";
-
-        public int RouteId { get; set; }
-
-        public SellSideStrategy(Framework framework, string name) : base(framework, name)
-        {
-        }
-
-        public virtual void Connect()
-        {
-            Console.WriteLine("SellSideStrategy::Connect");
-            Status = ProviderStatus.Connected;
-        }
-
-        public virtual bool Connect(int timeout)
-        {
-            long ticks = DateTime.Now.Ticks;
-            Connect();
-            while (!IsConnected)
-            {
-                Thread.Sleep(1);
-                double ms = TimeSpan.FromTicks(DateTime.Now.Ticks - ticks).TotalMilliseconds;
-                if (ms >= timeout)
-                {
-                    Console.WriteLine($"SellSideStrategy::Connect timed out : {Name}");
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        public virtual void Disconnect()
-        {
-            Console.WriteLine("SellSideStrategy::Disconnect");
-            Status = ProviderStatus.Disconnected;
-        }
-
-        public virtual void OnCancelCommand(ExecutionCommand command)
-        {
-            // noop
-        }
-
-        public virtual void OnReplaceCommand(ExecutionCommand command)
-        {
-            // noop
-        }
-
-        public virtual void OnSendCommand(ExecutionCommand command)
-        {
-            // noop
-        }
-
-        protected virtual void OnSubscribe(InstrumentList instruments)
-        {
-            // noop
-        }
-
-        protected virtual void OnSubscribe(Instrument instrument)
-        {
-            // noop
-        }
-
-        protected virtual void OnUnsubscribe(InstrumentList instruments)
-        {
-            // noop
-        }
-
-        protected virtual void OnUnsubscribe(Instrument instrument)
-        {
-            // noop
-        }
-
-        public virtual void Subscribe(Instrument instrument)
-        {
-            OnSubscribe(instrument);
-        }
-
-        public virtual void Subscribe(InstrumentList instruments)
-        {
-            OnSubscribe(instruments);
-        }
-
-        public virtual void Unsubscribe(Instrument instrument)
-        {
-            OnUnsubscribe(instrument);
-        }
-
-        public virtual void Unsubscribe(InstrumentList instruments)
-        {
-            OnUnsubscribe(instruments);
-        }
-
-        public virtual void Send(ExecutionCommand command)
-        {
-            switch (command.Type)
-            {
-                case ExecutionCommandType.Send:
-                    OnSendCommand(command);
-                    return;
-                case ExecutionCommandType.Cancel:
-                    OnCancelCommand(command);
-                    return;
-                case ExecutionCommandType.Replace:
-                    OnReplaceCommand(command);
-                    return;
-                default:
-                    return;
-            }
-        }
-
-        public virtual void EmitBid(Bid bid)
-        {
-            this.framework.EventManager.OnEvent(new Bid(bid) { ProviderId = (byte)Id });
-        }
-
-        public virtual void EmitBid(DateTime dateTime, int instrumentId, double price, int size)
-        {
-            this.framework.EventManager.OnEvent(new Bid(dateTime, (byte)Id, instrumentId, price, size));
-        }
-
-        public virtual void EmitAsk(Ask ask)
-        {
-            this.framework.EventManager.OnEvent(new Ask(ask) { ProviderId = (byte)Id });
-        }
-
-        public virtual void EmitAsk(DateTime dateTime, int instrumentId, double price, int size)
-        {
-            this.framework.EventManager.OnEvent(new Ask(dateTime, (byte)Id, instrumentId, price, size));
-        }
-
-        public virtual void EmitTrade(Trade trade)
-        {
-            this.framework.EventManager.OnEvent(new Trade(trade) { ProviderId = (byte)Id });
-        }
-
-        public virtual void EmitTrade(DateTime dateTime, int instrumentId, double price, int size)
-        {
-            this.framework.EventManager.OnEvent(new Trade(dateTime, (byte)Id, instrumentId, price, size));
-        }
-
-        public virtual void EmitBar(Bar bar)
-        {
-            this.framework.EventManager.OnEvent(bar);
-        }
-
-        public virtual void EmitExecutionReport(ExecutionReport report)
-        {
-            this.framework.EventManager.OnEvent(report);
-        }
-
-        public virtual void EmitLevel2Snapshot(Level2Snapshot snapshot)
-        {
-            this.framework.EventManager.OnEvent(new Level2Snapshot(snapshot) { ProviderId = (byte)Id });
-        }
-    }
-
-    public class SellSideInstrumentStrategy : SellSideStrategy
-    {
-        public Instrument Instrument { get; internal set; }
-
-        // FIXME: is this wrong?
-        [Parameter, Category("Information"), ReadOnly(true)]
-        public override string Type => "SellSideInstrumentStrategy";
-
-        public new bool IsInstance { get; private set; }
-
-        public SellSideInstrumentStrategy(Framework framework, string name) : base(framework, name)
-        {
-            this.raiseEvents = false;
-        }
-
-        public override void Init()
-        {
-            if (!this.initialized)
-            {
-                Portfolio = GetOrCreatePortfolio(Name);
-                if (!IsInstance)
-                {
-                    foreach (Instrument instrument in Instruments)
-                        if (this.idArray_0[instrument.Id] == null)
-                            this.method_8(instrument, true, false);
-                }
-                this.initialized = true;
-            }
-        }
-
-        public override void Subscribe(InstrumentList instruments)
-        {
-            foreach (Instrument current in instruments)
-                Subscribe(current);
-        }
-        public override void Subscribe(Instrument instrument)
-        {
-            if (this.idArray_0[instrument.Id] == null)
-            {
-                SellSideInstrumentStrategy sellSideInstrumentStrategy = this.method_8(instrument, false, true);
-                sellSideInstrumentStrategy.OnStrategyStart();
-            }
-        }
-        public override void Unsubscribe(InstrumentList instruments)
-        {
-            foreach (Instrument current in instruments)
-            {
-                this.Unsubscribe(current);
-            }
-        }
-        public override void Unsubscribe(Instrument instrument)
-        {
-            if (this.idArray_0[instrument.Id] != null)
-            {
-                SellSideInstrumentStrategy sellSideInstrumentStrategy = this.idArray_0[instrument.Id].First.Data as SellSideInstrumentStrategy;
-                sellSideInstrumentStrategy.OnUnsubscribe(instrument);
-            }
-        }
-
-        public override void Send(ExecutionCommand command)
-        {
-            var strategy = this.idArray_0[command.Order.Instrument.Id].First.Data as SellSideInstrumentStrategy;
-            switch (command.Type)
-            {
-                case ExecutionCommandType.Send:
-                    strategy.OnSendCommand(command);
-                    return;
-                case ExecutionCommandType.Cancel:
-                    strategy.OnCancelCommand(command);
-                    return;
-                case ExecutionCommandType.Replace:
-                    strategy.OnReplaceCommand(command);
-                    return;
-                default:
-                    return;
-            }
-        }
-
-        #region Emitters
-
-        public override void EmitBid(Bid bid)
-        {
-            var providerId = IsInstance ? (byte)Parent.Id : (byte)Id;
-            this.framework.EventManager.OnEvent(new Bid(bid) { ProviderId = providerId });
-        }
-
-        public override void EmitBid(DateTime dateTime, int instrumentId, double price, int size)
-        {
-            var providerId = IsInstance ? (byte)Parent.Id : (byte)Id;
-            this.framework.EventManager.OnEvent(new Bid(dateTime, providerId, instrumentId, price, size));
-        }
-
-        public override void EmitAsk(Ask ask)
-        {
-            var providerId = IsInstance ? (byte)Parent.Id : (byte)Id;
-            this.framework.EventManager.OnEvent(new Ask(ask) { ProviderId = providerId });
-        }
-
-        public override void EmitAsk(DateTime dateTime, int instrumentId, double price, int size)
-        {
-            var providerId = IsInstance ? (byte)Parent.Id : (byte)Id;
-            this.framework.EventManager.OnEvent(new Ask(dateTime, providerId, instrumentId, price, size));
-        }
-
-        public override void EmitTrade(Trade trade)
-        {
-            var providerId = IsInstance ? (byte)Parent.Id : (byte)Id;
-            this.framework.EventManager.OnEvent(new Trade(trade) { ProviderId = providerId });
-        }
-
-        public override void EmitTrade(DateTime dateTime, int instrumentId, double price, int size)
-        {
-            var providerId = IsInstance ? (byte)Parent.Id : (byte)Id;
-            this.framework.EventManager.OnEvent(new Trade(dateTime, providerId, instrumentId, price, size));
+            if (provider != null && (provider.IsConnected || provider.IsConnecting))
+                provider.Disconnect();
         }
 
         #endregion
-
-        private SellSideInstrumentStrategy method_8(Instrument instrument, bool bool_4, bool bool_5)
-        {
-            var strategy = (SellSideInstrumentStrategy)Activator.CreateInstance(GetType(), new object[] { this.framework, $"{Name}({instrument}" });
-            strategy.Instrument = instrument;
-            if (bool_4)
-                strategy.Instruments.Add(instrument);
-            strategy.ClientId = ClientId;
-            strategy.SetRawDataProvider(DataProvider);
-            strategy.SetRawExecutionProvider(ExecutionProvider);
-            strategy.raiseEvents = true;
-            strategy.IsInstance = true;
-            this.method_10(strategy);
-            this.method_9(strategy, instrument);
-            if (bool_5)
-                strategy.OnSubscribe(instrument);
-            AddStrategy(strategy, false);
-            strategy.OnStrategyInit();
-            return strategy;
-        }
-
-        private void method_9(Strategy strategy, Instrument instrument)
-        {
-            LinkedList<Strategy> linkedList;
-            if (this.idArray_0[instrument.Id] == null)
-            {
-                linkedList = new LinkedList<Strategy>();
-                this.idArray_0[instrument.Id] = linkedList;
-            }
-            else
-            {
-                linkedList = this.idArray_0[instrument.Id];
-            }
-            linkedList.Add(strategy);
-        }
-
-        private void method_10(SellSideInstrumentStrategy strategy)
-        {
-            var fields = strategy.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            foreach (var f in fields.TakeWhile(f => f.GetCustomAttributes(typeof(ParameterAttribute), true).Any()))
-                f.SetValue(strategy, f.GetValue(this));
-        }
     }
 }

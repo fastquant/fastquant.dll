@@ -4,6 +4,8 @@ using System.Linq;
 
 namespace SmartQuant
 {
+    public delegate void OrderManagerClearedEventHandler(object sender, OnOrderManagerCleared data);
+
     public class OrderManager
     {
         private int counter;
@@ -17,9 +19,9 @@ namespace SmartQuant
         internal List<ExecutionMessage> Messages { get; } = new List<ExecutionMessage>();
 
         private IdArray<Order> ordersById = new IdArray<Order>(102400);
-        private Dictionary<string, Order> ordersByClId = new Dictionary<string, Order>();
+        private Dictionary<string, Order> ordersByClOrderId = new Dictionary<string, Order>();
         private Dictionary<string, Order> ordersByProviderId = new Dictionary<string, Order>();
-        private Dictionary<string, List<Order>> dictionary_2 = new Dictionary<string, List<Order>>();
+        private Dictionary<string, List<Order>> ordersByOCAList = new Dictionary<string, List<Order>>();
 
         public bool IsPersistent { get; set; }
 
@@ -95,11 +97,12 @@ namespace SmartQuant
         {
             Orders.Clear();
             Messages.Clear();
-            ordersById.Clear();
-            ordersByClId.Clear();
+            this.ordersById.Clear();
+            this.ordersByClOrderId.Clear();
+            this.ordersByProviderId.Clear();
+            this.ordersByOCAList.Clear();
             this.counter = 0;
             this.framework.EventServer.OnOrderManagerCleared();
-
         }
 
         public void Dump()
@@ -107,7 +110,6 @@ namespace SmartQuant
             foreach (Order order in Orders)
                 Console.WriteLine(order);
         }
-
 
         public void Load(string name = null, int clientId = -1)
         {
@@ -142,7 +144,7 @@ namespace SmartQuant
                                         Orders.Add(order);
                                         this.ordersById[order.Id] = order;
                                         if (this.framework.Mode == FrameworkMode.Realtime)
-                                            this.ordersByClId[order.ClOrderId] = order;
+                                            this.ordersByClOrderId[order.ClOrderId] = order;
                                         Messages.Add(command);
                                         order.OnExecutionCommand(command);
                                         this.framework.EventServer.OnExecutionCommand(command);
@@ -182,7 +184,7 @@ namespace SmartQuant
         public Order GetByClId(string id)
         {
             Order result;
-            this.ordersByClId.TryGetValue(id, out result);
+            this.ordersByClOrderId.TryGetValue(id, out result);
             return result;
         }
 
@@ -195,7 +197,65 @@ namespace SmartQuant
 
         public void Send(Order order)
         {
-            throw new NotImplementedException();
+            if (!order.IsNotSent)
+                throw new ArgumentException($"Can not send order that has been already sent {order}");
+
+            this.framework.EventServer.OnSendOrder(order);
+            if (order.Id == -1)
+                Register(order);
+
+            if (order.IsOCA)
+            {
+                List<Order> list;
+                this.ordersByOCAList.TryGetValue(order.OCA, out list);
+                if (list == null)
+                {
+                    list = new List<Order>();
+                    this.ordersByOCAList[order.OCA] = list;
+                }
+                list.Add(order);
+            }
+
+            Orders.Add(order);
+            this.ordersById[order.Id] = order;
+
+            if (this.framework.Mode == FrameworkMode.Realtime)
+                this.ordersByClOrderId[order.ClOrderId] = order;
+
+            order.DateTime = this.framework.Clock.DateTime;
+            order.Status = OrderStatus.PendingNew;
+            var command = new ExecutionCommand(ExecutionCommandType.Send, order);
+            command.dateTime = order.dateTime;
+            command.Id = order.Id;
+            command.OrderId = order.Id;
+            command.ClOrderId = order.ClOrderId;
+            command.ProviderOrderId = order.ProviderOrderId;
+            command.ProviderId = order.ProviderId;
+            command.RouteId = order.RouteId;
+            command.PortfolioId = order.PortfolioId;
+            command.TransactTime = order.TransactTime;
+            command.Instrument = order.Instrument;
+            command.InstrumentId = order.InstrumentId;
+            command.Provider = order.Provider;
+            command.Portfolio = order.Portfolio;
+            command.Side = order.Side;
+            command.OrdType = order.Type;
+            command.TimeInForce = order.TimeInForce;
+            command.Price = order.Price;
+            command.StopPx = order.StopPx;
+            command.Qty = order.Qty;
+            command.OCA = order.OCA;
+            command.Text = order.Text;
+            command.Account = order.Account;
+            command.ClientID = order.ClientID;
+            command.ClientId = order.ClientId;
+            Messages.Add(command);
+            order.OnExecutionCommand(command);
+            this.framework.EventServer.OnExecutionCommand(command);
+            this.framework.EventServer.OnPendingNewOrder(order, true);
+            if (IsPersistent)
+                Server?.Save(command, -1);
+            order.Provider.Send(command);
         }
 
         public void Reject(Order order)
@@ -203,31 +263,190 @@ namespace SmartQuant
             order.Status = OrderStatus.Rejected;
         }
 
-        public void Replace(Order order, double price)
-        {
-            this.Replace(order, price, order.StopPx, order.Qty);
-        }
+        public void Replace(Order order, double price) => Replace(order, price, order.StopPx, order.Qty);
 
         public void Replace(Order order, double price, double stopPx, double qty)
         {
-            throw new NotImplementedException();
+            if (order.IsNotSent)
+                throw new ArgumentException($"Can not replace order that is not sent {order}");
+
+            var command = new ExecutionCommand(ExecutionCommandType.Replace, order);
+            command.DateTime = this.framework.Clock.DateTime;
+            command.Id = order.Id;
+            command.OrderId = order.Id;
+            command.ClOrderId = order.ClOrderId;
+            command.ProviderOrderId = order.ProviderOrderId;
+            command.ProviderId = order.ProviderId;
+            command.RouteId = order.RouteId;
+            command.PortfolioId = order.PortfolioId;
+            command.TransactTime = order.TransactTime;
+            command.Instrument = order.Instrument;
+            command.InstrumentId = order.InstrumentId;
+            command.Provider = order.Provider;
+            command.Portfolio = order.Portfolio;
+            command.Side = order.Side;
+            command.OrdType = order.Type;
+            command.TimeInForce = order.TimeInForce;
+            command.Price = order.Price;
+            command.StopPx = order.StopPx;
+            command.Qty = order.Qty;
+            command.OCA = order.OCA;
+            command.Text = order.Text;
+            command.Account = order.Account;
+            command.ClientID = order.ClientID;
+            command.ClientId = order.ClientId;
+            Messages.Add(command);
+            order.OnExecutionCommand(command);
+            this.framework.EventServer.OnExecutionCommand(command);
+            if (IsPersistent)
+                Server?.Save(command, -1);
+            order.Provider.Send(command);
         }
 
         internal void method_0(ExecutionReport report)
         {
-            throw new NotImplementedException();
+            report.Order = report.Order ?? (report.OrderId == -1 ? ordersByClOrderId[report.ClOrderId] : ordersById[report.OrderId]);
+            report.ClientId = report.Order.ClientId;
+            report.ClOrderId = report.Order.ClOrderId;
+            var order = report.Order;
+            var orderStatus = order.Status;
+            Messages.Add(report);
+            order.OnExecutionReport(report);
+            if (orderStatus != order.Status)
+                this.framework.EventServer.OnOrderStatusChanged(order, true);
+
+            switch (report.ExecType)
+            {
+                case ExecType.ExecNew:
+                    if (report.ProviderOrderId != null)
+                        ordersByProviderId[report.ProviderOrderId] = order;
+                    this.framework.EventServer.OnNewOrder(order, true);
+                    break;
+                case ExecType.ExecRejected:
+                    this.framework.EventServer.OnOrderRejected(order, true);
+                    this.framework.EventServer.OnOrderDone(order, true);
+                    this.method_2(order);
+                    break;
+                case ExecType.ExecExpired:
+                    this.framework.EventServer.OnOrderExpired(order, true);
+                    this.framework.EventServer.OnOrderDone(order, true);
+                    this.method_2(order);
+                    break;
+                case ExecType.ExecTrade:
+                    if (order.Status == OrderStatus.PartiallyFilled)
+                    {
+                        this.framework.EventServer.OnOrderPartiallyFilled(order, true);
+                    }
+                    else
+                    {
+                        this.framework.EventServer.OnOrderFilled(order, true);
+                        this.framework.EventServer.OnOrderDone(order, true);
+                        this.method_2(order);
+                    }
+                    break;
+                case ExecType.ExecCancelled:
+                    this.framework.EventServer.OnOrderCancelled(order, true);
+                    this.framework.EventServer.OnOrderDone(order, true);
+                    this.method_2(order);
+                    break;
+                case ExecType.ExecCancelReject:
+                    this.framework.EventServer.OnOrderCancelRejected(order, true);
+                    break;
+                case ExecType.ExecReplace:
+                    this.framework.EventServer.OnOrderReplaced(order, true);
+                    break;
+                case ExecType.ExecReplaceReject:
+                    this.framework.EventServer.OnOrderReplaceRejected(order, true);
+                    break;
+            }
+            if (IsPersistent)
+                Server?.Save(report, -1);
         }
 
         internal void OnAccountReport(AccountReport report)
         {
-            throw new NotImplementedException();
+            if (IsPersistent && !report.IsLoaded)
+                Server?.Save(report, -1);
         }
 
         internal void method_5(ExecutionReport report)
         {
-            throw new NotImplementedException();
+            report.Order = report.Order ?? (report.OrderId == -1 ? ordersByClOrderId[report.ClOrderId] : ordersById[report.OrderId]);
+            report.Instrument = report.Order.Instrument;
+            report.ClientId = report.Order.ClientId;
+            var order = report.Order;
+            var orderStatus = order.Status;
+            Messages.Add(report);
+            order.OnExecutionReport(report);
+            if (orderStatus != order.Status)
+            {
+                this.framework.EventServer.OnOrderStatusChanged(order, true);
+            }
+            switch (report.ExecType)
+            {
+                case ExecType.ExecNew:
+                    if (report.ClOrderId != null)
+                    {
+                        ordersByClOrderId[report.ClOrderId] = order;
+                    }
+                    this.framework.EventServer.OnNewOrder(order, true);
+                    return;
+                case ExecType.ExecStopped:
+                case ExecType.ExecPendingCancel:
+                case ExecType.ExecPendingReplace:
+                    break;
+                case ExecType.ExecRejected:
+                    this.framework.EventServer.OnOrderRejected(order, true);
+                    this.framework.EventServer.OnOrderDone(order, true);
+                    this.method_2(order);
+                    return;
+                case ExecType.ExecExpired:
+                    this.framework.EventServer.OnOrderExpired(order, true);
+                    this.framework.EventServer.OnOrderDone(order, true);
+                    this.method_2(order);
+                    return;
+                case ExecType.ExecTrade:
+                    if (order.Status == OrderStatus.PartiallyFilled)
+                    {
+                        this.framework.EventServer.OnOrderPartiallyFilled(order, true);
+                        return;
+                    }
+                    this.framework.EventServer.OnOrderFilled(order, true);
+                    this.framework.EventServer.OnOrderDone(order, true);
+                    this.method_2(order);
+                    return;
+                case ExecType.ExecCancelled:
+                    this.framework.EventServer.OnOrderCancelled(order, true);
+                    this.framework.EventServer.OnOrderDone(order, true);
+                    this.method_2(order);
+                    return;
+                case ExecType.ExecCancelReject:
+                    this.framework.EventServer.OnOrderCancelRejected(order, true);
+                    return;
+                case ExecType.ExecReplace:
+                    this.framework.EventServer.OnOrderReplaced(order, true);
+                    return;
+                case ExecType.ExecReplaceReject:
+                    this.framework.EventServer.OnOrderReplaceRejected(order, true);
+                    break;
+                default:
+                    return;
+            }
         }
 
+        private void method_2(Order order)
+        {
+            if (!order.IsOCA)
+                return;
 
+            List<Order> list;
+            this.ordersByOCAList.TryGetValue(order.OCA, out list);
+            if (list == null)
+                return;
+
+            this.ordersByOCAList.Remove(order.OCA);
+            foreach (var o in list.TakeWhile(o => o != order))
+                Cancel(o);
+        }
     }
 }

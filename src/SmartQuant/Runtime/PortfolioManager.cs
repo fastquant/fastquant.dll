@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace SmartQuant
 {
@@ -26,29 +27,20 @@ namespace SmartQuant
 
         public void Init()
         {
-            //foreach (ExecutionMessage current in this.framework.OrderManager.list_0)
-            //{
-            //    if (current.TypeId == 13)
-            //    {
-            //        ExecutionReport executionReport = (ExecutionReport)current;
-            //        Portfolio byId = this.GetById(executionReport.order_0.int_4);
-            //        if (byId != null)
-            //        {
-            //            Console.WriteLine(string.Concat(new object[]
-            //            {
-            //        byId.string_0,
-            //        " ",
-            //        executionReport.order_0.int_4,
-            //        " ",
-            //        byId.int_0
-            //            }));
-            //            if (executionReport.order_0.int_4 == byId.int_0)
-            //            {
-            //                byId.method_1(executionReport, false);
-            //            }
-            //        }
-            //    }
-            //}
+            foreach (var msg in this.framework.OrderManager.Messages)
+            {
+                if (msg.TypeId == DataObjectType.ExecutionReport)
+                {
+                    var report = (ExecutionReport)msg;
+                    var portfolio = GetById(report.Order.PortfolioId);
+                    if (portfolio != null)
+                    {
+                        Console.WriteLine($"{portfolio.Name} {report.Order.PortfolioId} {portfolio.Id}");
+                        if (report.Order.PortfolioId == portfolio.Id)
+                            portfolio.OnExecutionReport(report, false);
+                    }
+                }
+            }
         }
 
         public void Clear()
@@ -98,6 +90,14 @@ namespace SmartQuant
                 Remove(portfolio);
         }
 
+        public void Delete(string name)
+        {
+            if (Server != null)
+                Server.Delete(name);
+            else
+                Console.WriteLine($"PortfolioManager::Delete Can not delete portfolio {name} Server is null.");
+        }
+
         public Portfolio GetById(int id) => Portfolios.GetById(id);
 
         public void Save(Portfolio portfolio)
@@ -121,7 +121,7 @@ namespace SmartQuant
 
         internal void OnAccountReport(AccountReport report)
         {
-            var portfolio = Portfolios.GetById(report.PortfolioId);
+            var portfolio = GetById(report.PortfolioId);
             if (portfolio != null)
                 portfolio.Add(report);
             else
@@ -130,7 +130,26 @@ namespace SmartQuant
 
         internal void OnExecutionReport(ExecutionReport report)
         {
-            report.Order.Portfolio.method_1(report, true);
+            report.Order.Portfolio.OnExecutionReport(report, true);
+        }
+
+        internal void Read(BinaryReader reader)
+        {
+            int count = reader.ReadInt32();
+            for (int i = 0; i < count; i++)
+            {
+                var portfolio = (Portfolio)this.framework.StreamerManager.Deserialize(reader);
+                // TODO: more strict visibility
+                portfolio.framework = this.framework;
+                Add(portfolio, true);
+            }
+        }
+
+        internal void Write(BinaryWriter writer)
+        {
+            writer.Write(Portfolios.Count);
+            foreach (var p in Portfolios)
+                this.framework.StreamerManager.Serialize(writer, p);
         }
     }
 }

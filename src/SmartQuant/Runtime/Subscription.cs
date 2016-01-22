@@ -173,26 +173,22 @@ namespace SmartQuant
                 dictionary = new Dictionary<Instrument, int>();
                 this.submap[provider.Id] = dictionary;
             }
-            int num = 0;
-            bool flag = false;
-            if (!dictionary.TryGetValue(instrument, out num))
+            int count = 0;
+            bool isFirstTime = false;
+            if (!dictionary.TryGetValue(instrument, out count))
             {
-                flag = true;
-                num = 1;
+                isFirstTime = true;
+                count = 1;
             }
             else
             {
-                if (num == 0)
-                {
-                    flag = true;
-                }
-                num++;
+                if (count == 0)
+                    isFirstTime = true;
+                count++;
             }
-            dictionary[instrument] = num;
-            if (flag)
-            {
+            dictionary[instrument] = count;
+            if (isFirstTime)
                 provider.Subscribe(instrument);
-            }
         }
 
         public void Subscribe(IDataProvider provider, InstrumentList instruments)
@@ -200,23 +196,21 @@ namespace SmartQuant
             if (provider.Status != ProviderStatus.Connected)
                 provider.Connect();
 
-            var instrumentList = new InstrumentList();
+            var newInstruments = new InstrumentList();
             for (int i = 0; i < instruments.Count; i++)
             {
-                var byIndex = instruments.GetByIndex(i);
+                var instrument = instruments.GetByIndex(i);
                 if (!this.submap.ContainsKey(provider.Id))
                     this.submap[provider.Id] = new Dictionary<Instrument, int>();
-                if (!this.submap[provider.Id].ContainsKey(byIndex) || this.submap[provider.Id][byIndex] == 0)
+                if (!this.submap[provider.Id].ContainsKey(instrument) || this.submap[provider.Id][instrument] == 0)
                 {
-                    this.submap[provider.Id][byIndex] = 0;
-                    instrumentList.Add(byIndex);
+                    this.submap[provider.Id][instrument] = 0;
+                    newInstruments.Add(instrument);
                 }
-                this.submap[provider.Id][byIndex] += 1;
+                this.submap[provider.Id][instrument] += 1;
             }
-            if (instrumentList.Count > 0)
-            {
-                provider.Subscribe(instrumentList);
-            }
+            if (newInstruments.Count > 0)
+                provider.Subscribe(newInstruments);
         }
 
         public void Unsubscribe(int providerId, Instrument instrument)
@@ -239,12 +233,36 @@ namespace SmartQuant
 
         public void Unsubscribe(IDataProvider provider, Instrument instrument)
         {
-            throw new NotImplementedException();
+            if (!this.submap.ContainsKey(provider.Id))
+                return;
+            if (this.submap[provider.Id][instrument] == 0)
+            {
+                Console.WriteLine($"SubscriptionManager::Unsubscribe Error. Instrument has no subscriptions {instrument.Symbol} on data provider {provider.Name}");
+                return;
+            }
+            this.submap[provider.Id][instrument] -= 1;
+            if (this.submap[(int)provider.Id][instrument] == 0)
+                provider.Unsubscribe(instrument);
         }
 
         public void Unsubscribe(IDataProvider provider, InstrumentList instruments)
         {
-          //  throw new NotImplementedException();
+            var instrumentList = new InstrumentList();
+            for (int i = 0; i < instruments.Count; i++)
+            {
+                Instrument byIndex = instruments.GetByIndex(i);
+                if (this.submap.ContainsKey((int)provider.Id) && this.submap[provider.Id][byIndex] != 0)
+                {
+                    Dictionary<Instrument, int> dictionary;
+                    Instrument key;
+                    (dictionary = this.submap[provider.Id])[key = byIndex] = dictionary[key] - 1;
+                    if (this.submap[provider.Id][byIndex] == 0)
+                        instrumentList.Add(byIndex);
+                }
+                else
+                    Console.WriteLine($"SubscriptionManager::Unsubscribe Error. Instrument has no subscriptions {byIndex.Symbol} on data provider {provider.Name}");
+            }
+            provider.Unsubscribe(instrumentList);
         }
 
         internal void OnProviderConnected(IDataProvider dataProvider)

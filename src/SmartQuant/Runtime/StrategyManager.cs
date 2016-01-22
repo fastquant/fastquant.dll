@@ -123,7 +123,7 @@ namespace SmartQuant
                 if ((Persistence == StrategyPersistence.Full || Persistence == StrategyPersistence.Save) && !strategy.Portfolio.IsLoaded)
                     this.framework.PortfolioManager.Save(strategy.Portfolio);
               
-                strategy.vmethod_0();
+                strategy.EmitStrategyStart();
 
                 if (!this.framework.IsExternalDataQueue)
                 {
@@ -155,7 +155,7 @@ namespace SmartQuant
                             }
                         }
                     }
-                    this.SetParametersGroup();
+                    SetParametersGroup();
                     Status = StrategyStatus.Running;
                     this.subscriptions = dictionary;
                     if (this.subscriptions.Count == 0 && mode == StrategyMode.Backtest)
@@ -176,7 +176,7 @@ namespace SmartQuant
                 }
                 else
                 {
-                    this.SetParametersGroup();
+                    SetParametersGroup();
                     Status = StrategyStatus.Running;
                 }
             }
@@ -197,12 +197,13 @@ namespace SmartQuant
                 }
                 else
                 {
-                    Strategy.vmethod_1();
+                    Strategy.EmitStrategyStop();
                     if (this.framework.Mode == FrameworkMode.Simulation)
                     {
                         this.framework.ProviderManager.DataSimulator.Disconnect();
                         this.framework.ProviderManager.ExecutionSimulator.Disconnect();
                     }
+                    // TODO: figure out function name
                     Strategy.vmethod_2();
                     Status = StrategyStatus.Stopped;
                 }
@@ -291,200 +292,200 @@ namespace SmartQuant
         internal void OnException(string source, Event e, Exception ex)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_42(source, e, ex);
+                Strategy.EmitException(source, e, ex);
         }
 
         internal void OnBid(Bid bid)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_9(bid);
+                Strategy.EmitBid(bid);
         }
 
         internal void OnAsk(Ask ask)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.UxFbinsqFw(ask);
+                Strategy.EmitAsk(ask);
         }
 
         internal void OnTrade(Trade trade)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.EmitOnTrade(trade);
+                Strategy.EmitTrade(trade);
         }
 
         internal void OnBarOpen(Bar bar)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_13(bar);
+                Strategy.EmitBarOpen(bar);
         }
 
-        internal void OnBar(Bar bar_0)
+        internal void OnBar(Bar bar)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_13(bar_0);
+                Strategy.EmitBar(bar);
         }
 
         internal void OnBarSlice(BarSlice barSlice)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_17(barSlice);
+                Strategy.EmitBarSlice(barSlice);
         }
 
         internal void OnLevel2(Level2Snapshot l2s)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_11(l2s);
+                Strategy.EmitLevel2(l2s);
         }
 
         internal void OnLevel2(Level2Update l2u)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_12(l2u);
+                Strategy.EmitLevel2(l2u);
         }
 
 
         internal void OnNews(News news)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_18(news);
+                Strategy.EmitNews(news);
         }
 
         internal void OnFundamental(Fundamental fundamental)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_19(fundamental);
+                Strategy.EmitFundamental(fundamental);
         }
 
         internal void OnFill(OnFill e)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_35(e);
+                Strategy.EmitFill(e);
         }
 
         internal void OnTransaction(OnTransaction e)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_36(e);
+                Strategy.EmitTransaction(e);
         }
 
         internal void OnAccountReport(AccountReport report)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_21(report);
+                Strategy.EmitAccountReport(report);
         }
 
         internal void OnExecutionReport(ExecutionReport report)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_20(report);
+                Strategy.EmitExecutionReport(report);
         }
 
         internal void OnCommand(Command command)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_40(command);
+                Strategy.EmitCommand(command);
         }
 
         internal void OnAccountData(AccountData data)
         {
             if (Strategy != null && Strategy.Status == StrategyStatus.Running && Mode != StrategyMode.Backtest)
-                Strategy.vmethod_45(data);
+                Strategy.EmitAccountData(data);
         }
 
         internal void OnOrderDone(Order order)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_34(order);
+                Strategy.EmitOrderDone(order);
         }
 
         internal void OnOrderReplaceRejected(Order order)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_34(order);
+                Strategy.EmitOrderReplaceRejected(order);
         }
 
         internal void OnOrderCancelRejected(Order order)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_34(order);
+                Strategy.EmitOrderCancelRejected(order);
         }
 
         internal void OnOrderExpired(Order order)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_34(order);
+                Strategy.EmitOrderExpired(order);
         }
 
         internal void OnOrderRejected(Order order)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_34(order);
+                Strategy.EmitOrderRejected(order);
         }
 
         internal void OnOrderCancelled(Order order)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_34(order);
+                Strategy.EmitOrderCancelled(order);
         }
 
         internal void OnOrderReplaced(Order order)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_34(order);
+                Strategy.EmitOrderReplaced(order);
         }
 
         internal void OnOrderFilled(Order order)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_34(order);
+                Strategy.EmitOrderFilled(order);
         }
 
         internal void OnOrderPartiallyFilled(Order order)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_34(order);
+                Strategy.EmitOrderPartiallyFilled(order);
         }
 
         internal void OnOrderStatusChanged(Order order)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_34(order);
+                Strategy.EmitOrderStatusChanged(order);
         }
 
         internal void OnNewOrder(Order order)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_34(order);
+                Strategy.EmitNewOrder(order);
         }
 
         internal void OnSendOrder(Order order)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_34(order);
+                Strategy.EmitSendOrder(order);
         }
 
         internal void OnPendingNewOrder(Order order)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_34(order);
+                Strategy.EmitPendingNewOrder(order);
         }
 
         internal void OnProviderError(ProviderError error)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_100(error);
+                Strategy.EmitProviderError(error);
         }
 
         internal void OnProviderConnected(Provider provider)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_6(provider);
+                Strategy.EmitProviderConnected(provider);
         }
 
         internal void OnProviderDisconnected(Provider provider)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_6(provider);
+                Strategy.EmitProviderDisconnected(provider);
         }
 
         internal void OnPortfolioAdded(Portfolio portfolio)
@@ -499,38 +500,37 @@ namespace SmartQuant
 
         internal void OnPortfolioRemoved(Portfolio portfolio)
         {
-            if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_622(portfolio);
+            // noop
         }
 
         internal void OnPropertyChanged(OnPropertyChanged e)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_46(e);
+                Strategy.EmitPropertyChanged(e);
         }
 
         internal void OnPositionOpened(Portfolio portfolio, Position position)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_62(position);
+                Strategy.EmitPositionOpened(position);
         }
 
         internal void OnPositionClosed(Portfolio portfolio, Position position)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_62(position);
+                Strategy.EmitPositionClosed(position);
         }
 
         internal void OnPositionChanged(Portfolio portfolio, Position position)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_62(position);
+                Strategy.EmitPositionChanged(position);
         }
 
         internal void OnStrategyEvent(object data)
         {
             if (Strategy?.Status == StrategyStatus.Running)
-                Strategy.vmethod_43(data);
+                Strategy.EmitStrategyEvent(data);
         }
         #endregion
     }

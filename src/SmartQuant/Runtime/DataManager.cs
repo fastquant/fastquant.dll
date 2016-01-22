@@ -17,22 +17,24 @@ namespace SmartQuant
         private volatile bool exit;
         public DataServer Server { get; set; }
 
-        private IdArray<Bid> idArray_0 = new IdArray<Bid>(10240);
-        private IdArray<Ask> idArray_1 = new IdArray<Ask>(10240);
-        private IdArray<Trade> idArray_2 = new IdArray<Trade>(10240);
-        private IdArray<Bar> djtaJvnAjO = new IdArray<Bar>(10240);
-        private IdArray<News> idArray_5 = new IdArray<News>(10240);
-        private IdArray<Fundamental> idArray_6 = new IdArray<Fundamental>(10240);
+        // lastest dataobject by instrument id
+        private IdArray<Bid> latestBid = new IdArray<Bid>(10240);
+        private IdArray<Ask> latestAsk = new IdArray<Ask>(10240);
+        private IdArray<Trade> latestTrade = new IdArray<Trade>(10240);
+        private IdArray<Bar> latestBar = new IdArray<Bar>(10240);
+        private IdArray<News> latestNews = new IdArray<News>(10240);
+        private IdArray<Fundamental> latestFundamental = new IdArray<Fundamental>(10240);
 
-        private IdArray<IdArray<Bid>> idArray_7 = new IdArray<IdArray<Bid>>(256);
-        private IdArray<IdArray<Ask>> idArray_8 = new IdArray<IdArray<Ask>>(256);
-        private IdArray<IdArray<Trade>> idArray_9 = new IdArray<IdArray<Trade>>(256);
+        // lastest dataobject by instrument id and provider id
+        private IdArray<IdArray<Bid>> bidByIIdAndPId = new IdArray<IdArray<Bid>>(256);
+        private IdArray<IdArray<Ask>> askByIIdAndPId = new IdArray<IdArray<Ask>>(256);
+        private IdArray<IdArray<Trade>> tradeByIIdAndPId = new IdArray<IdArray<Trade>>(256);
 
         private IdArray<OrderBook> idArray_3 = new IdArray<OrderBook>(10240);
         private IdArray<OrderBookAggr> idArray_4 = new IdArray<OrderBookAggr>(10240);
         private IdArray<IdArray<OrderBook>> idArray_10 = new IdArray<IdArray<OrderBook>>(256);
 
-        private Dictionary<string, DataManager.DataNotifier> dictionary_0 = new Dictionary<string, DataNotifier>();
+        private Dictionary<string, DataNotifier> dictionary_0 = new Dictionary<string, DataNotifier>();
 
         public DataManager(Framework framework, DataServer server)
         {
@@ -61,34 +63,34 @@ namespace SmartQuant
         public void Dump()
         {
             Console.WriteLine("Bid");
-            for (int i = 0; i < this.idArray_0.Size; i++)
-                if (this.idArray_0[i] != null)
-                    Console.WriteLine(this.idArray_0[i]);
+            for (int i = 0; i < this.latestBid.Size; i++)
+                if (this.latestBid[i] != null)
+                    Console.WriteLine(this.latestBid[i]);
 
             Console.WriteLine("Ask");
-            for (int i = 0; i < this.idArray_1.Size; i++)
-                if (this.idArray_1[i] != null)
-                    Console.WriteLine(this.idArray_1[i]);
+            for (int i = 0; i < this.latestAsk.Size; i++)
+                if (this.latestAsk[i] != null)
+                    Console.WriteLine(this.latestAsk[i]);
 
             Console.WriteLine("Trade");
-            for (int i = 0; i < this.idArray_2.Size; i++)
-                if (this.idArray_2[i] != null)
-                    Console.WriteLine(this.idArray_2[i]);
+            for (int i = 0; i < this.latestTrade.Size; i++)
+                if (this.latestTrade[i] != null)
+                    Console.WriteLine(this.latestTrade[i]);
         }
 
         public void Clear()
         {
-            this.idArray_0.Clear();
-            this.idArray_1.Clear();
-            this.idArray_2.Clear();
-            this.djtaJvnAjO.Clear();
+            this.latestBid.Clear();
+            this.latestAsk.Clear();
+            this.latestTrade.Clear();
+            this.latestBar.Clear();
+            this.latestNews.Clear();
+            this.latestFundamental.Clear();
             this.idArray_3.Clear();
             this.idArray_4.Clear();
-            this.idArray_5.Clear();
-            this.idArray_6.Clear();
-            this.idArray_7.Clear();
-            this.idArray_8.Clear();
-            this.idArray_9.Clear();
+            this.bidByIIdAndPId.Clear();
+            this.askByIIdAndPId.Clear();
+            this.tradeByIIdAndPId.Clear();
             this.idArray_10.Clear();
         }
 
@@ -149,33 +151,33 @@ namespace SmartQuant
 
         public List<DataSeries> GetDataSeriesList(Instrument instrument = null, string pattern = null) => Server.GetDataSeriesList(instrument, pattern);
 
-        public Bid GetBid(int instrumentId) => this.idArray_0[instrumentId];
+        public Bid GetBid(int instrumentId) => this.latestBid[instrumentId];
 
-        public Bid GetBid(Instrument instrument) => this.idArray_0[instrument.Id];
+        public Bid GetBid(Instrument instrument) => this.latestBid[instrument.Id];
 
-        public Bid GetBid(Instrument instrument, byte providerId) => this.idArray_7[providerId + 1]?[instrument.Id];
+        public Bid GetBid(Instrument instrument, byte providerId) => this.bidByIIdAndPId[providerId + 1]?[instrument.Id];
 
-        public Bid GetBid(int instrumentId, byte providerId) => this.idArray_7[providerId + 1]?[instrumentId];
+        public Bid GetBid(int instrumentId, byte providerId) => this.bidByIIdAndPId[providerId + 1]?[instrumentId];
 
-        public Ask GetAsk(int instrumentId) => this.idArray_1[instrumentId];
+        public Ask GetAsk(int instrumentId) => this.latestAsk[instrumentId];
 
-        public Ask GetAsk(Instrument instrument) => this.idArray_1[instrument.Id];
+        public Ask GetAsk(Instrument instrument) => this.latestAsk[instrument.Id];
 
-        public Ask GetAsk(Instrument instrument, byte providerId) => this.idArray_8[providerId + 1]?[instrument.Id];
+        public Ask GetAsk(Instrument instrument, byte providerId) => this.askByIIdAndPId[providerId + 1]?[instrument.Id];
 
-        public Ask GetAsk(int instrumentId, byte providerId) => this.idArray_8[providerId + 1]?[instrumentId];
+        public Ask GetAsk(int instrumentId, byte providerId) => this.askByIIdAndPId[providerId + 1]?[instrumentId];
 
-        public Trade GetTrade(Instrument instrument) => this.idArray_2[instrument.Id];
+        public Trade GetTrade(Instrument instrument) => this.latestTrade[instrument.Id];
 
-        public Trade GetTrade(int instrumentId) => this.idArray_2[instrumentId];
+        public Trade GetTrade(int instrumentId) => this.latestTrade[instrumentId];
 
-        public Trade GetTrade(Instrument instrument, byte providerId) => this.idArray_9[providerId + 1]?[instrument.Id];
+        public Trade GetTrade(Instrument instrument, byte providerId) => this.tradeByIIdAndPId[providerId + 1]?[instrument.Id];
 
-        public Trade GetTrade(int instrumentId, byte providerId) => this.idArray_9[providerId + 1]?[instrumentId];
+        public Trade GetTrade(int instrumentId, byte providerId) => this.tradeByIIdAndPId[providerId + 1]?[instrumentId];
 
-        public Bar GetBar(int instrumentId) => this.djtaJvnAjO[instrumentId];
+        public Bar GetBar(int instrumentId) => this.latestBar[instrumentId];
 
-        public Bar GetBar(Instrument instrument) => this.djtaJvnAjO[instrument.Id];
+        public Bar GetBar(Instrument instrument) => this.latestBar[instrument.Id];
 
         public TimeSeries AddTimeSeries(string name) => new TimeSeries(Server.AddDataSeries(name));
 
@@ -564,62 +566,54 @@ namespace SmartQuant
         {
             var iId = bid.InstrumentId;
             var pId = bid.ProviderId + 1;
-            this.idArray_0[iId] = bid;
-            this.idArray_7[pId] = this.idArray_7[pId] ?? new IdArray<Bid>(10240);
-            this.idArray_7[pId][iId] = bid;
+            this.latestBid[iId] = bid;
+            this.bidByIIdAndPId[pId] = this.bidByIIdAndPId[pId] ?? new IdArray<Bid>(10240);
+            this.bidByIIdAndPId[pId][iId] = bid;
         }
 
         internal void OnAsk(Ask ask)
         {
             var iId = ask.InstrumentId;
             var pId = ask.ProviderId + 1;
-            this.idArray_1[iId] = ask;
-            this.idArray_8[pId] = this.idArray_8[pId] ?? new IdArray<Ask>(10240);
-            this.idArray_8[pId][iId] = ask;
+            this.latestAsk[iId] = ask;
+            this.askByIIdAndPId[pId] = this.askByIIdAndPId[pId] ?? new IdArray<Ask>(10240);
+            this.askByIIdAndPId[pId][iId] = ask;
         }
 
         internal void OnTrade(Trade trade)
         {
             var iId = trade.InstrumentId;
             var pId = trade.ProviderId + 1;
-            this.idArray_2[iId] = trade;
-            this.idArray_9[pId] = this.idArray_9[pId] ?? new IdArray<Trade>(10240);
-            this.idArray_9[pId][iId] = trade;
+            this.latestTrade[iId] = trade;
+            this.tradeByIIdAndPId[pId] = this.tradeByIIdAndPId[pId] ?? new IdArray<Trade>(10240);
+            this.tradeByIIdAndPId[pId][iId] = trade;
         }
 
         internal void OnBar(Bar bar)
         {
-            this.djtaJvnAjO[bar.InstrumentId] = bar;
+            this.latestBar[bar.InstrumentId] = bar;
         }
 
-        internal void OnLevel2(Level2Snapshot level2Snapshot_0)
+        internal void OnLevel2(Level2Snapshot l2s)
         {
-            //if (this.idArray_10[(int)(level2Snapshot_0.byte_0 + 1)] == null)
-            //{
-            //    this.idArray_10[(int)(level2Snapshot_0.byte_0 + 1)] = new IdArray<OrderBook>(10000);
-            //}
-            //OrderBook orderBook = this.idArray_10[(int)(level2Snapshot_0.byte_0 + 1)][level2Snapshot_0.int_0];
-            //if (orderBook == null)
-            //{
-            //    orderBook = new OrderBook();
-            //    this.idArray_10[(int)(level2Snapshot_0.byte_0 + 1)][level2Snapshot_0.int_0] = orderBook;
-            //}
-            //orderBook.method_0(level2Snapshot_0);
+            var pId = l2s.ProviderId + 1;
+            var iId = l2s.InstrumentId;
+            this.idArray_10[pId] = this.idArray_10[pId] ?? new IdArray<OrderBook>(10240);
+            var orderBook = this.idArray_10[pId][iId] = this.idArray_10[pId][iId] ?? new OrderBook();
+            orderBook.OnLevel2(l2s);
+            var orderBookAggr = this.idArray_4[iId] = this.idArray_4[iId] ?? new OrderBookAggr(iId);
+            orderBookAggr.OnLevel2(l2s);
         }
 
-        internal void OnLevel2(Level2Update level2Update_0)
+        internal void OnLevel2(Level2Update l2u)
         {
-            //if (this.idArray_10[(int)(level2Update_0.byte_0 + 1)] == null)
-            //{
-            //    this.idArray_10[(int)(level2Update_0.byte_0 + 1)] = new IdArray<OrderBook>(10000);
-            //}
-            //OrderBook orderBook = this.idArray_10[(int)(level2Update_0.byte_0 + 1)][level2Update_0.int_0];
-            //if (orderBook == null)
-            //{
-            //    orderBook = new OrderBook();
-            //    this.idArray_10[(int)(level2Update_0.byte_0 + 1)][level2Update_0.int_0] = orderBook;
-            //}
-            //orderBook.method_1(level2Update_0);
+            var pId = l2u.ProviderId + 1;
+            var iId = l2u.InstrumentId;
+            this.idArray_10[pId] = this.idArray_10[pId] ?? new IdArray<OrderBook>(10240);
+            var orderBook = this.idArray_10[pId][iId] = this.idArray_10[pId][iId] ?? new OrderBook();
+            orderBook.OnLevel2(l2u);
+            var orderBookAggr = this.idArray_4[iId] = this.idArray_4[iId] ?? new OrderBookAggr(iId);
+            orderBookAggr.OnLevel2(l2u);
         }
 
         internal void OnHistoricalData(HistoricalData historicalData_0)
@@ -652,13 +646,13 @@ namespace SmartQuant
 
         internal void OnNews(News news)
         {
-            this.idArray_5[news.InstrumentId] = news;
+            this.latestNews[news.InstrumentId] = news;
         }
 
         internal void OnFundamental(Fundamental fundamental)
         {
             if (fundamental.InstrumentId != -1)
-                this.idArray_6[fundamental.InstrumentId] = fundamental;
+                this.latestFundamental[fundamental.InstrumentId] = fundamental;
         }
 
         #endregion

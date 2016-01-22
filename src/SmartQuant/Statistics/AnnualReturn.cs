@@ -14,7 +14,7 @@ namespace SmartQuant.Statistics
         public override string Name => "Annual Return";
         public override string Category => "Daily / Annual returns";
 
-        public override void OnEquity(double equity)
+        protected internal override void OnEquity(double equity)
         {
             throw new NotImplementedException();
         }
@@ -26,7 +26,7 @@ namespace SmartQuant.Statistics
 
         protected double initial;
 
-        public override void OnEquity(double equity)
+        protected internal override void OnEquity(double equity)
         {
             if (this.dateTime == DateTime.MinValue)
             {
@@ -59,13 +59,13 @@ namespace SmartQuant.Statistics
 
     public class AnnualReturnPercentDownsideRisk : PortfolioStatisticsItem
     {
-        public override void OnInit()
+        protected internal override void OnInit()
         {
             AnnualizedFactor = 252;
             Subscribe(PortfolioStatisticsType.DailyDownsideRisk);
         }
 
-        public override void OnStatistics(PortfolioStatisticsItem statistics)
+        protected internal override void OnStatistics(PortfolioStatisticsItem statistics)
         {
             if (statistics.Type == PortfolioStatisticsType.DailyDownsideRisk)
             {
@@ -86,13 +86,13 @@ namespace SmartQuant.Statistics
 
     public class AnnualReturnPercentStdDev : PortfolioStatisticsItem
     {
-        public override void OnInit()
+        protected internal override void OnInit()
         {
             AnnualizedFactor = 252;
             Subscribe(PortfolioStatisticsType.DailyReturnPercentStdDev);
         }
 
-        public override void OnStatistics(PortfolioStatisticsItem statistics)
+        protected internal override void OnStatistics(PortfolioStatisticsItem statistics)
         {
             if (statistics.Type == PortfolioStatisticsType.DailyReturnPercentStdDev)
             {
@@ -115,13 +115,13 @@ namespace SmartQuant.Statistics
 
     public class AvgAnnualReturnPercent : PortfolioStatisticsItem
     {
-        public override void OnInit()
+        protected internal override void OnInit()
         {
             AnnualizedFactor = 252;
             Subscribe(PortfolioStatisticsType.AvgDailyReturnPercent);
         }
 
-        public override void OnStatistics(PortfolioStatisticsItem statistics)
+        protected internal override void OnStatistics(PortfolioStatisticsItem statistics)
         {
             if (statistics.Type == 66)
             {
@@ -144,7 +144,7 @@ namespace SmartQuant.Statistics
 
     public class DailyReturnPercent : PortfolioStatisticsItem
     {
-        public override void OnEquity(double equity)
+        protected internal override void OnEquity(double equity)
         {
             if (this.dateTime == DateTime.MinValue)
             {
@@ -181,13 +181,13 @@ namespace SmartQuant.Statistics
 
     public class DailyReturnPercentDownsideRisk : PortfolioStatisticsItem
     {
-        public override void OnInit()
+        protected internal override void OnInit()
         {
             Threshold = 0;
             Subscribe(PortfolioStatisticsType.DailyReturnPercent);
         }
 
-        public override void OnStatistics(PortfolioStatisticsItem statistics)
+        protected internal override void OnStatistics(PortfolioStatisticsItem statistics)
         {
             if (statistics.Type == PortfolioStatisticsType.DailyReturnPercent)
             {

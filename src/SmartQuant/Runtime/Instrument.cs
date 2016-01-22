@@ -79,7 +79,7 @@ namespace SmartQuant
         public double Factor { get; set; }
 
         [Category("Appearance"), Description("Instrument symbol")]
-        public string Symbol { get; }
+        public string Symbol { get; private set; }
 
         [Category("Appearance"), Description("Instrument description")]
         public string Description { get; set; }
@@ -131,6 +131,11 @@ namespace SmartQuant
         {
         }
 
+        public Instrument(Instrument instrument)
+        {
+            throw new NotImplementedException();
+        }
+
         public Instrument(InstrumentType type, string symbol, string description = "", byte currencyId = 148 /* USD */)
         {
             Type = type;
@@ -146,6 +151,13 @@ namespace SmartQuant
                 return altId.CurrencyId;
             else
                 return CurrencyId;
+        }
+
+        public Instrument Clone(string symbol = null)
+        {
+            var other = new Instrument(this);
+            other.Symbol = symbol ?? other.Symbol;
+            return other;
         }
 
         public override string ToString() => string.IsNullOrEmpty(Description) ? Symbol : $"{Symbol} ({Description})";
@@ -169,9 +181,6 @@ namespace SmartQuant
             this.v2 = v2;
             this.v3 = v3;
         }
-
-//        internal int GetId() => Id;
-//        internal string GetName() => Symbol;
 
         #endregion
     }
@@ -239,6 +248,8 @@ namespace SmartQuant
 
     public delegate void InstrumentEventHandler(object sender, InstrumentEventArgs args);
 
+    public delegate void InstrumentDefinitionEventHandler(object sender, InstrumentDefinitionEventArgs args);
+
     public class InstrumentDefinition
     {
         public string RequestId { get; set; }
@@ -278,6 +289,16 @@ namespace SmartQuant
             RequestId = requestId;
             Result = result;
             Text = text;
+        }
+    }
+
+    public class InstrumentDefinitionEventArgs : EventArgs
+    {
+        public InstrumentDefinition Definition { get; }
+
+        public InstrumentDefinitionEventArgs(InstrumentDefinition definition)
+        {
+            Definition = definition;
         }
     }
 }

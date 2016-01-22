@@ -13,7 +13,7 @@ namespace SmartQuant
     {
         private Framework framework;
 
-        private IdArray<AccountPosition> positionsByCId = new IdArray<AccountPosition>();
+        private IdArray<AccountPosition> positionsByCurrencyId = new IdArray<AccountPosition>();
 
         public byte CurrencyId { get; set; } = CId.USD;
 
@@ -37,13 +37,18 @@ namespace SmartQuant
             Add(new AccountTransaction(report), true);
         }
 
+        public void Add(Fill fill, bool updateParent = true)
+        {
+            Add(new AccountTransaction(fill), updateParent);
+        }
+
         public void Add(AccountTransaction transaction, bool updateParent = true)
         {
-            var position = this.positionsByCId[transaction.CurrencyId];
+            var position = this.positionsByCurrencyId[transaction.CurrencyId]; // GetByCurrencyId(transaction.CurrencyId)
             if (position == null)
             {
                 position = new AccountPosition(transaction);
-                this.positionsByCId[position.CurrencyId] = position;
+                this.positionsByCurrencyId[position.CurrencyId] = position;
                 Positions.Add(position);
             }
             else
@@ -86,9 +91,9 @@ namespace SmartQuant
             Add(dateTime, -value, currencyId, text, updateParent);
         }
 
-        public AccountPosition GetByCurrencyId(byte currencyId) => this.positionsByCId[currencyId];
+        public AccountPosition GetByCurrencyId(byte currencyId) => this.positionsByCurrencyId[currencyId];
 
-        public double GetValue(byte currencyId) => this.positionsByCId[currencyId]?.Value ?? 0;
+        public double GetValue(byte currencyId) => this.positionsByCurrencyId[currencyId]?.Value ?? 0;
     }
 
     public class AccountPosition

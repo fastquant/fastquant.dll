@@ -27,14 +27,14 @@ namespace SmartQuant.Statistics
             return false;
         }
 
-        public override void OnInit()
+        protected internal override void OnInit()
         {
             this.pnls = new List<double>();
             Level = 99;
             Subscribe(PortfolioStatisticsType.NetProfit);
         }
 
-        public override void OnStatistics(PortfolioStatisticsItem statistics)
+        protected internal override void OnStatistics(PortfolioStatisticsItem statistics)
         {
             if (statistics.Type == PortfolioStatisticsType.NetProfit)
             {

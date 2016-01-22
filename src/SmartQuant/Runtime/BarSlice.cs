@@ -24,17 +24,19 @@ namespace SmartQuant
         public override string ToString() => $"Bar slice {Size}";
     }
 
-    class Slice
+    class BarSliceItem
     {
         internal List<Bar> Bars;
-        internal DateTime DateTime;
-        internal int int_0;
+        internal DateTime CloseDateTime;
+        internal int barCount;
     }
 
     public class BarSliceFactory
     {
+        private const int SecondsPerDay = (int)(TimeSpan.TicksPerDay / TimeSpan.TicksPerSecond);
+
         private Framework framework;
-        private IdArray<Slice> slices = new IdArray<Slice>(86400);
+        private IdArray<BarSliceItem> items = new IdArray<BarSliceItem>(SecondsPerDay);
 
         public BarSliceFactory(Framework framework)
         {
@@ -43,43 +45,37 @@ namespace SmartQuant
 
         public void Clear()
         {
-            this.slices.Clear();
+            this.items.Clear();
         }
 
-        internal void method_1(Bar bar)
+        internal void OnBar(Bar bar)
         {
-            var slice = this.slices[(int)bar.Size];
-            if (slice == null)
+            var item = this.items[(int)bar.Size];
+            if (item == null)
                 return;
 
-            if (--slice.int_0 == 0)
+            if (--item.barCount == 0)
             {
                 this.framework.EventServer.OnEvent(new BarSlice(bar));
-                slice.DateTime = DateTime.MinValue;
-                foreach (var b in slice.Bars)
+                item.CloseDateTime = DateTime.MinValue;
+                foreach (var b in item.Bars)
                     this.framework.EventServer.OnEvent(b);
-                slice.Bars.Clear();
+                item.Bars.Clear();
             }
         }
 
-        internal bool method_0(Bar bar)
+        internal bool OnBarOpen(Bar bar)
         {
-            var slice = this.slices[(int)bar.Size];
-            if (slice == null)
+            var item = this.items[(int)bar.Size] = this.items[(int)bar.Size] ?? new BarSliceItem();
+            if (item.CloseDateTime == bar.OpenDateTime)
             {
-                slice = new Slice();
-                this.slices[(int)bar.Size] = slice;
-            }
-            if (slice.DateTime == bar.OpenDateTime)
-            {
-                slice.Bars.Add(bar);
+                item.Bars.Add(bar);
                 return false;
             }
-            if (slice.int_0 == 0)
-            {
-                slice.DateTime = bar.OpenDateTime.AddSeconds(bar.Size);
-            }
-            slice.int_0++;
+            if (item.barCount == 0)
+                item.CloseDateTime = bar.OpenDateTime.AddSeconds(bar.Size);
+
+            item.barCount++;
             return true;
         }
     }

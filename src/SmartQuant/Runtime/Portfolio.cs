@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel;
 using System.Collections.Generic;
 using System.Collections;
+using System.Linq;
 
 namespace SmartQuant
 {
@@ -22,10 +23,15 @@ namespace SmartQuant
 
         public string Description { get; set; } = "";
 
+        public bool IsLoaded { get; internal set; }
+
         [Browsable(false)]
         public Account Account { get; private set; }
 
-        public List<Portfolio> Children { get; } = new List<Portfolio>();
+        public double AccountValue => Account.Value;
+
+        [Browsable(false)]
+        public bool IsOwnerAlgo { get; set; }
 
         [Browsable(false)]
         public Portfolio Parent
@@ -38,8 +44,7 @@ namespace SmartQuant
             {
                 if (this.parent == value)
                     return;
-                if (this.parent != null)
-                    this.parent.Children.Remove(this);
+                this.parent?.Children.Remove(this);
                 this.parent = value;
                 if (this.parent != null)
                 {
@@ -52,7 +57,12 @@ namespace SmartQuant
             }
         }
 
-        public Pricer Pricer { get; set; }
+        public List<Portfolio> Children { get; } = new List<Portfolio>();
+
+        [Browsable(false)]
+        public List<Position> Positions { get; } = new List<Position>();
+
+        internal IdArray<Position> PositionsByInstrumentId { get; } = new IdArray<Position>(10240);
 
         [Browsable(false)]
         public List<Transaction> Transactions { get; } = new List<Transaction>();
@@ -62,23 +72,21 @@ namespace SmartQuant
         [Browsable(false)]
         public PortfolioPerformance Performance { get; private set; }
 
-        [Browsable(false)]
-        public List<Position> Positions { get; } = new List<Position>();
+        public double PositionValue => Positions.Sum(p => this.framework.CurrencyConverter.Convert(p.Value, p.Instrument.CurrencyId, Account.CurrencyId));
 
-        internal IdArray<Position> PositionsByInstrumentId { get; } = new IdArray<Position>(10240);
+        public Pricer Pricer { get; set; }
 
         public double Value => AccountValue + PositionValue;
 
-        public double AccountValue => Account.Value;
-
-        public double PositionValue
+        public double ActiveOrdersValue
         {
             get
             {
-                double num = 0;
-                //                for (int index = 0; index < this.list_1.Count; ++index)
-                //                    num += this.framework_0.ginterface4_0.Convert(this.list_1[index].Value, this.list_1[index].instrument_0.byte_0, this.account_0.byte_0);
-                return num;
+                return this.framework.OrderManager.Orders.TakeWhile(o => !o.IsDone && o.PortfolioId == Id).Sum(o =>
+                {
+                    var amount = o.Instrument.Factor != 0 ? o.Price * o.Qty * o.Instrument.Factor : o.Price * o.Qty;
+                    return this.framework.CurrencyConverter.Convert(amount, o.Instrument.CurrencyId, Account.CurrencyId);
+                });
             }
         }
 
@@ -104,16 +112,9 @@ namespace SmartQuant
             }
         }
 
-        public bool IsLoaded { get; internal set; }
-
         public Portfolio(string name)
         {
             Name = name;
-        }
-
-        internal void method_1(ExecutionReport report, bool v)
-        {
-            throw new NotImplementedException();
         }
 
         public Portfolio(Framework framework, string name = "") : this(name)
@@ -133,7 +134,7 @@ namespace SmartQuant
 
         public void Add(ExecutionReport report)
         {
-            Add(report, false);
+            OnExecutionReport(report, false);
         }
 
         public void Add(AccountReport report)
@@ -141,42 +142,12 @@ namespace SmartQuant
             Account.Add(report);
         }
 
-        internal void Add(ExecutionReport report, bool bool_0 = true)
-        {
-            throw new NotImplementedException();
-            //            switch (report.ExecType)
-            //            {
-            //                case ExecType.ExecRejected:
-            //                case ExecType.ExecCancelled:
-            //                    Transaction transaction_0_1 = this.idArray_0[report.Order.Id];
-            //                    if (transaction_0_1 == null)
-            //                        break;
-            //                    transaction_0_1.bool_0 = true;
-            //                    this.method_4(transaction_0_1, true);
-            //                    break;
-            //                case ExecType.ExecTrade:
-            //                    Transaction transaction_0_2 = this.idArray_0[report.Order.Id];
-            //                    if (transaction_0_2 == null)
-            //                    {
-            //                        transaction_0_2 = new Transaction();
-            //                        this.method_3(transaction_0_2, true);
-            //                        this.idArray_0[report.Order.Id] = transaction_0_2;
-            //                    }
-            //                    Fill fill = new Fill(report);
-            //                    transaction_0_2.Add(fill);
-            //                    this.method_2(fill, bool_0);
-            //                    if (report.OrdStatus != OrderStatus.Filled)
-            //                        break;
-            //                    transaction_0_2.bool_0 = true;
-            //                    this.method_4(transaction_0_2, true);
-            //                    break;
-            //            }
-        }
-
         public void Add(Fill fill)
         {
-            throw new NotImplementedException();
+            OnFill(fill, false);
         }
+
+        public double GetAccountValue(byte currencyId) => Account.GetValue(currencyId);
 
         internal Position Add(Instrument instrument)
         {
@@ -190,105 +161,121 @@ namespace SmartQuant
             return position;
         }
 
+        public Position GetPosition(Instrument instrument) => Positions[instrument.Id];
+
+        public double GetPositionValue(byte currencyId) => Positions.TakeWhile(p => p.Instrument.CurrencyId == currencyId).Sum(p => p.Value);
+
+        public double GetValue(byte currencyId) => GetAccountValue(currencyId) + GetPositionValue(currencyId);
+
         public bool HasPosition(Instrument instrument)
         {
-            throw new NotImplementedException();
+            var position = PositionsByInstrumentId[instrument.Id];
+            return position != null && position.Amount != 0;
         }
 
         public bool HasPosition(Instrument instrument, PositionSide side, double qty)
         {
-            throw new NotImplementedException();
-        }
-
-        public Position GetPosition(Instrument instrument)
-        {
-            throw new NotImplementedException();
+            var position = PositionsByInstrumentId[instrument.Id];
+            return position != null && position.Side == side && position.Qty == qty;
         }
 
         public bool HasLongPosition(Instrument instrument)
         {
-            throw new NotImplementedException();
+            var position = PositionsByInstrumentId[instrument.Id];
+            return position != null && position.Side == PositionSide.Long && position.Qty != 0;
         }
 
         public bool HasLongPosition(Instrument instrument, double qty)
         {
-            throw new NotImplementedException();
+            var position = PositionsByInstrumentId[instrument.Id];
+            return position != null && position.Side == PositionSide.Long && position.Qty == qty;
         }
 
         public bool HasShortPosition(Instrument instrument)
         {
-            throw new NotImplementedException();
+            var position = PositionsByInstrumentId[instrument.Id];
+            return position != null && position.Side == PositionSide.Short && position.Qty != 0;
         }
 
         public bool HasShortPosition(Instrument instrument, double qty)
         {
-            throw new NotImplementedException();
+            var position = PositionsByInstrumentId[instrument.Id];
+            return position != null && position.Side == PositionSide.Short && position.Qty == qty;
         }
 
-        internal void OnExecutionReport(ExecutionReport report)
+        internal Position GetOrCreatePosition(Instrument instrument_0)
         {
-            OnExecutionReport(report, false);
+            var position = PositionsByInstrumentId[instrument_0.Id];
+            if (position == null)
+            {
+                position = new Position(this, instrument_0);
+                PositionsByInstrumentId[instrument_0.Id] = position;
+                Positions.Add(position);
+            }
+            return position;
         }
 
         internal void OnExecutionReport(ExecutionReport report, bool queued = true)
         {
-            Transaction transaction;
             switch (report.ExecType)
             {
                 case ExecType.ExecRejected:
+                case ExecType.ExecExpired:
                 case ExecType.ExecCancelled:
-                    transaction = TransactionsByOrderId[report.Order.Id];
-                    if (transaction == null)
+                    {
+                        var transaction = TransactionsByOrderId[report.Order.Id];
+                        if (transaction != null)
+                        {
+                            transaction.IsDone = true;
+                            TransactionsByOrderId[report.Order.Id] = null;
+                            OnTransaction(transaction, queued);
+                        }
                         break;
-                    transaction.IsDone = true;
-                    OnTransaction(transaction, true);
-                    break;
+                    }
                 case ExecType.ExecTrade:
-                    transaction = TransactionsByOrderId[report.Order.Id];
-                    if (transaction == null)
                     {
-                        transaction = new Transaction();
-                        method_4(transaction, true);
-                        TransactionsByOrderId[report.Order.Id] = transaction;
+                        var transaction = TransactionsByOrderId[report.Order.Id];
+                        if (transaction == null)
+                        {
+                            transaction = new Transaction();
+                            this.method_3(transaction, queued);
+                            TransactionsByOrderId[report.Order.Id] = transaction;
+                        }
+                        var fill = new Fill(report);
+                        transaction.Add(fill);
+                        OnFill(fill, queued);
+                        if (report.OrdStatus == OrderStatus.Filled)
+                        {
+                            transaction.IsDone = true;
+                            TransactionsByOrderId[report.Order.Id] = null;
+                            OnTransaction(transaction, queued);
+                            return;
+                        }
+                        break;
                     }
-                    Fill fill = new Fill(report);
-                    transaction.Add(fill);
-                    OnFill(fill, queued);
-                    if (report.OrdStatus == OrderStatus.Filled)
-                    {
-                        transaction.IsDone = true;
-                        OnTransaction(transaction, true);
-                    }
+                case ExecType.ExecPendingCancel:
                     break;
+                default:
+                    return;
             }
         }
 
-        internal void method_4(Transaction transaction, bool queued = true)
-        {
-            Transactions.Add(transaction);
-            if (Parent != null)
-                Parent.method_4(transaction, queued);
-        }
-
-        internal void OnTransaction(Transaction transaction, bool queued = true)
-        {
-            this.framework.EventServer.OnTransaction(this, transaction, queued);
-            if (Parent != null)
-                Parent.OnTransaction(transaction, queued);
-            Statistics.OnTransaction(transaction);
-        }
-
+        // TODO: rewrite it
         internal void OnFill(Fill fill, bool queued = true)
         {
             Fills.Add(fill);
             this.framework.EventServer.OnFill(this, fill, queued);
-            var instrument = fill.Instrument;
+            var instrument_ = fill.Instrument;
             bool flag = false;
-            var position = FindPosition(instrument);
-            if (position.Qty == 0)
+            var position = PositionsByInstrumentId[instrument_.Id];
+            if (position == null)
+                position = this.GetOrCreatePosition(instrument_);
+
+            if (position.Amount == 0)
                 flag = true;
+
             position.Add(fill);
-            //Account.Add(fill, false);
+            Account.Add(fill, false);
             if (flag)
             {
                 Statistics.OnPositionChanged(position);
@@ -298,43 +285,42 @@ namespace SmartQuant
             }
             else
             {
+                if (fill.Qty > position.Qty && position.Amount != 0.0 && ((fill.Side == OrderSide.Buy && position.Side == PositionSide.Long) || (fill.Side == OrderSide.Sell && position.Side == PositionSide.Short)))
+                {
+                    Statistics.OnPositionSideChanged(position);
+                }
+                if (position.Amount != 0.0)
+                {
+                    Statistics.OnPositionChanged(position);
+                }
                 this.framework.EventServer.OnPositionChanged(this, position, queued);
-                if (position.Qty == 0)
+                if (position.Amount == 0.0)
                 {
                     Statistics.OnPositionClosed(position);
                     this.framework.EventServer.OnPositionClosed(this, position, queued);
                 }
             }
-            if (Parent != null)
-                Parent.OnFill(fill, queued);
+            if (UpdateParent)
+                Parent?.OnFill(fill, queued);
             Statistics.OnFill(fill);
         }
 
-        internal Position FindPosition(Instrument instrument)
+        // NewTransaction
+        internal void method_3(Transaction transaction, bool queued = true)
         {
-            Position position = PositionsByInstrumentId[instrument.Id];
-            if (position == null)
-            {
-                position = new Position(this, instrument);
-                PositionsByInstrumentId[instrument.Id] = position;
-                Positions.Add(position);
-            }
-            return position;
+            Transactions.Add(transaction);
+            if (UpdateParent)
+                Parent?.method_3(transaction, queued);
         }
 
-        #region Extra Helper Methods
-
-        internal string GetName()
+        // EmitTransaction?
+        internal void OnTransaction(Transaction transaction, bool queued = true)
         {
-            return Name;
+            this.framework.EventServer.OnTransaction(this, transaction, queued);
+            if (UpdateParent)
+                Parent?.OnTransaction(transaction, queued);
+            Statistics.OnTransaction(transaction);
         }
-
-        internal int GetId()
-        {
-            return Id;
-        }
-
-        #endregion
     }
 
     public class PortfolioEventArgs : EventArgs

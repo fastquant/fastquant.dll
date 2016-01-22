@@ -341,7 +341,7 @@ namespace SmartQuant.Component
 
         public virtual void OnOrder(Order order)
         {
-            order.Provider = this.strategy.method_5(Instrument);
+            order.Provider = this.strategy.DetermineExecutionProvider(Instrument);
             order.StrategyId = this.strategy.Id;
             this.strategy.framework.OrderManager.Send(order);
         }

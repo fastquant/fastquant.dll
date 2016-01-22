@@ -5,7 +5,7 @@ namespace SmartQuant.Statistics
 {
     public class RecoveryFactor : PortfolioStatisticsItem
     {
-        public override void OnInit()
+        protected internal override void OnInit()
         {
             this.shortValue = 1;
             this.longValue = 1;
@@ -17,7 +17,7 @@ namespace SmartQuant.Statistics
             Subscribe(PortfolioStatisticsType.MaxDrawdown);
         }
 
-        public override void OnStatistics(PortfolioStatisticsItem statistics)
+        protected internal override void OnStatistics(PortfolioStatisticsItem statistics)
         {
             bool changed = false;
             if (statistics.Type == PortfolioStatisticsType.NetProfit)

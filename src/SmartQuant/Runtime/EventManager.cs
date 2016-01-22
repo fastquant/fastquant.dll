@@ -110,6 +110,7 @@ namespace SmartQuant
             this.gates[EventType.OnProviderDisconnected] = new Delegate(OnProviderDisconnected);
             this.gates[EventType.OnSimulatorStart] = new Delegate(OnSimulatorStart);
             this.gates[EventType.OnSimulatorStop] = new Delegate(OnSimulatorStop);
+            this.gates[EventType.OnSimulatorProgress] = new Delegate(OnSimulatorProgress);
 
             // Enable all events by defaults
             for (int i = 0; i < byte.MaxValue; i++)
@@ -320,6 +321,7 @@ namespace SmartQuant
             if (quote.Bid != null && quote.Bid.Price != 0)
             {
                 var bid = this.framework.DataManager.GetBid(quote.Bid.InstrumentId);
+                // Emit OnBid when the last bid has changed.
                 if (bid == null || quote.Bid.Price != bid.Price || quote.Bid.Size != bid.Size)
                     OnBid(quote.Bid);
             }
@@ -327,11 +329,13 @@ namespace SmartQuant
             if (quote.Ask != null && quote.Ask.Price != 0)
             {
                 var ask = this.framework.DataManager.GetAsk(quote.Ask.InstrumentId);
+                // Emit OnAsk when the last ask has changed.
                 if (ask == null || quote.Ask.Price != ask.Price || quote.Ask.Size != ask.Size)
                     OnAsk(quote.Ask);
             }
         }
 
+        // TODO: rewrite it
         private void OnBar(Event e)
         {
             DataEventCount++;
@@ -345,13 +349,14 @@ namespace SmartQuant
                 this.framework.InstrumentManager.GetById(bar.InstrumentId).Bar = bar;
                 this.framework.ProviderManager.ExecutionSimulator.OnBar(bar);
                 this.framework.StrategyManager.OnBar(bar);
+
                 if (bar.Type == BarType.Time || bar.Type == BarType.Session)
-                {
-                    BarSliceFactory.method_1(bar);
-                }
+                    BarSliceFactory.OnBar(bar);
+
                 return;
             }
-            if ((bar.Type == BarType.Time || bar.Type == BarType.Session) && !BarSliceFactory.method_0(bar))
+
+            if ((bar.Type == BarType.Time || bar.Type == BarType.Session) && !BarSliceFactory.OnBarOpen(bar))
             {
                 return;
             }
@@ -630,8 +635,7 @@ namespace SmartQuant
                 this.framework.Clock.DateTime = start.DateTime1;
 
             this.bus?.ResetCounts();
-            EventCount = 0;
-            DataEventCount = 0;
+            EventCount = DataEventCount = 0;
             this.stopwatch.Reset();
             this.stopwatch.Start();
         }
@@ -645,6 +649,11 @@ namespace SmartQuant
                 Console.WriteLine($"{DateTime.Now} Data run done, count = {DataEventCount} ms = {this.stopwatch.ElapsedMilliseconds}  event/sec = {DataEventCount / ms * 1000}");
             else
                 Console.WriteLine($"{DateTime.Now} Data run done, count = {DataEventCount} ms = 0");
+        }
+
+        private void OnSimulatorProgress(Event e)
+        {
+            // noop
         }
 
         #endregion

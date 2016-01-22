@@ -5,9 +5,20 @@ using System;
 
 namespace SmartQuant
 {
+    public class Direction
+    {
+        public const sbyte Undefined = -1;
+        public const sbyte Plus = 0;
+        public const sbyte ZeroPlus = 1;
+        public const sbyte Minus = 2;
+        public const sbyte ZeroMinus = 3;
+    }
+
     public class Trade : Tick
     {
         public override byte TypeId => DataObjectType.Trade;
+
+        public sbyte Direction { get; set; }
 
         public Trade(DateTime dateTime, byte providerId, int instrumentId, double price, int size)
             : base(dateTime, providerId, instrumentId, price, size)

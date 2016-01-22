@@ -16,13 +16,4 @@ namespace SmartQuant
         Line,
         Candle
     }
-
-    public class Direction
-    {
-        public const sbyte Undefined = -1;
-        public const sbyte Plus = 0;
-        public const sbyte ZeroPlus = 1;
-        public const sbyte Minus = 2;
-        public const sbyte ZeroMinus = 3;
-    }
 }

@@ -5,13 +5,13 @@ namespace SmartQuant.Statistics
 {
     public class MARRatio : PortfolioStatisticsItem
     {
-        public override void OnInit()
+        protected internal override void OnInit()
         {
             Subscribe(PortfolioStatisticsType.CompoundAnnualGrowthRate);
             Subscribe(PortfolioStatisticsType.MaxDrawdownPercent);
         }
 
-        public override void OnStatistics(PortfolioStatisticsItem statistics)
+        protected internal override void OnStatistics(PortfolioStatisticsItem statistics)
         {
             bool changed = false;
             if (statistics.Type == PortfolioStatisticsType.CompoundAnnualGrowthRate)

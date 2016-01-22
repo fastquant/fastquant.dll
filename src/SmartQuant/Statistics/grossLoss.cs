@@ -8,7 +8,7 @@
 
         public override int Type => PortfolioStatisticsType.GrossLoss;
 
-        public override void OnRoundTrip(TradeInfo trade)
+        protected internal override void OnRoundTrip(TradeInfo trade)
         {
             if (!trade.IsWinning)
             {

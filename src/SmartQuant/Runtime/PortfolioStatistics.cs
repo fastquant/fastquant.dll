@@ -109,6 +109,8 @@ namespace SmartQuant
 
         public Clock Clock => this.portfolio.framework.Clock;
 
+        public int EmitId { get; private set; }
+
         public PortfolioStatisticsItem()
         {
             this.totalValues = new TimeSeries($"{Name}", "");
@@ -128,61 +130,75 @@ namespace SmartQuant
 
         protected internal void Emit()
         {
-            if (this.statistics == null)
-                return;
-            this.statistics.OnStatistics(this);
-
-            if (this.portfolio.Parent == null)
-                return;
-            this.statistics.OnStatistics(this.portfolio, this);
+            if (this.statistics != null)
+            {
+                EmitId++;
+                this.statistics.OnStatistics(this);
+                if (this.portfolio.Parent != null)
+                {
+                    this.statistics.OnStatistics(this.portfolio, this);
+                }
+            }
         }
 
-        public /*internal*/ virtual void OnInit()
+        protected internal virtual void OnInit()
         {
+            // noop
         }
 
-        public /*internal*/ virtual void OnEquity(double equity)
+        protected internal virtual void OnEquity(double equity)
         {
+            // noop
         }
 
-        public /*internal*/ virtual void OnFill(Fill fill)
+        protected internal virtual void OnFill(Fill fill)
         {
+            // noop
         }
 
-        public /*internal*/ virtual void OnTransaction(Transaction transaction)
+        protected internal virtual void OnTransaction(Transaction transaction)
         {
+            // noop
         }
 
-        public /*internal*/ virtual void OnPositionOpened(Position position)
+        protected internal virtual void OnPositionOpened(Position position)
         {
+            // noop
         }
 
-        public /*internal*/ virtual void OnPositionClosed(Position position)
+        protected internal virtual void OnPositionClosed(Position position)
         {
+            // noop
         }
 
-        public /*internal*/ virtual void OnPositionChanged(Position position)
+        protected internal virtual void OnPositionChanged(Position position)
         {
+            // noop
         }
 
-        public  /*internal*/ virtual void OnPositionSideChanged(Position position)
+        protected internal virtual void OnPositionSideChanged(Position position)
         {
+            // noop
         }
 
-        public /*internal*/ virtual void OnRoundTrip(TradeInfo trade)
+        protected internal virtual void OnRoundTrip(TradeInfo trade)
         {
+            // noop
         }
 
-        public /*internal*/ virtual void OnStatistics(PortfolioStatisticsItem statistics)
+        protected internal virtual void OnStatistics(PortfolioStatisticsItem statistics)
         {
+            // noop
         }
 
-        public /*internal*/ virtual void OnStatistics(Portfolio portfolio, PortfolioStatisticsItem statistics)
+        protected internal virtual void OnStatistics(Portfolio portfolio, PortfolioStatisticsItem statistics)
         {
+            // noop
         }
 
-        public virtual void OnClear()
+        protected internal virtual void OnClear()
         {
+            // noop
         }
     }
 
@@ -214,15 +230,15 @@ namespace SmartQuant
     public class PortfolioStatistics
     {
         private Portfolio portfolio;
-        internal IdArray<TradeDetector> detectors = new IdArray<TradeDetector>(8192);
-        internal IdArray<List<int>> idArray_1 = new IdArray<List<int>>();
-
+        internal IdArray<TradeDetector> detectors = new IdArray<TradeDetector>(10240);
+        internal IdArray<List<int>> subscriptions = new IdArray<List<int>>();
         public PortfolioStatisticsItemList Items { get; } = new PortfolioStatisticsItemList();
 
         public PortfolioStatistics(Portfolio portfolio)
         {
             this.portfolio = portfolio;
-            foreach (var item in Items)
+            var list = portfolio.framework.StatisticsManager.CloneAll();
+            foreach (var item in list)
                 Add(item);
         }
 
@@ -230,7 +246,7 @@ namespace SmartQuant
         {
             if (item.statistics != null)
             {
-                Console.WriteLine("PortfolioStatistics::Add Error. Item already belongs to other statistics {0}", item);
+                Console.WriteLine($"PortfolioStatistics::Add Error. Item already belongs to other statistics {item}");
                 return;
             }
 
@@ -242,29 +258,29 @@ namespace SmartQuant
 
         public PortfolioStatisticsItem Get(int type) => Items.GetByType(type);
 
-        public void Subscribe(PortfolioStatisticsItem item, int type)
+        internal void Subscribe(PortfolioStatisticsItem item, int type)
         {
             if (Items.GetByType(type) == null)
                 Add(this.portfolio.framework.StatisticsManager.Clone(type));
-            if (this.idArray_1[type] == null)
-                this.idArray_1[type] = new List<int>();
-            else if (this.idArray_1[type].Contains(item.Type))
+            if (this.subscriptions[type] == null)
+                this.subscriptions[type] = new List<int>();
+            else if (this.subscriptions[type].Contains(item.Type))
             {
                 Console.WriteLine($"PortfolioStatistics::Subscribe Item {item.Type} is already subscribed for item {type}");
                 return;
             }
-            this.idArray_1[type].Add(item.Type);
+            this.subscriptions[type].Add(item.Type);
         }
 
-        public void Unsubscribe(PortfolioStatisticsItem item, int type)
+        internal void Unsubscribe(PortfolioStatisticsItem item, int type)
         {
-            if (this.idArray_1[type] != null && this.idArray_1[type].Contains(item.Type))
-                this.idArray_1[type].Remove(item.Type);
+            if (this.subscriptions[type] != null && this.subscriptions[type].Contains(item.Type))
+                this.subscriptions[type].Remove(item.Type);
             else
-                Console.WriteLine("PortfolioStatistics::Unsubscribe Item {0} is not subscribed for item {1}", item.Type, type);
+                Console.WriteLine($"PortfolioStatistics::Unsubscribe Item {item.Type} is not subscribed for item {type}");
         }
 
-        public void Add(Fill fill)
+        internal void DetectTrade(Fill fill)
         {
             var id = fill.Instrument.Id;
             if (this.detectors[id] == null)
@@ -281,53 +297,73 @@ namespace SmartQuant
             this.detectors[id].Add(fill);
         }
 
-        public void OnFill(Fill fill)
+        internal void OnFill(Fill fill)
         {
-            Add(fill);
+            DetectTrade(fill);
             foreach (var item in Items)
                 item.OnFill(fill);
         }
 
-        public void OnTransaction(Transaction transaction)
+        internal void OnTransaction(Transaction transaction)
         {
             foreach (var item in Items)
                 item.OnTransaction(transaction);
         }
 
-        public void OnPositionOpened(Position position)
+        internal void OnPositionOpened(Position position)
         {
             foreach (var item in Items)
                 item.OnPositionOpened(position);
         }
 
-        public void OnPositionClosed(Position position)
+        internal void OnPositionClosed(Position position)
         {
             foreach (var item in Items)
                 item.OnPositionClosed(position);
         }
 
-        public void OnPositionChanged(Position position)
+        internal void OnPositionChanged(Position position)
         {
             foreach (var item in Items)
                 item.OnPositionChanged(position);
         }
 
-        public void OnStatistics(PortfolioStatisticsItem item)
+        internal void OnPositionSideChanged(Position position)
         {
-            throw new NotImplementedException();
+            foreach (var item in Items)
+                item.OnPositionSideChanged(position);
         }
 
-        public void OnStatistics(Portfolio portfolio, PortfolioStatisticsItem item)
+        internal void OnStatistics(PortfolioStatisticsItem item)
+        {
+            var list = this.subscriptions[item.Type];
+            if (list != null)
+            {
+                foreach (int type in list)
+                    Items.GetByType(type).OnStatistics(item);
+            }
+        }
+
+        internal void OnStatistics(Portfolio portfolio, PortfolioStatisticsItem item)
         {
             foreach (var i in Items)
                 if (i != item)
                     i.OnStatistics(portfolio, item);
         }
 
-        public void OnClear()
+        internal void OnClear()
         {
             foreach (var item in Items)
                 item.OnClear();
+        }
+
+        internal void OnEquity(double value)
+        {
+            for (int i = 0; i < this.detectors.Size; i++)
+                this.detectors[i]?.OnEquity(value);
+     
+            foreach (var item in Items)
+                item.OnEquity(value);
         }
     }
 }

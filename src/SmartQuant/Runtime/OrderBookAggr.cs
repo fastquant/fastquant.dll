@@ -116,7 +116,7 @@ namespace SmartQuant
 
         private int GetTickVolume(IEnumerable<Tick> ticks) => ticks.Sum(t => t.Size);
 
-        internal void method_0(Level2Snapshot l2s)
+        internal void OnLevel2(Level2Snapshot l2s)
         {
             lock (this.lck)
             {
@@ -127,7 +127,7 @@ namespace SmartQuant
             }
         }
 
-        internal void method_1(Level2Update l2u)
+        internal void OnLevel2(Level2Update l2u)
         {
             //lock (this.lck)
             //{

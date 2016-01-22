@@ -529,11 +529,11 @@ namespace SmartQuant.Controls.Portfolios
       this.correlationMatrix.Name = "correlationMatrix";
       this.correlationMatrix.Size = new Size(613, 421);
       this.correlationMatrix.TabIndex = 0;
-      this.imgStates.ImageStream = (ImageListStreamer) componentResourceManager.GetObject("imgStates.ImageStream");
-      this.imgStates.TransparentColor = Color.Transparent;
-      this.imgStates.Images.SetKeyName(0, "collapsed.png");
-      this.imgStates.Images.SetKeyName(1, "expanded.png");
-      this.imgStates.Images.SetKeyName(2, "empty.png");
+  //    this.imgStates.ImageStream = (ImageListStreamer) componentResourceManager.GetObject("imgStates.ImageStream");
+  //    this.imgStates.TransparentColor = Color.Transparent;
+  //    this.imgStates.Images.SetKeyName(0, "collapsed.png");
+ //     this.imgStates.Images.SetKeyName(1, "expanded.png");
+  //    this.imgStates.Images.SetKeyName(2, "empty.png");
       this.ctxSettings.Items.AddRange(new ToolStripItem[2]
       {
         (ToolStripItem) this.ctxSettings_ExportToCSV,

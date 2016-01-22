@@ -28,7 +28,9 @@ namespace SmartQuant
         public bool HasPosition { get; private set; }
 
         public List<TradeInfo> Trades { get; } = new List<TradeInfo>();
+
         internal event Delegate1 Detected;
+
         public TradeDetector(TradeDetectionType type, Portfolio portfolio)
         {
             Portfolio = portfolio;

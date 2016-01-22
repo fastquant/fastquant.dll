@@ -246,9 +246,13 @@ namespace SmartQuant
 
         protected override void OnData(DataObject obj)
         {
-            base.OnData(obj);
-            if (this.bar.N == this.barSize)
+            Tick tick = (Tick)obj;
+            if (this.bar != null && (tick.Price > this.bar.High || tick.Price < this.bar.Low) && 10000.0 * (this.bar.High - this.bar.Low) >= this.barSize)
+            {
+                this.bar.DateTime = tick.DateTime;
                 EmitBar();
+            }
+            base.OnData(obj);
         }
     }
 
@@ -504,22 +508,22 @@ namespace SmartQuant
             this.orderedItemLists.Clear();
         }
 
-        // TODO: review it later
+        // TODO: rewrite it using goto statement!!!
         internal void OnData(DataObject obj)
         {
             var tick = (Tick)obj;
-            var list = ItemLists[tick.InstrumentId];
-            if (list == null)
+            var items = ItemLists[tick.InstrumentId];
+            if (items == null)
                 return;
 
             int i = 0;
-            while (i < list.Count)
+            while (i < items.Count)
             {
-                var item = list[i];
+                var item = items[i];
                 switch (item.barInput)
                 {
                     case BarInput.Trade:
-                        if (tick.TypeId == EventType.Trade)
+                        if (tick.TypeId == DataObjectType.Trade)
                         {
                             item.Process(tick);
                             i++;
@@ -527,7 +531,7 @@ namespace SmartQuant
                         }
                         break;
                     case BarInput.Bid:
-                        if (tick.TypeId == EventType.Bid)
+                        if (tick.TypeId == DataObjectType.Bid)
                         {
                             item.Process(tick);
                             i++;
@@ -535,7 +539,7 @@ namespace SmartQuant
                         }
                         break;
                     case BarInput.Ask:
-                        if (tick.TypeId == EventType.Ask)
+                        if (tick.TypeId == DataObjectType.Ask)
                         {
                             item.Process(tick);
                             i++;
@@ -545,7 +549,7 @@ namespace SmartQuant
                     case BarInput.Middle:
                         switch (tick.TypeId)
                         {
-                            case EventType.Bid:
+                            case DataObjectType.Bid:
                                 {
                                     var ask = this.framework.DataManager.GetAsk(tick.InstrumentId);
                                     if (ask == null)
@@ -553,10 +557,10 @@ namespace SmartQuant
                                         i++;
                                         continue;
                                     }
-                                    tick = new Tick(obj.dateTime, tick.ProviderId, tick.InstrumentId, (ask.Price + tick.Price) / 2.0, (ask.Size + tick.Size) / 2);
+                                    tick = new Tick(obj.DateTime, tick.ProviderId, tick.InstrumentId, (ask.Price + tick.Price) / 2.0, (ask.Size + tick.Size) / 2);
                                     break;
                                 }
-                            case EventType.Ask:
+                            case DataObjectType.Ask:
                                 {
                                     Bid bid = this.framework.DataManager.GetBid(tick.InstrumentId);
                                     if (bid == null)
@@ -567,11 +571,11 @@ namespace SmartQuant
                                     tick = new Tick(obj.dateTime, tick.ProviderId, tick.InstrumentId, (bid.Price + tick.Price) / 2.0, (bid.Size + tick.Size) / 2);
                                     break;
                                 }
-                            case EventType.Trade:
+                            case DataObjectType.Trade:
                                 i++;
                                 continue;
                         }
-                        if (obj.TypeId != EventType.Ask)
+                        if (obj.TypeId != DataObjectType.Ask)
                         {
                             item.Process(tick);
                             i++;
@@ -585,7 +589,7 @@ namespace SmartQuant
                             continue;
                         }
                     case BarInput.BidAsk:
-                        if (tick.TypeId != EventType.Trade)
+                        if (tick.TypeId != DataObjectType.Trade)
                         {
                             item.Process(tick);
                             i++;

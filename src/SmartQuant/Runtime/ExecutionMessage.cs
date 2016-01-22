@@ -166,6 +166,8 @@ namespace SmartQuant
         public override string ToString() => $"{DateTime} {Instrument.Symbol} {ExecType} {Side} {AvgPx}";
     }
 
+    public delegate void ExecutionReportEventHandler(object sender, ExecutionReport report);
+
     public enum ExecutionCommandType
     {
         Send,

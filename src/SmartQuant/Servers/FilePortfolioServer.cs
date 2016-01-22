@@ -41,16 +41,14 @@ namespace SmartQuant
         public override void Flush()
         {
             if (this.opened)
-            {
                 this.dataFile.Flush();
-            }
         }
 
         public override Portfolio Load(string name)
         {
             var portfolio = (Portfolio)this.dataFile.Get(name);
             if (portfolio != null)
-                this.Init(portfolio);
+                Init(portfolio);
             return portfolio;
         }
 

@@ -1,9 +1,12 @@
-﻿using System;
+﻿#pragma warning disable CS0067
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+
 
 namespace SmartQuant
 {
@@ -31,34 +34,54 @@ namespace SmartQuant
     public delegate void BidEventHandler(object sender, Bid bid);
     public delegate void AskEventHandler(object sender, Ask ask);
     public delegate void BarEventHandler(object sender, Bar bar);
+    public delegate void FillEventHandler(object sender, OnFill fill);
+
     #endregion
 
     public class EventDispatcher
     {
+
         private Framework framework;
-
-        private IdArray<IEventClient> clients = new IdArray<IEventClient>(1024);
-
-        private IdArray<List<IEventClient>> clientsByEventType = new IdArray<List<IEventClient>>(1024);
-
+        private IdArray<IEventClient> clients = new IdArray<IEventClient>();
+        private IdArray<List<IEventClient>> clientsByEventType = new IdArray<List<IEventClient>>();
         private EventQueue commandQueue;
 
         public PermanentQueue<Event> PermanentQueue { get; } = new PermanentQueue<Event>();
 
         public EventController Controller { get; set; }
 
-        public FrameworkEventHandler FrameworkCleared { get; set; }
-
-        public GroupEventHandler NewGroup { get; internal set; }
-
-        public GroupEventEventHandler NewGroupEvent { get; internal set; }
-
-        public GroupUpdateEventHandler NewGroupUpdate { get; internal set; }
+        public event FrameworkEventHandler FrameworkCleared;
+        public event GroupEventHandler NewGroup;
+        public event GroupEventEventHandler NewGroupEvent;
+        public event GroupUpdateEventHandler NewGroupUpdate;
 
         public event BidEventHandler Bid;
         public event AskEventHandler Ask;
+        public event TradeEventHandler Trade;
+        public event BarEventHandler BarOpen;
         public event BarEventHandler Bar;
+
+
+        public event ExecutionCommandEventHandler ExecutionCommand;
+        public event ExecutionReportEventHandler ExecutionReport;
+        public event OrderManagerClearedEventHandler OrderManagerCleared;
+        public event PositionEventHandler PositionOpened;
+        public event PositionEventHandler PositionChanged;
+        public event PositionEventHandler PositionClosed;
+        public event FillEventHandler Fill;
+        public event TransactionEventHandler Transaction;
+        public event PortfolioEventHandler PortfolioAdded;
+        public event PortfolioEventHandler PortfolioRemoved;
+        public event PortfolioEventHandler PortfolioParentChanged;
+
         public event AccountDataEventHandler AccountData;
+        public event HistoricalDataEventHandler HistoricalData;
+        public event HistoricalDataEndEventHandler HistoricalDataEnd;
+
+        public event InstrumentEventHandler InstrumentAdded;
+        public event InstrumentEventHandler InstrumentDeleted;
+        public event InstrumentDefinitionEventHandler InstrumentDefinition;
+        public event InstrumentDefinitionEndEventHandler InstrumentDefinitionEnd;
 
         public EventDispatcher()
         {
@@ -145,60 +168,4 @@ namespace SmartQuant
 
         }
     }
-
-    //public class EventDispatcherServer
-    //{
-    //    private int port = 1000;
-    //    private IdArray<EventDispatcherServerClient> clients = new IdArray<EventDispatcherServerClient>(1024);
-    //    private TcpListener listener;
-    //    private IPAddress ip = IPAddress.Any;
-
-    //    public EventDispatcherServer(int port, string path)
-    //    {
-    //        Console.WriteLine($"{DateTime.Now} Creating EventDispatcherServer");
-    //        this.port = port;
-    //    }
-
-    //    public void Start()
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-
-    //    public void Stop()
-    //    {
-    //       throw new NotImplementedException();
-    //    }
-    //}
-
-    //public class EventDispatcherServerClient
-    //{
-    //    private StreamerManager smanager = new StreamerManager();
-
-    //    public EventDispatcherServerClient()
-    //    {
-    //        this.smanager.AddDefaultStreamers();
-    //    }
-
-    //    public void Emit(Event e)
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-
-    //    public virtual void OnEvent(Event e)
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-
-    //    public void Start()
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-
-    //    public void Stop()
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-
-    //    public EventDispatcher Dispatcher { get; set; }
-    //}
 }

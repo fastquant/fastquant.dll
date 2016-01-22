@@ -36,15 +36,17 @@ namespace SmartQuant
             return new Quote(bid, ask);
         }
 
-        internal void method_0(Level2Snapshot l2s)
+        internal void OnLevel2(Level2Snapshot l2s)
         {
             Bids.Clear();
             Asks.Clear();
-            l2s.Bids.ToList().ForEach(b => Bids.Add(new Tick(b)));
-            l2s.Asks.ToList().ForEach(a => Asks.Add(new Tick(a)));
+            foreach (var b in l2s.Bids)
+                Bids.Add(new Tick(b));
+            foreach (var a in l2s.Asks)
+                Asks.Add(new Tick(a));
         }
 
-        internal void method_1(Level2Update l2u)
+        internal void OnLevel2(Level2Update l2u)
         {
             for (int i = 0; i < l2u.Entries.Length; i++)
             {

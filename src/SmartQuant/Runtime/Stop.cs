@@ -38,8 +38,9 @@ namespace SmartQuant
         protected internal Position position;
         protected internal Instrument instrument;
         protected internal bool connected;
-        protected internal StopType type;
-        protected internal StopMode mode;
+
+        protected internal StopType type = StopType.Trailing;
+        protected internal StopMode mode = StopMode.Percent;
         protected internal StopStatus status;
         protected internal double level;
         protected internal double initPrice;
@@ -51,112 +52,41 @@ namespace SmartQuant
         protected internal PositionSide side;
         protected internal DateTime creationTime;
         protected internal DateTime completionTime;
-        protected internal bool traceOnQuote;
-        protected internal bool traceOnTrade;
-        protected internal bool traceOnBar;
-        protected internal bool traceOnBarOpen;
-        protected internal bool trailOnOpen;
+        protected internal bool traceOnQuote = true;
+        protected internal bool traceOnTrade = true;
+        protected internal bool traceOnBar = true;
+        protected internal bool traceOnBarOpen = true;
+        protected internal bool trailOnOpen = true;
         protected internal bool trailOnHighLow;
-        protected internal long filterBarSize;
-        protected internal BarType filterBarType;
-        protected internal StopFillMode fillMode;
+        protected internal long filterBarSize = -1;
+        protected internal BarType filterBarType = BarType.Time;
+        protected internal StopFillMode fillMode = StopFillMode.Stop;
+
         protected internal ObjectTable fields;
 
-        public Strategy Strategy
-        {
-            get
-            {
-                return this.strategy;
-            }
-        }
+        public Strategy Strategy => this.strategy;
 
-        public Position Position
-        {
-            get
-            {
-                return this.position;
-            }
-        }
+        public Position Position => this.position;
 
-        public Instrument Instrument
-        {
-            get
-            {
-                return this.instrument;
-            }
-        }
+        public Instrument Instrument => this.instrument;
 
-        public bool Connected
-        {
-            get
-            {
-                return this.connected;
-            }
-        }
+        public bool Connected => this.connected;
 
-        public StopType Type
-        {
-            get
-            {
-                return this.type;
-            }
-        }
+        public StopType Type => this.type;
 
-        public StopMode Mode
-        {
-            get
-            {
-                return this.mode;
-            }
-        }
+        public StopMode Mode => this.mode;
 
-        public StopStatus Status
-        {
-            get
-            {
-                return this.status;
-            }
-        }
+        public StopStatus Status => this.status;
 
-        public double Level
-        {
-            get
-            {
-                return this.level;
-            }
-        }
+        public double Level => this.level;
 
-        public double Qty
-        {
-            get
-            {
-                return this.qty;
-            }
-        }
+        public double Qty => this.qty;
 
-        public PositionSide Side
-        {
-            get
-            {
-                return this.side;
-            }
-        }
+        public PositionSide Side => this.side;
 
-        public DateTime CreationTime
-        {
-            get
-            {
-                return this.creationTime;
-            }
-        }
+        public DateTime CreationTime => this.creationTime;
 
-        public DateTime CompletionTime
-        {
-            get
-            {
-                return this.completionTime;
-            }
-        }
+        public DateTime CompletionTime => this.completionTime;
 
         public bool TraceOnQuote
         {
@@ -266,15 +196,7 @@ namespace SmartQuant
             }
         }
 
-        public ObjectTable Fields
-        {
-            get
-            {
-                if (this.fields == null)
-                    this.fields = new ObjectTable();
-                return this.fields;
-            }
-        }
+        public ObjectTable Fields => this.fields = this.fields ?? new ObjectTable();
 
         public Stop(Strategy strategy, Position position, double level, StopType type, StopMode mode)
             :this(strategy, position, DateTime.MinValue, level, type, mode)
@@ -288,15 +210,6 @@ namespace SmartQuant
 
         private Stop(Strategy strategy, Position position, DateTime time, double level = 0, StopType type = StopType.Trailing, StopMode mode = StopMode.Percent)
         {
-            TraceOnQuote = true;
-            TraceOnTrade = true;
-            TraceOnBar = true;
-            TraceOnBarOpen = true;
-            TrailOnOpen = true;
-            FilterBarSize = -1;
-            FilterBarType = BarType.Time;
-            FillMode = StopFillMode.Stop;
-
             this.strategy = strategy;
             this.position = position;
             this.instrument = position.Instrument;
@@ -307,9 +220,8 @@ namespace SmartQuant
             this.creationTime = strategy.framework.Clock.DateTime;
             this.completionTime = time;
             this.stopPrice = GetInstrumentPrice();
-            if (time == null)
-            {
-            }
+            if (this.completionTime > this.creationTime)
+                strategy.framework.Clock.AddReminder(new Reminder(new ReminderCallback(this.method_9), this.completionTime, null));
         }
 
         public void Cancel()
@@ -320,10 +232,7 @@ namespace SmartQuant
             OnStopStatusChange(StopStatus.Canceled);
         }
 
-        protected virtual double GetPrice(double price)
-        {
-            return price;
-        }
+        protected virtual double GetPrice(double price) => price;
 
         protected virtual double GetInstrumentPrice()
         {
@@ -361,31 +270,123 @@ namespace SmartQuant
             OnStopStatusChange(StopStatus.Executed);
         }
 
-        internal void method_6(Ask ask)
+        internal void OnBid(Bid bid)
         {
-            if (TraceOnQuote && this.side == PositionSide.Short)
+            if (TraceOnQuote && Side == PositionSide.Long)
             {
-                this.currPrice = GetPrice(ask.Price);
-                this.fillPrice = this.currPrice;
-                this.trailPrice = this.currPrice;
+                this.fillPrice = this.trailPrice = this.currPrice = GetPrice(bid.Price);
+                this.method_1();
+            }
+        }
+
+        internal void OnAsk(Ask ask)
+        {
+            if (TraceOnQuote && Side == PositionSide.Short)
+            {
+                this.fillPrice = this.trailPrice = this.currPrice = GetPrice(ask.Price);
+                this.method_1();
+            }
+        }
+
+        internal void OnTrade(Trade trade)
+        {
+            if (TraceOnTrade)
+            {
+                this.fillPrice = this.trailPrice = this.currPrice = GetPrice(trade.Price);
+                this.method_1();
+            }
+        }
+
+        internal void OnBarOpen(Bar bar)
+        {
+            if (TraceOnBar && TraceOnBarOpen && (FilterBarSize < 0 || (FilterBarSize == bar.Size && FilterBarType == BarType.Time)))
+            {
+                this.fillPrice = this.currPrice = GetPrice(bar.Open);
+                if (TrailOnOpen)
+                    this.trailPrice = GetPrice(bar.Open);
+                this.method_1();
+            }
+        }
+
+        internal void OnBar(Bar bar)
+        {
+            if (TraceOnBar && (FilterBarSize < 0 || (FilterBarSize == bar.Size && FilterBarType == BarType.Time)))
+            {
+                this.trailPrice = GetPrice(bar.Close);
+                switch (Side)
+                {
+                    case PositionSide.Long:
+                        this.fillPrice = this.currPrice = GetPrice(bar.Low);
+                        if (this.trailOnHighLow)
+                            this.trailPrice = GetPrice(bar.High);
+                        break;
+                    case PositionSide.Short:
+                        this.fillPrice = this.currPrice = GetPrice(bar.High);
+                        if (this.trailOnHighLow)
+                            this.trailPrice = GetPrice(bar.Low);
+                        break;
+                }
+                switch (FillMode)
+                {
+                    case StopFillMode.Close:
+                        this.fillPrice = GetPrice(bar.Close);
+                        break;
+                    case StopFillMode.Stop:
+                        this.fillPrice = this.stopPrice;
+                        break;
+                }
                 this.method_1();
             }
         }
 
         private void method_1()
         {
-            throw new NotImplementedException();
+            if (this.currPrice == 0)
+                return;
+
+            switch (Side)
+            {
+                case PositionSide.Long:
+                    if (this.currPrice <= this.stopPrice)
+                    {
+                        Disconnect();
+                        this.method_8(StopStatus.Executed);
+                        return;
+                    }
+                    if (Type == StopType.Trailing && this.trailPrice > this.initPrice)
+                    {
+                        this.stopPrice = GetStopPrice();
+                        return;
+                    }
+                    break;
+                case PositionSide.Short:
+                    if (this.currPrice >= this.stopPrice)
+                    {
+                        this.Disconnect();
+                        this.method_8(StopStatus.Executed);
+                        return;
+                    }
+                    if (Type == StopType.Trailing && this.trailPrice < this.initPrice)
+                    {
+                        this.stopPrice = this.GetStopPrice();
+                    }
+                    break;
+                default:
+                    return;
+            }
         }
 
-        internal void method_5(Bid bid)
+        private void method_9(DateTime dateTime, object obj)
         {
-            if (this.traceOnQuote && this.side == PositionSide.Long)
-            {
-                this.currPrice = this.GetPrice(bid.Price);
-                this.fillPrice = this.currPrice;
-                this.trailPrice = this.currPrice;
-                this.method_1();
-            }
+            this.stopPrice = GetInstrumentPrice();
+            this.method_8(StopStatus.Executed);
+        }
+
+        private void method_8(StopStatus stopStatus_0)
+        {
+            this.status = stopStatus_0;
+            this.completionTime = this.strategy.framework.Clock.DateTime;
+            this.strategy.EmitStopStatusChanged(this);
         }
     }
 }

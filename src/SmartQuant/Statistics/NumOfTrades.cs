@@ -2,7 +2,7 @@
 {
     public class NumOfTrades : PortfolioStatisticsItem
     {
-        public override void OnRoundTrip(TradeInfo trade)
+        protected internal override void OnRoundTrip(TradeInfo trade)
         {
             if (trade.IsLong)
             {
@@ -27,7 +27,7 @@
 
     public class NumOfLossTrades : PortfolioStatisticsItem
     {
-        public override void OnRoundTrip(TradeInfo trade)
+        protected internal override void OnRoundTrip(TradeInfo trade)
         {
             if (!trade.IsWinning)
             {
@@ -51,7 +51,7 @@
 
     public class NumOfWinTrades : PortfolioStatisticsItem
     {
-        public override void OnRoundTrip(TradeInfo trade)
+        protected internal override void OnRoundTrip(TradeInfo trade)
         {
             if (trade.IsWinning)
             {
@@ -87,13 +87,13 @@
 
         protected double totalWinTrades;
 
-        public override void OnInit()
+        protected internal override void OnInit()
         {
             Subscribe(PortfolioStatisticsType.NumOfWinTrades);
             Subscribe(PortfolioStatisticsType.NumOfLossTrades);
         }
 
-        public override void OnStatistics(PortfolioStatisticsItem statistics)
+        protected internal override void OnStatistics(PortfolioStatisticsItem statistics)
         {
             if (statistics.Type == PortfolioStatisticsType.NumOfLossTrades)
             {
@@ -177,13 +177,13 @@
 
         protected double totalWinTrades;
 
-        public override void OnInit()
+        protected internal override void OnInit()
         {
             Subscribe(PortfolioStatisticsType.NumOfWinTrades);
             Subscribe(PortfolioStatisticsType.NumOfLossTrades);
         }
 
-        public override void OnStatistics(PortfolioStatisticsItem statistics)
+        protected internal override void OnStatistics(PortfolioStatisticsItem statistics)
         {
             if (statistics.Type == PortfolioStatisticsType.NumOfWinTrades)
             {

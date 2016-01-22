@@ -1,5 +1,8 @@
 ﻿using SmartQuant.Controls.BarChart;
 using SmartQuant.FinChart;
+using SmartQuant.Controls.Orders;
+using SmartQuant.Controls.Data.Account;
+
 using System.Windows.Forms;
 
 namespace Demo
@@ -152,6 +155,8 @@ namespace Demo
         private BarChart2 barChart2;
         private Chart chart3;
         private TabPage tabPage3;
+        private OrderManagerWindow orderManager;
+        private AccountData accountData;
     }
 }
 
