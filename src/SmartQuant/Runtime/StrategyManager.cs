@@ -244,10 +244,10 @@ namespace SmartQuant
         internal void SetParametersGroup()
         {
             var group = FindOrCreateGroup("StrategyParameters");
-            CorrectParametersName(Strategy, "", group);
+            ConstructParametersName(Strategy, "", group);
         }
 
-        private void CorrectParametersName(Strategy strategy, string name, Group group)
+        private void ConstructParametersName(Strategy strategy, string name, Group group)
         {
             name += string.IsNullOrEmpty(name) ? strategy.Name : "\\" + strategy.Name;
             var parameters = strategy.GetParameters();
@@ -255,7 +255,7 @@ namespace SmartQuant
             parameters.DateTime = DateTime.Now;
             this.framework.EventServer.OnLog(new GroupEvent(parameters, group));
             foreach (Strategy s in strategy.Strategies)
-                CorrectParametersName(s, name, group);
+                ConstructParametersName(s, name, group);
         }
 
         private Group FindOrCreateGroup(string name)

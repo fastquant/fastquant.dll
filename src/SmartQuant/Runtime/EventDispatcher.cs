@@ -35,6 +35,20 @@ namespace SmartQuant
     public delegate void AskEventHandler(object sender, Ask ask);
     public delegate void BarEventHandler(object sender, Bar bar);
     public delegate void FillEventHandler(object sender, OnFill fill);
+    public delegate void AccountReportEventHandler(object sender, AccountReport report);
+    public delegate void SimulatorProgressEventHandler(object sender, SimulatorProgressEventArgs args);
+    public delegate void StrategyEventHandler(object sender, StrategyEventArgs args);
+
+    public class SimulatorProgressEventArgs : EventArgs
+    {
+        public long Count { get; }
+        public int Percent { get; }
+        public SimulatorProgressEventArgs(long count, int percent)
+        {
+            Count = count;
+            Percent = percent;
+        }
+    }
 
     #endregion
 
@@ -61,20 +75,21 @@ namespace SmartQuant
         public event BarEventHandler BarOpen;
         public event BarEventHandler Bar;
 
-
         public event ExecutionCommandEventHandler ExecutionCommand;
         public event ExecutionReportEventHandler ExecutionReport;
         public event OrderManagerClearedEventHandler OrderManagerCleared;
         public event PositionEventHandler PositionOpened;
-        public event PositionEventHandler PositionChanged;
         public event PositionEventHandler PositionClosed;
+        public event PositionEventHandler PositionChanged;
         public event FillEventHandler Fill;
         public event TransactionEventHandler Transaction;
+
         public event PortfolioEventHandler PortfolioAdded;
         public event PortfolioEventHandler PortfolioRemoved;
         public event PortfolioEventHandler PortfolioParentChanged;
 
         public event AccountDataEventHandler AccountData;
+        public event AccountReportEventHandler AccountReport;
         public event HistoricalDataEventHandler HistoricalData;
         public event HistoricalDataEndEventHandler HistoricalDataEnd;
 
@@ -82,6 +97,24 @@ namespace SmartQuant
         public event InstrumentEventHandler InstrumentDeleted;
         public event InstrumentDefinitionEventHandler InstrumentDefinition;
         public event InstrumentDefinitionEndEventHandler InstrumentDefinitionEnd;
+
+        public event EventHandler EventManagerPaused;
+        public event EventHandler EventManagerResumed;
+        public event EventHandler EventManagerStep;
+        public event EventHandler EventManagerStarted;
+        public event EventHandler EventManagerStopped;
+
+        public event SimulatorProgressEventHandler SimulatorProgress;
+        public event EventHandler SimulatorStop;
+
+        public event StrategyEventHandler StrategyAdded;
+
+        public event ProviderEventHandler ProviderAdded;
+        public event ProviderEventHandler ProviderRemoved;
+        public event ProviderErrorEventHandler ProviderError;
+        public event ProviderEventHandler ProviderConnected;
+        public event ProviderEventHandler ProviderDisconnected;
+        public event ProviderEventHandler ProviderStatusChanged;
 
         public EventDispatcher()
         {

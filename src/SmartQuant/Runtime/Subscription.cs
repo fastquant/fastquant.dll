@@ -44,20 +44,22 @@ namespace SmartQuant
         }
     }
 
+    /// <summary>
+    /// Track instruments subscription with a DataProvider.
+    /// No connection action involved. mainly used in Strategy or its subclasses
+    /// </summary>
     public class SubscriptionList : IEnumerable<Subscription>
     {
         private List<Subscription> subscriptions = new List<Subscription>();
-
-        private IdArray<IdArray<int>> byIIdAndPId = new IdArray<IdArray<int>>();
-
-        private IdArray<int> byIId = new IdArray<int>();
+        private IdArray<IdArray<int>> subscriptionsByIIdAndPId = new IdArray<IdArray<int>>();
+        private IdArray<int> subscriptionsByIId = new IdArray<int>();
 
         public int Count => this.subscriptions.Count;
 
         public void Clear()
         {
             this.subscriptions.Clear();
-            this.byIIdAndPId.Clear();
+            this.subscriptionsByIIdAndPId.Clear();
         }
 
         public void Add(Instrument instrument, IDataProvider provider) => Add(new Subscription(instrument, provider, -1));
@@ -65,13 +67,13 @@ namespace SmartQuant
         public void Add(Subscription subscription)
         {
             var iId = subscription.Instrument.Id;
-            this.byIIdAndPId[iId] = this.byIIdAndPId[iId] ?? new IdArray<int>();
+            this.subscriptionsByIIdAndPId[iId] = this.subscriptionsByIIdAndPId[iId] ?? new IdArray<int>();
 
-            if (this.byIIdAndPId[iId][subscription.ProviderId] == 0)
+            if (this.subscriptionsByIIdAndPId[iId][subscription.ProviderId] == 0)
                 this.subscriptions.Add(subscription);
 
-            this.byIId[iId] += 1;
-            this.byIIdAndPId[iId][subscription.ProviderId] += 1;
+            this.subscriptionsByIId[iId] += 1;
+            this.subscriptionsByIIdAndPId[iId][subscription.ProviderId] += 1;
         }
 
         public void Remove(Subscription subscription) => Remove(subscription.Instrument, subscription.Provider);
@@ -80,15 +82,15 @@ namespace SmartQuant
 
         public void Remove(int instrumentId, int providerId)
         {
-            if (this.byIIdAndPId[instrumentId] == null)
+            if (this.subscriptionsByIIdAndPId[instrumentId] == null)
                 return;
-            if (this.byIIdAndPId[instrumentId][providerId] == 0)
+            if (this.subscriptionsByIIdAndPId[instrumentId][providerId] == 0)
                 return;
 
-            this.byIIdAndPId[instrumentId][providerId] -= 1;
-            this.byIId[instrumentId] -= 1;
+            this.subscriptionsByIIdAndPId[instrumentId][providerId] -= 1;
+            this.subscriptionsByIId[instrumentId] -= 1;
 
-            if (this.byIIdAndPId[instrumentId][providerId] == 0)
+            if (this.subscriptionsByIIdAndPId[instrumentId][providerId] == 0)
             {
                 var i = this.subscriptions.FindIndex(s => s.InstrumentId == instrumentId && s.ProviderId == providerId);
                 if (i != -1)
@@ -100,19 +102,24 @@ namespace SmartQuant
 
         public bool Contains(int instrumentId) => Contains(instrumentId, 0);
 
-        public bool Contains(int instrumentId, int providerId) => this.byIIdAndPId[instrumentId] != null && this.byIIdAndPId[instrumentId][providerId] != 0;
+        public bool Contains(int instrumentId, int providerId) => this.subscriptionsByIIdAndPId[instrumentId] != null && this.subscriptionsByIIdAndPId[instrumentId][providerId] != 0;
 
         public bool Contains(Instrument instrument, IDataProvider provider) => Contains(instrument.Id, provider?.Id ?? 0);
 
         public int GetCount(Instrument instrument, IDataProvider provider) => GetCount(instrument.Id, provider.Id);
 
-        public int GetCount(int instrumentId, int providerId) => this.byIIdAndPId[instrumentId]?[providerId] ?? 0;
+        public int GetCount(int instrumentId, int providerId) => this.subscriptionsByIIdAndPId[instrumentId]?[providerId] ?? 0;
 
         public IEnumerator<Subscription> GetEnumerator() => this.subscriptions.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 
+
+    /// <summary>
+    /// Manage the Subscription with DataProvider in Framework.
+    /// Track each instrument with a ref counter
+    /// </summary>
     public class SubscriptionManager
     {
         private Framework framework;
@@ -174,20 +181,20 @@ namespace SmartQuant
                 this.submap[provider.Id] = dictionary;
             }
             int count = 0;
-            bool isFirstTime = false;
+            bool needSubcribe = false;
             if (!dictionary.TryGetValue(instrument, out count))
             {
-                isFirstTime = true;
+                needSubcribe = true;
                 count = 1;
             }
             else
             {
                 if (count == 0)
-                    isFirstTime = true;
+                    needSubcribe = true;
                 count++;
             }
             dictionary[instrument] = count;
-            if (isFirstTime)
+            if (needSubcribe)
                 provider.Subscribe(instrument);
         }
 
@@ -241,28 +248,26 @@ namespace SmartQuant
                 return;
             }
             this.submap[provider.Id][instrument] -= 1;
-            if (this.submap[(int)provider.Id][instrument] == 0)
+            if (this.submap[provider.Id][instrument] == 0)
                 provider.Unsubscribe(instrument);
         }
 
         public void Unsubscribe(IDataProvider provider, InstrumentList instruments)
         {
-            var instrumentList = new InstrumentList();
+            var list = new InstrumentList();
             for (int i = 0; i < instruments.Count; i++)
             {
-                Instrument byIndex = instruments.GetByIndex(i);
-                if (this.submap.ContainsKey((int)provider.Id) && this.submap[provider.Id][byIndex] != 0)
+                var instrument = instruments.GetByIndex(i);
+                if (this.submap.ContainsKey(provider.Id) && this.submap[provider.Id][instrument] != 0)
                 {
-                    Dictionary<Instrument, int> dictionary;
-                    Instrument key;
-                    (dictionary = this.submap[provider.Id])[key = byIndex] = dictionary[key] - 1;
-                    if (this.submap[provider.Id][byIndex] == 0)
-                        instrumentList.Add(byIndex);
+                    this.submap[provider.Id][instrument] -= 1;
+                    if (this.submap[provider.Id][instrument] == 0)
+                        list.Add(instrument);
                 }
                 else
-                    Console.WriteLine($"SubscriptionManager::Unsubscribe Error. Instrument has no subscriptions {byIndex.Symbol} on data provider {provider.Name}");
+                    Console.WriteLine($"SubscriptionManager::Unsubscribe Error. Instrument has no subscriptions {instrument.Symbol} on data provider {provider.Name}");
             }
-            provider.Unsubscribe(instrumentList);
+            provider.Unsubscribe(list);
         }
 
         internal void OnProviderConnected(IDataProvider dataProvider)

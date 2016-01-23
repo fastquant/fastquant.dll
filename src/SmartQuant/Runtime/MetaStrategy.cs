@@ -4,12 +4,9 @@ namespace SmartQuant
 {
     public class MetaStrategy : Strategy
     {
-        internal List<Strategy> list_1 = new List<Strategy>();
-
+        private List<Strategy> list_1 = new List<Strategy>();
         private IdArray<List<Strategy>> idArray_3 = new IdArray<List<Strategy>>();
-
         private IdArray<Strategy> idArray_4 = new IdArray<Strategy>();
-
         private IdArray<Strategy> idArray_5 = new IdArray<Strategy>();
 
         public MetaStrategy(Framework framework, string name) : base(framework, name)
@@ -38,6 +35,17 @@ namespace SmartQuant
                     Instruments.Add(current);
                 }
             }
+        }
+
+        internal override void EmitStrategyStart()
+        {
+            foreach (Strategy strategy in this.list_1)
+            {
+                this.idArray_4[strategy.Id] = strategy;
+                this.idArray_5[strategy.Portfolio.Id] = strategy;
+                strategy.EmitStrategyStart();
+            }
+            base.EmitStrategyStart();
         }
     }
 

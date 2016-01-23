@@ -71,7 +71,6 @@ namespace SmartQuant
             this.gates[EventType.Level2Update] = new Delegate(OnLevel2Update);            
             this.gates[EventType.ExecutionReport] = new Delegate(OnExecutionReport);
             this.gates[EventType.Reminder] = new Delegate(OnReminder);
-            this.gates[EventType.ProviderError] = new Delegate(OnProviderError);
             this.gates[EventType.Fundamental] = new Delegate(OnFundamental);
             this.gates[EventType.News] = new Delegate(OnNews);
             this.gates[EventType.Group] = new Delegate(OnGroup);
@@ -106,6 +105,7 @@ namespace SmartQuant
             this.gates[EventType.OnPropertyChanged] = new Delegate(OnPropertyChanged);
             this.gates[EventType.OnException] = new Delegate(OnException);
             this.gates[EventType.AccountReport] = new Delegate(OnAccountReport);
+            this.gates[EventType.ProviderError] = new Delegate(OnProviderError);
             this.gates[EventType.OnProviderConnected] = new Delegate(OnProviderConnected);
             this.gates[EventType.OnProviderDisconnected] = new Delegate(OnProviderDisconnected);
             this.gates[EventType.OnSimulatorStart] = new Delegate(OnSimulatorStart);

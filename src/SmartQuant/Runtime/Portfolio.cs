@@ -149,7 +149,7 @@ namespace SmartQuant
 
         public double GetAccountValue(byte currencyId) => Account.GetValue(currencyId);
 
-        internal Position Add(Instrument instrument)
+        internal Position GetOrCreatePosition(Instrument instrument)
         {
             var position = PositionsByInstrumentId[instrument.Id];
             if (position == null)
@@ -201,18 +201,6 @@ namespace SmartQuant
         {
             var position = PositionsByInstrumentId[instrument.Id];
             return position != null && position.Side == PositionSide.Short && position.Qty == qty;
-        }
-
-        internal Position GetOrCreatePosition(Instrument instrument_0)
-        {
-            var position = PositionsByInstrumentId[instrument_0.Id];
-            if (position == null)
-            {
-                position = new Position(this, instrument_0);
-                PositionsByInstrumentId[instrument_0.Id] = position;
-                Positions.Add(position);
-            }
-            return position;
         }
 
         internal void OnExecutionReport(ExecutionReport report, bool queued = true)
@@ -346,6 +334,7 @@ namespace SmartQuant
         public PortfolioList()
         {
         }
+
         public bool Contains(int id) => this.list.Contains(id);
 
         public bool Contains(string name) => this.list.Contains(name);

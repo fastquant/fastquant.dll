@@ -8,17 +8,12 @@ using System.Reflection;
 
 namespace SmartQuant
 {
+    [NotOriginal]
     class GetByList<T> : IEnumerable<T>
     {
-        //private static MethodInfo nameMethodInfo;
-        //private static MethodInfo idMethodInfo;
-
         private Dictionary<string, T> dictionary;
         private IdArray<T> array;
         private List<T> list;
-
-        //private Func<T, string> nameFunc;
-        //private Func<T, int> idFunc;
 
         public int Count => this.list.Count;
 
@@ -36,19 +31,6 @@ namespace SmartQuant
                 this.list[index] = value;
             }
         }
-
-        //static GetByList()
-        //{
-        //    var t = typeof(T);
-        //    nameMethodInfo = t.GetMethod("GetName", BindingFlags.NonPublic | BindingFlags.Instance);
-        //    idMethodInfo = t.GetProperty("Id")?.GetGetMethod() ?? t.GetMethod("GetId", BindingFlags.NonPublic | BindingFlags.Instance);
-        //}
-
-        //public GetByList(Func<T, string> nameFunc = null, Func<T, int> idFunc= null)
-        //{
-        //    this.nameFunc = nameFunc;
-        //    this.idFunc = idFunc;
-        //}
 
         public GetByList(string idPropName, string namePropName, int size = 1024)
         {

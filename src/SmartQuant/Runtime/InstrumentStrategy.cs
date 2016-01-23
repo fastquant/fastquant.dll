@@ -20,7 +20,7 @@ namespace SmartQuant
         {
             get
             {
-                return DetermineDataProvider(this, Instrument);
+                return DetermineDataProvider(this, Instrument); // called with not-non args
             }
             set
             {
@@ -34,7 +34,7 @@ namespace SmartQuant
         {
             get
             {
-                return DetermineExecutionProvider(Instrument);
+                return DetermineExecutionProvider(Instrument); // called with not-non args
             }
             set
             {
@@ -85,30 +85,29 @@ namespace SmartQuant
 
         public bool HasShortPosition(double qty) => base.HasShortPosition(Instrument, qty);
 
-
-        //public void AddInstance(Instrument instrument, InstrumentStrategy strategy)
-        //{
-        //    strategy.Instrument = instrument;
-        //    strategy.Instruments.Add(instrument);
-        //    strategy.Portfolio.Add(instrument);
-        //    strategy.raiseEvents = true;
-        //    strategy.SetRawDataProvider(this.rawDataProvider);
-        //    strategy.SetRawExecutionProvider(this.rawExecutionProvider);
-        //    this.method_8(strategy);
-        //    if (Instruments.GetById(instrument.Id) == null)
-        //        Instruments.Add(instrument);
-        //    strategy.Status = StrategyStatus.Running;
-        //    strategy.OnStrategyInit();
-        //    strategy.OnStrategyStart();
-        //}
+        public void AddInstance(Instrument instrument, InstrumentStrategy strategy)
+        {
+            strategy.Instrument = instrument;
+            strategy.Instruments.Add(instrument);
+            strategy.Portfolio.GetOrCreatePosition(instrument);
+            strategy.raiseEvents = true;
+            strategy.SetRawDataProvider(this.rawDataProvider);
+            strategy.SetRawExecutionProvider(this.rawExecutionProvider);
+            InsertStrategy(strategy);
+            if (Instruments.GetById(instrument.Id) == null)
+                Instruments.Add(instrument);
+            strategy.Status = StrategyStatus.Running;
+            strategy.OnStrategyInit();
+            strategy.OnStrategyStart();
+        }
 
         internal override void EmitStrategyStart()
         {
             Status = StrategyStatus.Running;
-            foreach(var s in Strategies)
+            foreach (var s in Strategies)
             {
                 s.Status = StrategyStatus.Running;
-                base.method_3(s, s.Instruments, s.Id);
+                PapareStrategyForStartRecursively(s, s.Instruments, s.Id);
                 s.OnStrategyStart();
             }
         }
@@ -136,27 +135,16 @@ namespace SmartQuant
             strategy.Instruments.Add(instrument);
             strategy.SubscriptionList.Add(instrument, DetermineDataProvider(this, instrument));
             strategy.Portfolio = GetOrCreatePortfolio(strategy.Name);
-            strategy.Portfolio.Add(instrument);
+            strategy.Portfolio.GetOrCreatePosition(instrument);
             strategy.raiseEvents = true;
             strategy.IsInstance = true;
             strategy.SetRawDataProvider(DataProvider);
             strategy.SetRawExecutionProvider(ExecutionProvider);
-
-            // Set Parameters for substrategy
-            var fields = strategy.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            // TODO: code1 vs code2
-            // code 1
-            foreach (var f in fields)
-                if (f.GetCustomAttributes(typeof(ParameterAttribute), true).Any())
-                    f.SetValue(strategy, f.GetValue(this));
-            // code 2
-            //foreach (var f in fields.TakeWhile(f => f.GetCustomAttributes(typeof(ParameterAttribute), true).Any()))
-            //    f.SetValue(strategy, f.GetValue(this));
-
+            CopyParameterValues(strategy);
             return strategy;
         }
 
-        private void method_8(InstrumentStrategy strategy)
+        private void InsertStrategy(InstrumentStrategy strategy)
         {
             AddStrategy(strategy, false);
         }

@@ -1,7 +1,7 @@
 using System;
 using SmartQuant;
 using System.IO;
-
+using System.Diagnostics;
 
 namespace HelloWorldSample 
 {
@@ -9,15 +9,12 @@ namespace HelloWorldSample
 	{
 		public static void Main() 
 		{
-            var ms =new MemoryStream();
-            var wr = new BinaryWriter(ms);
-            wr.Write("FKey");
-            Console.WriteLine(ms.ToArray().Length);
-            var f = Framework.Current;
-            var ds = f.DataManager.GetDataSeries("AAPL.0.Bid");
-            ds.Dump();
-            for (long i = 0; i < ds.Count; i++)
-                Console.WriteLine(ds.Get(i));
+            Test1();
+            //var f = Framework.Current;
+            //var ds = f.DataManager.GetDataSeries("AAPL.0.Bid");
+            //ds.Dump();
+            //for (long i = 0; i < ds.Count; i++)
+            //    Console.WriteLine(ds.Get(i));
 
             // DumpInstrument();
             Console.ReadLine();
@@ -48,6 +45,30 @@ namespace HelloWorldSample
             var f = Framework.Current;
             foreach (var i in f.InstrumentManager.Instruments)
                 Console.WriteLine(i.Symbol);
+        }
+
+        static void Test1()
+        {
+            var during = new Stopwatch();
+            var count = 300000000;
+            object b = null;
+            during.Start();
+            for(int i=0;i<count;i++ )
+            {
+                b = b ?? new object();
+            }
+            during.Stop();
+            Console.WriteLine(during.Elapsed);
+
+            during.Restart();
+            for (int i = 0; i < count; i++)
+            {
+                if (b == null)
+                    b = new object();
+               // b = b ?? new object();
+            }
+            during.Stop();
+            Console.WriteLine(during.Elapsed);
         }
 	}
 }

@@ -190,11 +190,22 @@ namespace SmartQuant
         {
             this.framework.EventManager.OnEvent(new Level2Snapshot(snapshot) { ProviderId = (byte)Id });
         }
+
+        [NotOriginal]
+        protected internal byte GetProviderId() => IsInstance ? (byte)Parent.Id : (byte)Id;
+
+        [NotOriginal]
+        protected internal void EmitTickWithProviderId(Tick tick, byte providerId)
+        {
+            // create a new instance?
+            tick.ProviderId = providerId;
+            this.framework.EventManager.OnEvent(tick);
+        }
     }
 
     public class SellSideInstrumentStrategy : SellSideStrategy
     {
-        public Instrument Instrument { get; internal set; }
+        protected Instrument Instrument { get; set; }
 
         [Parameter, Category("Information"), ReadOnly(true)]
         public override string Type => "SellSideInstrumentStrategy";
@@ -213,9 +224,11 @@ namespace SmartQuant
                 Portfolio = GetOrCreatePortfolio(Name);
                 if (!IsInstance)
                 {
-                    foreach (Instrument instrument in Instruments)
-                        if (this.subStrategiesByInstrument[instrument.Id] == null)
-                            CreateSubSellSideInstrumentStrategy(instrument, true, false);
+                    foreach (var instrument in Instruments.TakeWhile(i => this.childrenByInstrument[i.Id] == null))
+                        CreateChildSellSideInstrumentStrategy(instrument, true, false);
+                    //foreach (var instrument in Instruments)
+                    //    if (this.childrenStrategiesByInstrument[instrument.Id] == null)
+                    //        CreateSubSellSideInstrumentStrategy(instrument, true, false);
                 }
                 this.initialized = true;
             }
@@ -228,9 +241,9 @@ namespace SmartQuant
         }
         public override void Subscribe(Instrument instrument)
         {
-            if (this.subStrategiesByInstrument[instrument.Id] == null)
+            if (this.childrenByInstrument[instrument.Id] == null)
             {
-                var subStrategy = CreateSubSellSideInstrumentStrategy(instrument, false, true);
+                var subStrategy = CreateChildSellSideInstrumentStrategy(instrument, false, true);
                 subStrategy.OnStrategyStart();
             }
         }
@@ -243,16 +256,16 @@ namespace SmartQuant
         }
         public override void Unsubscribe(Instrument instrument)
         {
-            if (this.subStrategiesByInstrument[instrument.Id] != null)
+            if (this.childrenByInstrument[instrument.Id] != null)
             {
-                var subStrategy = this.subStrategiesByInstrument[instrument.Id].First.Data as SellSideInstrumentStrategy;
+                var subStrategy = this.childrenByInstrument[instrument.Id].First.Data as SellSideInstrumentStrategy;
                 subStrategy.OnUnsubscribe(instrument);
             }
         }
 
         public override void Send(ExecutionCommand command)
         {
-            var strategy = this.subStrategiesByInstrument[command.Order.Instrument.Id].First.Data as SellSideInstrumentStrategy;
+            var strategy = this.childrenByInstrument[command.Order.Instrument.Id].First.Data as SellSideInstrumentStrategy;
             switch (command.Type)
             {
                 case ExecutionCommandType.Send:
@@ -273,43 +286,43 @@ namespace SmartQuant
 
         public override void EmitBid(Bid bid)
         {
-            var providerId = IsInstance ? (byte)Parent.Id : (byte)Id;
+            var providerId = GetProviderId();
             this.framework.EventManager.OnEvent(new Bid(bid) { ProviderId = providerId });
         }
 
         public override void EmitBid(DateTime dateTime, int instrumentId, double price, int size)
         {
-            var providerId = IsInstance ? (byte)Parent.Id : (byte)Id;
+            var providerId = GetProviderId();
             this.framework.EventManager.OnEvent(new Bid(dateTime, providerId, instrumentId, price, size));
         }
 
         public override void EmitAsk(Ask ask)
         {
-            var providerId = IsInstance ? (byte)Parent.Id : (byte)Id;
+            var providerId = GetProviderId();
             this.framework.EventManager.OnEvent(new Ask(ask) { ProviderId = providerId });
         }
 
         public override void EmitAsk(DateTime dateTime, int instrumentId, double price, int size)
         {
-            var providerId = IsInstance ? (byte)Parent.Id : (byte)Id;
+            var providerId = GetProviderId();
             this.framework.EventManager.OnEvent(new Ask(dateTime, providerId, instrumentId, price, size));
         }
 
         public override void EmitTrade(Trade trade)
         {
-            var providerId = IsInstance ? (byte)Parent.Id : (byte)Id;
+            var providerId = GetProviderId();
             this.framework.EventManager.OnEvent(new Trade(trade) { ProviderId = providerId });
         }
 
         public override void EmitTrade(DateTime dateTime, int instrumentId, double price, int size)
         {
-            var providerId = IsInstance ? (byte)Parent.Id : (byte)Id;
+            var providerId = GetProviderId();
             this.framework.EventManager.OnEvent(new Trade(dateTime, providerId, instrumentId, price, size));
         }
 
         #endregion
 
-        private SellSideInstrumentStrategy CreateSubSellSideInstrumentStrategy(Instrument instrument, bool bool_4, bool bool_5)
+        private SellSideInstrumentStrategy CreateChildSellSideInstrumentStrategy(Instrument instrument, bool bool_4, bool bool_5)
         {
             var name = $"{Name}({instrument}";
             var strategy = (SellSideInstrumentStrategy)Activator.CreateInstance(GetType(), new object[] { this.framework, name });
@@ -332,17 +345,8 @@ namespace SmartQuant
 
         private void method_9(Strategy strategy, Instrument instrument)
         {
-            LinkedList<Strategy> linkedList;
-            if (this.subStrategiesByInstrument[instrument.Id] == null)
-            {
-                linkedList = new LinkedList<Strategy>();
-                this.subStrategiesByInstrument[instrument.Id] = linkedList;
-            }
-            else
-            {
-                linkedList = this.subStrategiesByInstrument[instrument.Id];
-            }
-            linkedList.Add(strategy);
+            var list = GetOrCreateChildrenStrategiesForInstrumennt(instrument);
+            list.Add(strategy);
         }
 
         private void SetSubStrategyParameters(SellSideInstrumentStrategy strategy)
@@ -351,6 +355,22 @@ namespace SmartQuant
             foreach (var f in fields)
                 if (f.GetCustomAttributes(typeof(ParameterAttribute), true).Any())
                     f.SetValue(strategy, f.GetValue(this));
+        }
+
+        [NotOriginal]
+        private LinkedList<Strategy> GetOrCreateChildrenStrategiesForInstrumennt(Instrument instrument)
+        {
+            LinkedList<Strategy> list;
+            if (this.childrenByInstrument[instrument.Id] == null)
+            {
+                list = new LinkedList<Strategy>();
+                this.childrenByInstrument[instrument.Id] = list;
+            }
+            else
+            {
+                list = this.childrenByInstrument[instrument.Id];
+            }
+            return list;
         }
     }
 }
