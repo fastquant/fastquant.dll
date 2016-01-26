@@ -185,7 +185,7 @@ namespace SmartQuant
         static CurrencyId()
         {
             mapping = new Dictionary<byte, string>();
-            var fields = typeof(CurrencyId).GetFields(BindingFlags.Static | BindingFlags.Public).TakeWhile(f => f.FieldType == typeof(byte));
+            var fields = typeof(CurrencyId).GetFields(BindingFlags.Static | BindingFlags.Public).Where(f => f.FieldType == typeof(byte));
             foreach (var f in fields)
                 mapping.Add(Convert.ToByte(f.GetValue(null)), f.Name);
         }

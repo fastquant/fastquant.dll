@@ -128,6 +128,8 @@ namespace SmartQuant
         public const byte QuantBaseInfo = 232;
         public const byte QuantRouterInfo = 233;
         public const byte QuantDataInfo = 234;
+
+        // something that EventType does not have
         public const byte ClientStatus = 240;
         public const byte ClientStatusRequest = 241;
         public const byte ClientInfo = 242;
@@ -159,18 +161,18 @@ namespace SmartQuant
 
     public class DataObject : Event
     {
+        public override byte TypeId => DataObjectType.DataObject;
+
         public DataObject()
         {
         }
 
-        public DataObject(DateTime dateTime)
+        public DataObject(DateTime dateTime) : base(dateTime)
         {
-            this.dateTime = dateTime;
         }
 
-        public DataObject(DataObject obj)
+        public DataObject(DataObject obj) : base(obj.DateTime)
         {
-            this.dateTime = obj.dateTime;
         }
     }
 }

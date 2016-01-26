@@ -39,9 +39,9 @@ namespace SmartQuant
 
     public class AltIdList : IEnumerable<AltId>
     {
-        private IdArray<AltId> array = new IdArray<AltId>();
+        private readonly IdArray<AltId> array = new IdArray<AltId>();
 
-        private List<AltId> list = new List<AltId>();
+        private readonly List<AltId> list = new List<AltId>();
 
         public void Add(AltId id)
         {

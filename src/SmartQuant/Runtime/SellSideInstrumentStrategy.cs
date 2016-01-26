@@ -224,7 +224,7 @@ namespace SmartQuant
                 Portfolio = GetOrCreatePortfolio(Name);
                 if (!IsInstance)
                 {
-                    foreach (var instrument in Instruments.TakeWhile(i => this.childrenByInstrument[i.Id] == null))
+                    foreach (var instrument in Instruments.Where(i => this.childrenByInstrument[i.Id] == null))
                         CreateChildSellSideInstrumentStrategy(instrument, true, false);
                     //foreach (var instrument in Instruments)
                     //    if (this.childrenStrategiesByInstrument[instrument.Id] == null)

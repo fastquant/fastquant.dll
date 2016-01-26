@@ -20,8 +20,8 @@ namespace SmartQuant
         {
             lock (this.items)
             {
-                foreach (var reader in this.readers.Keys)
-                    this.readers[reader] = 0;
+                foreach (var key in this.readers.Keys)
+                    this.readers[key] = 0;
                 this.items.Clear();
             }
         }
@@ -36,15 +36,16 @@ namespace SmartQuant
         {
             lock (this.items)
             {
-                int num = this.readers[reader];
-                if (this.items.Count >= num + 1)
+                int count = this.readers[reader];
+                if (this.items.Count >= count + 1)
                 {
-                    var result = new T[this.items.Count - num];
-                    this.items.CopyTo(num, result, 0, result.Length);
-                    this.readers[reader] = num + result.Length;
+                    var result = new T[this.items.Count - count];
+                    this.items.CopyTo(count, result, 0, result.Length);
+                    this.readers[reader] = count + result.Length;
                     return result;
                 }
-                return null;
+                else
+                    return null;
             }
         }
 

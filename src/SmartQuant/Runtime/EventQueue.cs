@@ -45,13 +45,13 @@ namespace SmartQuant
             Priority = priority;
             Size = size;
             this.bus = bus;
-            this.events = new Event[Size];
+            this.events = new Event[size];
         }
 
         public void Clear()
         {
             this.readPosition = this.writePosition = 0;
-            EmptyCount = FullCount = EnqueueCount = DequeueCount = 0;
+             FullCount = EmptyCount = EnqueueCount = DequeueCount = 0;
             Array.Clear(this.events, 0, this.events.Length);
         }
 
@@ -61,7 +61,8 @@ namespace SmartQuant
 
         public Event Read()
         {
-            var e = Peek();
+            var e = this.events[this.readPosition];
+            this.events[this.readPosition] = null;
             this.readPosition = (this.readPosition + 1) % Size;
             ++DequeueCount;
             return e;
@@ -78,6 +79,8 @@ namespace SmartQuant
             this.events[this.writePosition] = obj;
             this.writePosition = (this.writePosition + 1) % Size;
             ++EnqueueCount;
+            if (Count == 1)
+                this.bus?.TryWakeUpIdle();
         }
 
         public Event Dequeue()
@@ -92,6 +95,12 @@ namespace SmartQuant
 
         public void Enqueue(Event obj)
         {
+            if (obj == null)
+            {
+                Console.WriteLine($"EventQueue::Write Error. Can not write null object to the queue {Name}");
+                return;
+            }
+
             while (IsFull())
             {
                 ++FullCount;
@@ -104,7 +113,7 @@ namespace SmartQuant
 
         public bool IsFull() => (this.writePosition + 1) % Size == this.readPosition;
 
-        public void ResetCounts() => FullCount = EmptyCount = 0;
+        public void ResetCounts() => EmptyCount = FullCount = 0;
 
         public int CompareTo(IEventQueue other) => PeekDateTime().CompareTo(other.PeekDateTime());
 
@@ -127,7 +136,60 @@ namespace SmartQuant
 
         public Event this[int index] => this.events[index];
 
+        public IEnumerator GetEnumerator() => this.events.GetEnumerator();
+
+        public void Clear() => this.events.Clear();
+
+        // Pop from head
+        internal void RemoveAt(int index) => this.events.RemoveAt(0);
+
         public void Add(Event e)
+        {
+            Add_me(e);
+        }
+
+        private void Add_original(Event e)
+        {
+            int index = this.method_0(e.dateTime);
+            this.events.Insert(index, e);
+        }
+
+        private int method_0(DateTime dateTime_0)
+        {
+            if (this.events.Count == 0)
+            {
+                return 0;
+            }
+            if (this.events[0].dateTime > dateTime_0)
+            {
+                return 0;
+            }
+            if (this.events[this.events.Count - 1].dateTime <= dateTime_0)
+            {
+                return this.events.Count;
+            }
+            int num = 0;
+            int num2 = this.events.Count - 1;
+            while (num != num2)
+            {
+                int num3 = (num + num2 + 1) / 2;
+                if (this.events[num3].dateTime <= dateTime_0)
+                {
+                    if (this.events[num3 + 1].dateTime > dateTime_0)
+                    {
+                        return num3 + 1;
+                    }
+                    num = num3;
+                }
+                else
+                {
+                    num2 = num3 - 1;
+                }
+            }
+            return num + 1;
+        }
+
+        private void Add_me(Event e)
         {
             // Don't care what finding algorithm it uses at the moment.
             var i = this.events.FindIndex(evt => evt.DateTime > e.DateTime);
@@ -136,37 +198,22 @@ namespace SmartQuant
             else
                 this.events.Insert(i, e);
         }
-
-        public void Clear()
-        {
-            this.events.Clear();
-        }
-
-        internal void RemoveAt(int index)
-        {
-            this.events.RemoveAt(0);
-        }
-
-        public IEnumerator GetEnumerator()
-        {
-            return this.events.GetEnumerator();
-        }
     }
 
     public class SortedEventQueue : IComparable<IEventQueue>, IEventQueue
     {
-        protected internal EventSortedSet events = new EventSortedSet();
-        protected internal DateTime dateTime;
+        internal EventSortedSet events = new EventSortedSet();
+        internal DateTime dateTime;
 
         public byte Id { get; }
 
-        public byte Type { get; }
-
-        public bool IsSynched { get; set; }
-
         public string Name { get; }
 
+        public byte Type { get; }
+
         public byte Priority { get; }
+
+        public bool IsSynched { get; set; }
 
         public long Count => this.events.Count;
 
@@ -211,8 +258,9 @@ namespace SmartQuant
             lock (this)
             {
                 var e = this.events[0];
+                this.events.RemoveAt(0);
                 if (this.events.Count > 0)
-                    this.dateTime = e.DateTime;
+                    this.dateTime = this.events[0].DateTime;
                 return e;
             }
         }
@@ -245,9 +293,6 @@ namespace SmartQuant
             // no-op
         }
 
-        public int CompareTo(IEventQueue other)
-        {
-            return PeekDateTime().CompareTo(other.PeekDateTime());
-        }
+        public int CompareTo(IEventQueue other) => PeekDateTime().CompareTo(other.PeekDateTime());
     }
 }

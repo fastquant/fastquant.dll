@@ -165,46 +165,6 @@ namespace SmartQuant
             if (this.isStandalone)
             {
                 throw new NotImplementedException("don't know when to use it");
-                //this.thread = new Thread(() => {
-                //    Console.WriteLine($"{DateTime.Now} Clock thread started");
-                //    bool imminent = false;
-                //    while (true)
-                //    {
-                //        if (Mode == ClockMode.Realtime)
-                //        {
-                //            if (!ReminderEventQueue.IsEmpty())
-                //            {
-                //                long ticks1 = ReminderEventQueue.PeekDateTime().Ticks;
-                //                long ticks2 = this.framework.Clock.Ticks;
-                //                if (ticks1 <= ticks2)
-                //                {
-                //                    ((Reminder)ReminderEventQueue.Read()).Execute();
-                //                }
-                //                else if (ticks1 - ticks2 < 15000)
-                //                {
-                //                    imminent = true;
-                //                }
-                //            }
-                //            if (imminent)
-                //            {
-                //                Thread.Sleep(0);
-                //                //Thread.SpinWait(1);Thread.Sleep(1);
-                //                //System.Threading.Tasks.Task.Delay(3000).Wait()
-                //            }
-                //            else
-                //            {
-                //                Thread.Sleep(1);
-                //            }
-                //        }
-                //        else
-                //        {
-                //            Thread.Sleep(10);
-                //        }
-                //    }
-                //});
-                //this.thread.Name = "Clock Thread";
-                //this.thread.IsBackground = true;
-                //this.thread.Start();
             }
         }
 

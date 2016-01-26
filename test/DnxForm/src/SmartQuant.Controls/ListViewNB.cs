@@ -2,19 +2,19 @@
 
 namespace SmartQuant.Controls
 {
-  public class ListViewNB : ListView
-  {
-    public ListViewNB()
+    public class ListViewNB : ListView
     {
-      this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);
-      this.SetStyle(ControlStyles.EnableNotifyMessage, true);
-    }
+        public ListViewNB()
+        {
+            SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);
+            SetStyle(ControlStyles.EnableNotifyMessage, true);
+        }
 
-    protected override void OnNotifyMessage(System.Windows.Forms.Message m)
-    {
-      if (m.Msg == 20)
-        return;
-      base.OnNotifyMessage(m);
+        protected override void OnNotifyMessage(System.Windows.Forms.Message m)
+        {
+            if (m.Msg == 20)
+                return;
+            base.OnNotifyMessage(m);
+        }
     }
-  }
 }

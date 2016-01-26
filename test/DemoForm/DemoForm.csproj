@@ -1,0 +1,524 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{4A586C31-A1FE-4738-9DFA-7AE52B2F3403}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DemoForm</RootNamespace>
+    <AssemblyName>DemoForm</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="SmartQuant">
+      <HintPath>..\..\..\..\..\..\Program Files\SmartQuant Ltd\OpenQuant 2014\SmartQuant.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Backtest.cs" />
+    <Compile Include="DataLoader.cs" />
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainForm.Designer.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\FrameworkControl.cs">
+      <Link>SmartQuant.Controls\FrameworkControl.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\ListViewNB.cs">
+      <Link>SmartQuant.Controls\ListViewNB.cs</Link>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\BarChart\BarChart.cs">
+      <Link>SmartQuant.Controls\BarChart\BarChart.cs</Link>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\BarChart\BarChart2.cs">
+      <Link>SmartQuant.Controls\BarChart\BarChart2.cs</Link>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\BarChart\GroupItem.cs">
+      <Link>SmartQuant.Controls\BarChart\GroupItem.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\BarEditor.cs">
+      <Link>SmartQuant.Controls\Data\BarEditor.cs</Link>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\BarSeriesMenuItem.cs">
+      <Link>SmartQuant.Controls\Data\BarSeriesMenuItem.cs</Link>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\BarViewer.cs">
+      <Link>SmartQuant.Controls\Data\BarViewer.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\CustomBarSeriesMenuItem.cs">
+      <Link>SmartQuant.Controls\Data\CustomBarSeriesMenuItem.cs</Link>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\DataManager.cs">
+      <Link>SmartQuant.Controls\Data\DataManager.cs</Link>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\DataManager.Designer.cs">
+      <Link>SmartQuant.Controls\Data\DataManager.Designer.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\DataObjectEditor.cs">
+      <Link>SmartQuant.Controls\Data\DataObjectEditor.cs</Link>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\DataObjectViewer.cs">
+      <Link>SmartQuant.Controls\Data\DataObjectViewer.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\DataSeriesViewer.cs">
+      <Link>SmartQuant.Controls\Data\DataSeriesViewer.cs</Link>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\DataSeriesViewItem.cs">
+      <Link>SmartQuant.Controls\Data\DataSeriesViewItem.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\DataSeriesViewItemComparer.cs">
+      <Link>SmartQuant.Controls\Data\DataSeriesViewItemComparer.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\DataTypeConverter.cs">
+      <Link>SmartQuant.Controls\Data\DataTypeConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\DataTypeItem.cs">
+      <Link>SmartQuant.Controls\Data\DataTypeItem.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\DataTypeItemComparer.cs">
+      <Link>SmartQuant.Controls\Data\DataTypeItemComparer.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\DataTypeNode.cs">
+      <Link>SmartQuant.Controls\Data\DataTypeNode.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\DefaultObjectViewer.cs">
+      <Link>SmartQuant.Controls\Data\DefaultObjectViewer.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\DeleteRangeForm.cs">
+      <Link>SmartQuant.Controls\Data\DeleteRangeForm.cs</Link>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\DeleteRangeForm.Designer.cs">
+      <Link>SmartQuant.Controls\Data\DeleteRangeForm.Designer.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\GotoForm.cs">
+      <Link>SmartQuant.Controls\Data\GotoForm.cs</Link>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\GotoForm.Designer.cs">
+      <Link>SmartQuant.Controls\Data\GotoForm.Designer.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\InstrumentData.cs">
+      <Link>SmartQuant.Controls\Data\InstrumentData.cs</Link>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\InstrumentData.Designer.cs">
+      <Link>SmartQuant.Controls\Data\InstrumentData.Designer.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\InstrumentDataSeries.cs">
+      <Link>SmartQuant.Controls\Data\InstrumentDataSeries.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\InstrumentDataSeriesViewItem.cs">
+      <Link>SmartQuant.Controls\Data\InstrumentDataSeriesViewItem.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\NewBarSeriesForm.cs">
+      <Link>SmartQuant.Controls\Data\NewBarSeriesForm.cs</Link>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\QuoteEditor.cs">
+      <Link>SmartQuant.Controls\Data\QuoteEditor.cs</Link>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\QuoteViewer.cs">
+      <Link>SmartQuant.Controls\Data\QuoteViewer.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\TickEditor.cs">
+      <Link>SmartQuant.Controls\Data\TickEditor.cs</Link>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\TickViewer.cs">
+      <Link>SmartQuant.Controls\Data\TickViewer.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\Account\AccountData.cs">
+      <Link>SmartQuant.Controls\Data\Account\AccountData.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\Account\AccountDataViewer.cs">
+      <Link>SmartQuant.Controls\Data\Account\AccountDataViewer.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\Import\Historical\DataTypeItem.cs">
+      <Link>SmartQuant.Controls\Data\Import\Historical\DataTypeItem.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\Import\Historical\ImportHistoricalData.cs">
+      <Link>SmartQuant.Controls\Data\Import\Historical\ImportHistoricalData.cs</Link>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\Import\Historical\ImportHistoricalData.Designer.cs">
+      <Link>SmartQuant.Controls\Data\Import\Historical\ImportHistoricalData.Designer.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\Import\Historical\ImportTask.cs">
+      <Link>SmartQuant.Controls\Data\Import\Historical\ImportTask.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\Import\Historical\ImportTaskState.cs">
+      <Link>SmartQuant.Controls\Data\Import\Historical\ImportTaskState.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\Import\Historical\ImportTaskViewItem.cs">
+      <Link>SmartQuant.Controls\Data\Import\Historical\ImportTaskViewItem.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\Import\Instruments\ImportInstruments.cs">
+      <Link>SmartQuant.Controls\Data\Import\Instruments\ImportInstruments.cs</Link>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\Import\Instruments\ImportInstruments.Designer.cs">
+      <Link>SmartQuant.Controls\Data\Import\Instruments\ImportInstruments.Designer.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\Import\Instruments\InstrumentViewItem.cs">
+      <Link>SmartQuant.Controls\Data\Import\Instruments\InstrumentViewItem.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Orders\ExecutionCommandViewItem.cs">
+      <Link>SmartQuant.Controls\Orders\ExecutionCommandViewItem.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Orders\ExecutionReportViewItem.cs">
+      <Link>SmartQuant.Controls\Orders\ExecutionReportViewItem.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Orders\MyDelegate.cs">
+      <Link>SmartQuant.Controls\Orders\MyDelegate.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Orders\OrderManagerWindow.cs">
+      <Link>SmartQuant.Controls\Orders\OrderManagerWindow.cs</Link>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Orders\OrderViewItem.cs">
+      <Link>SmartQuant.Controls\Orders\OrderViewItem.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Portfolios\ChildrenStatistics.cs">
+      <Link>SmartQuant.Controls\Portfolios\ChildrenStatistics.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Portfolios\Composition.cs">
+      <Link>SmartQuant.Controls\Portfolios\Composition.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Portfolios\CorrelationMatrix.cs">
+      <Link>SmartQuant.Controls\Portfolios\CorrelationMatrix.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Portfolios\NewPortfolioForm.cs">
+      <Link>SmartQuant.Controls\Portfolios\NewPortfolioForm.cs</Link>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Portfolios\PerformanceWindow.cs">
+      <Link>SmartQuant.Controls\Portfolios\PerformanceWindow.cs</Link>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Portfolios\Portfolio.cs">
+      <Link>SmartQuant.Controls\Portfolios\Portfolio.cs</Link>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Portfolios\Portfolio.Designer.cs">
+      <Link>SmartQuant.Controls\Portfolios\Portfolio.Designer.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Portfolios\PortfolioList.cs">
+      <Link>SmartQuant.Controls\Portfolios\PortfolioList.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Portfolios\PortfolioList.Designer.cs">
+      <Link>SmartQuant.Controls\Portfolios\PortfolioList.Designer.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Portfolios\PositionViewItem.cs">
+      <Link>SmartQuant.Controls\Portfolios\PositionViewItem.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Portfolios\Statistics.cs">
+      <Link>SmartQuant.Controls\Portfolios\Statistics.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Portfolios\TransactionViewItem.cs">
+      <Link>SmartQuant.Controls\Portfolios\TransactionViewItem.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Controls\TradingTools\ModifyOrderForm.cs">
+      <Link>SmartQuant.Controls\TradingTools\ModifyOrderForm.cs</Link>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.ExcelLib\Excel.cs">
+      <Link>SmartQuant.ExcelLib\Excel.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.ExcelLib\Range.cs">
+      <Link>SmartQuant.ExcelLib\Range.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.ExcelLib\Workbook.cs">
+      <Link>SmartQuant.ExcelLib\Workbook.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.ExcelLib\WorkbookList.cs">
+      <Link>SmartQuant.ExcelLib\WorkbookList.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.ExcelLib\Worksheet.cs">
+      <Link>SmartQuant.ExcelLib\Worksheet.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.ExcelLib\WorksheetList.cs">
+      <Link>SmartQuant.ExcelLib\WorksheetList.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.ChartViewers\BarSeriesViewer.cs">
+      <Link>SmartQuant.ChartViewers\BarSeriesViewer.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.ChartViewers\FillSeriesViewer.cs">
+      <Link>SmartQuant.ChartViewers\FillSeriesViewer.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.ChartViewers\TickSeriesViewer.cs">
+      <Link>SmartQuant.ChartViewers\TickSeriesViewer.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.ChartViewers\TimeSeriesViewer.cs">
+      <Link>SmartQuant.ChartViewers\TimeSeriesViewer.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Charting\Axis.cs">
+      <Link>SmartQuant.Charting\Axis.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Charting\Canvas.cs">
+      <Link>SmartQuant.Charting\Canvas.cs</Link>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Charting\Chart.cs">
+      <Link>SmartQuant.Charting\Chart.cs</Link>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Charting\Extensions.cs">
+      <Link>SmartQuant.Charting\Extensions.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Charting\Graph.cs">
+      <Link>SmartQuant.Charting\Graph.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Charting\Histogram.cs">
+      <Link>SmartQuant.Charting\Histogram.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Charting\Histogram2D.cs">
+      <Link>SmartQuant.Charting\Histogram2D.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Charting\IChartTransformation.cs">
+      <Link>SmartQuant.Charting\IChartTransformation.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Charting\Pad.cs">
+      <Link>SmartQuant.Charting\Pad.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Charting\Pie.cs">
+      <Link>SmartQuant.Charting\Pie.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Charting\TDistance.cs">
+      <Link>SmartQuant.Charting\TDistance.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Charting\TEmptyTransformation.cs">
+      <Link>SmartQuant.Charting\TEmptyTransformation.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Charting\TImage.cs">
+      <Link>SmartQuant.Charting\TImage.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Charting\TIntradayTransformation.cs">
+      <Link>SmartQuant.Charting\TIntradayTransformation.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Charting\TLabel.cs">
+      <Link>SmartQuant.Charting\TLabel.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Charting\TLegend.cs">
+      <Link>SmartQuant.Charting\TLegend.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Charting\TLine.cs">
+      <Link>SmartQuant.Charting\TLine.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Charting\TMarker.cs">
+      <Link>SmartQuant.Charting\TMarker.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Charting\TPaintingBitmap.cs">
+      <Link>SmartQuant.Charting\TPaintingBitmap.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Charting\TText.cs">
+      <Link>SmartQuant.Charting\TText.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Charting\TTextBox.cs">
+      <Link>SmartQuant.Charting\TTextBox.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Charting\TTitle.cs">
+      <Link>SmartQuant.Charting\TTitle.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Charting\Viewer.cs">
+      <Link>SmartQuant.Charting\Viewer.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Charting\Draw3D\TAxisCalc.cs">
+      <Link>SmartQuant.Charting\Draw3D\TAxisCalc.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Charting\Draw3D\TColor.cs">
+      <Link>SmartQuant.Charting\Draw3D\TColor.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Charting\Draw3D\TFunction.cs">
+      <Link>SmartQuant.Charting\Draw3D\TFunction.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Charting\Draw3D\TLight.cs">
+      <Link>SmartQuant.Charting\Draw3D\TLight.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Charting\Draw3D\TMat3x3.cs">
+      <Link>SmartQuant.Charting\Draw3D\TMat3x3.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Charting\Draw3D\TVec3.cs">
+      <Link>SmartQuant.Charting\Draw3D\TVec3.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Charting\Draw3D\TView.cs">
+      <Link>SmartQuant.Charting\Draw3D\TView.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.FinChart\Axis.cs">
+      <Link>SmartQuant.FinChart\Axis.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.FinChart\Chart.cs">
+      <Link>SmartQuant.FinChart\Chart.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.FinChart\Chart.WinForm.cs">
+      <Link>SmartQuant.FinChart\Chart.WinForm.cs</Link>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.FinChart\ChartToolBar.Designer.cs">
+      <Link>SmartQuant.FinChart\ChartToolBar.Designer.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.FinChart\ChartToolStrip.cs">
+      <Link>SmartQuant.FinChart\ChartToolStrip.cs</Link>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.FinChart\ChartToolStrip.Designer.cs">
+      <Link>SmartQuant.FinChart\ChartToolStrip.Designer.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.FinChart\FillView.cs">
+      <Link>SmartQuant.FinChart\FillView.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.FinChart\Pad.cs">
+      <Link>SmartQuant.FinChart\Pad.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.FinChart\PropertyForm.cs">
+      <Link>SmartQuant.FinChart\PropertyForm.cs</Link>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.FinChart\SeriesView.cs">
+      <Link>SmartQuant.FinChart\SeriesView.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.FinChart\SortedRangeList.cs">
+      <Link>SmartQuant.FinChart\SortedRangeList.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.FinChart\ToolBar.cs">
+      <Link>SmartQuant.FinChart\ToolBar.cs</Link>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.FinChart\ToolBar.Designer.cs">
+      <Link>SmartQuant.FinChart\ToolBar.Designer.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.FinChart\Objects\DrawingEllipse.cs">
+      <Link>SmartQuant.FinChart\Objects\DrawingEllipse.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.FinChart\Objects\DrawingImage.cs">
+      <Link>SmartQuant.FinChart\Objects\DrawingImage.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.FinChart\Objects\DrawingLine.cs">
+      <Link>SmartQuant.FinChart\Objects\DrawingLine.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.FinChart\Objects\DrawingPath.cs">
+      <Link>SmartQuant.FinChart\Objects\DrawingPath.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.FinChart\Objects\DrawingPoint.cs">
+      <Link>SmartQuant.FinChart\Objects\DrawingPoint.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.FinChart\Objects\DrawingRay.cs">
+      <Link>SmartQuant.FinChart\Objects\DrawingRay.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.FinChart\Objects\DrawingRectangle.cs">
+      <Link>SmartQuant.FinChart\Objects\DrawingRectangle.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.FinChart\Objects\EllipseView.cs">
+      <Link>SmartQuant.FinChart\Objects\EllipseView.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.FinChart\Objects\ImageView.cs">
+      <Link>SmartQuant.FinChart\Objects\ImageView.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.FinChart\Objects\IUpdatable.cs">
+      <Link>SmartQuant.FinChart\Objects\IUpdatable.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.FinChart\Objects\LineView.cs">
+      <Link>SmartQuant.FinChart\Objects\LineView.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.FinChart\Objects\PathView.cs">
+      <Link>SmartQuant.FinChart\Objects\PathView.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.FinChart\Objects\RayView.cs">
+      <Link>SmartQuant.FinChart\Objects\RayView.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.FinChart\Objects\RectangleView.cs">
+      <Link>SmartQuant.FinChart\Objects\RectangleView.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="quicklz150_64_3.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ItemGroup>
+    <None Include="..\DnxForm\src\SmartQuant.Controls\Data\DataManager.resx">
+      <Link>SmartQuant.Controls\Data\DataManager.resx</Link>
+    </None>
+    <None Include="..\DnxForm\src\SmartQuant.Controls\Data\DeleteRangeForm.resx">
+      <Link>SmartQuant.Controls\Data\DeleteRangeForm.resx</Link>
+    </None>
+    <None Include="..\DnxForm\src\SmartQuant.Controls\Data\GotoForm.resx">
+      <Link>SmartQuant.Controls\Data\GotoForm.resx</Link>
+    </None>
+    <None Include="..\DnxForm\src\SmartQuant.Controls\Data\InstrumentData.resx">
+      <Link>SmartQuant.Controls\Data\InstrumentData.resx</Link>
+    </None>
+    <None Include="..\DnxForm\src\SmartQuant.Controls\Data\Import\Historical\ImportHistoricalData.resx">
+      <Link>SmartQuant.Controls\Data\Import\Historical\ImportHistoricalData.resx</Link>
+    </None>
+    <None Include="..\DnxForm\src\SmartQuant.Controls\Data\Import\Instruments\ImportInstruments.resx">
+      <Link>SmartQuant.Controls\Data\Import\Instruments\ImportInstruments.resx</Link>
+    </None>
+    <None Include="..\DnxForm\src\SmartQuant.Controls\Portfolios\Portfolio.resx">
+      <Link>SmartQuant.Controls\Portfolios\Portfolio.resx</Link>
+    </None>
+    <None Include="..\DnxForm\src\SmartQuant.Controls\Portfolios\PortfolioList.resx">
+      <Link>SmartQuant.Controls\Portfolios\PortfolioList.resx</Link>
+    </None>
+    <None Include="..\DnxForm\src\SmartQuant.FinChart\ChartToolBar.resx">
+      <Link>SmartQuant.FinChart\ChartToolBar.resx</Link>
+    </None>
+    <None Include="..\DnxForm\src\SmartQuant.FinChart\ChartToolStrip.resx">
+      <Link>SmartQuant.FinChart\ChartToolStrip.resx</Link>
+    </None>
+    <None Include="..\DnxForm\src\SmartQuant.FinChart\ToolBar.resx">
+      <Link>SmartQuant.FinChart\ToolBar.resx</Link>
+    </None>
+  </ItemGroup>
+</Project>

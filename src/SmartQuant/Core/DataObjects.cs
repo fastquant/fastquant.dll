@@ -39,7 +39,7 @@ namespace SmartQuant
     public class OnSimulatorProgress : DataObject
     {
         internal long Count { get; }
-        internal long Percent { get; }
+        internal int Percent { get; }
 
         public OnSimulatorProgress()
         {

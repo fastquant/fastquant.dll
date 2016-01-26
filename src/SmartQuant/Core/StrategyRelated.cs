@@ -7,7 +7,14 @@ namespace SmartQuant
 {
     public class StrategyEventArgs : EventArgs
     {
+        public Strategy Strategy { get; }
+
+        public StrategyEventArgs(Strategy strategy)
+        {
+            Strategy = strategy;
+        }
     }
+
 
     public enum StrategyMode
     {

@@ -490,7 +490,7 @@ namespace SmartQuant
 
         public Order Order(Instrument instrument, OrderType type, OrderSide side, double qty, double stopPx, double price, string text = "")
         {
-            var order = new Order(this.DetermineExecutionProvider(instrument), Portfolio, instrument, type, side, qty, 0, 0, TimeInForce.Day, 0, "");
+            var order = new Order(DetermineExecutionProvider(instrument), Portfolio, instrument, type, side, qty, 0, 0, TimeInForce.Day, 0, "");
             order.StrategyId = Id;
             order.ClientId = ClientId;
             order.Text = text;
@@ -591,7 +591,7 @@ namespace SmartQuant
 
         public Order BuyOrder(Instrument instrument, double qty, string text = "")
         {
-            var order = new Order(this.DetermineExecutionProvider(instrument), Portfolio, instrument, OrderType.Market, OrderSide.Buy, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
+            var order = new Order(DetermineExecutionProvider(instrument), Portfolio, instrument, OrderType.Market, OrderSide.Buy, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
             order.StrategyId = Id;
             order.ClientId = ClientId;
             order.Text = text;
@@ -1514,7 +1514,7 @@ namespace SmartQuant
                 OnPositionClosed(position);
                 var list = this.efBkyXtSiO[position.Instrument.Id];
                 if (list != null)
-                    foreach (var stop in list.TakeWhile(s => s.Position == position))
+                    foreach (var stop in list.Where(s => s.Position == position))
                         stop.Cancel();
             }
             foreach (var s in Strategies)
@@ -1876,14 +1876,8 @@ namespace SmartQuant
         protected internal void CopyParameterValues(Strategy childStrategy)
         {
             var fields = childStrategy.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            // TODO: code1 vs code2
-            // code 1
-            foreach (var f in fields)
-                if (f.GetCustomAttributes(typeof(ParameterAttribute), true).Any())
-                    f.SetValue(childStrategy, f.GetValue(this));
-            // code 2
-            //foreach (var f in fields.TakeWhile(f => f.GetCustomAttributes(typeof(ParameterAttribute), true).Any()))
-            //    f.SetValue(childStrategy, f.GetValue(this));
+            foreach (var f in fields.Where(f => f.GetCustomAttributes(typeof(ParameterAttribute), true).Any()))
+                f.SetValue(childStrategy, f.GetValue(this));
         }
 
         #endregion

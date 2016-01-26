@@ -140,8 +140,8 @@ namespace SmartQuant
                     parameterList.Add(new Parameter(propertyInfo.Name, propertyInfo.GetValue(obj), assemblyQualifiedName, list.ToArray()));
                 }
             }
-            var fields = obj.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public).TakeWhile(f => f.GetCustomAttribute(typeof(TypeConverterAttribute)) == null);
-            foreach (var param in fields.Select(f => new Parameter(f.Name, f.GetValue(obj), f.FieldType.AssemblyQualifiedName, f.GetCustomAttributes().TakeWhile(a => pred(a)).ToArray())))
+            var fields = obj.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public).Where(f => f.GetCustomAttribute(typeof(TypeConverterAttribute)) == null);
+            foreach (var param in fields.Select(f => new Parameter(f.Name, f.GetValue(obj), f.FieldType.AssemblyQualifiedName, f.GetCustomAttributes().Where(a => pred(a)).ToArray())))
                 parameterList.Add(param);
 
             return parameterList;
@@ -170,15 +170,15 @@ namespace SmartQuant
                 var t = a.GetType();
                 return t.FullName.Contains("ComponentModel") && t.Name != "PropertyTabAttribute" && t.Name != "ToolboxItemAttribute";
             });
-            var properties = obj.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).TakeWhile(p => p.GetCustomAttributes(typeof(ParameterAttribute), true).Any());
-            foreach(var param in properties.Select(p => new Parameter(p.Name, p.GetValue(obj), p.PropertyType.AssemblyQualifiedName, p.GetCustomAttributes().TakeWhile(a => pred(a)).ToArray())))
+            var properties = obj.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Where(p => p.GetCustomAttributes(typeof(ParameterAttribute), true).Any());
+            foreach(var param in properties.Select(p => new Parameter(p.Name, p.GetValue(obj), p.PropertyType.AssemblyQualifiedName, p.GetCustomAttributes().Where(a => pred(a)).ToArray())))
                 list.Add(param);
 
-            var fields = obj.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).TakeWhile(f => f.GetCustomAttributes(typeof(ParameterAttribute), true).Any());
-            foreach (var param in fields.Select(f => new Parameter(f.Name, f.GetValue(obj), f.FieldType.AssemblyQualifiedName, f.GetCustomAttributes().TakeWhile(a => pred(a)).ToArray())))
+            var fields = obj.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Where(f => f.GetCustomAttributes(typeof(ParameterAttribute), true).Any());
+            foreach (var param in fields.Select(f => new Parameter(f.Name, f.GetValue(obj), f.FieldType.AssemblyQualifiedName, f.GetCustomAttributes().Where(a => pred(a)).ToArray())))
                 list.Add(param);
 
-            var methods = obj.GetType().GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public).TakeWhile(m => m.GetCustomAttributes(typeof (StrategyMethodAttribute), true).Any() && m.GetParameters().Length == 0);
+            var methods = obj.GetType().GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public).Where(m => m.GetCustomAttributes(typeof (StrategyMethodAttribute), true).Any() && m.GetParameters().Length == 0);
             foreach (var m in methods)
                 list.Methods.Add(m.Name);
 

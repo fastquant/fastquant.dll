@@ -21,26 +21,32 @@ namespace SmartQuant
 
         protected virtual void OnBid(Bid bid)
         {
+            // noop
         }
 
         protected virtual void OnAsk(Ask Ask)
         {
+            // noop
         }
 
         protected virtual void OnTrade(Trade trade)
         {
+            // noop
         }
 
         protected virtual void OnBar(Bar bar)
         {
+            // noop
         }
 
         protected virtual void OnExecutionReport(ExecutionReport report)
         {
+            // noop
         }
 
         protected internal virtual void Clear()
         {
+            // noop
         }
     }
 
@@ -59,5 +65,39 @@ namespace SmartQuant
                 report.Clear();
             this.reports.Clear();
         }
+    }
+
+    public class ReportManager
+    {
+    }
+
+    public class RiskReport
+    {
+        public RiskReport(string text)
+        {
+            Text = text;
+        }
+
+        public string Text { get; set; }
+    }
+
+    public class RiskManager
+    {
+        public RiskManager(Framework framework)
+        {
+            this.framework = framework;
+        }
+
+        public virtual RiskReport OnExecutionCommand(ExecutionCommand command)
+        {
+            return null;
+        }
+
+        public virtual void PropertyChanged(OnPropertyChanged onPropertyChanged)
+        {
+            // noop
+        }
+
+        protected Framework framework;
     }
 }

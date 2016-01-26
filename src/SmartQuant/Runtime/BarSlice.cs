@@ -26,9 +26,9 @@ namespace SmartQuant
 
     class BarSliceItem
     {
-        internal List<Bar> Bars;
-        internal DateTime CloseDateTime;
-        internal int barCount;
+        internal List<Bar> Bars = new List<Bar>();
+        internal DateTime CloseDateTime= DateTime.MinValue;
+        internal int barCount = 0;
     }
 
     public class BarSliceFactory

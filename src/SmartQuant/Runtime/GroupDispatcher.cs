@@ -53,115 +53,29 @@ namespace SmartQuant
     {
         private Framework framework;
 
-        private Dictionary<IGroupListener, List<int>> dictionary_0= new Dictionary<IGroupListener, List<int>>();
+        private Dictionary<IGroupListener, List<int>> groupIdsByListener = new Dictionary<IGroupListener, List<int>>();
 
-        private IdArray<List<IGroupListener>> idArray_0 = new IdArray<List<IGroupListener>>();
+        private IdArray<List<IGroupListener>> listenersByGroupId = new IdArray<List<IGroupListener>>();
 
-        private List<IGroupListener> list_0 = new List<IGroupListener>();
+        private List<IGroupListener> listeners = new List<IGroupListener>();
 
         public GroupDispatcher(Framework framework)
         {
             this.framework = framework;
-            this.framework.EventManager.Dispatcher.NewGroup += new GroupEventHandler(this.method_3);
-            this.framework.EventManager.Dispatcher.NewGroupEvent += new GroupEventEventHandler(this.method_2);
-            this.framework.EventManager.Dispatcher.NewGroupUpdate += new GroupUpdateEventHandler(this.method_1);
-            this.framework.EventManager.Dispatcher.FrameworkCleared += new FrameworkEventHandler(this.method_0);
+            this.framework.EventManager.Dispatcher.NewGroup += OnNewGroup;
+            this.framework.EventManager.Dispatcher.NewGroupEvent += OnNewGroupEvent;
+            this.framework.EventManager.Dispatcher.NewGroupUpdate += OnNewGroupUpdate;
+            this.framework.EventManager.Dispatcher.FrameworkCleared += OnFrameworkCleared;
         }
 
         public void AddListener(IGroupListener listener)
         {
             lock (this)
             {
-                this.list_0.Add(listener);
-                this.dictionary_0[listener] = new List<int>();
-                for (int i = 0; i < this.framework.GroupManager.GroupList.Count; i++)
-                {
-                    this.method_4(listener, this.framework.GroupManager.GroupList[i]);
-                }
-            }
-        }
-
-        private void method_0(object sender, FrameworkEventArgs e)
-        {
-            lock (this)
-            {
-                foreach (IGroupListener current in this.list_0)
-                {
-                    current.Queue.Enqueue(new OnFrameworkCleared(e.Framework));
-                }
-                this.idArray_0.Clear();
-                foreach (List<int> current2 in this.dictionary_0.Values)
-                {
-                    current2.Clear();
-                }
-            }
-        }
-
-        private void method_1(object object_0, GroupUpdateEventAgrs groupUpdateEventAgrs_0)
-        {
-            lock (this)
-            {
-                if (groupUpdateEventAgrs_0.GroupUpdate.GroupId != -1)
-                {
-                    List<IGroupListener> list = this.idArray_0[groupUpdateEventAgrs_0.GroupUpdate.GroupId];
-                    if (list != null)
-                    {
-                        foreach (IGroupListener current in list)
-                        {
-                            current.OnNewGroupUpdate(groupUpdateEventAgrs_0.GroupUpdate);
-                        }
-                    }
-                }
-            }
-        }
-
-        private void method_2(object object_0, GroupEventEventAgrs groupEventEventAgrs_0)
-        {
-            lock (this)
-            {
-                if (groupEventEventAgrs_0.GroupEvent.Group != null)
-                {
-                    Group group = this.framework.GroupManager.Groups[groupEventEventAgrs_0.GroupEvent.Group.Id];
-                    if (group != null)
-                    {
-                        group.OnNewGroupEvent(groupEventEventAgrs_0.GroupEvent);
-                        List<IGroupListener> list = this.idArray_0[groupEventEventAgrs_0.GroupEvent.Group.Id];
-                        if (list != null)
-                        {
-                            foreach (IGroupListener current in list)
-                            {
-                                current.Queue.Enqueue(groupEventEventAgrs_0.GroupEvent);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        private void method_3(object object_0, GroupEventAgrs groupEventAgrs_0)
-        {
-            foreach (IGroupListener current in this.list_0)
-            {
-                this.method_4(current, groupEventAgrs_0.Group);
-            }
-        }
-
-        private void method_4(IGroupListener igroupListener_0, Group group_0)
-        {
-            if (igroupListener_0.OnNewGroup(group_0))
-            {
-                List<IGroupListener> list = this.idArray_0[group_0.Id];
-                if (list == null)
-                {
-                    list = new List<IGroupListener>();
-                    this.idArray_0[group_0.Id] = list;
-                }
-                this.dictionary_0[igroupListener_0].Add(group_0.Id);
-                list.Add(igroupListener_0);
-                foreach (GroupEvent current in group_0.Events)
-                {
-                    igroupListener_0.Queue.Enqueue(current);
-                }
+                this.listeners.Add(listener);
+                this.groupIdsByListener[listener] = new List<int>();
+                foreach(var group in this.framework.GroupManager.GroupList)
+                    AddListener(listener, group);
             }
         }
 
@@ -169,12 +83,75 @@ namespace SmartQuant
         {
             lock (this)
             {
-                this.list_0.Remove(listener);
-                foreach (int current in this.dictionary_0[listener])
+                this.listeners.Remove(listener);
+                foreach (var id in this.groupIdsByListener[listener])
+                    this.listenersByGroupId[id].Remove(listener);
+                this.groupIdsByListener.Remove(listener);
+            }
+        }
+
+        private void OnFrameworkCleared(object sender, FrameworkEventArgs e)
+        {
+            lock (this)
+            {
+                foreach (var listener in this.listeners)
+                    listener.Queue.Enqueue(new OnFrameworkCleared(e.Framework));
+                this.listenersByGroupId.Clear();
+                foreach (var list in this.groupIdsByListener.Values)
+                    list.Clear();
+            }
+        }
+
+        private void OnNewGroupUpdate(object sender, GroupUpdateEventAgrs args)
+        {
+            lock (this)
+            {
+                if (args.GroupUpdate.GroupId != -1)
                 {
-                    this.idArray_0[current].Remove(listener);
+                    var list = this.listenersByGroupId[args.GroupUpdate.GroupId];
+                    list?.ForEach(l => l.OnNewGroupUpdate(args.GroupUpdate));
                 }
-                this.dictionary_0.Remove(listener);
+            }
+        }
+
+        private void OnNewGroupEvent(object sender, GroupEventEventAgrs args)
+        {
+            lock (this)
+            {
+                if (args.GroupEvent.Group != null)
+                {
+                    var id = args.GroupEvent.Group.Id;
+                    var group = this.framework.GroupManager.Groups[id];
+                    if (group != null)
+                    {
+                        group.OnNewGroupEvent(args.GroupEvent);
+                        var list = this.listenersByGroupId[id];
+                        list?.ForEach(l => l.Queue.Enqueue(args.GroupEvent));
+                    }
+                }
+            }
+        }
+
+        private void OnNewGroup(object sender, GroupEventAgrs args)
+        {
+            foreach (var listener in this.listeners)
+                AddListener(listener, args.Group);
+        }
+
+        private void AddListener(IGroupListener listener, Group group)
+        {
+            if (listener.OnNewGroup(group))
+            {
+                var list = this.listenersByGroupId[group.Id];
+                if (list == null)
+                {
+                    list = new List<IGroupListener>();
+                    this.listenersByGroupId[group.Id] = list;
+                }
+                this.groupIdsByListener[listener].Add(group.Id);
+                list.Add(listener);
+                foreach (var e in group.Events)
+                    listener.Queue.Enqueue(e);
             }
         }
     }

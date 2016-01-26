@@ -58,7 +58,7 @@ namespace SmartQuant
 
         static ProviderId()
         {
-            var fields = typeof(ProviderId).GetFields(BindingFlags.Static | BindingFlags.Public).TakeWhile(f => f.FieldType == typeof(byte)).ToList();
+            var fields = typeof(ProviderId).GetFields(BindingFlags.Static | BindingFlags.Public).Where(f => f.FieldType == typeof(byte)).ToList();
             fields.ForEach(f => mapping.Add(f.Name, (byte)f.GetValue(null)));
         }
 
@@ -508,7 +508,7 @@ namespace SmartQuant
 
         protected internal virtual void SetProperties(ProviderPropertyList properties)
         {
-            foreach(var p in GetType().GetProperties().TakeWhile(p => p.CanRead && p.CanWrite))
+            foreach(var p in GetType().GetProperties().Where(p => p.CanRead && p.CanWrite))
             {
                 var converter = TypeDescriptor.GetConverter(p.PropertyType);
                 if (converter != null && converter.CanConvertFrom(typeof(string)))

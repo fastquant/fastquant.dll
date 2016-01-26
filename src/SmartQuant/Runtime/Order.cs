@@ -79,27 +79,39 @@ namespace SmartQuant
         private OrderStatus status;
         private OrderType type;
         private TimeInForce timeInForce;
+        private DateTime expireTime;
         private double qty;
         private byte routeId;
         private double price;
         private double stopPx;
         private string account;
         private string clientId;
-
         private IExecutionProvider provider;
         private Portfolio portfolio;
-
-        internal List<ExecutionCommand> list_0;
-
-        internal List<ExecutionReport> list_1;
-
-        // Token: 0x040006B1 RID: 1713
-        internal List<ExecutionMessage> list_2;
-
         private Instrument instrument;
-        internal int InstrumentId { get; set; }
+        internal ObjectTable fields;
 
-        public string ClOrderId { get; set; }
+        public int Id { get; internal set; } = -1;
+
+        public int ClId { get; set; } = -1;
+
+        public int AlgoId { get; set; } = -1;
+
+        public int ClientId { get; set; } = -1;
+
+        public string ProviderOrderId { get; set; } = string.Empty;
+
+        public string ClOrderId { get; set; } = string.Empty;
+
+        internal int InstrumentId { get; set; } = -1;
+
+        public int PortfolioId { get; set; } = -1;
+
+        public int StrategyId { get; set; } = -1;
+
+        public string OCA { get; set; } = string.Empty;
+
+        public string Text { get; set; } = string.Empty;
 
         public override byte TypeId => DataObjectType.Order;
 
@@ -129,15 +141,35 @@ namespace SmartQuant
             }
         }
 
-        public string Text { get; set; }
+        [Category("Message"), Description("Commands")]
+        public List<ExecutionCommand> Commands { get; set; } = new List<ExecutionCommand>();
+
+        [Category("Message"), Description("Messages")]
+        public List<ExecutionMessage> Messages { get; set; } = new List<ExecutionMessage>();
+
+        [Category("Message"), Description("Reports")]
+        public List<ExecutionReport> Reports { get; set; } = new List<ExecutionReport>();
+
+        public ObjectTable Fields => this.fields = this.fields ?? new ObjectTable();
+
+        public object this[int index]
+        {
+            get
+            {
+                return Fields[index];
+            }
+            set
+            {
+                Fields[index] = value;
+            }
+        }
+
 
         public double AvgPx { get; set; }
 
         public double LeavesQty { get; internal set; }
 
-        public double CumQty { get; }
-
-        public string ProviderOrderId { get; set; }
+        public double CumQty { get; internal set; }
 
         public Instrument Instrument
         {
@@ -151,9 +183,6 @@ namespace SmartQuant
                 InstrumentId = this.instrument?.Id ?? -1;
             }
         }
-
-
-        public int Id { get; internal set; }
 
         [ReadOnly(true)]
         public double Price
@@ -196,11 +225,7 @@ namespace SmartQuant
                 this.stopPx = value;
             }
         }
-        public string OCA { get; set; }
 
-        public int StrategyId { get; set; }
-
-        public int ClientId { get; set; }
 
         [ReadOnly(true)]
         public OrderSide Side
@@ -257,6 +282,21 @@ namespace SmartQuant
         }
 
         [ReadOnly(true)]
+        public DateTime ExpireTime
+        {
+            get
+            {
+                return this.expireTime;
+            }
+            set
+            {
+                EnsureNotSent();
+                this.expireTime = value;
+            }
+        }
+
+
+        [ReadOnly(true)]
         public byte RouteId
         {
             get
@@ -285,8 +325,6 @@ namespace SmartQuant
             }
         }
 
-        public int PortfolioId { get; set; }
-
         [Browsable(false)]
         public Portfolio Portfolio
         {
@@ -300,10 +338,6 @@ namespace SmartQuant
                 PortfolioId = this.portfolio?.Id ?? -1;
             }
         }
-
-        [Category("Message"), Description("Messages")]
-        public List<ExecutionMessage> Messages { get; set; }
-
 
         [Browsable(false)]
         public bool IsFilled => Status == OrderStatus.Filled;
@@ -348,27 +382,85 @@ namespace SmartQuant
 
         public Order()
         {
-
         }
 
         public Order(ExecutionCommand command)
         {
-
+            if (command.Type != ExecutionCommandType.Send)
+                throw new Exception($"Order::Order Can not create order from execution command of type different than Send : {command.Type}");
+            Id = command.OrderId;
+            ClOrderId= command.ClOrderId;
+            AlgoId = command.AlgoId;
+            ProviderOrderId = command.ProviderOrderId;
+            ProviderId = command.ProviderId;
+            RouteId = command.RouteId;
+            PortfolioId = command.PortfolioId;
+            StrategyId = command.StrategyId;
+            InstrumentId = command.InstrumentId;
+            TransactTime = command.TransactTime;
+            DateTime = command.DateTime;
+            Side = command.Side;
+            Type = command.OrdType;
+            TimeInForce = command.TimeInForce;
+            ExpireTime = command.ExpireTime;
+            Price = command.Price;
+            StopPx = command.StopPx;
+            Qty = command.Qty;
+            Text = command.Text;
+            Account = command.Account;
+            ClientID = command.ClientID;
+            ClientId = command.ClientId;
         }
 
         public Order(Order order)
         {
+            Id = order.Id;
+            ClId = order.ClId;
+            AlgoId = order.AlgoId;
+            ProviderOrderId = order.ProviderOrderId;
+            ProviderId = order.ProviderId;
+            PortfolioId = order.PortfolioId;
+            StrategyId = order.StrategyId;
+            InstrumentId = order.InstrumentId;
+            TransactTime = order.TransactTime;
+            DateTime = order.DateTime;
+            Instrument = order.Instrument;
+            provider = order.Provider;
+            Portfolio = order.Portfolio;
+            Status = order.Status;
+            Side = order.Side;
+            Type = order.Type;
+            TimeInForce = order.TimeInForce;
+            ExpireTime = order.ExpireTime;
+            Price = order.Price;
+            StopPx = order.StopPx;
+            AvgPx = order.AvgPx;
+            Qty = order.Qty;
+            CumQty = order.CumQty;
+            Text = order.Text;
+            Account = order.Account;
+            ClientID = order.ClientID;
         }
 
-        public Order(IExecutionProvider provider, Instrument instrument, OrderType type, OrderSide side, double qty,
-            double price = 0.0, double stopPx = 0.0, TimeInForce timeInForce = TimeInForce.Day, string text = "")
+        public Order(IExecutionProvider provider, Instrument instrument, OrderType type, OrderSide side, double qty, double price = 0, double stopPx = 0, TimeInForce timeInForce = TimeInForce.Day, string text = "")
+            : this()
         {
+            Provider = provider;
+            Instrument = instrument;
+            Type = type;
+            Side = side;
+            Qty = qty;
+            Price = price;
+            StopPx = stopPx;
+            TimeInForce = timeInForce;
+            Text = text;
         }
 
-        public Order(IExecutionProvider provider, Portfolio portfolio, Instrument instrument, OrderType type, OrderSide side,
-            double qty, double price = 0.0, double stopPx = 0.0, TimeInForce timeInForce = TimeInForce.Day,
-            byte routeId = 0, string text = "")
+        public Order(IExecutionProvider provider, Portfolio portfolio, Instrument instrument, OrderType type, OrderSide side, double qty, double price = 0, double stopPx = 0, TimeInForce timeInForce = TimeInForce.Day, byte routeId = 0, string text = "")
+           : this(provider, instrument, type, side, qty, price, stopPx, timeInForce, text = "")
         {
+            Portfolio = portfolio;
+            RouteId = routeId;
         }
 
         public string GetSideAsString() => Side == OrderSide.Buy ? "Buy" : Side == OrderSide.Sell ? "Sell" : "Undefined";
@@ -406,13 +498,32 @@ namespace SmartQuant
 
         public void OnExecutionCommand(ExecutionCommand command)
         {
-            this.list_0.Add(command);
-            this.list_2.Add(command);
+            Commands.Add(command);
+            Messages.Add(command);
         }
 
         public void OnExecutionReport(ExecutionReport report)
         {
-            throw new NotImplementedException();
+            Status = report.OrdStatus;
+            if (report.ExecType == ExecType.ExecTrade)
+                AvgPx = (AvgPx  * CumQty + report.LastPx * report.LastQty) / (CumQty + report.LastQty);
+
+            CumQty = report.CumQty;
+            LeavesQty = report.LeavesQty;
+
+            if (report.ExecType == ExecType.ExecNew)
+                ProviderOrderId = report.ProviderOrderId;
+
+            if (report.ExecType == ExecType.ExecReplace)
+            {
+                Type = report.OrdType;
+                Price = report.Price;
+                StopPx = report.StopPx;
+                Qty = report.OrdQty;
+            }
+
+            Reports.Add(report);
+            Messages.Add(report);
         }
 
         public string GetTypeAsString()

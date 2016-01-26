@@ -521,7 +521,7 @@ namespace SmartQuant
                 {
                     report.dateTime = this.framework.Clock.DateTime;
                 }
-                this.framework.OrderManager.method_0(report);
+                this.framework.OrderManager.OnExecutionReport(report);
                 this.framework.PortfolioManager.OnExecutionReport(report);
                 this.framework.StrategyManager.OnExecutionReport(report);
                 this.framework.EventServer.EmitQueued();

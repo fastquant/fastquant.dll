@@ -153,7 +153,7 @@ namespace SmartQuant
 
         public Event(DateTime dateTime)
         {
-            this.dateTime = dateTime;
+            DateTime = dateTime;
         }
 
         public override string ToString() => $"{DateTime} {GetType()}";

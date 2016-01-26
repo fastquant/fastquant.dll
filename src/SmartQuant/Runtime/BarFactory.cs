@@ -17,7 +17,6 @@ namespace SmartQuant
         protected internal TimeSpan session1;
         protected internal TimeSpan session2;
         protected internal int providerId;
-
         protected Bar bar;
 
         public Instrument Instrument => this.instrument;
@@ -25,6 +24,8 @@ namespace SmartQuant
         public BarType BarType => this.barType;
 
         public long BarSize => this.barSize;
+
+        public int ProviderId { get; set; }
 
         public bool SessionEnabled
         {
@@ -62,8 +63,6 @@ namespace SmartQuant
             }
         }
 
-        public int ProviderId { get; set; }
-
         protected BarFactoryItem(Instrument instrument, BarType barType, long barSize, BarInput barInput = BarInput.Trade, int providerId = -1)
         {
             this.instrument = instrument;
@@ -82,6 +81,14 @@ namespace SmartQuant
         }
 
         protected virtual bool InSession(DateTime dateTime) => !this.sessionEnabled || (this.session1 <= dateTime.TimeOfDay && dateTime.TimeOfDay <= this.session2);
+        //protected virtual bool InSession(DateTime dateTime)
+        //{
+        //    if (this.sessionEnabled && !(this.session1 <= dateTime.TimeOfDay && dateTime.TimeOfDay <= this.session2))
+        //    {
+        //          return false;
+        //    }
+        //    return true;
+        //}
 
         internal void Process(DataObject obj)
         {
@@ -139,7 +146,7 @@ namespace SmartQuant
 
         protected virtual DateTime GetDataObjectDateTime(DataObject obj, ClockType type)
         {
-            return type == ClockType.Local ? obj.DateTime : (obj as Tick).ExchangeDateTime;
+            return type == ClockType.Local ? obj.DateTime : ((Tick)obj).ExchangeDateTime;
         }
 
         protected bool AddReminder(DateTime datetime, ClockType type) => this.factory.AddReminder(this, datetime, type);
@@ -151,14 +158,15 @@ namespace SmartQuant
             this.bar = null;
         }
 
-        public override string ToString() => $"{this.instrument.Symbol} {this.barType} {this.barSize} {this.barInput}";
+        public override string ToString() => $"{Instrument.Symbol} {BarType} {BarSize} {this.barInput}";
     }
 
     public class TimeBarFactoryItem : BarFactoryItem
     {
         private ClockType type;
 
-        public TimeBarFactoryItem(Instrument instrument, long barSize, int providerId = -1) : base(instrument, BarType.Time, barSize, BarInput.Trade, providerId)
+        public TimeBarFactoryItem(Instrument instrument, long barSize, int providerId = -1)
+            : base(instrument, BarType.Time, barSize, BarInput.Trade, providerId)
         {
         }
 
@@ -168,33 +176,53 @@ namespace SmartQuant
             this.type = type;
         }
 
-        public TimeBarFactoryItem(Instrument instrument, long barSize, BarInput barInput = BarInput.Trade, int providerId = -1) : base(instrument, BarType.Time, barSize, barInput, providerId)
+        public TimeBarFactoryItem(Instrument instrument, long barSize, BarInput barInput = BarInput.Trade, int providerId = -1)
+            : base(instrument, BarType.Time, barSize, barInput, providerId)
         {
         }
 
-        public TimeBarFactoryItem(Instrument instrument, long barSize, BarInput barInput = BarInput.Trade, ClockType type = ClockType.Local, int providerId = -1) : base(instrument, BarType.Time, barSize, barInput, providerId)
+        public TimeBarFactoryItem(Instrument instrument, long barSize, BarInput barInput = BarInput.Trade, ClockType type = ClockType.Local, int providerId = -1)
+            : base(instrument, BarType.Time, barSize, barInput, providerId)
         {
             this.type = type;
         }
 
-        public TimeBarFactoryItem(Instrument instrument, long barSize, BarInput barInput, TimeSpan session1, TimeSpan session2, int providerId = -1) : base(instrument, BarType.Tick, barSize, barInput, session1, session2, providerId)
+        public TimeBarFactoryItem(Instrument instrument, long barSize, BarInput barInput, TimeSpan session1, TimeSpan session2, int providerId = -1)
+            : base(instrument, BarType.Tick, barSize, barInput, session1, session2, providerId)
         {
         }
 
-        public TimeBarFactoryItem(Instrument instrument, long barSize, BarInput barInput, ClockType type, TimeSpan session1, TimeSpan session2, int providerId = -1) : base(instrument, BarType.Time, barSize, barInput, session1, session2, providerId)
+        public TimeBarFactoryItem(Instrument instrument, long barSize, BarInput barInput, ClockType type, TimeSpan session1, TimeSpan session2, int providerId = -1)
+            : base(instrument, BarType.Time, barSize, barInput, session1, session2, providerId)
         {
             this.type = type;
         }
 
         protected override void OnData(DataObject obj)
         {
+            bool barOpen = this.bar == null;
             base.OnData(obj);
-            if (this.bar != null || AddReminder(GetBarCloseDateTime(obj), this.type))
-                return;
-            if (obj is Tick)
-                Console.WriteLine($"TimeBarFactoryItem::OnData Can not add reminder. Clock = {this.type} local datetime = {this.factory.Framework.Clock.DateTime} exchange dateTime = {this.factory.Framework.ExchangeClock.DateTime} object = {obj} object exchange datetime = {(obj as Tick).ExchangeDateTime} reminder datetime = {GetBarCloseDateTime(obj)}");
-            else
-                Console.WriteLine($"TimeBarFactoryItem::OnData Can not add reminder. Object is not tick! Clock = {this.type} local datetime = {this.factory.Framework.Clock.DateTime} exchange datetime = {this.factory.Framework.ExchangeClock.DateTime} object = {obj} reminder datetime = {GetBarCloseDateTime(obj)}");
+            if (barOpen)
+            {
+                var success = AddReminder(GetBarCloseDateTime(obj), this.type);
+                if (!success)
+                {
+                    if (obj is Tick)
+                        Console.WriteLine($"TimeBarFactoryItem::OnData Can not add reminder. Clock = {this.type} local datetime = {this.factory.Framework.Clock.DateTime} exchange dateTime = {this.factory.Framework.ExchangeClock.DateTime} object = {obj} object exchange datetime = {(obj as Tick).ExchangeDateTime} reminder datetime = {GetBarCloseDateTime(obj)}");
+                    else
+                        Console.WriteLine($"TimeBarFactoryItem::OnData Can not add reminder. Object is not tick! Clock = {this.type} local datetime = {this.factory.Framework.Clock.DateTime} exchange datetime = {this.factory.Framework.ExchangeClock.DateTime} object = {obj} reminder datetime = {GetBarCloseDateTime(obj)}");
+                }
+            }
+
+
+            //bool flag = this.bar == null;
+            //base.OnData(obj);
+            //if (!flag || AddReminder(GetBarCloseDateTime(obj), this.type))
+            //    return;
+            //if (obj is Tick)
+            //    Console.WriteLine($"TimeBarFactoryItem::OnData Can not add reminder. Clock = {this.type} local datetime = {this.factory.Framework.Clock.DateTime} exchange dateTime = {this.factory.Framework.ExchangeClock.DateTime} object = {obj} object exchange datetime = {(obj as Tick).ExchangeDateTime} reminder datetime = {GetBarCloseDateTime(obj)}");
+            //else
+            //    Console.WriteLine($"TimeBarFactoryItem::OnData Can not add reminder. Object is not tick! Clock = {this.type} local datetime = {this.factory.Framework.Clock.DateTime} exchange datetime = {this.factory.Framework.ExchangeClock.DateTime} object = {obj} reminder datetime = {GetBarCloseDateTime(obj)}");
         }
 
         protected override DateTime GetBarOpenDateTime(DataObject obj)
@@ -211,18 +239,20 @@ namespace SmartQuant
 
         protected internal override void OnReminder(DateTime datetime)
         {
-            this.bar.DateTime = this.type == ClockType.Local ? datetime : this.factory.Framework.Clock.DateTime;
+            this.bar.CloseDateTime = this.type == ClockType.Local ? datetime : this.factory.Framework.Clock.DateTime;
             EmitBar();
         }
     }
 
     public class TickBarFactoryItem : BarFactoryItem
     {
-        public TickBarFactoryItem(Instrument instrument, long barSize, BarInput barInput = BarInput.Trade, int providerId = -1) : base(instrument, BarType.Tick, barSize, barInput, providerId)
+        public TickBarFactoryItem(Instrument instrument, long barSize, BarInput barInput = BarInput.Trade, int providerId = -1)
+            : base(instrument, BarType.Tick, barSize, barInput, providerId)
         {
         }
 
-        public TickBarFactoryItem(Instrument instrument, long barSize, BarInput barInput, TimeSpan session1, TimeSpan session2, int providerId = -1) : base(instrument, BarType.Tick, barSize, barInput, session1, session2, providerId)
+        public TickBarFactoryItem(Instrument instrument, long barSize, BarInput barInput, TimeSpan session1, TimeSpan session2, int providerId = -1)
+            : base(instrument, BarType.Tick, barSize, barInput, session1, session2, providerId)
         {
         }
 
@@ -236,21 +266,26 @@ namespace SmartQuant
 
     public class RangeBarFactoryItem : BarFactoryItem
     {
-        public RangeBarFactoryItem(Instrument instrument, long barSize, BarInput barInput = BarInput.Trade, int providerId = -1) : base(instrument, BarType.Range, barSize, barInput, providerId)
+        public RangeBarFactoryItem(Instrument instrument, long barSize, BarInput barInput = BarInput.Trade, int providerId = -1)
+            : base(instrument, BarType.Range, barSize, barInput, providerId)
         {
         }
 
-        public RangeBarFactoryItem(Instrument instrument, long barSize, BarInput barInput, TimeSpan session1, TimeSpan session2, int providerId = -1) : base(instrument, BarType.Tick, barSize, barInput, session1, session2, providerId)
+        public RangeBarFactoryItem(Instrument instrument, long barSize, BarInput barInput, TimeSpan session1, TimeSpan session2, int providerId = -1)
+            : base(instrument, BarType.Tick, barSize, barInput, session1, session2, providerId)
         {
         }
 
         protected override void OnData(DataObject obj)
         {
             Tick tick = (Tick)obj;
-            if (this.bar != null && (tick.Price > this.bar.High || tick.Price < this.bar.Low) && 10000.0 * (this.bar.High - this.bar.Low) >= this.barSize)
+            if (this.bar != null) // when the bar is not new
             {
-                this.bar.DateTime = tick.DateTime;
-                EmitBar();
+                if ((tick.Price > this.bar.High || tick.Price < this.bar.Low) && 10000 * (this.bar.High - this.bar.Low) >= this.barSize)
+                {
+                    this.bar.DateTime = tick.DateTime;
+                    EmitBar();
+                }
             }
             base.OnData(obj);
         }
@@ -258,11 +293,13 @@ namespace SmartQuant
 
     public class VolumeBarFactoryItem : BarFactoryItem
     {
-        public VolumeBarFactoryItem(Instrument instrument, long barSize, BarInput barInput = BarInput.Trade, int providerId = -1) : base(instrument, BarType.Volume, barSize, barInput, providerId)
+        public VolumeBarFactoryItem(Instrument instrument, long barSize, BarInput barInput = BarInput.Trade, int providerId = -1)
+            : base(instrument, BarType.Volume, barSize, barInput, providerId)
         {
         }
 
-        public VolumeBarFactoryItem(Instrument instrument, long barSize, BarInput barInput, TimeSpan session1, TimeSpan session2, int providerId = -1) : base(instrument, BarType.Tick, barSize, barInput, session1, session2, providerId)
+        public VolumeBarFactoryItem(Instrument instrument, long barSize, BarInput barInput, TimeSpan session1, TimeSpan session2, int providerId = -1)
+            : base(instrument, BarType.Tick, barSize, barInput, session1, session2, providerId)
         {
         }
 
@@ -278,25 +315,41 @@ namespace SmartQuant
     {
         private ClockType type;
 
-        public SessionBarFactoryItem(Instrument instrument, BarInput barInput, TimeSpan session1, TimeSpan session2, int providerId = -1) : base(instrument, BarType.Session, (long)(session2 - session1).TotalSeconds, barInput, session1, session2, providerId)
+        public SessionBarFactoryItem(Instrument instrument, BarInput barInput, TimeSpan session1, TimeSpan session2, int providerId = -1)
+            : base(instrument, BarType.Session, (long)(session2 - session1).TotalSeconds, barInput, session1, session2, providerId)
         {
         }
 
-        public SessionBarFactoryItem(Instrument instrument, BarInput barInput, ClockType type, TimeSpan session1, TimeSpan session2, int providerId = -1) : base(instrument, BarType.Session, (long)(session2 - session1).TotalSeconds, barInput, session1, session2, providerId)
+        public SessionBarFactoryItem(Instrument instrument, BarInput barInput, ClockType type, TimeSpan session1, TimeSpan session2, int providerId = -1)
+            : base(instrument, BarType.Session, (long)(session2 - session1).TotalSeconds, barInput, session1, session2, providerId)
         {
             this.type = type;
         }
 
         protected override void OnData(DataObject obj)
         {
-            bool flag = this.bar == null;
+            bool barOpen = this.bar == null;
             base.OnData(obj);
-            if (!flag || AddReminder(GetBarCloseDateTime(obj), this.type))
-                return;
-            if (!(obj is Tick))
-                Console.WriteLine($"SessionBarFactoryItem::OnData Can not add reminder. Object is not tick! Clock = {this.type} local datetime = {this.factory.Framework.Clock.DateTime} exchange datetime = {this.factory.Framework.ExchangeClock.DateTime} object = {obj} reminder datetime = {GetBarCloseDateTime(obj)}");
-            else
-                Console.WriteLine($"SessionBarFactoryItem::OnData Can not add reminder. Clock = {this.type} local datetime = {this.factory.Framework.Clock.DateTime} exchange dateTime = {this.factory.Framework.ExchangeClock.DateTime} object = {obj} object exchange datetime = {((Tick)obj).ExchangeDateTime} reminder datetime = {GetBarCloseDateTime(obj)}");
+            if (barOpen)
+            {
+                var success = AddReminder(GetBarCloseDateTime(obj), this.type);
+                if (!success)
+                {
+                    if (!(obj is Tick))
+                        Console.WriteLine($"SessionBarFactoryItem::OnData Can not add reminder. Object is not tick! Clock = {this.type} local datetime = {this.factory.Framework.Clock.DateTime} exchange datetime = {this.factory.Framework.ExchangeClock.DateTime} object = {obj} reminder datetime = {GetBarCloseDateTime(obj)}");
+                    else
+                        Console.WriteLine($"SessionBarFactoryItem::OnData Can not add reminder. Clock = {this.type} local datetime = {this.factory.Framework.Clock.DateTime} exchange dateTime = {this.factory.Framework.ExchangeClock.DateTime} object = {obj} object exchange datetime = {((Tick)obj).ExchangeDateTime} reminder datetime = {GetBarCloseDateTime(obj)}");
+                }
+            }
+
+            //bool barOpen = this.bar == null;
+            //base.OnData(obj);
+            //if (!barOpen || AddReminder(GetBarCloseDateTime(obj), this.type))
+            //    return;
+            //if (!(obj is Tick))
+            //    Console.WriteLine($"SessionBarFactoryItem::OnData Can not add reminder. Object is not tick! Clock = {this.type} local datetime = {this.factory.Framework.Clock.DateTime} exchange datetime = {this.factory.Framework.ExchangeClock.DateTime} object = {obj} reminder datetime = {GetBarCloseDateTime(obj)}");
+            //else
+            //    Console.WriteLine($"SessionBarFactoryItem::OnData Can not add reminder. Clock = {this.type} local datetime = {this.factory.Framework.Clock.DateTime} exchange dateTime = {this.factory.Framework.ExchangeClock.DateTime} object = {obj} object exchange datetime = {((Tick)obj).ExchangeDateTime} reminder datetime = {GetBarCloseDateTime(obj)}");
         }
 
         protected override DateTime GetBarOpenDateTime(DataObject obj)
@@ -311,10 +364,7 @@ namespace SmartQuant
 
         protected internal override void OnReminder(DateTime datetime)
         {
-            if (this.type == ClockType.Local)
-                this.bar.DateTime = datetime;
-            else
-                this.bar.DateTime = this.factory.Framework.Clock.DateTime;
+            this.bar.CloseDateTime = this.type == ClockType.Local ? datetime : this.factory.Framework.Clock.DateTime;
             EmitBar();
         }
     }
@@ -325,7 +375,7 @@ namespace SmartQuant
 
         private SortedList<DateTime, SortedList<long, List<BarFactoryItem>>> orderedItemLists = new SortedList<DateTime, SortedList<long, List<BarFactoryItem>>>();
 
-        public IdArray<List<BarFactoryItem>> ItemLists { get; } = new IdArray<List<BarFactoryItem>>(10240);
+        public IdArray<List<BarFactoryItem>> ItemLists { get; } = new IdArray<List<BarFactoryItem>>(256);
 
         internal Framework Framework => this.framework;
 
@@ -341,9 +391,9 @@ namespace SmartQuant
                 throw new InvalidOperationException("BarFactoryItem is already added to another BarFactory instance.");
 
             item.factory = this;
-            int id = item.instrument.Id;
+            int id = item.Instrument.Id;
             var items = ItemLists[id] = ItemLists[id] ?? new List<BarFactoryItem>();
-            if (items.Exists(match => item.barType == match.barType && item.barSize == match.barSize && item.barInput == match.barInput))
+            if (items.Exists(match => item.barType == match.barType && item.barSize == match.barSize && item.barInput == match.barInput && item.providerId == match.providerId))
                 Console.WriteLine($"{DateTime.Now} BarFactory::Add Item '{item}' is already added");
             else
                 items.Add(item);
@@ -351,12 +401,12 @@ namespace SmartQuant
 
         public void Add(Instrument instrument, TimeSpan session1, TimeSpan session2, int providerId = -1)
         {
-            Add(instrument, BarType.Session, (long)(session2 - session1).Seconds, BarInput.Trade, ClockType.Local, session1, session2, providerId);
+            this.Add(instrument, BarType.Session, (session2 - session1).Seconds, BarInput.Trade, ClockType.Local, session1, session2, providerId);
         }
 
         public void Add(string symbol, TimeSpan session1, TimeSpan session2, int providerId = -1)
         {
-            Add(this.framework.InstrumentManager[symbol], BarType.Session, (long)(session2 - session1).Seconds, BarInput.Trade, ClockType.Local, session1, session2, providerId);
+            Add(this.framework.InstrumentManager[symbol], BarType.Session, (session2 - session1).Seconds, BarInput.Trade, ClockType.Local, session1, session2, providerId);
         }
 
         public void Add(string symbol, BarType barType, long barSize, BarInput barInput = BarInput.Trade, int providerId = -1)
@@ -372,7 +422,7 @@ namespace SmartQuant
 
         public void Add(string[] symbols, BarType barType, long barSize, BarInput barInput = BarInput.Trade, int providerId = -1)
         {
-            foreach (var symbol in symbols)
+            foreach(var symbol in symbols)
                 Add(this.framework.InstrumentManager.Get(symbol), barType, barSize, barInput, ClockType.Local, providerId);
         }
 
@@ -414,7 +464,7 @@ namespace SmartQuant
 
         public void Add(string[] symbols, BarType barType, long barSize, BarInput barInput = BarInput.Trade, ClockType type = ClockType.Local, int providerId = -1)
         {
-            foreach (var symbol in symbols)
+            foreach(var symbol in symbols)
                 Add(this.framework.InstrumentManager.Get(symbol), barType, barSize, barInput, type, providerId);
         }
 
@@ -430,7 +480,7 @@ namespace SmartQuant
 
         public void Add(string symbol, BarInput barInput, ClockType type, TimeSpan session1, TimeSpan session2, int providerId = -1)
         {
-            Add(this.framework.InstrumentManager[symbol], BarType.Session, (long)(session2 - session1).Seconds, barInput, type, session1, session2, providerId);
+            Add(this.framework.InstrumentManager[symbol], BarType.Session, (session2 - session1).Seconds, barInput, type, session1, session2, providerId);
         }
 
         public void Add(Instrument instrument, BarType barType, long barSize, BarInput barInput, ClockType type, TimeSpan session1, TimeSpan session2, int providerId = -1)
@@ -483,16 +533,16 @@ namespace SmartQuant
             switch (barType)
             {
                 case BarType.Time:
-                    item = new TimeBarFactoryItem(instrument, barSize, barInput, type);
+                    item = new TimeBarFactoryItem(instrument, barSize, barInput, type, -1);
                     break;
                 case BarType.Tick:
-                    item = new TickBarFactoryItem(instrument, barSize, barInput);
+                    item = new TickBarFactoryItem(instrument, barSize, barInput, -1);
                     break;
                 case BarType.Volume:
-                    item = new VolumeBarFactoryItem(instrument, barSize, barInput);
+                    item = new VolumeBarFactoryItem(instrument, barSize, barInput, -1);
                     break;
                 case BarType.Range:
-                    item = new RangeBarFactoryItem(instrument, barSize, barInput);
+                    item = new RangeBarFactoryItem(instrument, barSize, barInput, -1);
                     break;
                 case BarType.Session:
                     throw new ArgumentException("BarFactory::Remove Can not create SessionBarFactoryItem without session parameters");
@@ -511,97 +561,179 @@ namespace SmartQuant
         // TODO: rewrite it using goto statement!!!
         internal void OnData(DataObject obj)
         {
-            var tick = (Tick)obj;
-            var items = ItemLists[tick.InstrumentId];
-            if (items == null)
-                return;
+            /*
+                        var tick = (Tick)obj;
+                        var items = ItemLists[tick.InstrumentId];
+                        if (items == null)
+                            return;
 
-            int i = 0;
-            while (i < items.Count)
+                        int i = 0;
+                        while (i < items.Count)
+                        {
+                            var item = items[i];
+                            switch (item.barInput)
+                            {
+                                case BarInput.Trade:
+                                    if (tick.TypeId == DataObjectType.Trade)
+                                    {
+                                        item.Process(tick);
+                                        i++;
+                                        continue;
+                                    }
+                                    break;
+                                case BarInput.Bid:
+                                    if (tick.TypeId == DataObjectType.Bid)
+                                    {
+                                        item.Process(tick);
+                                        i++;
+                                        continue;
+                                    }
+                                    break;
+                                case BarInput.Ask:
+                                    if (tick.TypeId == DataObjectType.Ask)
+                                    {
+                                        item.Process(tick);
+                                        i++;
+                                        continue;
+                                    }
+                                    break;
+                                case BarInput.Middle:
+                                    switch (tick.TypeId)
+                                    {
+                                        case DataObjectType.Bid:
+                                            {
+                                                var ask = this.framework.DataManager.GetAsk(tick.InstrumentId);
+                                                if (ask == null)
+                                                {
+                                                    i++;
+                                                    continue;
+                                                }
+                                                tick = new Tick(obj.DateTime, tick.ProviderId, tick.InstrumentId, (ask.Price + tick.Price) / 2.0, (ask.Size + tick.Size) / 2);
+                                                break;
+                                            }
+                                        case DataObjectType.Ask:
+                                            {
+                                                Bid bid = this.framework.DataManager.GetBid(tick.InstrumentId);
+                                                if (bid == null)
+                                                {
+                                                    i++;
+                                                    continue;
+                                                }
+                                                tick = new Tick(obj.dateTime, tick.ProviderId, tick.InstrumentId, (bid.Price + tick.Price) / 2.0, (bid.Size + tick.Size) / 2);
+                                                break;
+                                            }
+                                        case DataObjectType.Trade:
+                                            i++;
+                                            continue;
+                                    }
+                                    if (obj.TypeId != DataObjectType.Ask)
+                                    {
+                                        item.Process(tick);
+                                        i++;
+                                        continue;
+                                    }
+                                    break;
+                                case BarInput.Tick:
+                                    {
+                                        item.Process(tick);
+                                        i++;
+                                        continue;
+                                    }
+                                case BarInput.BidAsk:
+                                    if (tick.TypeId != DataObjectType.Trade)
+                                    {
+                                        item.Process(tick);
+                                        i++;
+                                        continue;
+                                    }
+                                    break;
+                                default:
+                                    Console.WriteLine($"BarFactory::OnData BarInput is not supported : {item.barInput}");
+                                    break;
+                            }
+                            i++;
+                        }
+            */
+            Tick tick = (Tick)obj;
+            List<BarFactoryItem> list = ItemLists[tick.InstrumentId];
+            if (list != null)
             {
-                var item = items[i];
-                switch (item.barInput)
+                int i = 0;
+                while (i < list.Count)
                 {
-                    case BarInput.Trade:
-                        if (tick.TypeId == DataObjectType.Trade)
-                        {
-                            item.Process(tick);
-                            i++;
-                            continue;
-                        }
-                        break;
-                    case BarInput.Bid:
-                        if (tick.TypeId == DataObjectType.Bid)
-                        {
-                            item.Process(tick);
-                            i++;
-                            continue;
-                        }
-                        break;
-                    case BarInput.Ask:
-                        if (tick.TypeId == DataObjectType.Ask)
-                        {
-                            item.Process(tick);
-                            i++;
-                            continue;
-                        }
-                        break;
-                    case BarInput.Middle:
-                        switch (tick.TypeId)
-                        {
-                            case DataObjectType.Bid:
-                                {
-                                    var ask = this.framework.DataManager.GetAsk(tick.InstrumentId);
-                                    if (ask == null)
+                    BarFactoryItem barFactoryItem = list[i];
+                    switch (barFactoryItem.barInput)
+                    {
+                        case BarInput.Trade:
+                            if (tick.TypeId == DataObjectType.Trade)
+                            {
+                                goto IL_19C;
+                            }
+                            break;
+                        case BarInput.Bid:
+                            if (tick.TypeId == DataObjectType.Bid)
+                            {
+                                goto IL_19C;
+                            }
+                            break;
+                        case BarInput.Ask:
+                            if (tick.TypeId == DataObjectType.Ask)
+                            {
+                                goto IL_19C;
+                            }
+                            break;
+                        case BarInput.Middle:
+                            switch (tick.TypeId)
+                            {
+                                case DataObjectType.Bid:
                                     {
-                                        i++;
-                                        continue;
+                                        Ask ask = this.framework.DataManager.GetAsk(tick.InstrumentId);
+                                        if (ask == null)
+                                        {
+                                            goto IL_1A3;
+                                        }
+                                        tick = new Tick(obj.dateTime, tick.ProviderId, tick.InstrumentId, (ask.Price + tick.Price) / 2.0, (ask.Size + tick.Size) / 2);
+                                        break;
                                     }
-                                    tick = new Tick(obj.DateTime, tick.ProviderId, tick.InstrumentId, (ask.Price + tick.Price) / 2.0, (ask.Size + tick.Size) / 2);
-                                    break;
-                                }
-                            case DataObjectType.Ask:
-                                {
-                                    Bid bid = this.framework.DataManager.GetBid(tick.InstrumentId);
-                                    if (bid == null)
+                                case DataObjectType.Ask:
                                     {
-                                        i++;
-                                        continue;
+                                        Bid bid = this.framework.DataManager.GetBid(tick.InstrumentId);
+                                        if (bid == null)
+                                        {
+                                            goto IL_1A3;
+                                        }
+                                        tick = new Tick(obj.dateTime, tick.ProviderId, tick.InstrumentId, (bid.Price + tick.Price) / 2.0, (bid.Size + tick.Size) / 2);
+                                        break;
                                     }
-                                    tick = new Tick(obj.dateTime, tick.ProviderId, tick.InstrumentId, (bid.Price + tick.Price) / 2.0, (bid.Size + tick.Size) / 2);
-                                    break;
-                                }
-                            case DataObjectType.Trade:
-                                i++;
-                                continue;
-                        }
-                        if (obj.TypeId != DataObjectType.Ask)
-                        {
-                            item.Process(tick);
-                            i++;
-                            continue;
-                        }
-                        break;
-                    case BarInput.Tick:
-                        {
-                            item.Process(tick);
-                            i++;
-                            continue;
-                        }
-                    case BarInput.BidAsk:
-                        if (tick.TypeId != DataObjectType.Trade)
-                        {
-                            item.Process(tick);
-                            i++;
-                            continue;
-                        }
-                        break;
-                    default:
-                        Console.WriteLine($"BarFactory::OnData BarInput is not supported : {item.barInput}");
-                        break;
+                                case DataObjectType.Trade:
+                                    goto IL_1A3;
+                            }
+                            if (obj.TypeId != 3)
+                            {
+                                goto IL_19C;
+                            }
+                            break;
+                        case BarInput.Tick:
+                            goto IL_19C;
+                        case BarInput.BidAsk:
+                            if (tick.TypeId != DataObjectType.Trade)
+                            {
+                                goto IL_19C;
+                            }
+                            break;
+                        default:
+                            Console.WriteLine("BarFactory::OnData BarInput is not supported : " + barFactoryItem.barInput);
+                            break;
+                    }
+                    IL_1A3:
+                    i++;
+                    continue;
+                    IL_19C:
+                    barFactoryItem.Process(tick);
+                    goto IL_1A3;
                 }
-                i++;
             }
+
         }
 
         internal bool AddReminder(BarFactoryItem item, DateTime dateTime, ClockType type)

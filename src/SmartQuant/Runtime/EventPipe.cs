@@ -9,11 +9,14 @@ namespace SmartQuant
         private LinkedList<IEventQueue> list = new LinkedList<IEventQueue>();
         private EventTree tree = new EventTree();
 
-        public int Count => list.Count;
+        internal bool Threaded { get; }
+
+        public int Count => this.list.Count;
 
         public EventPipe(Framework framework, bool threaded = false)
         {
             this.framework = framework;
+            Threaded = threaded;
             if (threaded)
                 throw new NotSupportedException();
         }

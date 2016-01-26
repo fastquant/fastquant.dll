@@ -82,7 +82,7 @@ namespace SmartQuant
         {
             get
             {
-                return this.framework.OrderManager.Orders.TakeWhile(o => !o.IsDone && o.PortfolioId == Id).Sum(o =>
+                return this.framework.OrderManager.Orders.Where(o => !o.IsDone && o.PortfolioId == Id).Sum(o =>
                 {
                     var amount = o.Instrument.Factor != 0 ? o.Price * o.Qty * o.Instrument.Factor : o.Price * o.Qty;
                     return this.framework.CurrencyConverter.Convert(amount, o.Instrument.CurrencyId, Account.CurrencyId);

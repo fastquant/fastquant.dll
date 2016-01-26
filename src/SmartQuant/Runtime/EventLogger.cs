@@ -8,18 +8,25 @@ namespace SmartQuant
 {
     public class EventLogger
     {
+        protected internal string name;
         protected internal Framework framework;
 
-        public string Name { get; private set; }
+        public string Name => this.name;
+
+        public EventLogger()
+        {
+        }
 
         public EventLogger(Framework framework, string name)
         {
             this.framework = framework;
-            Name = name;
+            this.name = name;
+            this.framework.EventLoggerManager.Add(this);
         }
 
         public virtual void OnEvent(Event e)
         {
+            // noop
         }
     }
 
@@ -41,6 +48,8 @@ namespace SmartQuant
     public class DataSeriesEventLogger : EventLogger
     {
         private DataSeries series;
+        private IdArray<bool> gates = new IdArray<bool>(256);
+        private DateTime dateTime;
 
         public DataSeriesEventLogger(Framework framework, DataSeries series)
             : base(framework, "DataSeriesEventLogger")
@@ -54,22 +63,31 @@ namespace SmartQuant
             this.series = series;
         }
 
-        public void Enable(byte typeId)
-        {
-        }
+        public void Enable(byte typeId) => this.gates[typeId] = true;
 
-        public void Disable(byte typeId)
-        {
-        }
+        public void Disable(byte typeId) => this.gates[typeId] = false;
 
         public override void OnEvent(Event e)
         {
+            if (this.gates[e.TypeId])
+            {
+
+                if (e.DateTime >= this.dateTime)
+                {
+                    this.dateTime = e.dateTime;
+                    this.series.Add((DataObject)e);
+                }
+                else
+                {
+                    Console.WriteLine($"!{e} = {e.DateTime} <> {this.dateTime}");
+                }
+            }
         }
     }
 
     public class EventLoggerManager
     {
-        private Dictionary<string, EventLogger> loggers = new Dictionary<string, EventLogger>();
+        private readonly Dictionary<string, EventLogger> loggers = new Dictionary<string, EventLogger>();
 
         public void Add(EventLogger logger) => this.loggers[logger.Name] = logger;
 

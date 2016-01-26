@@ -80,7 +80,7 @@ namespace SmartQuant
                 i.Bar = null;
             }
             var deleted = new InstrumentList();
-            foreach (var i in Instruments.TakeWhile(i => !i.Loaded))
+            foreach (var i in Instruments.Where(i => !i.Loaded))
                 deleted.Add(i);
             foreach (var i in deleted)
                 Delete(i);

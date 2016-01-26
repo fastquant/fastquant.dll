@@ -6,13 +6,13 @@ namespace SmartQuant
     {
         byte Id { get; }
 
-        byte Type { get; }
-
-        bool IsSynched { get; set; }
-
         string Name { get; }
 
+        byte Type { get; }
+
         byte Priority { get; }
+
+        bool IsSynched { get; set; }
 
         long Count { get; }
 

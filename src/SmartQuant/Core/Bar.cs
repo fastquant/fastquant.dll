@@ -57,13 +57,38 @@ namespace SmartQuant
     {
         private IdArray<double> fields;
 
-        private static Dictionary<string, byte> mapping;
+        private static Dictionary<string, byte> mapping = new Dictionary<string, byte>()
+        {
+            ["Close"] = 0,
+            ["Open"] = 1,
+            ["High"] = 2,
+            ["Low"] = 3,
+            ["Median"] = 4,
+            ["Typical"] = 5,
+            ["Weighted"] = 6,
+            ["Volume"] = 8,
+            ["OpenInt"] = 9,
+            ["Range"] = 10,
+            ["Mean"] = 11,
+            ["Variance"] = 12,
+            ["StdDev"] = 13
+        };
 
         public override byte TypeId => DataObjectType.Bar;
 
         public BarType Type { get; set; } = BarType.Time;
 
-        public DateTime CloseDateTime => DateTime;
+        public DateTime CloseDateTime
+        {
+            get
+            {
+                return DateTime;
+            }
+            internal set
+            {
+                DateTime = value;
+            }
+        }
 
         public DateTime OpenDateTime { get; set; } = DateTime.MinValue;
 
@@ -75,11 +100,11 @@ namespace SmartQuant
 
         public int ProviderId { get; set; }
 
-        public double Open { get; set; }
-
         public double High { get; set; }
 
         public double Low { get; set; }
+
+        public double Open { get; set; }
 
         public double Close { get; set; } = double.NaN;
 
@@ -132,14 +157,14 @@ namespace SmartQuant
             }
         }
 
-        static Bar()
-        {
-            mapping = new Dictionary<string, byte>();
-            foreach (var field in Enum.GetNames(typeof(BarData)))
-                AddField(field, Convert.ToByte(Enum.Parse(typeof(BarData), field)));
-        }
+        //static Bar()
+        //{
+        //    mapping = new Dictionary<string, byte>();
+        //    foreach (var field in Enum.GetNames(typeof(BarData)))
+        //        AddField(field, Convert.ToByte(Enum.Parse(typeof(BarData), field)));
+        //}
 
-        public Bar(DateTime openDateTime, DateTime closeDateTime, int instrumentId, BarType type, long size, double open = 0.0, double high = 0.0, double low = 0.0, double close = 0.0, long volume = 0, long openInt = 0)
+        public Bar(DateTime openDateTime, DateTime closeDateTime, int instrumentId, BarType type, long size, double open = 0, double high = 0, double low = 0, double close = 0.0, long volume = 0, long openInt = 0)
            : base(closeDateTime)
         {
             OpenDateTime = openDateTime;
@@ -177,11 +202,14 @@ namespace SmartQuant
 
         public override string ToString()
         {
-            return $"Bar [{OpenDateTime} - {DateTime}] Instrument={InstrumentId} Type={Type} Size={Size} Open={Open} High={High} Low={Low} Close={Close} Volume={Volume}";
+            return $"{nameof(Bar)} [{OpenDateTime} - {CloseDateTime}] Instrument={InstrumentId} Type={Type} Size={Size} Open={Open} High={High} Low={Low} Close={Close} Volume={Volume}";
         }
 
         #region Extra
-        public IdArray<double> Fields => this.fields;
+
+        [NotOriginal]
+        internal IdArray<double> Fields => this.fields;
+        
         #endregion
     }
 }

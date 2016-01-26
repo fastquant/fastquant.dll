@@ -103,11 +103,59 @@ namespace SmartQuant
             }
         }
 
+        private void method_0()
+        {
+            this.bars.RemoveAt(0);
+            for (int i = 0; i < this.Indicators.Count; i++)
+            {
+                if (this.Indicators[i].Count > 0)
+                {
+                    this.Indicators[i].Remove(0);
+                }
+            }
+        }
+        private void Add_origin(Bar bar)
+        {
+            if (this.min == null)
+            {
+                this.min = bar;
+            }
+            else if (bar.High < this.min.Low)
+            {
+                this.min = bar;
+            }
+            if (this.max == null)
+            {
+                this.max = bar;
+            }
+            else if (bar.High > this.max.High)
+            {
+                this.max = bar;
+            }
+            if (this.bars.Count != 0 && !(bar.dateTime >= this.bars[this.bars.Count - 1].dateTime))
+            {
+                this.bars.Insert(this.GetIndex(bar.dateTime, IndexOption.Next), bar);
+            }
+            else
+            {
+                this.bars.Add(bar);
+            }
+            int num = this.bars.Count - 1;
+            for (int i = 0; i < this.Indicators.Count; i++)
+            {
+                this.Indicators[i].Update(num);
+            }
+            if (this.maxLength != -1 && this.Count > this.maxLength)
+            {
+                this.method_0();
+            }
+
+        }
         public void Add(Bar bar)
         {
-            this.min = this.min == null ? bar : bar.High < this.min.Low ? bar : this.min;
-            this.max = this.max == null ? bar : bar.High > this.max.High ? bar : this.max;
-            throw new NotImplementedException();
+            Add_origin(bar);
+            //this.min = this.min == null ? bar : bar.High < this.min.Low ? bar : this.min;
+            //this.max = this.max == null ? bar : bar.High > this.max.High ? bar : this.max;
         }
 
         void IDataSeries.Add(DataObject obj)=> Add((Bar)obj);

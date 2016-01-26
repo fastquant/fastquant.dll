@@ -62,7 +62,7 @@ namespace SmartQuant
             if (disposing)
             {
                 DisconnectAll();
-                Providers.TakeWhile(p => p is Provider).ToList().ForEach(p => ((Provider)p).Dispose());
+                Providers.Where(p => p is Provider).ToList().ForEach(p => ((Provider)p).Dispose());
             }
         }
 
@@ -110,13 +110,17 @@ namespace SmartQuant
 
         public void SetExecutionSimulator(int id) => this.executionSimulator = GetProvider(id) as IExecutionSimulator;
 
-        public void DisconnectAll() => Providers.TakeWhile(provider => provider.IsConnected).ToList().ForEach(provider => provider.Disconnect());
+        public void DisconnectAll() => Providers.Where(provider => provider.IsConnected).ToList().ForEach(provider => provider.Disconnect());
 
         public IProvider GetProvider(int id) => Providers.GetById(id);
 
         public IProvider GetProvider(string name) => Providers.GetByName(name);
 
-        public void Clear() => Providers.TakeWhile(p => p is Provider).ToList().ForEach(p => ((Provider)p).Clear());
+        public void Clear()
+        {
+            foreach (var p in Providers)
+                ((Provider)p).Clear();
+        }
 
         public void SaveSettings(IProvider provider)
         {

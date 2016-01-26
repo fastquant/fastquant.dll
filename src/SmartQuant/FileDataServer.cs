@@ -63,7 +63,7 @@ namespace SmartQuant
 
         public override List<DataSeries> GetDataSeriesList(Instrument instrument = null, string pattern = null)
         {
-            var keys = this.dataFile.Keys.Values.TakeWhile(k => k.TypeId == ObjectType.DataSeries && (instrument == null || DataSeriesNameHelper.GetSymbol(k.Name) == instrument.Symbol) && (pattern == null || k.Name.Contains(pattern)));
+            var keys = this.dataFile.Keys.Values.Where(k => k.TypeId == ObjectType.DataSeries && (instrument == null || DataSeriesNameHelper.GetSymbol(k.Name) == instrument.Symbol) && (pattern == null || k.Name.Contains(pattern)));
             return keys.Select(k => GetDataSeries(k.Name)).ToList();
         }
 

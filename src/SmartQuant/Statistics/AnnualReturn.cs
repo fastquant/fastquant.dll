@@ -16,7 +16,22 @@ namespace SmartQuant.Statistics
 
         protected internal override void OnEquity(double equity)
         {
-            throw new NotImplementedException();
+            if (this.dateTime == DateTime.MinValue)
+            {
+                this.dateTime = base.Clock.DateTime;
+                this.initial = equity;
+            }
+            if (base.Clock.DateTime.Year > this.dateTime.Year)
+            {
+                if (this.initial != 0.0)
+                {
+                    this.totalValue = equity - this.initial;
+                    this.totalValues.Add(base.Clock.DateTime, this.totalValue);
+                    base.Emit();
+                }
+                this.dateTime = base.Clock.DateTime;
+                this.initial = equity;
+            }
         }
     }
 

@@ -135,8 +135,14 @@ namespace SmartQuant
 
     public class OnPositionOpened : Event
     {
+        [NotOriginal]
         public Portfolio Portfolio { get; }
+        [NotOriginal]
         public Position Position { get; }
+
+        public Portfolio portfolio => Portfolio;
+
+        public Position position => Position;
 
         public override byte TypeId => EventType.OnPositionOpened;
 
@@ -151,8 +157,14 @@ namespace SmartQuant
 
     public class OnPositionClosed : Event
     {
+        [NotOriginal]
         public Portfolio Portfolio { get; }
+        [NotOriginal]
         public Position Position { get; }
+
+        public Portfolio portfolio => Portfolio;
+
+        public Position position => Position;
 
         public override byte TypeId => EventType.OnPositionClosed;
 
@@ -167,8 +179,14 @@ namespace SmartQuant
 
     public class OnPositionChanged : Event
     {
+        [NotOriginal]
         public Portfolio Portfolio { get; }
+        [NotOriginal]
         public Position Position { get; }
+
+        public Portfolio portfolio => Portfolio;
+
+        public Position position => Position;
 
         public override byte TypeId => EventType.OnPositionChanged;
 

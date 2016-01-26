@@ -46,6 +46,19 @@ namespace SmartQuant
         private int v3;
         internal bool Loaded;
 
+        [NotOriginal]
+        internal Framework Framework
+        {
+            get
+            {
+                return this.framework;
+            }
+            set
+            {
+                this.framework = value;
+            }
+        }
+
         [Category("Appearance"), Description("Unique instrument id in the framework")]
         public int Id { get; set; }
 
@@ -113,8 +126,6 @@ namespace SmartQuant
 
         [Category("Appearance"), Description("Instrument Type (Stock, Futures, Option, Bond, ETF, Index, etc.)")]
         public InstrumentType Type { get; }
-
-        internal Framework Framework { get; set; }
 
         public byte CurrencyId { get; set; }
 

@@ -23,7 +23,7 @@ namespace SmartQuant
 
         public string Text { get; set; }
 
-        public double Commission { get; private set; }
+        public double Commission { get; internal set; }
 
         public double Value => Instrument.Factor != 0 ? Price * Qty * Instrument.Factor : Price * Qty;
 

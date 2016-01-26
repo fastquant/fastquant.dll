@@ -223,6 +223,8 @@ namespace SmartQuant
 
         public DateTime ExpireTime { get; internal set; }
 
+        public int StrategyId { get; }
+
         public ExecutionCommand()
         {
             Text = "";

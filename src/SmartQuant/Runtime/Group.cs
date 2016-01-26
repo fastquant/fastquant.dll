@@ -10,13 +10,13 @@ namespace SmartQuant
 {
     public class GroupEvent : DataObject
     {
+        public override byte TypeId => DataObjectType.GroupEvent;
+
         public Group Group { get; set; }
 
-        public Event Obj { get; private set; }
+        public Event Obj { get; }
 
-        public int GroupId { get; private set; }
-
-        public override byte TypeId => DataObjectType.GroupEvent;
+        public int GroupId { get; }
 
         public GroupEvent(Event obj, Group group)
         {
@@ -40,17 +40,15 @@ namespace SmartQuant
 
         public string Name { get; private set; }
 
-        public Framework Framework { get; internal set; }
+        public Framework Framework { get; set; }
 
-        public Dictionary<string, GroupField> Fields { get; private set; }
+        public Dictionary<string, GroupField> Fields { get; } = new Dictionary<string, GroupField>();
 
-        public List<GroupEvent> Events { get; private set; }
+        public List<GroupEvent> Events { get; } = new List<GroupEvent>();
 
         public Group(string name)
         {
             Name = name;
-            Fields = new Dictionary<string, GroupField>();
-            Events = new List<GroupEvent>();
         }
 
         public void Add(string name, byte type, object value)
@@ -106,9 +104,9 @@ namespace SmartQuant
 
         private object value;
 
-        public string Name { get; private set; }
+        public string Name { get;  }
 
-        public byte Type { get; private set; }
+        public byte Type { get; }
 
         public object Value
         {
@@ -122,7 +120,7 @@ namespace SmartQuant
                     return;
                 object oldValue = this.value;
                 this.value = value;
-                //Group.Framework.EventServer.OnLog(new GroupUpdate(Group.Id, Name, Type, this.value, oldValue, GroupUpdateType.FieldUpdated));
+                Group.Framework.EventServer.OnLog(new GroupUpdate(Group.Id, Name, Type, this.value, oldValue, GroupUpdateType.FieldUpdated));
             }
         }
 
@@ -145,17 +143,17 @@ namespace SmartQuant
     {
         public override byte TypeId => DataObjectType.GroupUpdate;
 
-        public int GroupId { get; private set; }
+        public int GroupId { get; }
 
-        public string FieldName { get; private set; }
+        public string FieldName { get; }
 
-        public GroupUpdateType UpdateType { get; private set; }
+        public GroupUpdateType UpdateType { get; }
 
-        public byte FieldType { get; private set; }
+        public byte FieldType { get; }
 
-        public object Value { get; private set; }
+        public object Value { get; }
 
-        public object OldValue { get; private set; }
+        public object OldValue { get; }
 
         public GroupUpdate(int groupId, string fieldName, byte fieldType, object value, object oldValue, GroupUpdateType updateType)
         {
@@ -200,10 +198,12 @@ namespace SmartQuant
 
         internal void OnGroupEvent(GroupEvent e)
         {
+            // noop
         }
 
         internal void OnGroup(Group e)
         {
+            // noop
         }
     }
 }

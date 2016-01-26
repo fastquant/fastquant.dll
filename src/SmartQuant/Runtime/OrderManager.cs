@@ -172,7 +172,7 @@ namespace SmartQuant
             {
                 Server.Open();
                 var messages = Server.Load(name);
-                var result = clientId == -1 ? messages.Take(messages.Count) : messages.TakeWhile(m => m.ClientId == clientId);
+                var result = clientId == -1 ? messages.Take(messages.Count) : messages.Where(m => m.ClientId == clientId);
                 return result.ToList();
             }
             else
@@ -303,7 +303,7 @@ namespace SmartQuant
             order.Provider.Send(command);
         }
 
-        internal void method_0(ExecutionReport report)
+        internal void OnExecutionReport(ExecutionReport report)
         {
             report.Order = report.Order ?? (report.OrderId == -1 ? ordersByClOrderId[report.ClOrderId] : ordersById[report.OrderId]);
             report.ClientId = report.Order.ClientId;
@@ -445,7 +445,7 @@ namespace SmartQuant
                 return;
 
             this.ordersByOCAList.Remove(order.OCA);
-            foreach (var o in list.TakeWhile(o => o != order))
+            foreach (var o in list.Where(o => o != order))
                 Cancel(o);
         }
     }

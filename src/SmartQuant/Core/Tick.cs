@@ -11,6 +11,8 @@ namespace SmartQuant
 
     public class Tick : DataObject
     {
+        public override byte TypeId => DataObjectType.Tick;
+
         public byte ProviderId { get; set; }
 
         public int InstrumentId { get; set; }
@@ -45,6 +47,6 @@ namespace SmartQuant
             Size = size;
         }
 
-        public override string ToString() => $"Tick {DateTime} {ProviderId} {InstrumentId} {Price} {Size}";
+        public override string ToString() => $"{nameof(Tick)} {DateTime} {ProviderId} {InstrumentId} {Price} {Size}";
     }
 }

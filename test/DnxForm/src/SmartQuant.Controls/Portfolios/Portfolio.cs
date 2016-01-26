@@ -89,25 +89,25 @@ namespace SmartQuant.Controls.Portfolios
               break;
             case 110:
               OnPositionOpened onPositionOpened = @event as OnPositionOpened;
-              if (onPositionOpened.Portfolio.Name == this.portfolioName)
+              if (onPositionOpened.portfolio.Name == this.portfolioName)
               {
-                dictionary[onPositionOpened.Position.Instrument] = @event;
+                dictionary[onPositionOpened.position.Instrument] = @event;
                 break;
               }
               break;
             case 111:
               OnPositionClosed onPositionClosed = @event as OnPositionClosed;
-              if (onPositionClosed.Portfolio.Name == this.portfolioName)
+              if (onPositionClosed.portfolio.Name == this.portfolioName)
               {
-                dictionary[onPositionClosed.Position.Instrument] = @event;
+                dictionary[onPositionClosed.position.Instrument] = @event;
                 break;
               }
               break;
             case 112:
               OnPositionChanged onPositionChanged = @event as OnPositionChanged;
-              if (onPositionChanged.Portfolio.Name == this.portfolioName)
+              if (onPositionChanged.portfolio.Name == this.portfolioName)
               {
-                dictionary[onPositionChanged.Position.Instrument] = @event;
+                dictionary[onPositionChanged.position.Instrument] = @event;
                 break;
               }
               break;
@@ -131,29 +131,29 @@ namespace SmartQuant.Controls.Portfolios
               continue;
             case 110:
               OnPositionOpened onPositionOpened = @event as OnPositionOpened;
-              if (this.composition.PositionViewItems.TryGetValue(onPositionOpened.Position, out positionViewItem))
+              if (this.composition.PositionViewItems.TryGetValue(onPositionOpened.position, out positionViewItem))
               {
-                this.composition.UpdatePosition(onPositionOpened.Position);
+                this.composition.UpdatePosition(onPositionOpened.position);
                 continue;
               }
-              this.composition.AddPosition(onPositionOpened.Position);
+              this.composition.AddPosition(onPositionOpened.position);
               continue;
             case 111:
               OnPositionClosed onPositionClosed = @event as OnPositionClosed;
-              if (this.composition.PositionViewItems.TryGetValue(onPositionClosed.Position, out positionViewItem))
+              if (this.composition.PositionViewItems.TryGetValue(onPositionClosed.position, out positionViewItem))
               {
-                this.composition.RemovePosition(onPositionClosed.Position);
+                this.composition.RemovePosition(onPositionClosed.position);
                 continue;
               }
               continue;
             case 112:
               OnPositionChanged onPositionChanged = @event as OnPositionChanged;
-              if (this.composition.PositionViewItems.TryGetValue(onPositionChanged.Position, out positionViewItem))
+              if (this.composition.PositionViewItems.TryGetValue(onPositionChanged.position, out positionViewItem))
               {
-                this.composition.UpdatePosition(onPositionChanged.Position);
+                this.composition.UpdatePosition(onPositionChanged.position);
                 continue;
               }
-              this.composition.AddPosition(onPositionChanged.Position);
+              this.composition.AddPosition(onPositionChanged.position);
               continue;
             default:
               continue;
