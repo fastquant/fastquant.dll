@@ -29,14 +29,7 @@ namespace Demo
             this.orderManager = new SmartQuant.Controls.Orders.OrderManagerWindow();
             this.orderManager.Dock = DockStyle.Fill;
             this.orderManager.Name = "OrderManager";
-            this.accountData = new SmartQuant.Controls.Data.Account.AccountData();
-            this.accountData.Dock = DockStyle.Fill;
-            this.accountData.Location = new Point(0, 0);
-            this.accountData.Name = "Account";
 
-            this.portfolioWindow = new SmartQuant.Controls.Portfolios.Portfolio();
-            this.portfolioWindow.Dock = DockStyle.Fill;
-            this.portfolioWindow.Name = "portfolio";
 
             TabPage tpage = null;
             tpage = new TabPage();
@@ -44,17 +37,7 @@ namespace Demo
             tpage.Name = this.orderManager.Name;
             tpage.Text = this.orderManager.Name;
             this.tabControl1.Controls.Add(tpage);
-            tpage = new TabPage();
-            tpage.Controls.Add(this.accountData);
-            tpage.Name = this.accountData.Name;
-            tpage.Text = this.accountData.Name;
-            this.tabControl1.Controls.Add(tpage);
 
-            tpage = new TabPage();
-            tpage.Controls.Add(this.portfolioWindow);
-            tpage.Name = this.portfolioWindow.Name;
-            tpage.Text = this.portfolioWindow.Name;
-            this.tabControl1.Controls.Add(tpage);
 
             ResumeLayout();
 
@@ -110,6 +93,31 @@ namespace Demo
                 this.portfolio = Framework.Current.PortfolioManager.Portfolios.GetByIndex(0);
                 if (this.portfolio == null)
                     return;
+                foreach (var p in Framework.Current.PortfolioManager.Portfolios)
+                {
+                    var portfolio = new SmartQuant.Controls.Portfolios.Portfolio();
+                    portfolio.Dock = DockStyle.Fill;
+                    portfolio.Name = p.Name;
+                    portfolio.Init(dataLoader.PortfolioEventQueue, new []{p.Name});
+
+                    var tpage = new TabPage();
+                    tpage.Controls.Add(portfolio);
+                    tpage.Name = portfolio.Name;
+                    tpage.Text = portfolio.Name;
+                    this.tabControl1.Controls.Add(tpage);
+                    portfolio.UpdateGUI();
+                }
+
+                var accountData = new SmartQuant.Controls.Data.Account.AccountData();
+                accountData.Dock = DockStyle.Fill;
+                accountData.Name = "Account";
+
+                var page = new TabPage();
+                page.Controls.Add(accountData);
+                page.Name = accountData.Name;
+                page.Text = accountData.Name;
+                this.tabControl1.Controls.Add(page);
+
                 var performance = this.portfolio.Performance;
                 this.chart3.Reset();
                 this.chart3.SetMainSeries(performance.EquitySeries, false, Color.White);

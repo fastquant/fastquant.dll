@@ -110,8 +110,11 @@ namespace SmartQuant.ChartViewers
                         num6 = pad.ClientY(num3);
                         num5 = (long)pad.ClientX(num14);
                         num7 = pad.ClientY(num15);
-                        if ((pad.IsInRange(num14, num15) || pad.IsInRange(num2, num3)) && (num4 != num8 || num5 != num9 || (num6 != num10 || num7 != num11)))
-                            pad.Graphics.DrawLine(pen, (float)num4, (float)num6, (float)num5, (float)num7);
+                        if ((pad.IsInRange(num14, num15) || pad.IsInRange(num2, num3)) &&
+                            (num4 != num8 || num5 != num9 || (num6 != num10 || num7 != num11)))
+                        {
+                            pad.Graphics.DrawLine(pen, (float) num4, (float) num6, (float) num5, (float) num7);
+                        }
                     }
                     num8 = num4;
                     num10 = num6;

@@ -91,9 +91,13 @@ namespace SmartQuant
     public class AccountReport : ExecutionMessage
     {
         public override byte TypeId => DataObjectType.AccountReport;
+
         public double Amount { get; internal set; }
+
         public new byte CurrencyId { get; internal set; }
+
         public int PortfolioId { get; internal set; }
+
         public string Text { get; internal set; }
     }
 

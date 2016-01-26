@@ -13,6 +13,10 @@ namespace SmartQuant
     {
         private Framework framework;
 
+        public List<AccountPosition> Positions = new List<AccountPosition>();
+
+        public List<AccountTransaction> Transactions = new List<AccountTransaction>();
+
         private IdArray<AccountPosition> positionsByCurrencyId = new IdArray<AccountPosition>();
 
         public byte CurrencyId { get; set; } = CId.USD;
@@ -22,10 +26,6 @@ namespace SmartQuant
         public double Value => Positions.Sum(p => this.framework.CurrencyConverter.Convert(p.Value, p.CurrencyId, CurrencyId));
 
         public Account Parent { get; internal set; }
-
-        public List<AccountPosition> Positions = new List<AccountPosition>();
-
-        public List<AccountTransaction> Transactions = new List<AccountTransaction>();
 
         public Account(Framework framework)
         {
@@ -44,7 +44,7 @@ namespace SmartQuant
 
         public void Add(AccountTransaction transaction, bool updateParent = true)
         {
-            var position = this.positionsByCurrencyId[transaction.CurrencyId]; // GetByCurrencyId(transaction.CurrencyId)
+            var position = this.positionsByCurrencyId[transaction.CurrencyId];
             if (position == null)
             {
                 position = new AccountPosition(transaction);
@@ -57,8 +57,8 @@ namespace SmartQuant
             }
 
             Transactions.Add(transaction);
-            if (Parent != null && updateParent && UpdateParent)
-                Parent.Add(transaction.DateTime, transaction.Value, transaction.CurrencyId, transaction.Text, updateParent);
+            if (updateParent && UpdateParent)
+                Parent?.Add(transaction.DateTime, transaction.Value, transaction.CurrencyId, transaction.Text, updateParent);
         }
 
         public void Add(DateTime dateTime, double value, byte currencyId = CId.USD, string text = null, bool updateParent = true)
@@ -71,7 +71,8 @@ namespace SmartQuant
             Add(new AccountTransaction(this.framework.Clock.DateTime, value, currencyId, text), updateParent);
         }
 
-        public void Deposit(DateTime dateTime, double value, byte currencyId = CId.USD, string text = null, bool updateParent = true)
+        public void Deposit(DateTime dateTime, double value, byte currencyId = CId.USD, string text = null,
+            bool updateParent = true)
         {
             Add(dateTime, value, currencyId, text, updateParent);
         }
@@ -86,7 +87,8 @@ namespace SmartQuant
             Add(-value, currencyId, text, updateParent);
         }
 
-        public void Withdraw(DateTime dateTime, double value, byte currencyId = CId.USD, string text = null, bool updateParent = true)
+        public void Withdraw(DateTime dateTime, double value, byte currencyId = CId.USD, string text = null,
+            bool updateParent = true)
         {
             Add(dateTime, -value, currencyId, text, updateParent);
         }
@@ -119,9 +121,9 @@ namespace SmartQuant
         }
     }
 
-    public class AccountTransaction
+    public class AccountTransaction : Event
     {
-        public DateTime DateTime { get; }
+        public override byte TypeId => EventType.AccountTransaction;
 
         public double Value { get; }
 
@@ -142,6 +144,7 @@ namespace SmartQuant
         }
 
         public AccountTransaction(AccountReport report)
+            : this(report.DateTime, report.Amount, report.CurrencyId, report.Text)
         {
         }
     }

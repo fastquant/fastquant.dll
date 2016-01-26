@@ -16,10 +16,7 @@ namespace SmartQuant.Indicators
         [Category("Parameters"), Description("")]
         public int Length
         {
-            get
-            {
-                return this.length;
-            }
+            get { return this.length; }
             set
             {
                 this.length = value;
@@ -30,10 +27,7 @@ namespace SmartQuant.Indicators
         [Category("Parameters"), Description("")]
         public double K
         {
-            get
-            {
-                return this.k;
-            }
+            get { return this.k; }
             set
             {
                 this.k = value;
@@ -44,10 +38,7 @@ namespace SmartQuant.Indicators
         [Category("Parameters"), Description("")]
         public BarData BarData
         {
-            get
-            {
-                return this.barData;
-            }
+            get { return this.barData; }
             set
             {
                 this.barData = value;
@@ -55,7 +46,7 @@ namespace SmartQuant.Indicators
             }
         }
 
-        public BBU(ISeries input, int length, double k, BarData barData = BarData.Close):base(input)
+        public BBU(ISeries input, int length, double k, BarData barData = BarData.Close) : base(input)
         {
             this.length = length;
             this.k = k;
@@ -65,7 +56,7 @@ namespace SmartQuant.Indicators
 
         protected override void Init()
         {
-            this.name = $"BBU ({this.length}, {this.k}, { this.barData})";
+            this.name = $"BBU ({this.length}, {this.k}, {this.barData})";
             this.description = "Bollinger Band Upper";
             Clear();
             this.calculate = true;

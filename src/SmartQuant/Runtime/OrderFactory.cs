@@ -1,8 +1,11 @@
-﻿namespace SmartQuant
+﻿// Copyright (c) FastQuant Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
+namespace SmartQuant
 { 
     public class OrderFactory
     {
-        private IdArray<Order> orders = new IdArray<Order>(1024000);
+        private readonly IdArray<Order> orders = new IdArray<Order>(1024000);
 
         public Order OnExecutionCommand(ExecutionCommand command)
         {

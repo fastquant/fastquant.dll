@@ -163,14 +163,14 @@ namespace SmartQuant
 
         public Position GetPosition(Instrument instrument) => Positions[instrument.Id];
 
-        public double GetPositionValue(byte currencyId) => Positions.TakeWhile(p => p.Instrument.CurrencyId == currencyId).Sum(p => p.Value);
+        public double GetPositionValue(byte currencyId) => Positions.Where(p => p.Instrument.CurrencyId == currencyId).Sum(p => p.Value);
 
         public double GetValue(byte currencyId) => GetAccountValue(currencyId) + GetPositionValue(currencyId);
 
         public bool HasPosition(Instrument instrument)
         {
             var position = PositionsByInstrumentId[instrument.Id];
-            return position != null && position.Amount != 0;
+            return position != null && position.Amount != 0.0;
         }
 
         public bool HasPosition(Instrument instrument, PositionSide side, double qty)
@@ -179,11 +179,7 @@ namespace SmartQuant
             return position != null && position.Side == side && position.Qty == qty;
         }
 
-        public bool HasLongPosition(Instrument instrument)
-        {
-            var position = PositionsByInstrumentId[instrument.Id];
-            return position != null && position.Side == PositionSide.Long && position.Qty != 0;
-        }
+        public bool HasLongPosition(Instrument instrument) => HasLongPosition(instrument, 0);
 
         public bool HasLongPosition(Instrument instrument, double qty)
         {
@@ -191,11 +187,7 @@ namespace SmartQuant
             return position != null && position.Side == PositionSide.Long && position.Qty == qty;
         }
 
-        public bool HasShortPosition(Instrument instrument)
-        {
-            var position = PositionsByInstrumentId[instrument.Id];
-            return position != null && position.Side == PositionSide.Short && position.Qty != 0;
-        }
+        public bool HasShortPosition(Instrument instrument) => HasShortPosition(instrument, 0);
 
         public bool HasShortPosition(Instrument instrument, double qty)
         {
@@ -237,7 +229,6 @@ namespace SmartQuant
                             transaction.IsDone = true;
                             TransactionsByOrderId[report.Order.Id] = null;
                             OnTransaction(transaction, queued);
-                            return;
                         }
                         break;
                     }
@@ -253,11 +244,11 @@ namespace SmartQuant
         {
             Fills.Add(fill);
             this.framework.EventServer.OnFill(this, fill, queued);
-            var instrument_ = fill.Instrument;
+            var instrument = fill.Instrument;
             bool flag = false;
-            var position = PositionsByInstrumentId[instrument_.Id];
+            var position = PositionsByInstrumentId[instrument.Id];
             if (position == null)
-                position = this.GetOrCreatePosition(instrument_);
+                position = GetOrCreatePosition(instrument);
 
             if (position.Amount == 0)
                 flag = true;
@@ -325,15 +316,11 @@ namespace SmartQuant
 
     public class PortfolioList : IEnumerable<Portfolio>
     {
-        private GetByList<Portfolio> list = new GetByList<Portfolio>("Id", "Name");
+        private readonly GetByList<Portfolio> list = new GetByList<Portfolio>("Id", "Name");
 
         public int Count => this.list.Count;
 
         public Portfolio this[string name] => GetByName(name);
-
-        public PortfolioList()
-        {
-        }
 
         public bool Contains(int id) => this.list.Contains(id);
 

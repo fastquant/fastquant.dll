@@ -16,10 +16,7 @@ namespace SmartQuant.Indicators
         [Category("Parameters"), Description("")]
         public BarData BarData
         {
-            get
-            {
-                return this.barData;
-            }
+            get { return this.barData; }
             set
             {
                 this.barData = value;
@@ -30,10 +27,7 @@ namespace SmartQuant.Indicators
         [Category("Parameters"), Description("")]
         public int Length
         {
-            get
-            {
-                return this.length;
-            }
+            get { return this.length; }
             set
             {
                 this.length = value;
@@ -58,12 +52,13 @@ namespace SmartQuant.Indicators
                 {
                     for (int i = index; i >= index - this.length + 1; i--)
                     {
-                        num += this.input[i, this.barData] / this.length;
+                        num += this.input[i, this.barData]/this.length;
                     }
                 }
                 else
                 {
-                    num = base[this.input.GetDateTime(index - 1), SearchOption.ExactFirst] + (this.input[index, this.barData] - this.input[index - this.length, this.barData]) / this.length;
+                    num = base[this.input.GetDateTime(index - 1), SearchOption.ExactFirst] +
+                          (this.input[index, this.barData] - this.input[index - this.length, this.barData])/this.length;
                 }
                 Add(this.input.GetDateTime(index), num);
             }

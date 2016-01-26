@@ -48,9 +48,8 @@ namespace SmartQuant
 
         internal void OnLevel2(Level2Update l2u)
         {
-            for (int i = 0; i < l2u.Entries.Length; i++)
+            foreach (var level in l2u.Entries)
             {
-                var level = l2u.Entries[i];
                 IList<Tick> list = null;
                 switch (level.Side)
                 {
@@ -72,13 +71,11 @@ namespace SmartQuant
                     case Level2UpdateAction.Delete:
                         if (level.InstrumentId >= list.Count)
                         {
-                            Console.WriteLine($"OrderBook:: {level.Side}  Delete warning at index: {level.InstrumentId}, max index: {list.Count - 1}, InstrumentId: {level.InstrumentId}");
+                            Console.WriteLine($"OrderBook::{level.Side}  Delete warning at index: {level.InstrumentId}, max index: {list.Count - 1}, InstrumentId: {level.InstrumentId}");
                             list.RemoveAt(list.Count - 1);
                         }
                         else
-                        {
                             list.RemoveAt(level.InstrumentId);
-                        }
                         break;
                     case Level2UpdateAction.Reset:
                         list.Clear();
@@ -92,7 +89,7 @@ namespace SmartQuant
         private double GetAvgPx(IList<Tick> ticks)
         {
             double sum = 0;
-            double size = 0;
+            int size = 0;
             foreach (var t in ticks)
             {
                 sum += t.Price * t.Size;

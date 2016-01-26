@@ -15,10 +15,7 @@ namespace SmartQuant.Indicators
         [Category("Parameters"), Description("")]
         public int Length
         {
-            get
-            {
-                return this.length;
-            }
+            get { return this.length; }
             set
             {
                 this.length = value;
@@ -29,10 +26,7 @@ namespace SmartQuant.Indicators
         [Category("Parameters"), Description("")]
         public BarData BarData
         {
-            get
-            {
-                return this.barData;
-            }
+            get { return this.barData; }
             set
             {
                 this.barData = value;
@@ -40,7 +34,7 @@ namespace SmartQuant.Indicators
             }
         }
 
-        public SMD(ISeries input, int length, BarData barData = BarData.Close): base(input)
+        public SMD(ISeries input, int length, BarData barData = BarData.Close) : base(input)
         {
             this.length = length;
             this.barData = barData;

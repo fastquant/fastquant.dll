@@ -50,11 +50,11 @@ namespace SmartQuant.Controls.Portfolios
       this.InitializeComponent();
     }
 
-    public void Init(PermanentQueue<Event> messages)
+    public void Init(PermanentQueue<Event> messages, object[] args)
     {
       this.messageQueue = messages;
       messages.AddReader((object) this);
-      this.portfolioName = this.args[0] as string;
+        this.portfolioName =  args[0] as string;
       this.Reset();
     }
 

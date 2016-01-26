@@ -16,10 +16,7 @@ namespace SmartQuant.Indicators
         [Category("Parameters"), Description("")]
         public int Length
         {
-            get
-            {
-                return this.length;
-            }
+            get { return this.length; }
             set
             {
                 this.length = value;
@@ -30,10 +27,7 @@ namespace SmartQuant.Indicators
         [Category("Parameters"), Description("")]
         public BarData BarData
         {
-            get
-            {
-                return this.barData;
-            }
+            get { return this.barData; }
             set
             {
                 this.barData = value;
@@ -71,7 +65,7 @@ namespace SmartQuant.Indicators
                 return Enumerable.Range(index - length + 1, length)
                     .Sum(i => (sma - input[i, barData])*(sma - input[i, barData]))/length;
             }
-            else 
+            else
                 return double.NaN;
         }
     }

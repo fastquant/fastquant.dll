@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{4A586C31-A1FE-4738-9DFA-7AE52B2F3403}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DemoForm</RootNamespace>
     <AssemblyName>DemoForm</AssemblyName>
@@ -44,13 +44,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Backtest.cs" />
-    <Compile Include="DataLoader.cs" />
-    <Compile Include="MainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="MainForm.Designer.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="..\DnxForm\src\SmartQuant.Controls\FrameworkControl.cs">
       <Link>SmartQuant.Controls\FrameworkControl.cs</Link>
     </Compile>
@@ -468,6 +461,22 @@
     </Compile>
     <Compile Include="..\DnxForm\src\SmartQuant.FinChart\Objects\RectangleView.cs">
       <Link>SmartQuant.FinChart\Objects\RectangleView.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\Backtest.cs">
+      <Link>Backtest.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\MainForm.cs">
+      <Link>MainForm.cs</Link>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="..\DnxForm\MainForm.Designer.cs">
+      <Link>MainForm.Designer.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\Program.cs">
+      <Link>Program.cs</Link>
+    </Compile>
+    <Compile Include="..\DnxForm\src\SmartQuant.Shared\DataLoader.cs">
+      <Link>SmartQuant.Shared\DataLoader.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>
