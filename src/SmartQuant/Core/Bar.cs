@@ -57,7 +57,7 @@ namespace SmartQuant
     {
         private IdArray<double> fields;
 
-        private static Dictionary<string, byte> mapping = new Dictionary<string, byte>()
+        private static readonly Dictionary<string, byte> mapping = new Dictionary<string, byte>()
         {
             ["Close"] = 0,
             ["Open"] = 1,

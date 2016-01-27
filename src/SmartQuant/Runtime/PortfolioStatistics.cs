@@ -135,9 +135,7 @@ namespace SmartQuant
                 EmitId++;
                 this.statistics.OnStatistics(this);
                 if (this.portfolio.Parent != null)
-                {
                     this.statistics.OnStatistics(this.portfolio, this);
-                }
             }
         }
 
@@ -204,7 +202,7 @@ namespace SmartQuant
 
     public class PortfolioStatisticsItemList : IEnumerable<PortfolioStatisticsItem>
     {
-        private GetByList<PortfolioStatisticsItem> items = new GetByList<PortfolioStatisticsItem>("Type", "Name");
+        private readonly GetByList<PortfolioStatisticsItem> items = new GetByList<PortfolioStatisticsItem>("Type", "Name");
 
         public int Count => this.items.Count;
 

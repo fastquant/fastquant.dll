@@ -83,7 +83,7 @@ namespace SmartQuant
 
         public override byte TypeId => DataObjectType.Fundamental;
 
-        static Dictionary<string, byte> mapping = new Dictionary<string, byte>()
+        static readonly Dictionary<string, byte> mapping = new Dictionary<string, byte>()
         {
             ["CashFlow"] = 1,
             ["PE"] = 2,

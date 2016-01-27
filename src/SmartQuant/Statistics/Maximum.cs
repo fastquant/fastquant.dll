@@ -33,7 +33,7 @@ namespace SmartQuant.Statistics
 
     public class MaxConsecutiveLossTrades : Maximum
     {
-        public MaxConsecutiveLossTrades():base(PortfolioStatisticsType.ConsecutiveLossTrades)
+        public MaxConsecutiveLossTrades() : base(PortfolioStatisticsType.ConsecutiveLossTrades)
         {
         }
 
@@ -48,7 +48,7 @@ namespace SmartQuant.Statistics
 
     public class MaxConsecutiveWinTrades : Maximum
     {
-        public MaxConsecutiveWinTrades():base(PortfolioStatisticsType.ConsecutiveWinTrades)
+        public MaxConsecutiveWinTrades() : base(PortfolioStatisticsType.ConsecutiveWinTrades)
         {
         }
 

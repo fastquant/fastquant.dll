@@ -11,14 +11,14 @@ namespace SmartQuant
     [NotOriginal]
     class GetByList<T> : IEnumerable<T>
     {
-        private Dictionary<string, T> dictionary;
-        private IdArray<T> array;
-        private List<T> list;
+        private readonly Dictionary<string, T> dictionary;
+        private readonly IdArray<T> array;
+        private readonly List<T> list;
 
         public int Count => this.list.Count;
 
-        private MethodInfo nameMethod;
-        private MethodInfo idMethod;
+        private readonly MethodInfo nameMethod;
+        private readonly MethodInfo idMethod;
 
         public T this[int index]
         {

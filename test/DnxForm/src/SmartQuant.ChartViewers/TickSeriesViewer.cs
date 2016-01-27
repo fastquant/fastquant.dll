@@ -32,9 +32,9 @@ namespace SmartQuant.ChartViewers
             var dt1 = new DateTime((long) pad.XMin);
             var dt2 = new DateTime((long) pad.XMax);
             var min = ts.GetMin(dt1, dt2);
-            double minPx = min == null ? 0 : min.Price;
+            var minPx = min?.Price ?? 0;
             var max = ts.GetMax(dt1, dt2);
-            double maxPx = max == null ? 0 : max.Price;
+            var maxPx = max?.Price ?? 0;
             return new PadRange(minPx, maxPx);
         }
 

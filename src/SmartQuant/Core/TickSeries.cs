@@ -6,7 +6,7 @@ namespace SmartQuant
 {
     public class TickSeries : IEnumerable<Tick>, IDataSeries, ISeries
     {
-        private List<Tick> ticks = new List<Tick>();
+        private readonly List<Tick> ticks = new List<Tick>();
         private Tick min;
         private Tick max;
 

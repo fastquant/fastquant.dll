@@ -51,10 +51,10 @@ namespace SmartQuant
         private double median;
         private double variance;
 
-        private static Func<double, double, double> opAdd = (a, b) => a + b;
-        private static Func<double, double, double> opSub = (a, b) => a - b;
-        private static Func<double, double, double> opMul = (a, b) => a * b;
-        private static Func<double, double, double> opDiv = (a, b) => a / b;
+        private static readonly Func<double, double, double> opAdd = (a, b) => a + b;
+        private static readonly Func<double, double, double> opSub = (a, b) => a - b;
+        private static readonly Func<double, double, double> opMul = (a, b) => a * b;
+        private static readonly Func<double, double, double> opDiv = (a, b) => a / b;
 
         public List<Indicator> Indicators { get; } = new List<Indicator>();
 

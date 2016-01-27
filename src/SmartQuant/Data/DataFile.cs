@@ -8,8 +8,8 @@ namespace SmartQuant
     public class DataKey : ObjectKey
     {
         internal const string LABEL = "DKey";
-        private const int LABEL_SIZE = 5;
-        internal const int HEADER_SIZE = 77;
+        private new const int LABEL_SIZE = 5;
+        internal new const int HEADER_SIZE = 77;
         internal const int PREV_OFFSET = 61;
         internal const int NEXT_OFFSET = 69;
 

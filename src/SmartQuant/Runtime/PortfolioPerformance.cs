@@ -1,16 +1,21 @@
-﻿using System;
+﻿// Copyright (c) FastQuant Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
+using System;
 
 namespace SmartQuant
 {
     public class PortfolioPerformance
     {
         private Portfolio portfolio;
-        private double double_0;
+        private double equity;
         private double drawdown;
-        private double double_2;
+        private double maxEquity;
 
-        public TimeSeries DrawdownSeries { get; } = new TimeSeries("Drawdown", "Drawdown", -1);
-        public TimeSeries EquitySeries { get; } = new TimeSeries("Equity", "Equity", -1);
+        public TimeSeries DrawdownSeries { get; } = new TimeSeries("Drawdown", "Drawdown");
+
+        public TimeSeries EquitySeries { get; } = new TimeSeries("Equity", "Equity");
+
         public bool UpdateParent { get; set; } = true;
 
         public event EventHandler Updated;
@@ -23,7 +28,7 @@ namespace SmartQuant
         public void Reset()
         {
             this.drawdown = 0;
-            this.double_2 = double.MinValue;
+            this.maxEquity = double.MinValue;
         }
 
 
@@ -40,23 +45,15 @@ namespace SmartQuant
 
         public void OnEquity(DateTime dateTime, double equity, bool forceUpdate = false)
         {
-            if (this.double_0 == equity && !forceUpdate)
+            if (this.equity == equity && !forceUpdate)
                 return;
 
-            this.double_0 = equity;
-            if (equity > this.double_2)
-            {
-                this.double_2 = equity;
-                this.drawdown = 0;
-            }
-            else
-            {
-                this.drawdown = this.double_2 - equity;
-            }
-            EquitySeries.Add(dateTime, equity);
+            this.equity = equity;
+            this.maxEquity = Math.Max(this.maxEquity, this.equity);
+            this.drawdown = this.maxEquity - equity;
+            EquitySeries.Add(dateTime, this.equity);
             DrawdownSeries.Add(dateTime, this.drawdown);
             this.portfolio.Statistics.OnEquity(equity);
         }
-
     }
 }

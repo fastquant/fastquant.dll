@@ -94,6 +94,8 @@ namespace SmartQuant
         private Instrument instrument;
         internal ObjectTable fields;
 
+        internal double double_6;
+
         public int Id { get; internal set; } = -1;
 
         public int ClId { get; set; } = -1;

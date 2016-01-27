@@ -63,17 +63,17 @@ namespace SmartQuant
         public void Dump()
         {
             Console.WriteLine("Bid");
-            for (int i = 0; i < this.latestBid.Size; i++)
+            for (var i = 0; i < this.latestBid.Size; i++)
                 if (this.latestBid[i] != null)
                     Console.WriteLine(this.latestBid[i]);
 
             Console.WriteLine("Ask");
-            for (int i = 0; i < this.latestAsk.Size; i++)
+            for (var i = 0; i < this.latestAsk.Size; i++)
                 if (this.latestAsk[i] != null)
                     Console.WriteLine(this.latestAsk[i]);
 
             Console.WriteLine("Trade");
-            for (int i = 0; i < this.latestTrade.Size; i++)
+            for (var i = 0; i < this.latestTrade.Size; i++)
                 if (this.latestTrade[i] != null)
                     Console.WriteLine(this.latestTrade[i]);
         }
@@ -107,10 +107,10 @@ namespace SmartQuant
                     switch (typeId)
                     {
                         case EventType.HistoricalData:
-                            this.OnHistoricalData((HistoricalData)e);
+                            this.OnHistoricalData((HistoricalData) e);
                             break;
                         case EventType.HistoricalDataEnd:
-                            this.OnHistoricalDataEnd((HistoricalDataEnd)e);
+                            this.OnHistoricalDataEnd((HistoricalDataEnd) e);
                             break;
                         case EventType.OnQueueOpened:
                         case EventType.OnQueueClosed:
@@ -122,9 +122,7 @@ namespace SmartQuant
                     this.framework.EventManager.Dispatcher.OnEvent(e);
                 }
                 else
-                {
                     Thread.Sleep(1);
-                }
             }
             Console.WriteLine($"{DateTime.Now} Data manager thread stopped: Framework = {this.framework.Name}  Clock = {this.framework.Clock.GetModeAsString()}");
         }
@@ -286,8 +284,8 @@ namespace SmartQuant
             foreach (var data in @class.Data)
             {
                 var objs = data.Objects;
-                for (int i = 0; i < objs.Length; i++)
-                    ts.Add((Tick)objs[i]);
+                foreach (var tick in objs)
+                    ts.Add((Tick)tick);
             }
             return ts;
         }
@@ -425,7 +423,7 @@ namespace SmartQuant
                 Console.WriteLine($"DataManager::GetHistoricalBars Error. Provider does not exist : {provider}");
                 return null;
             }
-            return this.GetHistoricalBars(p, instrument, dateTime1, dateTime2, barType, barSize);
+            return GetHistoricalBars(p, instrument, dateTime1, dateTime2, barType, barSize);
         }
 
         public BarSeries GetHistoricalBars(string provider, string symbol, DateTime dateTime1, DateTime dateTime2, BarType barType, long barSize)
@@ -442,7 +440,7 @@ namespace SmartQuant
                 Console.WriteLine($"DataManager::GetHistoricalBars Error. Instrument with such symbol does not exist : {symbol}");
                 return null;
             }
-            return this.GetHistoricalBars(p, i, dateTime1, dateTime2, barType, barSize);
+            return GetHistoricalBars(p, i, dateTime1, dateTime2, barType, barSize);
         }
 
         public BarSeries GetHistoricalBars(IHistoricalDataProvider provider, Instrument instrument, DateTime dateTime1, DateTime dateTime2, BarType barType, long barSize)
@@ -522,23 +520,19 @@ namespace SmartQuant
         public void Save(int instrumentId, DataObject obj, SaveMode option = SaveMode.Add)
         {
             var i = this.framework.InstrumentManager.GetById(instrumentId);
-            if (i == null)
-            {
+            if (i != null)
+                Server.Save(i, obj, option);
+            else
                 Console.WriteLine($"DataManager::Save Instrument with id does not exist in the framework id = {instrumentId}");
-                return;
-            }
-            Server.Save(i, obj, option);
         }
 
         public void Save(string symbol, DataObject obj, SaveMode option = SaveMode.Add)
         {
             var i = this.framework.InstrumentManager[symbol];
-            if (i == null)
-            {
+            if (i != null)
+                Server.Save(i, obj, option);
+            else
                 Console.WriteLine($"DataManager::Save Instrument with symbol does not exist in the framework {symbol}");
-                return;
-            }
-            Server.Save(i, obj, option);
         }
 
         public void Save(Instrument instrument, IDataSeries series, SaveMode option = SaveMode.Add)
@@ -549,15 +543,16 @@ namespace SmartQuant
 
         public void Save(TickSeries series, SaveMode option = SaveMode.Add)
         {
-            for (int i = 0; i < series.Count; i++)
-                Save(series[i], option);
+            foreach (var tick in series)
+                Save(tick, option);
         }
 
         public void Save(BarSeries series, SaveMode option = SaveMode.Add)
         {
-            for (int i = 0; i < series.Count; i++)
-                Save(series[i], option);
+            foreach (var bar in series)
+                Save(bar, option);
         }
+
         #endregion
 
         #region EventHandlers

@@ -77,7 +77,7 @@ namespace SmartQuant
 
     public class FieldList
     {
-        private IdArray<double> array = new IdArray<double>();
+        private readonly IdArray<double> array = new IdArray<double>();
 
         public int Size => this.array.Size;
 
@@ -107,7 +107,7 @@ namespace SmartQuant
 
         public string Solution { get; set; }
 
-        public StrategyStatusType Type { get; private set; }
+        public StrategyStatusType Type { get; }
 
         public override byte TypeId => DataObjectType.StrategyStatus;
     }

@@ -48,7 +48,7 @@ namespace SmartQuant
             this.id = ProviderId.DataSimulator;
             this.name = "DataSimulator";
             this.description = "Default data simulator";
-            this.url = "fastquant.org";
+            this.url = $"www.{nameof(SmartQuant).ToLower()}.com";
         }
 
         public override void Clear()

@@ -8,7 +8,7 @@ namespace SmartQuant
 {
     public class Global : IEnumerable<KeyValuePair<string, object>>
     {
-        private Dictionary<string, object> data = new Dictionary<string, object>();
+        private readonly Dictionary<string, object> data = new Dictionary<string, object>();
 
         public int Count => this.data.Count;
 

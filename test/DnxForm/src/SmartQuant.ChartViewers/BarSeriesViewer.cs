@@ -60,9 +60,9 @@ namespace SmartQuant.ChartViewers
             var dt1 = new DateTime((long)pad.XMin);
             var dt2 = new DateTime((long)pad.XMax);
             var lowest = bs.LowestLowBar(dt1, dt2);
-            double min = lowest != null ? lowest.Low : 0;
+            var min = lowest?.Low ?? 0;
             var highest = bs.HighestHighBar(dt1, dt2);
-            double max = highest != null ? highest.High : 0;
+            var max = highest?.High ?? 0;
             return new PadRange(min, max);
         }
 

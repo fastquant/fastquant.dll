@@ -245,7 +245,7 @@ namespace SmartQuant
 
         public PortfolioManager PortfolioManager { get; internal set; }
 
-        public OutputManager OutputManager { get; private set; }
+        public OutputManager OutputManager { get; }
 
         public EventBus EventBus { get; }
 

@@ -10,7 +10,7 @@ namespace SmartQuant
         protected string name = string.Empty;
         protected string description;
         private int maxLength = -1;
-        private List<Bar> bars = new List<Bar>();
+        private readonly List<Bar> bars = new List<Bar>();
         private Bar max;
         private Bar min;
 
@@ -106,14 +106,10 @@ namespace SmartQuant
         private void method_0()
         {
             this.bars.RemoveAt(0);
-            for (int i = 0; i < this.Indicators.Count; i++)
-            {
-                if (this.Indicators[i].Count > 0)
-                {
-                    this.Indicators[i].Remove(0);
-                }
-            }
+            foreach (var indicator in Indicators.Where(i => i.Count > 0))
+                indicator.Remove(0);
         }
+
         private void Add_origin(Bar bar)
         {
             if (this.min == null)

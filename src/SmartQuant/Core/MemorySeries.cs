@@ -37,7 +37,7 @@ namespace SmartQuant
 
     public class MemorySeries : IDataSeries
     {
-        private List<DataObject> list = new List<DataObject>();
+        private readonly List<DataObject> list = new List<DataObject>();
 
         public DataObject this[long index] => this.list[(int)index];
 

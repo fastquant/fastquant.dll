@@ -81,6 +81,7 @@ namespace SmartQuant
         Disconnected
     }
 
+    [Flags]
     public enum ProviderType
     {
         DataProvider = 1,
@@ -511,7 +512,7 @@ namespace SmartQuant
             foreach(var p in GetType().GetProperties().Where(p => p.CanRead && p.CanWrite))
             {
                 var converter = TypeDescriptor.GetConverter(p.PropertyType);
-                if (converter != null && converter.CanConvertFrom(typeof(string)))
+                if (converter.CanConvertFrom(typeof(string)))
                 {
                     string value = properties.GetStringValue(p.Name, null);
                     //if (value != null && converter.IsValid(value))

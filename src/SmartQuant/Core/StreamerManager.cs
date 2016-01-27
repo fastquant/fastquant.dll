@@ -10,8 +10,8 @@ namespace SmartQuant
 {
     public class StreamerManager
     {
-        private Dictionary<Type, ObjectStreamer> streamsByType = new Dictionary<Type, ObjectStreamer>();
-        private IdArray<ObjectStreamer> streamsById = new IdArray<ObjectStreamer>();
+        private readonly Dictionary<Type, ObjectStreamer> streamsByType = new Dictionary<Type, ObjectStreamer>();
+        private readonly IdArray<ObjectStreamer> streamsById = new IdArray<ObjectStreamer>();
 
         public StreamerManager()
         {

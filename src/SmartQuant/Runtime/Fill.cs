@@ -9,9 +9,9 @@ namespace SmartQuant
     {
         public override byte TypeId => DataObjectType.Fill;
 
-        public Order Order { get; private set; }
+        public Order Order { get; }
 
-        public Instrument Instrument { get; private set; }
+        public Instrument Instrument { get; }
 
         public byte CurrencyId { get; set; }
 

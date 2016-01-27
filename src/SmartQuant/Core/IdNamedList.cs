@@ -26,7 +26,7 @@ namespace SmartQuant
 
     public class IdNamedList : IEnumerable<IIdNamedItem>
     {
-        private GetByList<IIdNamedItem> items;
+        private readonly GetByList<IIdNamedItem> items;
 
         public int Count => this.items.Count;
 

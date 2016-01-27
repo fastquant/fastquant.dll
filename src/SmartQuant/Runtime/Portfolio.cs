@@ -246,9 +246,7 @@ namespace SmartQuant
             this.framework.EventServer.OnFill(this, fill, queued);
             var instrument = fill.Instrument;
             bool flag = false;
-            var position = PositionsByInstrumentId[instrument.Id];
-            if (position == null)
-                position = GetOrCreatePosition(instrument);
+            var position = PositionsByInstrumentId[instrument.Id] ?? GetOrCreatePosition(instrument);
 
             if (position.Amount == 0)
                 flag = true;

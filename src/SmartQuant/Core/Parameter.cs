@@ -43,7 +43,7 @@ namespace SmartQuant
 
     public class ParameterList : DataObject
     {
-        private List<Parameter> parameters = new List<Parameter>();
+        private readonly List<Parameter> parameters = new List<Parameter>();
 
         public List<string> Methods { get; } = new List<string>();
 
@@ -80,8 +80,7 @@ namespace SmartQuant
     {
         public ParameterList Aggregate(ParameterList list1, ParameterList list2)
         {
-            var list = new ParameterList();
-            list.Name = list1.Name;
+            var list = new ParameterList {Name = list1.Name};
 
             foreach (var p in list1.Parameters())
                 list.Add(p);

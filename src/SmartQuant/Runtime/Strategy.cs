@@ -512,66 +512,26 @@ namespace SmartQuant
 
         public void CancelAll()
         {
-            List<Order> list = new List<Order>();
-            foreach (Order current in this.framework.OrderManager.Orders)
-            {
-                if (current.StrategyId == Id && !current.IsDone)
-                {
-                    list.Add(current);
-                }
-            }
-            foreach (Order current2 in list)
-            {
-                Cancel(current2);
-            }
+            foreach(var order in this.framework.OrderManager.Orders.Where(o => o.StrategyId == Id && !o.IsDone))
+                Cancel(order);
         }
 
         public void CancelAll(OrderSide side)
         {
-            List<Order> list = new List<Order>();
-            foreach (Order current in this.framework.OrderManager.Orders)
-            {
-                if (current.StrategyId == Id && current.Side == side && !current.IsDone)
-                {
-                    list.Add(current);
-                }
-            }
-            foreach (Order current2 in list)
-            {
-                this.Cancel(current2);
-            }
+            foreach (var order in this.framework.OrderManager.Orders.Where(o => o.StrategyId == Id && o.Side == side && !o.IsDone))
+                Cancel(order);
         }
 
         public void CancelAll(Instrument instrument)
         {
-            List<Order> list = new List<Order>();
-            foreach (Order current in this.framework.OrderManager.Orders)
-            {
-                if (current.StrategyId == Id && current.Instrument == instrument && !current.IsDone)
-                {
-                    list.Add(current);
-                }
-            }
-            foreach (Order current2 in list)
-            {
-                this.Cancel(current2);
-            }
+            foreach (var order in this.framework.OrderManager.Orders.Where(o => o.StrategyId == Id && o.Instrument == instrument && !o.IsDone))
+                Cancel(order);
         }
 
         public void CancelAll(Instrument instrument, OrderSide side)
         {
-            List<Order> list = new List<Order>();
-            foreach (Order current in this.framework.OrderManager.Orders)
-            {
-                if (current.StrategyId == this.Id && current.Instrument == instrument && current.Side == side && !current.IsDone)
-                {
-                    list.Add(current);
-                }
-            }
-            foreach (Order current2 in list)
-            {
-                this.Cancel(current2);
-            }
+            foreach (var order in this.framework.OrderManager.Orders.Where(o => o.StrategyId == Id && o.Instrument == instrument && o.Side == side && !o.IsDone))
+                Cancel(order);
         }
 
         public void Reject(Order order)
@@ -601,17 +561,20 @@ namespace SmartQuant
 
         public Order SellOrder(Instrument instrument, double qty, string text = "")
         {
-            var order = new Order(this.DetermineExecutionProvider(instrument), Portfolio, instrument, OrderType.Market, OrderSide.Sell, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
-            order.StrategyId = Id;
-            order.ClientId = ClientId;
-            order.Text = text;
+            var order = new Order(DetermineExecutionProvider(instrument), Portfolio, instrument, OrderType.Market,
+                OrderSide.Sell, qty, 0.0, 0.0, TimeInForce.Day, 0, "")
+            {
+                StrategyId = Id,
+                ClientId = ClientId,
+                Text = text
+            };
             this.framework.OrderManager.Register(order);
             return order;
         }
 
         public Order Buy(Instrument instrument, double qty, string text = "")
         {
-            return Buy(this.DetermineExecutionProvider(instrument), instrument, qty, text);
+            return Buy(DetermineExecutionProvider(instrument), instrument, qty, text);
         }
 
         public Order Buy(IExecutionProvider provider, Instrument instrument, double qty, string text = "")

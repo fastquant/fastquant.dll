@@ -187,7 +187,7 @@ namespace SmartQuant.Quant
 
         public static bool operator ==(Matrix m1, Matrix m2)
         {
-            if (!Matrix.AreComparable(m1, m2))
+            if (!AreComparable(m1, m2))
                 return false;
             for (int i = 0; i < m1.m; ++i)
                 for (int j = 0; j < m1.n; ++j)
@@ -198,7 +198,7 @@ namespace SmartQuant.Quant
 
         public static bool operator !=(Matrix m1, Matrix m2)
         {
-            if (!Matrix.AreComparable(m1, m2))
+            if (!AreComparable(m1, m2))
                 return false;
             for (int i = 0; i < m1.m; ++i)
                 for (int j = 0; j < m1.n; ++j)

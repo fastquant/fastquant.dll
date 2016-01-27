@@ -128,10 +128,6 @@ namespace SmartQuant
 
         public string Description { get; set; }
 
-        public EventSortedSet()
-        {
-        }
-
         public int Count => this.events.Count;
 
         public Event this[int index] => this.events[index];

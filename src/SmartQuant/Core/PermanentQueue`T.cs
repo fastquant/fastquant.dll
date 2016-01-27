@@ -7,8 +7,8 @@ namespace SmartQuant
 {
     public class PermanentQueue<T>
     {
-        private Dictionary<object, int> readers = new Dictionary<object, int>();
-        private List<T> items = new List<T>();
+        private readonly Dictionary<object, int> readers = new Dictionary<object, int>();
+        private readonly List<T> items = new List<T>();
 
         public void AddReader(object reader)
         {

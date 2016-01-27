@@ -201,7 +201,7 @@ namespace SmartQuant
 
     public class CurrencyConverter : ICurrencyConverter
     {
-        public Framework Framework { get; private set; }
+        public Framework Framework { get; }
 
         public DataManager DataManager => Framework.DataManager;
 

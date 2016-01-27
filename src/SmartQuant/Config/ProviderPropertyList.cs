@@ -38,7 +38,7 @@ namespace SmartQuant
 
     public class ProviderPropertyList
     {
-        private Dictionary<string, string> properties  = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> properties  = new Dictionary<string, string>();
 
         public void SetValue(string name, string value)
         {

@@ -3,6 +3,15 @@
   "version": 2,
   "targets": {
     "DNX,Version=v4.5.1": {
+      "JetBrains.dotMemoryUnit/2.1.20150828.125449": {
+        "type": "package",
+        "compile": {
+          "Lib/dotMemory.Unit.dll": {}
+        },
+        "runtime": {
+          "Lib/dotMemory.Unit.dll": {}
+        }
+      },
       "Microsoft.Dnx.Compilation.Abstractions/1.0.0-rc1-final": {
         "type": "package",
         "dependencies": {
@@ -260,6 +269,15 @@
       }
     },
     "DNX,Version=v4.5.1/win7-x86": {
+      "JetBrains.dotMemoryUnit/2.1.20150828.125449": {
+        "type": "package",
+        "compile": {
+          "Lib/dotMemory.Unit.dll": {}
+        },
+        "runtime": {
+          "Lib/dotMemory.Unit.dll": {}
+        }
+      },
       "Microsoft.Dnx.Compilation.Abstractions/1.0.0-rc1-final": {
         "type": "package",
         "dependencies": {
@@ -517,6 +535,15 @@
       }
     },
     "DNX,Version=v4.5.1/win7-x64": {
+      "JetBrains.dotMemoryUnit/2.1.20150828.125449": {
+        "type": "package",
+        "compile": {
+          "Lib/dotMemory.Unit.dll": {}
+        },
+        "runtime": {
+          "Lib/dotMemory.Unit.dll": {}
+        }
+      },
       "Microsoft.Dnx.Compilation.Abstractions/1.0.0-rc1-final": {
         "type": "package",
         "dependencies": {
@@ -778,6 +805,73 @@
     "SmartQuant/1.0.0": {
       "type": "project",
       "path": "../../src/SmartQuant/project.json"
+    },
+    "JetBrains.dotMemoryUnit/2.1.20150828.125449": {
+      "type": "package",
+      "sha512": "vUJHBmoBMO7cIgnc29YkIW4sIKoWVhz55xUGUyzzpUUC/DwyNgKzB4wM1fibGt5g0nBZJQGejdCr9vrRCFx6ag==",
+      "files": [
+        "JetBrains.dotMemoryUnit.2.1.20150828.125449.nupkg",
+        "JetBrains.dotMemoryUnit.2.1.20150828.125449.nupkg.sha512",
+        "JetBrains.dotMemoryUnit.nuspec",
+        "Lib/dotMemory.Unit.dll",
+        "Lib/dotMemory.Unit.xml",
+        "tools/BLToolkit.3.dll",
+        "tools/Castle.Core.dll",
+        "tools/dotMemory.Unit.dll",
+        "tools/dotMemory.Unit.xml",
+        "tools/dotMemoryUnit.exe",
+        "tools/dotMemoryUnit.exe.config",
+        "tools/Ionic.Zip.Reduced.dll",
+        "tools/JetBrains.Annotations.dll",
+        "tools/JetBrains.Common.CallTreeStorage.dll",
+        "tools/JetBrains.Common.JetInjector.dll",
+        "tools/JetBrains.Common.JetInjector.Interface.dll",
+        "tools/JetBrains.Common.Remotable.dll",
+        "tools/JetBrains.Common.Remotable.Proxy.dll",
+        "tools/JetBrains.Common.Remotable.Util.dll",
+        "tools/JetBrains.Common.Util.dll",
+        "tools/JetBrains.Common.Util.Shell.dll",
+        "tools/JetBrains.dotMemory.Assembler.dll",
+        "tools/JetBrains.dotMemory.Common.dll",
+        "tools/JetBrains.dotMemory.Core.dll",
+        "tools/JetBrains.dotMemory.Dal.dll",
+        "tools/JetBrains.dotMemory.Dal.Interface.dll",
+        "tools/JetBrains.dotMemory.External.dll",
+        "tools/JetBrains.dotMemory.ExternalProcessor.exe",
+        "tools/JetBrains.dotMemory.ExternalProcessor.exe.config",
+        "tools/JetBrains.dotMemory.ExternalProcessor.Interface.dll",
+        "tools/JetBrains.dotMemory.Model.dll",
+        "tools/JetBrains.dotMemory.Model.Interface.dll",
+        "tools/JetBrains.dotMemoryUnit.ClientController.dll",
+        "tools/JetBrains.dotMemoryUnit.Interface.dll",
+        "tools/JetBrains.dotMemoryUnit.Server.exe",
+        "tools/JetBrains.dotMemoryUnit.Server.exe.config",
+        "tools/JetBrains.Etw.dll",
+        "tools/JetBrains.Platform.ComponentModel.dll",
+        "tools/JetBrains.Platform.Interop.dll",
+        "tools/JetBrains.Platform.Interop.WinApi.dll",
+        "tools/JetBrains.Platform.Metadata.dll",
+        "tools/JetBrains.Platform.Shell.dll",
+        "tools/JetBrains.Platform.UI.dll",
+        "tools/JetBrains.Platform.Util.dll",
+        "tools/JetBrains.Profiler.dll",
+        "tools/JetBrains.Profiler.Snapshot.dll",
+        "tools/JetBrains.Profiler.Snapshot.Interface.dll",
+        "tools/JetBrains.Profiler.Util.dll",
+        "tools/JetBrains.Profiler.Windows.Api.dll",
+        "tools/JetBrains.Profiler.Windows.dll",
+        "tools/JetBrains.Profiler.Windows.Impl.dll",
+        "tools/JetBrains.Profiler.Windows.RemoteAgent.dll",
+        "tools/JetBrains.Profiler.Windows.SysTools.dll",
+        "tools/x64/JetBrains.Profiler.Windows.Core.dll",
+        "tools/x64/JetBrains.Profiler.Windows.CoreApi.dll",
+        "tools/x64/symsrv.dll",
+        "tools/x64/symsrv.yes",
+        "tools/x86/JetBrains.Profiler.Windows.Core.dll",
+        "tools/x86/JetBrains.Profiler.Windows.CoreApi.dll",
+        "tools/x86/symsrv.dll",
+        "tools/x86/symsrv.yes"
+      ]
     },
     "Microsoft.Dnx.Compilation.Abstractions/1.0.0-rc1-final": {
       "type": "package",
@@ -1103,7 +1197,9 @@
     }
   },
   "projectFileDependencyGroups": {
-    "": [],
+    "": [
+      "JetBrains.dotMemoryUnit >= 2.1.20150828.125449"
+    ],
     "DNX,Version=v4.5.1": [
       "SmartQuant ",
       "fx/System.Windows.Forms >= 4.0.0",

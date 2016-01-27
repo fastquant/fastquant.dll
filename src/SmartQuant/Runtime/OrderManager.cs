@@ -38,14 +38,16 @@ namespace SmartQuant
             if (order.IsNotSent)
                 throw new ArgumentException($"Can not cancel order that is not sent {order}");
 
-            var command = new ExecutionCommand(ExecutionCommandType.Cancel, order);
-            command.DateTime = this.framework.Clock.DateTime;
-            command.OrderId = order.Id;
-            command.ClOrderId = order.ClOrderId;
-            command.ProviderOrderId = order.ProviderOrderId;
-            command.ProviderId = order.ProviderId;
-            command.RouteId = order.RouteId;
-            command.PortfolioId = order.PortfolioId;
+            var command = new ExecutionCommand(ExecutionCommandType.Cancel, order)
+            {
+                DateTime = this.framework.Clock.DateTime,
+                OrderId = order.Id,
+                ClOrderId = order.ClOrderId,
+                ProviderOrderId = order.ProviderOrderId,
+                ProviderId = order.ProviderId,
+                RouteId = order.RouteId,
+                PortfolioId = order.PortfolioId
+            };
             command.DateTime = order.DateTime;
             command.Instrument = order.Instrument;
             command.InstrumentId = order.InstrumentId;
@@ -82,7 +84,7 @@ namespace SmartQuant
                 order.Id = this.counter++;
 
             if (this.framework.Mode == FrameworkMode.Realtime && string.IsNullOrEmpty(order.ClOrderId))
-                order.ClOrderId = $"{this.framework.Clock.DateTime} { order.Id}";
+                order.ClOrderId = $"{this.framework.Clock.DateTime} {order.Id}";
         }
 
         public void Delete(string name)
@@ -107,7 +109,7 @@ namespace SmartQuant
 
         public void Dump()
         {
-            foreach (Order order in Orders)
+            foreach (var order in Orders)
                 Console.WriteLine(order);
         }
 
@@ -117,7 +119,7 @@ namespace SmartQuant
             foreach (var msg in messages)
             {
                 msg.IsLoaded = true;
-                byte typeId = msg.TypeId;
+                var typeId = msg.TypeId;
                 switch (typeId)
                 {
                     case DataObjectType.ExecutionReport:
@@ -172,8 +174,7 @@ namespace SmartQuant
             {
                 Server.Open();
                 var messages = Server.Load(name);
-                var result = clientId == -1 ? messages.Take(messages.Count) : messages.Where(m => m.ClientId == clientId);
-                return result.ToList();
+                return clientId == -1 ? messages : messages.Where(m => m.ClientId == clientId).ToList();
             }
             else
                 return new List<ExecutionMessage>();
@@ -208,11 +209,7 @@ namespace SmartQuant
             {
                 List<Order> list;
                 this.ordersByOCAList.TryGetValue(order.OCA, out list);
-                if (list == null)
-                {
-                    list = new List<Order>();
-                    this.ordersByOCAList[order.OCA] = list;
-                }
+                this.ordersByOCAList[order.OCA] = list = list ?? new List<Order>();
                 list.Add(order);
             }
 
@@ -224,31 +221,33 @@ namespace SmartQuant
 
             order.DateTime = this.framework.Clock.DateTime;
             order.Status = OrderStatus.PendingNew;
-            var command = new ExecutionCommand(ExecutionCommandType.Send, order);
-            command.dateTime = order.dateTime;
-            command.Id = order.Id;
-            command.OrderId = order.Id;
-            command.ClOrderId = order.ClOrderId;
-            command.ProviderOrderId = order.ProviderOrderId;
-            command.ProviderId = order.ProviderId;
-            command.RouteId = order.RouteId;
-            command.PortfolioId = order.PortfolioId;
-            command.TransactTime = order.TransactTime;
-            command.Instrument = order.Instrument;
-            command.InstrumentId = order.InstrumentId;
-            command.Provider = order.Provider;
-            command.Portfolio = order.Portfolio;
-            command.Side = order.Side;
-            command.OrdType = order.Type;
-            command.TimeInForce = order.TimeInForce;
-            command.Price = order.Price;
-            command.StopPx = order.StopPx;
-            command.Qty = order.Qty;
-            command.OCA = order.OCA;
-            command.Text = order.Text;
-            command.Account = order.Account;
-            command.ClientID = order.ClientID;
-            command.ClientId = order.ClientId;
+            var command = new ExecutionCommand(ExecutionCommandType.Send, order)
+            {
+                DateTime = order.DateTime,
+                Id = order.Id,
+                OrderId = order.Id,
+                ClOrderId = order.ClOrderId,
+                ProviderOrderId = order.ProviderOrderId,
+                ProviderId = order.ProviderId,
+                RouteId = order.RouteId,
+                PortfolioId = order.PortfolioId,
+                TransactTime = order.TransactTime,
+                Instrument = order.Instrument,
+                InstrumentId = order.InstrumentId,
+                Provider = order.Provider,
+                Portfolio = order.Portfolio,
+                Side = order.Side,
+                OrdType = order.Type,
+                TimeInForce = order.TimeInForce,
+                Price = order.Price,
+                StopPx = order.StopPx,
+                Qty = order.Qty,
+                OCA = order.OCA,
+                Text = order.Text,
+                Account = order.Account,
+                ClientID = order.ClientID,
+                ClientId = order.ClientId
+            };
             Messages.Add(command);
             order.OnExecutionCommand(command);
             this.framework.EventServer.OnExecutionCommand(command);
@@ -270,31 +269,33 @@ namespace SmartQuant
             if (order.IsNotSent)
                 throw new ArgumentException($"Can not replace order that is not sent {order}");
 
-            var command = new ExecutionCommand(ExecutionCommandType.Replace, order);
-            command.DateTime = this.framework.Clock.DateTime;
-            command.Id = order.Id;
-            command.OrderId = order.Id;
-            command.ClOrderId = order.ClOrderId;
-            command.ProviderOrderId = order.ProviderOrderId;
-            command.ProviderId = order.ProviderId;
-            command.RouteId = order.RouteId;
-            command.PortfolioId = order.PortfolioId;
-            command.TransactTime = order.TransactTime;
-            command.Instrument = order.Instrument;
-            command.InstrumentId = order.InstrumentId;
-            command.Provider = order.Provider;
-            command.Portfolio = order.Portfolio;
-            command.Side = order.Side;
-            command.OrdType = order.Type;
-            command.TimeInForce = order.TimeInForce;
-            command.Price = order.Price;
-            command.StopPx = order.StopPx;
-            command.Qty = order.Qty;
-            command.OCA = order.OCA;
-            command.Text = order.Text;
-            command.Account = order.Account;
-            command.ClientID = order.ClientID;
-            command.ClientId = order.ClientId;
+            var command = new ExecutionCommand(ExecutionCommandType.Replace, order)
+            {
+                DateTime = this.framework.Clock.DateTime,
+                Id = order.Id,
+                OrderId = order.Id,
+                ClOrderId = order.ClOrderId,
+                ProviderOrderId = order.ProviderOrderId,
+                ProviderId = order.ProviderId,
+                RouteId = order.RouteId,
+                PortfolioId = order.PortfolioId,
+                TransactTime = order.TransactTime,
+                Instrument = order.Instrument,
+                InstrumentId = order.InstrumentId,
+                Provider = order.Provider,
+                Portfolio = order.Portfolio,
+                Side = order.Side,
+                OrdType = order.Type,
+                TimeInForce = order.TimeInForce,
+                Price = order.Price,
+                StopPx = order.StopPx,
+                Qty = order.Qty,
+                OCA = order.OCA,
+                Text = order.Text,
+                Account = order.Account,
+                ClientID = order.ClientID,
+                ClientId = order.ClientId
+            };
             Messages.Add(command);
             order.OnExecutionCommand(command);
             this.framework.EventServer.OnExecutionCommand(command);
@@ -325,29 +326,27 @@ namespace SmartQuant
                 case ExecType.ExecRejected:
                     this.framework.EventServer.OnOrderRejected(order, true);
                     this.framework.EventServer.OnOrderDone(order, true);
-                    this.method_2(order);
+                    CancelOCAOrder(order);
                     break;
                 case ExecType.ExecExpired:
                     this.framework.EventServer.OnOrderExpired(order, true);
                     this.framework.EventServer.OnOrderDone(order, true);
-                    this.method_2(order);
+                    CancelOCAOrder(order);
                     break;
                 case ExecType.ExecTrade:
                     if (order.Status == OrderStatus.PartiallyFilled)
-                    {
                         this.framework.EventServer.OnOrderPartiallyFilled(order, true);
-                    }
                     else
                     {
                         this.framework.EventServer.OnOrderFilled(order, true);
                         this.framework.EventServer.OnOrderDone(order, true);
-                        this.method_2(order);
+                        CancelOCAOrder(order);
                     }
                     break;
                 case ExecType.ExecCancelled:
                     this.framework.EventServer.OnOrderCancelled(order, true);
                     this.framework.EventServer.OnOrderDone(order, true);
-                    this.method_2(order);
+                    CancelOCAOrder(order);
                     break;
                 case ExecType.ExecCancelReject:
                     this.framework.EventServer.OnOrderCancelRejected(order, true);
@@ -369,7 +368,7 @@ namespace SmartQuant
                 Server?.Save(report, -1);
         }
 
-        internal void method_5(ExecutionReport report)
+        internal void OnExecutionReportLoaded(ExecutionReport report)
         {
             report.Order = report.Order ?? (report.OrderId == -1 ? ordersByClOrderId[report.ClOrderId] : ordersById[report.OrderId]);
             report.Instrument = report.Order.Instrument;
@@ -378,17 +377,15 @@ namespace SmartQuant
             var orderStatus = order.Status;
             Messages.Add(report);
             order.OnExecutionReport(report);
+
             if (orderStatus != order.Status)
-            {
                 this.framework.EventServer.OnOrderStatusChanged(order, true);
-            }
+
             switch (report.ExecType)
             {
                 case ExecType.ExecNew:
                     if (report.ClOrderId != null)
-                    {
                         ordersByClOrderId[report.ClOrderId] = order;
-                    }
                     this.framework.EventServer.OnNewOrder(order, true);
                     return;
                 case ExecType.ExecStopped:
@@ -398,27 +395,27 @@ namespace SmartQuant
                 case ExecType.ExecRejected:
                     this.framework.EventServer.OnOrderRejected(order, true);
                     this.framework.EventServer.OnOrderDone(order, true);
-                    this.method_2(order);
+                    CancelOCAOrder(order);
                     return;
                 case ExecType.ExecExpired:
                     this.framework.EventServer.OnOrderExpired(order, true);
                     this.framework.EventServer.OnOrderDone(order, true);
-                    this.method_2(order);
+                    CancelOCAOrder(order);
                     return;
                 case ExecType.ExecTrade:
                     if (order.Status == OrderStatus.PartiallyFilled)
-                    {
                         this.framework.EventServer.OnOrderPartiallyFilled(order, true);
-                        return;
+                    else
+                    {
+                        this.framework.EventServer.OnOrderFilled(order, true);
+                        this.framework.EventServer.OnOrderDone(order, true);
+                        CancelOCAOrder(order);
                     }
-                    this.framework.EventServer.OnOrderFilled(order, true);
-                    this.framework.EventServer.OnOrderDone(order, true);
-                    this.method_2(order);
-                    return;
+                    return;                        
                 case ExecType.ExecCancelled:
                     this.framework.EventServer.OnOrderCancelled(order, true);
                     this.framework.EventServer.OnOrderDone(order, true);
-                    this.method_2(order);
+                    CancelOCAOrder(order);
                     return;
                 case ExecType.ExecCancelReject:
                     this.framework.EventServer.OnOrderCancelRejected(order, true);
@@ -434,7 +431,7 @@ namespace SmartQuant
             }
         }
 
-        private void method_2(Order order)
+        private void CancelOCAOrder(Order order)
         {
             if (!order.IsOCA)
                 return;

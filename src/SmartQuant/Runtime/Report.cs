@@ -15,10 +15,6 @@ namespace SmartQuant
 
         public string Description => this.description;
 
-        public ReportItem()
-        {
-        }
-
         protected virtual void OnBid(Bid bid)
         {
             // noop

@@ -109,7 +109,7 @@ namespace SmartQuant
             this.stream_1 = this.tcpClient_1.GetStream();
             this.binaryReader_0 = new BinaryReader(this.stream_0);
             this.binaryWriter_0 = new BinaryWriter(this.stream_1);
-            this.thread_0 = new Thread(new ThreadStart(this.method_0));
+            this.thread_0 = new Thread(this.method_0);
             this.thread_0.IsBackground = true;
             this.thread_0.Start();
             this.IsStopped = false;
@@ -322,7 +322,7 @@ namespace SmartQuant
             this.framework = framework;
             if (this.eventQueue_1 != null)
             {
-                this.thread_0 = new Thread(new ThreadStart(this.method_0));
+                this.thread_0 = new Thread(method_0);
                 this.thread_0.IsBackground = true;
                 this.thread_0.Name = "Event Dispatcher Thread";
                 this.thread_0.Start();

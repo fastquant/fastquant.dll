@@ -13,7 +13,7 @@ namespace SmartQuant
 
         public override bool Equals(object obj) => obj is Class3 ? this.text.Equals(((Class3)obj).text) : base.Equals(obj);
 
-        public override int GetHashCode()=> this.text.GetHashCode();
+        public override int GetHashCode() => this.text.GetHashCode();
 
         private string method_0(AccountData data, string name)
         {

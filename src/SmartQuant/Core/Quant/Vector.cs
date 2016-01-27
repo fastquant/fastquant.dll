@@ -208,7 +208,7 @@ namespace SmartQuant.Quant
 
         private static void EnsureCompatible(Vector v1, Vector v2)
         {
-            if (!Vector.AreCompatible(v1, v2))
+            if (!AreCompatible(v1, v2))
                 throw new ApplicationException("Vectors are not compatible");
         }
     }

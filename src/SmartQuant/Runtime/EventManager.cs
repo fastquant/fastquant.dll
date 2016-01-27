@@ -62,55 +62,55 @@ namespace SmartQuant
             Dispatcher = new EventDispatcher(this.framework);
 
             // Event Gates
-            this.gates[EventType.Bid] = new Delegate(OnBid);
-            this.gates[EventType.Ask] = new Delegate(OnAsk);
-            this.gates[EventType.Trade] = new Delegate(OnTrade);
-            this.gates[EventType.Quote] = new Delegate(OnQuote);
-            this.gates[EventType.Bar] = new Delegate(OnBar);
-            this.gates[EventType.Level2Snapshot] = new Delegate(OnLevel2Snapshot);
-            this.gates[EventType.Level2Update] = new Delegate(OnLevel2Update);            
-            this.gates[EventType.ExecutionReport] = new Delegate(OnExecutionReport);
-            this.gates[EventType.Reminder] = new Delegate(OnReminder);
-            this.gates[EventType.Fundamental] = new Delegate(OnFundamental);
-            this.gates[EventType.News] = new Delegate(OnNews);
-            this.gates[EventType.Group] = new Delegate(OnGroup);
-            this.gates[EventType.GroupEvent] = new Delegate(OnGroupEvent);
-            this.gates[EventType.Command] = new Delegate(OnCommand);
-            this.gates[EventType.OnPositionOpened] = new Delegate(OnPositionOpened);
-            this.gates[EventType.OnPositionClosed] = new Delegate(OnPositionClosed);
-            this.gates[EventType.OnPositionChanged] = new Delegate(OnPositionChanged);
-            this.gates[EventType.OnFill] = new Delegate(OnFill);
-            this.gates[EventType.OnTransaction] = new Delegate(OnTransaction);
-            this.gates[EventType.OnSendOrder] = new Delegate(OnSendOrder);
-            this.gates[EventType.OnPendingNewOrder] = new Delegate(OnPendingNewOrder);
-            this.gates[EventType.OnNewOrder] = new Delegate(OnNewOrder);
-            this.gates[EventType.OnOrderStatusChanged] = new Delegate(OnOrderStatusChanged);
-            this.gates[EventType.OnOrderPartiallyFilled] = new Delegate(OnOrderPartiallyFilled);
-            this.gates[EventType.OnOrderFilled] = new Delegate(OnOrderFilled);
-            this.gates[EventType.OnOrderReplaced] = new Delegate(OnOrderReplaced);
-            this.gates[EventType.OnOrderCancelled] = new Delegate(OnOrderCancelled);
-            this.gates[EventType.OnOrderRejected] = new Delegate(OnOrderRejected);
-            this.gates[EventType.OnOrderExpired] = new Delegate(OnOrderExpired);
-            this.gates[EventType.OnOrderCancelRejected] = new Delegate(OnOrderCancelRejected);
-            this.gates[EventType.OnOrderReplaceRejected] = new Delegate(OnOrderReplaceRejected);
-            this.gates[EventType.OnOrderDone] = new Delegate(OnOrderDone);
-            this.gates[EventType.OnPortfolioAdded] = new Delegate(OnPortfolioAdded);
-            this.gates[EventType.OnPortfolioRemoved] = new Delegate(OnPortfolioRemoved);
-            this.gates[EventType.OnPortfolioParentChanged] = new Delegate(OnPortfolioParentChanged);
-            this.gates[EventType.HistoricalData] = new Delegate(OnHistoricalData);
-            this.gates[EventType.HistoricalDataEnd] = new Delegate(OnHistoricalDataEnd);
-            this.gates[EventType.BarSlice] = new Delegate(OnBarSlice);
-            this.gates[EventType.OnStrategyEvent] = new Delegate(OnStrategyEvent);
-            this.gates[EventType.AccountData] = new Delegate(OnAccountData);
-            this.gates[EventType.OnPropertyChanged] = new Delegate(OnPropertyChanged);
-            this.gates[EventType.OnException] = new Delegate(OnException);
-            this.gates[EventType.AccountReport] = new Delegate(OnAccountReport);
-            this.gates[EventType.ProviderError] = new Delegate(OnProviderError);
-            this.gates[EventType.OnProviderConnected] = new Delegate(OnProviderConnected);
-            this.gates[EventType.OnProviderDisconnected] = new Delegate(OnProviderDisconnected);
-            this.gates[EventType.OnSimulatorStart] = new Delegate(OnSimulatorStart);
-            this.gates[EventType.OnSimulatorStop] = new Delegate(OnSimulatorStop);
-            this.gates[EventType.OnSimulatorProgress] = new Delegate(OnSimulatorProgress);
+            this.gates[EventType.Bid] = OnBid;
+            this.gates[EventType.Ask] = OnAsk;
+            this.gates[EventType.Trade] = OnTrade;
+            this.gates[EventType.Quote] = OnQuote;
+            this.gates[EventType.Bar] = OnBar;
+            this.gates[EventType.Level2Snapshot] = OnLevel2Snapshot;
+            this.gates[EventType.Level2Update] = OnLevel2Update;            
+            this.gates[EventType.ExecutionReport] = OnExecutionReport;
+            this.gates[EventType.Reminder] = OnReminder;
+            this.gates[EventType.Fundamental] = OnFundamental;
+            this.gates[EventType.News] = OnNews;
+            this.gates[EventType.Group] = OnGroup;
+            this.gates[EventType.GroupEvent] = OnGroupEvent;
+            this.gates[EventType.Command] = OnCommand;
+            this.gates[EventType.OnPositionOpened] = OnPositionOpened;
+            this.gates[EventType.OnPositionClosed] = OnPositionClosed;
+            this.gates[EventType.OnPositionChanged] = OnPositionChanged;
+            this.gates[EventType.OnFill] = OnFill;
+            this.gates[EventType.OnTransaction] = OnTransaction;
+            this.gates[EventType.OnSendOrder] = OnSendOrder;
+            this.gates[EventType.OnPendingNewOrder] = OnPendingNewOrder;
+            this.gates[EventType.OnNewOrder] = OnNewOrder;
+            this.gates[EventType.OnOrderStatusChanged] = OnOrderStatusChanged;
+            this.gates[EventType.OnOrderPartiallyFilled] = OnOrderPartiallyFilled;
+            this.gates[EventType.OnOrderFilled] = OnOrderFilled;
+            this.gates[EventType.OnOrderReplaced] = OnOrderReplaced;
+            this.gates[EventType.OnOrderCancelled] = OnOrderCancelled;
+            this.gates[EventType.OnOrderRejected] = OnOrderRejected;
+            this.gates[EventType.OnOrderExpired] = OnOrderExpired;
+            this.gates[EventType.OnOrderCancelRejected] = OnOrderCancelRejected;
+            this.gates[EventType.OnOrderReplaceRejected] = OnOrderReplaceRejected;
+            this.gates[EventType.OnOrderDone] = OnOrderDone;
+            this.gates[EventType.OnPortfolioAdded] = OnPortfolioAdded;
+            this.gates[EventType.OnPortfolioRemoved] = OnPortfolioRemoved;
+            this.gates[EventType.OnPortfolioParentChanged] = OnPortfolioParentChanged;
+            this.gates[EventType.HistoricalData] = OnHistoricalData;
+            this.gates[EventType.HistoricalDataEnd] = OnHistoricalDataEnd;
+            this.gates[EventType.BarSlice] = OnBarSlice;
+            this.gates[EventType.OnStrategyEvent] = OnStrategyEvent;
+            this.gates[EventType.AccountData] = OnAccountData;
+            this.gates[EventType.OnPropertyChanged] = OnPropertyChanged;
+            this.gates[EventType.OnException] = OnException;
+            this.gates[EventType.AccountReport] = OnAccountReport;
+            this.gates[EventType.ProviderError] = OnProviderError;
+            this.gates[EventType.OnProviderConnected] = OnProviderConnected;
+            this.gates[EventType.OnProviderDisconnected] = OnProviderDisconnected;
+            this.gates[EventType.OnSimulatorStart] = OnSimulatorStart;
+            this.gates[EventType.OnSimulatorStop] = OnSimulatorStop;
+            this.gates[EventType.OnSimulatorProgress] = OnSimulatorProgress;
 
             // Enable all events by defaults
             for (int i = 0; i < byte.MaxValue; i++)
@@ -525,15 +525,17 @@ namespace SmartQuant
                 this.framework.PortfolioManager.OnExecutionReport(report);
                 this.framework.StrategyManager.OnExecutionReport(report);
                 this.framework.EventServer.EmitQueued();
-                return;
             }
-            this.framework.OrderManager.method_5(report);
-            if (report.Order != null && report.Order.Portfolio != null)
+            else
             {
-                this.framework.PortfolioManager.OnExecutionReport(report);
+                this.framework.OrderManager.OnExecutionReportLoaded(report);
+
+                if (report.Order?.Portfolio != null)
+                    this.framework.PortfolioManager.OnExecutionReport(report);
+
+                this.framework.StrategyManager.OnExecutionReport(report);
+                this.framework.EventServer.EmitQueued();                
             }
-            this.framework.StrategyManager.OnExecutionReport(report);
-            this.framework.EventServer.EmitQueued();
         }
 
         private void OnReminder(Event e)
@@ -644,11 +646,10 @@ namespace SmartQuant
         {
             this.framework.StrategyManager.Stop();
             this.stopwatch.Stop();
-            long ms = this.stopwatch.ElapsedMilliseconds;
-            if (ms != 0)
-                Console.WriteLine($"{DateTime.Now} Data run done, count = {DataEventCount} ms = {this.stopwatch.ElapsedMilliseconds}  event/sec = {DataEventCount / ms * 1000}");
-            else
-                Console.WriteLine($"{DateTime.Now} Data run done, count = {DataEventCount} ms = 0");
+            var ms = this.stopwatch.ElapsedMilliseconds;
+            Console.WriteLine(ms != 0
+                ? $"{DateTime.Now} Data run done, count = {DataEventCount} ms = {this.stopwatch.ElapsedMilliseconds}  event/sec = {DataEventCount/ms*1000}"
+                : $"{DateTime.Now} Data run done, count = {DataEventCount} ms = 0");
         }
 
         private void OnSimulatorProgress(Event e)

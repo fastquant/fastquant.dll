@@ -11,10 +11,6 @@ namespace SmartQuant
         private IdArray<TickSeries> trades = new IdArray<TickSeries>();
         private IdArray<IdArray<IdArray<BarSeries>>> bars = new IdArray<IdArray<IdArray<BarSeries>>>();
 
-        public DataStore()
-        {
-        }
-
         public void Add(Bar bar)
         {
             var barsWithInstrumentId = this.bars[bar.InstrumentId] = this.bars[bar.InstrumentId] ?? new IdArray<IdArray<BarSeries>>(8);
