@@ -6,7 +6,7 @@ namespace SmartQuant.FinChart
 {
     public class ColorSeries : ICollection
     {
-        private SortedList list = new SortedList();
+        private readonly SortedList list = new SortedList();
 
         public bool IsSynchronized => this.list.IsSynchronized;
 
@@ -23,7 +23,7 @@ namespace SmartQuant.FinChart
 
     public class SortedRangeList : ICollection
     {
-        private SortedList list = new SortedList();
+        private readonly SortedList list = new SortedList();
 
         public ArrayList this [int index] => this.list.GetByIndex(index) as ArrayList;
 

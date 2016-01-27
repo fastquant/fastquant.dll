@@ -58,13 +58,7 @@ namespace SmartQuant.FinChart
             }
         }
 
-        public virtual int LabelDigitsCount
-        {
-            get
-            {
-                return this.pad.Chart.LabelDigitsCount;
-            }
-        }
+        public virtual int LabelDigitsCount => this.pad.Chart.LabelDigitsCount;
 
         public bool ToolTipEnabled
         {
@@ -109,7 +103,7 @@ namespace SmartQuant.FinChart
             this.lastDate = maxDate;
         }
 
-        public abstract PadRange GetPadRangeY(Pad Pad);
+        public abstract PadRange GetPadRangeY(Pad pad);
 
         public abstract void Paint();
 
@@ -285,13 +279,7 @@ namespace SmartQuant.FinChart
     {
         private TimeSeries series;
 
-        public override ISeries MainSeries
-        {
-            get
-            {
-                return this.series;
-            }
-        }
+        public override ISeries MainSeries => this.series;
 
         public SearchOption Option { get; private set; }
 

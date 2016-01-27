@@ -17,8 +17,7 @@ namespace SmartQuant
 
         private string method_0(AccountData data, string name)
         {
-            var obj = data.Fields[name];
-            return obj != null ? obj.ToString() : string.Empty;
+            return data.Fields[name]?.ToString() ?? string.Empty;
         }
 
         public override string ToString() => this.text;
@@ -42,8 +41,8 @@ namespace SmartQuant
 
     public class AccountDataManager
     {
-        private Framework framework;
-        private Dictionary<int, Class4> items = new Dictionary<int, Class4>();
+        private readonly Framework framework;
+        private readonly Dictionary<int, Class4> items = new Dictionary<int, Class4>();
 
         internal AccountDataManager(Framework framework)
         {

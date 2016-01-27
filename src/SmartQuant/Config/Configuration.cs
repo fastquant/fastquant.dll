@@ -5,6 +5,8 @@ using System;
 using System.IO;
 using System.Xml.Serialization;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace SmartQuant
 {
@@ -46,6 +48,8 @@ namespace SmartQuant
         public override string ToString() => TypeName;
     }
 
+
+#if SMARTQUANT_COMPAT
     [XmlRoot("Configuration")]
     public class Configuration
     {
@@ -167,4 +171,31 @@ namespace SmartQuant
             return c;
         }
     }
+#else
+    public class Configuration
+    {
+        private static JObject configData;
+
+        static Configuration()
+        {
+            var json = File.ReadAllText(Path.Combine(Installation.ConfigDir.FullName, "configuration.json"));
+            configData = JObject.Parse(json);
+        }
+
+        public string DefaultDataProvider => Get("DefaultDataProvider");
+        public string DefaultExecutionProvider => Get("DefaultExecutionProvider");
+        public string DataFileName => Get("DataFileName");
+        public string InstrumentFileName => Get("InstrumentFileName");
+        public string OrderFileName => Get("OrderFileName");
+        public string PortfolioFileName => Get("PortfolioFileName");
+
+        private static string Get(string key) => (string)configData[key];
+
+        public static Configuration DefaultConfiguaration()
+        {
+            var c = new Configuration();
+            return c;
+        }
+    }
+#endif
 }

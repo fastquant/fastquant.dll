@@ -57,8 +57,7 @@ namespace SmartQuant
             this.stream = this.tcpClient.GetStream();
             this.reader = new BinaryReader(this.stream);
             this.writer = new BinaryWriter(this.stream);
-            this.thread = new Thread(new ThreadStart(Run));
-            this.thread.IsBackground = true;
+            this.thread = new Thread(Run) {IsBackground = true};
             this.thread.Start();
         }
 
@@ -284,10 +283,10 @@ namespace SmartQuant
             StreamerManager.AddDefaultStreamers();
 
             // Create Servers
-            var iServer = instrumentServer ?? new FileInstrumentServer(this, "d:\\instruments.quant");
-            var dServer = dataServer ?? new FileDataServer(this, "d:\\data.quant");
-            var oServer = new FileOrderServer(this, "d:\\orders.quant");
-            var pServer = new FilePortfolioServer(this, "d:\\portfolios.quant");
+            var iServer = instrumentServer ?? new FileInstrumentServer(this, Configuration.InstrumentFileName);
+            var dServer = dataServer ?? new FileDataServer(this, Configuration.DataFileName);
+            var oServer = new FileOrderServer(this, Configuration.OrderFileName);
+            var pServer = new FilePortfolioServer(this, Configuration.PortfolioFileName);
 
             InstrumentManager = new InstrumentManager(this, iServer);
             InstrumentServer = iServer;

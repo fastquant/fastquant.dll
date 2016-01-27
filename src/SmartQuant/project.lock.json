@@ -7316,6 +7316,7 @@
   },
   "projectFileDependencyGroups": {
     "": [
+      "Newtonsoft.Json >= 7.0.1",
       "xunit >= 2.1.0-*",
       "xunit.runner.dnx >= 2.1.0-*"
     ],

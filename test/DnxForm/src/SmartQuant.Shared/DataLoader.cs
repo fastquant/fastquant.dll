@@ -9,80 +9,80 @@ namespace SmartQuant.Shared
             OrderManagerQueue = new PermanentQueue<Event>();
             PortfolioEventQueue = new PermanentQueue<Event>();
             PortfolioManagerEventQueue = new PermanentQueue<Event>();
-            framework.EventManager.Dispatcher.FrameworkCleared += new FrameworkEventHandler(this.Dispatcher_FrameworkCleared);
-            framework.EventManager.Dispatcher.ExecutionCommand += new ExecutionCommandEventHandler(this.Dispatcher_ExecutionCommand);
-            framework.EventManager.Dispatcher.ExecutionReport += new ExecutionReportEventHandler(this.Dispatcher_ExecutionReport);
-            framework.EventManager.Dispatcher.OrderManagerCleared += new OrderManagerClearedEventHandler(this.Dispatcher_OrderManagerCleared);
-            framework.EventManager.Dispatcher.PositionOpened += new PositionEventHandler(this.Dispatcher_PositionOpened);
-            framework.EventManager.Dispatcher.PositionChanged += new PositionEventHandler(this.Dispatcher_PositionChanged);
-            framework.EventManager.Dispatcher.PositionClosed += new PositionEventHandler(this.Dispatcher_PositionClosed);
-            framework.EventManager.Dispatcher.Fill += new FillEventHandler(this.Dispatcher_NewFill);
-            framework.EventManager.Dispatcher.Transaction += new TransactionEventHandler(this.Dispatcher_Transaction);
-            framework.EventManager.Dispatcher.PortfolioAdded += new PortfolioEventHandler(this.Dispatcher_PortfolioAdded);
-            framework.EventManager.Dispatcher.PortfolioRemoved += new PortfolioEventHandler(this.Dispatcher_PortfolioRemoved);
-            framework.EventManager.Dispatcher.PortfolioParentChanged += new PortfolioEventHandler(this.Dispatcher_ParentChanged);
+            framework.EventManager.Dispatcher.FrameworkCleared += DispatcherFrameworkCleared;
+            framework.EventManager.Dispatcher.ExecutionCommand += DispatcherExecutionCommand;
+            framework.EventManager.Dispatcher.ExecutionReport += DispatcherExecutionReport;
+            framework.EventManager.Dispatcher.OrderManagerCleared += DispatcherOrderManagerCleared;
+            framework.EventManager.Dispatcher.PositionOpened += DispatcherPositionOpened;
+            framework.EventManager.Dispatcher.PositionChanged += DispatcherPositionChanged;
+            framework.EventManager.Dispatcher.PositionClosed += DispatcherPositionClosed;
+            framework.EventManager.Dispatcher.Fill += DispatcherNewFill;
+            framework.EventManager.Dispatcher.Transaction += DispatcherTransaction;
+            framework.EventManager.Dispatcher.PortfolioAdded += DispatcherPortfolioAdded;
+            framework.EventManager.Dispatcher.PortfolioRemoved += DispatcherPortfolioRemoved;
+            framework.EventManager.Dispatcher.PortfolioParentChanged += DispatcherParentChanged;
         }
 
-        private void Dispatcher_ExecutionCommand(object sender, ExecutionCommand command)
+        private void DispatcherExecutionCommand(object sender, ExecutionCommand command)
         {
-            this.OrderManagerQueue.Enqueue(command);
+            OrderManagerQueue.Enqueue(command);
         }
 
-        private void Dispatcher_ExecutionReport(object sender, ExecutionReport report)
+        private void DispatcherExecutionReport(object sender, ExecutionReport report)
         {
-            this.OrderManagerQueue.Enqueue(report);
+            OrderManagerQueue.Enqueue(report);
         }
 
-        private void Dispatcher_FrameworkCleared(object sender, FrameworkEventArgs args)
+        private void DispatcherFrameworkCleared(object sender, FrameworkEventArgs args)
         {
-            this.PortfolioEventQueue.Clear();
-            this.PortfolioManagerEventQueue.Clear();
-            this.PortfolioEventQueue.Enqueue(new OnFrameworkCleared(args.Framework));
-            this.PortfolioManagerEventQueue.Enqueue(new OnFrameworkCleared(args.Framework));
+            PortfolioEventQueue.Clear();
+            PortfolioManagerEventQueue.Clear();
+            PortfolioEventQueue.Enqueue(new OnFrameworkCleared(args.Framework));
+            PortfolioManagerEventQueue.Enqueue(new OnFrameworkCleared(args.Framework));
         }
 
-        private void Dispatcher_NewFill(object sender, OnFill fill)
+        private void DispatcherNewFill(object sender, OnFill fill)
         {
-            this.PortfolioEventQueue.Enqueue(fill);
+            PortfolioEventQueue.Enqueue(fill);
         }
 
-        private void Dispatcher_OrderManagerCleared(object sender, OnOrderManagerCleared data)
+        private void DispatcherOrderManagerCleared(object sender, OnOrderManagerCleared data)
         {
-            this.OrderManagerQueue.Clear();
-            this.OrderManagerQueue.Enqueue(data);
+            OrderManagerQueue.Clear();
+            OrderManagerQueue.Enqueue(data);
         }
 
-        private void Dispatcher_ParentChanged(object sender, PortfolioEventArgs args)
+        private void DispatcherParentChanged(object sender, PortfolioEventArgs args)
         {
-            this.PortfolioManagerEventQueue.Enqueue(new OnPortfolioParentChanged(args.Portfolio));
+            PortfolioManagerEventQueue.Enqueue(new OnPortfolioParentChanged(args.Portfolio));
         }
 
-        private void Dispatcher_PortfolioAdded(object sender, PortfolioEventArgs args)
+        private void DispatcherPortfolioAdded(object sender, PortfolioEventArgs args)
         {
-            this.PortfolioManagerEventQueue.Enqueue(new OnPortfolioAdded(args.Portfolio));
+            PortfolioManagerEventQueue.Enqueue(new OnPortfolioAdded(args.Portfolio));
         }
 
-        private void Dispatcher_PortfolioRemoved(object sender, PortfolioEventArgs args)
+        private void DispatcherPortfolioRemoved(object sender, PortfolioEventArgs args)
         {
-            this.PortfolioManagerEventQueue.Enqueue(new OnPortfolioRemoved(args.Portfolio));
+            PortfolioManagerEventQueue.Enqueue(new OnPortfolioRemoved(args.Portfolio));
         }
 
-        private void Dispatcher_PositionChanged(object sender, PositionEventArgs args)
+        private void DispatcherPositionChanged(object sender, PositionEventArgs args)
         {
-            this.PortfolioEventQueue.Enqueue(new OnPositionChanged(args.Portfolio, args.Position));
+            PortfolioEventQueue.Enqueue(new OnPositionChanged(args.Portfolio, args.Position));
         }
 
-        private void Dispatcher_PositionClosed(object sender, PositionEventArgs args)
+        private void DispatcherPositionClosed(object sender, PositionEventArgs args)
         {
-            this.PortfolioEventQueue.Enqueue(new OnPositionClosed(args.Portfolio, args.Position));
+            PortfolioEventQueue.Enqueue(new OnPositionClosed(args.Portfolio, args.Position));
         }
 
-        private void Dispatcher_PositionOpened(object sender, PositionEventArgs args)
+        private void DispatcherPositionOpened(object sender, PositionEventArgs args)
         {
             PortfolioEventQueue.Enqueue(new OnPositionOpened(args.Portfolio, args.Position));
         }
 
-        private void Dispatcher_Transaction(object sender, OnTransaction transaction)
+        private void DispatcherTransaction(object sender, OnTransaction transaction)
         {
             PortfolioEventQueue.Enqueue(transaction);
         }
