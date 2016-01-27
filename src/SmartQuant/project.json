@@ -2,16 +2,14 @@
   "dependencies": {
     "Newtonsoft.Json": "7.0.1",
     "xunit": "2.1.0-*",
-    "xunit.runner.dnx": "2.1.0-*"
+    "xunit.runner.dnx": "2.1.0-*",
+	"xunit.runner.visualstudio": "2.2.0-beta1-*"
   },
   "frameworks": {
     "dnx451": {
       "frameworkAssemblies": {
         "System.Drawing": "4.0.0.0",
         "System.Xml": "4.0.0.0"
-      },
-      "dependencies": {
-        "xunit.runner.visualstudio": "2.2.0-beta1-build1144"
       }
     },
     "dnxcore50": {
@@ -37,6 +35,7 @@
   "packInclude": {
     "runtimes/win7-x64/native/": "runtimes/win7-x64/native/*",
     "runtimes/win7-x86/native/": "runtimes/win7-x86/native/*",
+    "runtimes/centos.7.1-x64/native/": "runtimes/centos.7.1-x64/native/*",
     "runtimes/osx/native/": "runtimes/osx/native/*"
   }
 }
