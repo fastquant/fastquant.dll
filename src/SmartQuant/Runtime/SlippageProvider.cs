@@ -14,6 +14,6 @@ namespace SmartQuant
     {
         public double Slippage { get; set; }
 
-        public virtual double GetPrice(ExecutionReport report) => report.AvgPx*(1 + Slippage*(report.Side == OrderSide.Buy ? 1 : -1));
+        public virtual double GetPrice(ExecutionReport report) => report.LastPx*(1 + Slippage*(report.Side == OrderSide.Buy ? 1 : -1));
     }
 }

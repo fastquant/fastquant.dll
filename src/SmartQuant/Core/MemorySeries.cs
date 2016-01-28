@@ -63,11 +63,9 @@ namespace SmartQuant
         public void Add(DataObject obj)
         {
             if (this.list.Count != 0 && !(obj.dateTime >= this.list[this.list.Count - 1].dateTime))
-            {
-                this.list.Insert((int)this.GetIndex(obj.dateTime, SearchOption.Next), obj);
-                return;
-            }
-            this.list.Add(obj);
+                this.list.Insert((int) this.GetIndex(obj.dateTime, SearchOption.Next), obj);
+            else
+                this.list.Add(obj);
         }
 
         public void Clear()=> this.list.Clear();

@@ -29,6 +29,7 @@ namespace SmartQuant
 
         #region Extra Helper Methods
 
+        [NotOriginal]
         internal Quote()
         {
         }

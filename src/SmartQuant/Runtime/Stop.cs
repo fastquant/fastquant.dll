@@ -236,12 +236,37 @@ namespace SmartQuant
 
         protected virtual double GetInstrumentPrice()
         {
-            throw new NotImplementedException(); 
+            if (this.position.Side == PositionSide.Long)
+            {
+                var bid = this.strategy.framework.DataManager.GetBid(this.instrument);
+                if (bid != null)
+                    return GetPrice(bid.Price);
+            }
+
+            if (this.position.Side == PositionSide.Short)
+            {
+                var ask = this.strategy.framework.DataManager.GetAsk(this.instrument);
+                if (ask != null)
+                    return GetPrice(ask.Price);
+            }
+
+            var trade = this.strategy.framework.DataManager.GetTrade(this.instrument);
+            if (trade != null)
+                return GetPrice(trade.Price);
+
+            var bar = this.strategy.framework.DataManager.GetBar(this.instrument);
+            return bar != null ? GetPrice(bar.Close) : 0;
         }
 
         protected virtual double GetStopPrice()
         {
-            throw new NotImplementedException(); 
+            this.initPrice = this.trailPrice;
+            if (Mode == StopMode.Absolute)
+                return Side == PositionSide.Long ? this.trailPrice - Math.Abs(Level) : this.trailPrice + Math.Abs(Level);
+            else
+                return Position.Side == PositionSide.Long
+                    ? this.trailPrice - Math.Abs(this.trailPrice*Level)
+                    : this.trailPrice + Math.Abs(this.trailPrice*Level);
         }
 
         public void Disconnect()
@@ -382,9 +407,9 @@ namespace SmartQuant
             this.method_8(StopStatus.Executed);
         }
 
-        private void method_8(StopStatus stopStatus_0)
+        private void method_8(StopStatus status)
         {
-            this.status = stopStatus_0;
+            this.status = status;
             this.completionTime = this.strategy.framework.Clock.DateTime;
             this.strategy.EmitStopStatusChanged(this);
         }

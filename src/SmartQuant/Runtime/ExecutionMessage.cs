@@ -5,7 +5,6 @@ namespace SmartQuant
     public class ExecutionMessage : DataObject
     {
         private Instrument instrument;
-
         private ObjectTable fields;
         private Order order;
         private int orderId;
@@ -25,7 +24,7 @@ namespace SmartQuant
             set
             {
                 this.order = value;
-                this.orderId = this.order.Id;
+                OrderId = this.order.Id;
             }
         }
 
@@ -45,7 +44,7 @@ namespace SmartQuant
 
         public string ProviderOrderId { get; set; } = string.Empty;
 
-        public int InstrumentId { get; set; }
+        public int InstrumentId { get; internal set; }
 
         public byte CurrencyId { get; set; }
 
@@ -133,11 +132,11 @@ namespace SmartQuant
 
         public double Commission { get; set; }
 
-        public string Text { get; set; }
+        public string Text { get; set; } = string.Empty;
 
         public DateTime ExpireTime { get; set; }
 
-        public string ExecId { get; set; }
+        public string ExecId { get; set; } = string.Empty;
 
         public ExecutionReport()
         {
@@ -145,29 +144,28 @@ namespace SmartQuant
 
         public ExecutionReport(ExecutionReport report)
         {
-            this.DateTime = report.DateTime;
-            this.Instrument = report.Instrument;
-            this.Order = report.Order;
-
-            this.CurrencyId = report.CurrencyId;
-            this.ExecType = report.ExecType;
-            this.OrdType = report.OrdType;
-            this.Side = report.Side;
-            this.TimeInForce = report.TimeInForce;
-            this.OrdStatus = report.OrdStatus;
-            this.LastPx = report.LastPx;
-            this.AvgPx = report.AvgPx;
-            this.OrdQty = report.OrdQty;
-            this.CumQty = report.CumQty;
-            this.LastQty = report.LastQty;
-            this.LeavesQty = report.LeavesQty;
-            this.Price = report.Price;
-            this.StopPx = report.StopPx;
-            this.Commission = report.Commission;
-            this.Text = report.Text;
+            DateTime = report.DateTime;
+            Instrument = report.Instrument;
+            Order = report.Order;
+            CurrencyId = report.CurrencyId;
+            ExecType = report.ExecType;
+            OrdType = report.OrdType;
+            Side = report.Side;
+            TimeInForce = report.TimeInForce;
+            OrdStatus = report.OrdStatus;
+            LastPx = report.LastPx;
+            AvgPx = report.AvgPx;
+            OrdQty = report.OrdQty;
+            CumQty = report.CumQty;
+            LastQty = report.LastQty;
+            LeavesQty = report.LeavesQty;
+            Price = report.Price;
+            StopPx = report.StopPx;
+            Commission = report.Commission;
+            Text = report.Text;
         }
 
-        public override string ToString() => $"{DateTime} {Instrument.Symbol} {ExecType} {Side} {AvgPx}";
+        public override string ToString() => $"{DateTime} {Instrument?.Symbol ?? InstrumentId.ToString()} {ExecType} {Side} {LastPx}";
     }
 
     public delegate void ExecutionReportEventHandler(object sender, ExecutionReport report);
@@ -181,13 +179,7 @@ namespace SmartQuant
 
     public class ExecutionCommand : ExecutionMessage
     {
-        public override byte TypeId
-        {
-            get
-            {
-                return DataObjectType.ExecutionCommand;
-            }
-        }
+        public override byte TypeId => DataObjectType.ExecutionCommand;
 
         public Portfolio Portfolio { get; internal set; }
 
@@ -195,9 +187,9 @@ namespace SmartQuant
 
         public int AlgoId { get; internal set; }
 
-        public string OCA { get; internal set; }
+        public string OCA { get; internal set; } = string.Empty;
 
-        public string Text { get; internal set; }
+        public string Text { get; internal set; } = string.Empty;
 
         public double StopPx { get; internal set; }
 
@@ -227,12 +219,10 @@ namespace SmartQuant
 
         public DateTime ExpireTime { get; internal set; }
 
-        public int StrategyId { get; }
+        public int StrategyId { get; internal set; }
 
         public ExecutionCommand()
         {
-            Text = "";
-            OCA = "";
         }
 
         public ExecutionCommand(ExecutionCommandType type, Order order)
@@ -241,15 +231,61 @@ namespace SmartQuant
             Type = type;
             Order = order;
             OrderId = order.Id;
+            ProviderId = order.ProviderId;
+            RouteId = order.RouteId;
+            AlgoId = order.AlgoId;
+            PortfolioId = order.PortfolioId;
+            InstrumentId = order.InstrumentId;
+            TransactTime = order.TransactTime;
+            DateTime = order.DateTime;
+            Instrument = order.Instrument;
+            Provider = order.Provider;
+            Portfolio = order.Portfolio;
+            Side = order.Side;
+            OrdType = order.Type;
+            TimeInForce = order.TimeInForce;
+            ExpireTime = order.ExpireTime;
+            Price = order.Price;
+            StopPx = order.StopPx;
+            Qty = order.Qty;
+            OCA = order.OCA;
+            Text = order.Text;
+            Account = order.Account;
+            ClientID = order.ClientID;
+            Fields = new ObjectTable(order.Fields);
         }
 
         public ExecutionCommand(ExecutionCommand command)
             : this()
         {
+            Type = command.Type;
+            Id = command.Id;
+            ProviderId = command.ProviderId;
+            RouteId = command.RouteId;
+            AlgoId = command.AlgoId;
+            PortfolioId = command.PortfolioId;
+            InstrumentId = command.InstrumentId;
+            TransactTime = command.TransactTime;
+            DateTime = command.DateTime;
+            Instrument = command.Instrument;
+            Provider = command.Provider;
+            Portfolio = command.Portfolio;
+            Side = command.Side;
+            OrdType = command.OrdType;
+            TimeInForce = command.TimeInForce;
+            ExpireTime = command.ExpireTime;
+            Price = command.Price;
+            StopPx = command.StopPx;
+            Qty = command.Qty;
+            OCA = command.OCA;
+            Text = command.Text;
             Account = command.Account;
             ClientID = command.ClientID;
-            RouteId = command.RouteId;
+            Fields = new ObjectTable(command.Fields);
         }
+
+        public override string ToString() => $"{DateTime} {Type} {Instrument?.Symbol ?? InstrumentId.ToString()} {Side} {OrdType} {Qty}";
+
     }
 
     public delegate void ExecutionCommandEventHandler(object sender, ExecutionCommand command);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SmartQuant
 {
@@ -23,10 +24,10 @@ namespace SmartQuant
                 switch (option)
                 {
                     case SearchOption.Next:
-                        num = this.GetIndex(dateTime, IndexOption.Next);
+                        num = GetIndex(dateTime, IndexOption.Next);
                         break;
                     case SearchOption.Prev:
-                        num = this.GetIndex(dateTime, IndexOption.Prev);
+                        num = GetIndex(dateTime, IndexOption.Prev);
                         break;
                 }
                 if (num >= 0)
@@ -69,9 +70,13 @@ namespace SmartQuant
 
         public void Add(Tick tick)
         {
-            this.min = this.min == null || this.min.Price > tick.Price ? tick : this.min;
-            this.max = this.max == null || this.max.Price < tick.Price ? tick : this.max;
-            throw new NotImplementedException();
+            this.min = this.min == null ? tick : tick.Price < this.min.Price ? tick : this.min;
+            this.max = this.max == null ? tick : tick.Price > this.min.Price ? tick : this.max;
+
+            if (this.ticks.Count == 0 || tick.DateTime >= this.ticks[this.ticks.Count - 1].DateTime)
+                this.ticks.Add(tick);
+            else
+                this.ticks.Insert(GetIndex(tick.DateTime, IndexOption.Next), tick);
         }
 
         void IDataSeries.Add(DataObject obj) => Add((Tick)obj);
@@ -86,7 +91,7 @@ namespace SmartQuant
 
         public Tick Ago(int n)
         {
-            int i = Count - 1 - n;
+            var i = Count - 1 - n;
             if (i < 0)
                 throw new ArgumentException($"TickSeries::Ago Can not return tick {n} ticks ago: tick series is too short, count = {Count}");
             return this[i];
@@ -100,7 +105,7 @@ namespace SmartQuant
   
         public int GetIndex(DateTime dateTime, IndexOption option = IndexOption.Null)
         {
-            throw new NotImplementedException();
+            return GetIndex_me(dateTime, option);
         }
 
         long IDataSeries.GetIndex(DateTime dateTime, SearchOption option)
@@ -120,12 +125,29 @@ namespace SmartQuant
 
         public Tick GetMax(DateTime dateTime1, DateTime dateTime2)
         {
-            throw new NotImplementedException();
+            Tick tick = null;
+            foreach (var t in this.ticks)
+            {
+                if (dateTime1 <= t.DateTime)
+                {
+                    if (t.DateTime > dateTime2)
+                        return tick;
+                    tick = tick == null ? t : t.Price > tick.Price ? t : tick;
+                }
+            }
+            return tick;
         }
 
         public Tick GetMax(int index1, int index2)
         {
-            throw new NotImplementedException();
+            var tick = this[index1];
+            for (var i = index1 + 1; i <= index2; i++)
+            {
+                var t = this[i];
+                if (t.Price > tick.Price)
+                    tick = t;
+            }
+            return tick;
         }
 
         double ISeries.GetMax(DateTime dateTime1, DateTime dateTime2) => GetMax(dateTime1, dateTime2).Price;
@@ -136,12 +158,29 @@ namespace SmartQuant
 
         public Tick GetMin(int index1, int index2)
         {
-            throw new NotImplementedException();
+            var tick = this[index1];
+            for (var i = index1 + 1; i <= index2; i++)
+            {
+                var t = this[i];
+                if (t.Price < tick.Price)
+                    tick = t;
+            }
+            return tick;
         }
 
         public Tick GetMin(DateTime dateTime1, DateTime dateTime2)
         {
-            throw new NotImplementedException();
+            Tick tick = null;
+            foreach (var t in this.ticks)
+            {
+                if (dateTime1 <= t.dateTime)
+                {
+                    if (t.dateTime > dateTime2)
+                        return tick;
+                    tick = tick == null ? t : t.Price < tick.Price ? t : tick;
+                }
+            }
+            return tick;
         }
 
         double ISeries.GetMin(DateTime dateTime1, DateTime dateTime2) => GetMin(dateTime1, dateTime2).Price;
@@ -149,5 +188,79 @@ namespace SmartQuant
         double ISeries.GetMin(int index1, int index2, BarData barData) => GetMin(index1, index2).Price;
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        private int GetIndex_me(DateTime dateTime, IndexOption option = IndexOption.Null)
+        {
+            var i = this.ticks.BinarySearch(new Tick() { DateTime = dateTime }, new DataObjectComparer());
+            if (i >= 0)
+                return i;
+            else if (option == IndexOption.Next)
+                return ~i;
+            else if (option == IndexOption.Prev)
+                return ~i - 1;
+            return -1; // option == IndexOption.Null
+        }
+
+        private int GetIndex_original(DateTime dateTime, IndexOption option = IndexOption.Null)
+        {
+            int num = 0;
+            int num2 = 0;
+            int num3 = this.ticks.Count - 1;
+            bool flag = true;
+            while (flag)
+            {
+                if (num3 < num2)
+                {
+                    return -1;
+                }
+                num = (num2 + num3) / 2;
+                switch (option)
+                {
+                    case IndexOption.Null:
+                        if (this.ticks[num].dateTime == dateTime)
+                        {
+                            flag = false;
+                        }
+                        else if (this.ticks[num].dateTime > dateTime)
+                        {
+                            num3 = num - 1;
+                        }
+                        else if (this.ticks[num].dateTime < dateTime)
+                        {
+                            num2 = num + 1;
+                        }
+                        break;
+                    case IndexOption.Next:
+                        if (this.ticks[num].dateTime >= dateTime && (num == 0 || this.ticks[num - 1].dateTime < dateTime))
+                        {
+                            flag = false;
+                        }
+                        else if (this.ticks[num].dateTime < dateTime)
+                        {
+                            num2 = num + 1;
+                        }
+                        else
+                        {
+                            num3 = num - 1;
+                        }
+                        break;
+                    case IndexOption.Prev:
+                        if (this.ticks[num].dateTime <= dateTime && (num == this.ticks.Count - 1 || this.ticks[num + 1].dateTime > dateTime))
+                        {
+                            flag = false;
+                        }
+                        else if (this.ticks[num].dateTime > dateTime)
+                        {
+                            num3 = num - 1;
+                        }
+                        else
+                        {
+                            num2 = num + 1;
+                        }
+                        break;
+                }
+            }
+            return num;
+        }
     }
 }

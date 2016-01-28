@@ -46,9 +46,9 @@ namespace SmartQuant
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public int GetIndex(DateTime datetime, IndexOption option)
+        public int GetIndex(DateTime dateTime, IndexOption option)
         {
-            throw new NotImplementedException();
+            return GetIndex_me(dateTime, option);
         }
 
         long IDataSeries.GetIndex(DateTime dateTime, SearchOption option)
@@ -62,6 +62,80 @@ namespace SmartQuant
                 default:
                     throw new ApplicationException("Unsupported search option");
             }
+        }
+
+        private int GetIndex_me(DateTime dateTime, IndexOption option)
+        {
+            var i = this.quotes.BinarySearch(new Quote { DateTime = dateTime }, new DataObjectComparer());
+            if (i >= 0)
+                return i;
+            else if (option == IndexOption.Next)
+                return ~i;
+            else if (option == IndexOption.Prev)
+                return ~i - 1;
+            return -1; // option == IndexOption.Null   
+        }
+
+        private int GetIndex_original(DateTime datetime, IndexOption option)
+        {
+            int num = 0;
+            int num2 = 0;
+            int num3 = this.quotes.Count - 1;
+            bool flag = true;
+            while (flag)
+            {
+                if (num3 < num2)
+                {
+                    return -1;
+                }
+                num = (num2 + num3) / 2;
+                switch (option)
+                {
+                    case IndexOption.Null:
+                        if (this.quotes[num].dateTime == datetime)
+                        {
+                            flag = false;
+                        }
+                        else if (this.quotes[num].dateTime > datetime)
+                        {
+                            num3 = num - 1;
+                        }
+                        else if (this.quotes[num].dateTime < datetime)
+                        {
+                            num2 = num + 1;
+                        }
+                        break;
+                    case IndexOption.Next:
+                        if (this.quotes[num].dateTime >= datetime && (num == 0 || this.quotes[num - 1].dateTime < datetime))
+                        {
+                            flag = false;
+                        }
+                        else if (this.quotes[num].dateTime < datetime)
+                        {
+                            num2 = num + 1;
+                        }
+                        else
+                        {
+                            num3 = num - 1;
+                        }
+                        break;
+                    case IndexOption.Prev:
+                        if (this.quotes[num].dateTime <= datetime && (num == this.quotes.Count - 1 || this.quotes[num + 1].dateTime > datetime))
+                        {
+                            flag = false;
+                        }
+                        else if (this.quotes[num].dateTime > datetime)
+                        {
+                            num3 = num - 1;
+                        }
+                        else
+                        {
+                            num2 = num + 1;
+                        }
+                        break;
+                }
+            }
+            return num;
         }
     }
 }

@@ -284,34 +284,41 @@ namespace SmartQuant
             // noop
         }
 
-        private bool method_13(Order order_0, Ask ask_0)
+        private bool method_13(Order order, Ask ask)
         {
-            if (order_0.Side == OrderSide.Buy)
+            if (order.Side == OrderSide.Buy)
             {
                 while (true)
                 {
-                    switch (order_0.Type)
+                    switch (order.Type)
                     {
                         case OrderType.Market:
                         case OrderType.Pegged:
-                            goto IL_C3;
+                            Fill(order, ask.Price, ask.Size);
+                            return true;
                         case OrderType.Stop:
-                            if (ask_0.Price >= order_0.StopPx)
+                            if (ask.Price >= order.StopPx)
                             {
                                 if (!FillAtStopPrice)
                                 {
-                                    order_0.Type = OrderType.Market;
+                                    order.Type = OrderType.Market;
                                     continue;
                                 }
-                                goto IL_6E;
+                                Fill(order, order.StopPx, ask.Size);
+                                return true;
                             }
                             break;
                         case OrderType.Limit:
-                            goto IL_83;
-                        case OrderType.StopLimit:
-                            if (ask_0.Price >= order_0.StopPx)
+                            if (ask.Price <= order.Price)
                             {
-                                order_0.Type = OrderType.Limit;
+                                Fill(order, FillAtLimitPrice ? order.Price : ask.Price, ask.Size);
+                                return true;
+                            }
+                            return false;
+                        case OrderType.StopLimit:
+                            if (ask.Price >= order.StopPx)
+                            {
+                                order.Type = OrderType.Limit;
                                 continue;
                             }
                             break;
@@ -319,19 +326,6 @@ namespace SmartQuant
                     break;
                 }
                 return false;
-                IL_6E:
-                this.Fill(order_0, order_0.StopPx, ask_0.Size);
-                return true;
-                IL_83:
-                if (ask_0.Price <= order_0.Price)
-                {
-                    this.Fill(order_0, FillAtLimitPrice ? order_0.Price : ask_0.Price, ask_0.Size);
-                    return true;
-                }
-                return false;
-                IL_C3:
-                this.Fill(order_0, ask_0.Price, ask_0.Size);
-                return true;
             }
             return false;
         }
@@ -363,7 +357,7 @@ namespace SmartQuant
 
         private void method_10(Order order, string text)
         {
-            ReportSummary @class = this.idArray_1[order.Id];
+            var summary = this.idArray_1[order.Id];
             EmitExecutionReport(new ExecutionReport
             {
                 dateTime = this.framework.Clock.DateTime,
@@ -376,13 +370,13 @@ namespace SmartQuant
                 StopPx = order.StopPx,
                 TimeInForce = order.TimeInForce,
                 ExecType = ExecType.ExecReplaceReject,
-                OrdStatus = @class.OrdStatus,
+                OrdStatus = summary.OrdStatus,
                 CurrencyId = order.Instrument.CurrencyId,
                 OrdType = order.Type,
                 Side = order.Side,
-                CumQty = @class.CumQty,
-                LeavesQty = @class.LeavesQty,
-                AvgPx = @class.AvgPx,
+                CumQty = summary.CumQty,
+                LeavesQty = summary.LeavesQty,
+                AvgPx = summary.AvgPx,
                 Text = text
             }, Queued);
         }
@@ -391,33 +385,36 @@ namespace SmartQuant
         {
             if (order.Qty == 0)
             {
-                this.method_6(order, "Order amount can not be zero");
+                ExecOrderRejected(order, "Order amount can not be zero");
                 return;
             }
-            var executionReport = new ExecutionReport();
-            executionReport.dateTime = this.framework.Clock.DateTime;
-            executionReport.Order = order;
-            executionReport.OrderId = order.Id;
-            executionReport.Instrument = order.Instrument;
-            executionReport.InstrumentId = order.InstrumentId;
-            executionReport.ExecType = ExecType.ExecNew;
-            executionReport.OrdStatus = OrderStatus.New;
-            executionReport.CurrencyId = order.Instrument.CurrencyId;
-            executionReport.OrdType = order.Type;
-            executionReport.Side = order.Side;
-            executionReport.OrdQty = order.Qty;
-            executionReport.Price = order.Price;
-            executionReport.StopPx = order.StopPx;
-            executionReport.TimeInForce = order.TimeInForce;
-            executionReport.CumQty = 0.0;
-            executionReport.LastQty = 0.0;
-            executionReport.OrdQty = order.Qty;
-            executionReport.LastPx = 0.0;
-            executionReport.AvgPx = 0.0;
-            executionReport.Text = order.Text;
-            order.LeavesQty = executionReport.LeavesQty;
-            this.idArray_1[order.Id] = new ReportSummary(executionReport);
-            base.EmitExecutionReport(executionReport, Queued);
+
+            var report = new ExecutionReport
+            {
+                DateTime = this.framework.Clock.DateTime,
+                Order = order,
+                OrderId = order.Id,
+                Instrument = order.Instrument,
+                InstrumentId = order.InstrumentId,
+                ExecType = ExecType.ExecNew,
+                OrdStatus = OrderStatus.New,
+                CurrencyId = order.Instrument.CurrencyId,
+                OrdType = order.Type,
+                Side = order.Side,
+                OrdQty = order.Qty,
+                Price = order.Price,
+                StopPx = order.StopPx,
+                TimeInForce = order.TimeInForce,
+                CumQty = 0,
+                LastQty = 0
+            };
+            report.OrdQty = order.Qty;
+            report.LastPx = 0;
+            report.AvgPx = 0;
+            report.Text = order.Text;
+            order.LeavesQty = report.LeavesQty;
+            this.idArray_1[order.Id] = new ReportSummary(report);
+            EmitExecutionReport(report, Queued);
             if (order.TimeInForce == TimeInForce.AUC)
             {
                 this.list_1.Add(order);
@@ -428,23 +425,23 @@ namespace SmartQuant
                 }
                 return;
             }
-            int int_ = order.InstrumentId;
-            if (this.idArray_0[int_] == null)
+            int iId = order.InstrumentId;
+            if (this.idArray_0[iId] == null)
             {
-                this.idArray_0[int_] = new List<Order>();
+                this.idArray_0[iId] = new List<Order>();
             }
-            this.idArray_0[int_].Add(order);
+            this.idArray_0[iId].Add(order);
             if (((order.Type == OrderType.Market || order.Type == OrderType.Pegged) && !FillMarketOnNext) || (order.Type == OrderType.Limit && !FillLimitOnNext) || (order.Type == OrderType.Stop && !FillStopOnNext) || (order.Type == OrderType.StopLimit && !FillStopLimitOnNext))
             {
                 if (FillOnQuote)
                 {
-                    Ask ask = this.framework.DataManager.GetAsk(int_);
+                    var ask = this.framework.DataManager.GetAsk(iId);
                     if (ask != null && this.method_13(order, ask))
                     {
                         this.method_11();
                         return;
                     }
-                    Bid bid = this.framework.DataManager.GetBid(int_);
+                    var bid = this.framework.DataManager.GetBid(iId);
                     if (bid != null && this.method_12(order, bid))
                     {
                         this.method_11();
@@ -453,7 +450,7 @@ namespace SmartQuant
                 }
                 if (FillOnTrade)
                 {
-                    Trade trade = this.framework.DataManager.GetTrade(int_);
+                    var trade = this.framework.DataManager.GetTrade(iId);
                     if (trade != null && this.method_14(order, trade))
                     {
                         this.method_11();
@@ -462,7 +459,7 @@ namespace SmartQuant
                 }
                 if (FillOnBar)
                 {
-                    Bar bar = this.framework.DataManager.GetBar(int_);
+                    var bar = this.framework.DataManager.GetBar(iId);
                     if (BarFilter.Count != 0 && !BarFilter.Contains(bar.Type, bar.Size))
                     {
                         return;
@@ -725,98 +722,7 @@ namespace SmartQuant
             return false;
         }
 
-        private void Send(Order order)
-        {
-            if (order.Qty == 0)
-            {
-                this.method_6(order, "Order amount can not be zero");
-                return;
-            }
-            var report = new ExecutionReport
-            {
-                DateTime = this.framework.Clock.DateTime,
-                Order = order,
-                OrderId = order.Id,
-                Instrument = order.Instrument,
-                InstrumentId = order.InstrumentId,
-                ExecType = ExecType.ExecNew,
-                OrdStatus = OrderStatus.New,
-                CurrencyId = order.Instrument.CurrencyId,
-                OrdType = order.Type,
-                Side = order.Side,
-                OrdQty = order.Qty,
-                Price = order.Price,
-                StopPx = order.StopPx,
-                TimeInForce = order.TimeInForce,
-                CumQty = 0,
-                LastQty = 0,
-                LeavesQty = order.Qty,
-                LastPx = 0,
-                AvgPx = 0,
-                Text = order.Text
-            };
-            order.LeavesQty = report.LeavesQty;
-            this.idArray_1[order.Id] = new ReportSummary(report);
-            EmitExecutionReport(report, Queued);
-            if (order.TimeInForce == TimeInForce.AUC)
-            {
-                this.list_1.Add(order);
-                if (this.list_1.Count == 1)
-                {
-                    this.framework.Clock.AddReminder(method_16, this.framework.Clock.DateTime.Date.Add(Auction1), null);
-                    this.framework.Clock.AddReminder(method_17, this.framework.Clock.DateTime.Date.Add(Auction2), null);
-                }
-                return;
-            }
-            int int_ = order.InstrumentId;
-            if (this.idArray_0[int_] == null)
-            {
-                this.idArray_0[int_] = new List<Order>();
-            }
-            this.idArray_0[int_].Add(order);
-            if (((order.Type == OrderType.Market || order.Type == OrderType.Pegged) && !FillMarketOnNext) || (order.Type == OrderType.Limit && !FillLimitOnNext) || (order.Type == OrderType.Stop && !FillStopOnNext) || order.Type == OrderType.StopLimit && !FillStopLimitOnNext)
-            {
-                if (FillOnQuote)
-                {
-                    var ask = this.framework.DataManager.GetAsk(int_);
-                    if (ask != null && this.method_13(order, ask))
-                    {
-                        this.method_11();
-                        return;
-                    }
-                    Bid bid = this.framework.DataManager.GetBid(int_);
-                    if (bid != null && this.method_12(order, bid))
-                    {
-                        this.method_11();
-                        return;
-                    }
-                }
-                if (FillOnTrade)
-                {
-                    Trade trade = this.framework.DataManager.GetTrade(int_);
-                    if (trade != null && this.method_14(order, trade))
-                    {
-                        this.method_11();
-                        return;
-                    }
-                }
-                if (FillOnBar)
-                {
-                    Bar bar = this.framework.DataManager.GetBar(int_);
-                    if (BarFilter.Count != 0 && !BarFilter.Contains(bar.Type, bar.Size))
-                    {
-                        return;
-                    }
-                    if (bar != null && this.method_15(order, bar))
-                    {
-                        this.method_11();
-                    }
-                }
-            }
-
-        }
-
-        private void method_6(Order order, string text)
+        private void ExecOrderRejected(Order order, string text)
         {
             EmitExecutionReport(new ExecutionReport
             {

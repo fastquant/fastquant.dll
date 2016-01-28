@@ -13,19 +13,19 @@ namespace SmartQuant
 
         public Instrument Instrument { get; }
 
-        public byte CurrencyId { get; set; }
+        public byte CurrencyId { get; internal set; }
 
-        public OrderSide Side { get; set; }
+        public OrderSide Side { get; internal set; }
 
-        public double Qty { get; set; }
+        public double Qty { get; internal set; }
 
-        public double Price { get; set; }
+        public double Price { get; internal set; }
 
-        public string Text { get; set; }
+        public string Text { get; internal set; }
 
         public double Commission { get; internal set; }
 
-        public double Value => Instrument.Factor != 0 ? Price * Qty * Instrument.Factor : Price * Qty;
+        public double Value => Instrument.Factor != 0.0 ? Price * Qty * Instrument.Factor : Price * Qty;
 
         public double NetCashFlow => Side == OrderSide.Buy ? -Value : Value;
 
@@ -40,6 +40,8 @@ namespace SmartQuant
             DateTime = dateTime;
             Order = order;
             Instrument = instrument;
+            OrderId = order.Id;
+            InstrumentId = instrument.Id;
             CurrencyId = currencyId;
             Side = side;
             Qty = qty;
@@ -52,10 +54,13 @@ namespace SmartQuant
             DateTime = report.DateTime;
             Order = report.Order;
             Instrument = report.Instrument;
+            OrderId = report.Order.Id;
+            InstrumentId = report.InstrumentId;
             CurrencyId = report.CurrencyId;
             Side = report.Side;
             Qty = report.LastQty;
             Price = report.Price;
+            Commission = report.Commission;
             Text = report.Text;
         }
 
@@ -64,6 +69,8 @@ namespace SmartQuant
             DateTime = fill.DateTime;
             Order = fill.Order;
             Instrument = fill.Instrument;
+            OrderId = fill.OrderId;
+            InstrumentId = fill.InstrumentId;
             CurrencyId = fill.CurrencyId;
             Side = fill.Side;
             Qty = fill.Qty;
@@ -85,15 +92,16 @@ namespace SmartQuant
             }
         }
 
-        public override string ToString()
-        {
-            return $"{DateTime} {GetSideAsString()} {Instrument.Symbol} {Qty} {Price} {Text}";
-        }
-
+        public override string ToString() => $"{DateTime} {GetSideAsString()} {Instrument.Symbol} {Qty} {Price} {Text}";
 
         #region Extra
+
+        [NotOriginal]
         public int OrderId { get; set; }
+
+        [NotOriginal]
         public int InstrumentId { get; set; }
+        
         #endregion
     }
 }

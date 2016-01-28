@@ -548,7 +548,8 @@ namespace SmartQuant
             }
         }
 
-
+        public override string ToString() => $"{Id} {DateTime} {GetTypeAsString()} {GetSideAsString()}";
+  
         private void EnsureNotSent()
         {
             if (!IsNotSent)

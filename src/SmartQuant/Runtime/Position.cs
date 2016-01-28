@@ -145,7 +145,6 @@ namespace SmartQuant
             }
         }
 
-
         private double method_1(double double_5)
         {
             return double_5 = Instrument.Factor != 0 ? double_5 * Instrument.Factor : double_5;

@@ -551,10 +551,13 @@ namespace SmartQuant
 
         public Order BuyOrder(Instrument instrument, double qty, string text = "")
         {
-            var order = new Order(DetermineExecutionProvider(instrument), Portfolio, instrument, OrderType.Market, OrderSide.Buy, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
-            order.StrategyId = Id;
-            order.ClientId = ClientId;
-            order.Text = text;
+            var order = new Order(DetermineExecutionProvider(instrument), Portfolio, instrument, OrderType.Market,
+                OrderSide.Buy, qty, 0, 0, TimeInForce.Day, 0, "")
+            {
+                StrategyId = Id,
+                ClientId = ClientId,
+                Text = text
+            };
             this.framework.OrderManager.Register(order);
             return order;
         }
