@@ -147,6 +147,7 @@ namespace SmartQuant
             }
 
         }
+
         public void Add(Bar bar)
         {
             Add_origin(bar);
@@ -154,7 +155,7 @@ namespace SmartQuant
             //this.max = this.max == null ? bar : bar.High > this.max.High ? bar : this.max;
         }
 
-        void IDataSeries.Add(DataObject obj)=> Add((Bar)obj);
+        void IDataSeries.Add(DataObject obj) => Add((Bar)obj);
 
         public void Clear()
         {
@@ -196,7 +197,14 @@ namespace SmartQuant
 
         public Bar HighestHighBar(int index1, int index2)
         {
-            throw new NotImplementedException();
+            if (Count == 0 || !IsIndex1AndIndex2Valid(index1, index2))
+                return null;
+
+            var bar = this.bars[index1];
+            for (int i = index1 + 1; i <= index2; i++)
+                if (this.bars[i].High > bar.High)
+                    bar = this.bars[i];
+            return bar;
         }
 
         public Bar LowestLowBar() => GetMin();
@@ -207,7 +215,14 @@ namespace SmartQuant
 
         public Bar LowestLowBar(int index1, int index2)
         {
-            throw new NotImplementedException();
+            if (Count == 0 || !IsIndex1AndIndex2Valid(index1, index2))
+                return null;
+
+            var bar = this.bars[index1];
+            for (int i = index1 + 1; i <= index2; i++)
+                if (this.bars[i].Low < bar.Low)
+                    bar = this.bars[i];
+            return bar;
         }
 
         public double HighestHigh() => HighestHighBar().High;
@@ -232,7 +247,14 @@ namespace SmartQuant
 
         public Bar HighestLowBar(int index1, int index2)
         {
-            throw new NotImplementedException();
+            if (Count == 0 || !IsIndex1AndIndex2Valid(index1, index2))
+                return null;
+
+            var bar = this.bars[index1];
+            for (int i = index1 + 1; i <= index2; i++)
+                if (this.bars[i].Low > bar.Low)
+                    bar = this.bars[i];
+            return bar;
         }
 
         public double HighestLow(int nBars) => HighestLowBar(nBars).Low;
@@ -245,8 +267,16 @@ namespace SmartQuant
 
         public Bar LowestHighBar(int index1, int index2)
         {
-            throw new NotImplementedException();
+            if (Count == 0 || !IsIndex1AndIndex2Valid(index1, index2))
+                return null;
+
+            var bar = this.bars[index1];
+            for (int i = index1 + 1; i <= index2; i++)
+                if (this.bars[i].High < bar.High)
+                    bar = this.bars[i];
+            return bar;
         }
+
         public Bar LowestHighBar(DateTime dateTime1, DateTime dateTime2) => LowestHighBar(GetIndex(dateTime1, IndexOption.Next), GetIndex(dateTime2, IndexOption.Prev));
 
         public double LowestHigh(int nBars) => LowestHighBar(nBars).High;
@@ -291,5 +321,11 @@ namespace SmartQuant
         public IEnumerator<Bar> GetEnumerator() => this.bars.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        [NotOriginal]
+        private bool IsIndex1AndIndex2Valid(int index1, int index2) => index1 >= 0 && index2 >= 0 && index1 <= index2 && index1 <= Count - 1 && index2 <= Count - 1;
+
+        [NotOriginal]
+        private bool IsEmpty() => Count == 0;
     }
 }

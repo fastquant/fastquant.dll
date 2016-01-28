@@ -53,7 +53,8 @@ namespace SmartQuant
         {
             this.framework = framework;
             this.name = name;
-            this.tcpClient = new TcpClient(this.host, this.port);
+            //this.tcpClient = new TcpClient(this.host, this.port);
+            this.tcpClient = new TcpClient(AddressFamily.InterNetwork);
             this.stream = this.tcpClient.GetStream();
             this.reader = new BinaryReader(this.stream);
             this.writer = new BinaryWriter(this.stream);

@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using SmartQuant;
 
-namespace SmartQuant.Test
+namespace SmartQuant.Tests
 {
     public class TestClass1
     {
@@ -64,6 +65,40 @@ namespace SmartQuant.Test
             Assert.Same(e3, sset[3]);
             Assert.Same(e4, sset[4]);
             Assert.Same(e5, sset[5]);
+        }
+    }
+
+    public class MemorySeriesTest
+    {
+        [Fact]
+        public void TestGetIndex()
+        {
+            var dt1 = DateTime.Parse("2000/01/01 12:30:00");
+            var dt2 = DateTime.Parse("2000/01/01 12:31:00");
+            var dt3 = DateTime.Parse("2000/01/01 12:32:00");
+            var dt4 = DateTime.Parse("2000/01/01 12:33:00");
+            var dt5 = DateTime.Parse("2000/01/01 12:34:00");
+            var ts = new MemorySeries();
+            ts.Add(new DataObject() {DateTime = dt1});
+            ts.Add(new DataObject() { DateTime = dt2 });
+            ts.Add(new DataObject() { DateTime = dt3 });
+            ts.Add(new DataObject() { DateTime = dt4 });
+            ts.Add(new DataObject() { DateTime = dt5 });
+            Assert.Equal(1, ts.GetIndex(dt2, SearchOption.ExactFirst));
+            Assert.Equal(1, ts.GetIndex(dt2, SearchOption.Next));
+            Assert.Equal(1, ts.GetIndex(dt2, SearchOption.Prev));
+            var dtBeforeFirstDt = DateTime.Parse("2000/01/01 12:29:11");
+            var dtAfterFirstDt = DateTime.Parse("2000/01/01 12:35:23");
+            var dtMiddle = DateTime.Parse("2000/01/01 12:33:54");
+            Assert.Equal(-1, ts.GetIndex(dtBeforeFirstDt, SearchOption.ExactFirst));
+            Assert.Equal(0, ts.GetIndex(dtBeforeFirstDt, SearchOption.Next));
+            Assert.Equal(-1, ts.GetIndex(dtBeforeFirstDt, SearchOption.Prev));
+            Assert.Equal(-1, ts.GetIndex(dtAfterFirstDt, SearchOption.ExactFirst));
+            Assert.Equal(-1, ts.GetIndex(dtAfterFirstDt, SearchOption.Next));
+            Assert.Equal(ts.Count - 1, ts.GetIndex(dtAfterFirstDt, SearchOption.Prev));
+            Assert.Equal(-1, ts.GetIndex(dtMiddle, SearchOption.ExactFirst));
+            Assert.Equal(3, ts.GetIndex(dtMiddle, SearchOption.Prev));
+            Assert.Equal(4, ts.GetIndex(dtMiddle, SearchOption.Next));
         }
     }
 }

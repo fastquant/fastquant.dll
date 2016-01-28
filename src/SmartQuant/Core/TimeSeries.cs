@@ -121,11 +121,75 @@ namespace SmartQuant
 
         public virtual DateTime LastDateTime => this.series[this.series.Count - 1].DateTime;
 
+        public double GetValue(int index) => this[index];
+
         public bool Contains(DateTime dateTime) => IndexOf(dateTime, SearchOption.ExactFirst) != -1;
 
         public Cross Crosses(TimeSeries series, DateTime dateTime)
         {
-            throw new NotImplementedException();
+            int num = this.IndexOf(dateTime, SearchOption.ExactFirst);
+            int num2 = series.IndexOf(dateTime, SearchOption.ExactFirst);
+            if (num <= 0 || (long)num >= this.series.Count)
+            {
+                return Cross.None;
+            }
+            if (num2 > 0 && num2 < series.Count)
+            {
+                DateTime dateTime2 = this.GetDateTime(num - 1);
+                DateTime dateTime3 = series.GetDateTime(num2 - 1);
+                if (dateTime2 == dateTime3)
+                {
+                    if (this.GetValue(num - 1) <= series.GetValue(num2 - 1) && this.GetValue(num) > series.GetValue(num2))
+                    {
+                        return Cross.Above;
+                    }
+                    if (this.GetValue(num - 1) >= series.GetValue(num2 - 1) && this.GetValue(num) < series.GetValue(num2))
+                    {
+                        return Cross.Below;
+                    }
+                }
+                else
+                {
+                    double value;
+                    double value2;
+                    if (dateTime2 < dateTime3)
+                    {
+                        DateTime dateTime4 = this.GetDateTime(num - 1);
+                        value = this.GetValue(num - 1);
+                        if (series.IndexOf(dateTime4, SearchOption.Next) != num2)
+                        {
+                            value2 = series.GetValue(series.IndexOf(dateTime4, SearchOption.Next));
+                        }
+                        else
+                        {
+                            value2 = series.GetValue(series.IndexOf(dateTime4, SearchOption.Prev));
+                        }
+                    }
+                    else
+                    {
+                        DateTime dateTime5 = series.GetDateTime(num2 - 1);
+                        value2 = series.GetValue(num2 - 1);
+                        if (this.IndexOf(dateTime5, SearchOption.Prev) != num)
+                        {
+                            value = this.GetValue(this.IndexOf(dateTime5, SearchOption.Next));
+                        }
+                        else
+                        {
+                            value = this.GetValue(this.IndexOf(dateTime5, SearchOption.Prev));
+                        }
+                    }
+                    if (value <= value2 && this.GetValue(num) > series.GetValue(num2))
+                    {
+                        return Cross.Above;
+                    }
+                    if (value >= value2 && this.GetValue(num) < series.GetValue(num2))
+                    {
+                        return Cross.Below;
+                    }
+                }
+                return Cross.None;
+            }
+            return Cross.None;
         }
 
         public Cross Crosses(double level, int index)
@@ -222,10 +286,7 @@ namespace SmartQuant
                     indicator.Update((int)this.series.Count - 1);
         }
 
-        public void Remove(int index)
-        {
-            this.series.Remove(index);
-        }
+        public void Remove(int index) => this.series.Remove(index);
 
         public TimeSeriesItem GetByDateTime(DateTime dateTime, SearchOption option = SearchOption.ExactFirst)
         {
@@ -233,25 +294,13 @@ namespace SmartQuant
             return i == -1 ? null : GetItem(i);
         }
 
-        public virtual DateTime GetDateTime(int index)
-        {
-            return GetItem(index).DateTime;
-        }
+        public virtual DateTime GetDateTime(int index) => GetItem(index).DateTime;
 
-        public TimeSeriesItem GetItem(int index)
-        {
-            return (TimeSeriesItem)this.series[index];
-        }
+        public TimeSeriesItem GetItem(int index) => (TimeSeriesItem)this.series[index];
 
-        public TimeSeriesItem GetMaxItem()
-        {
-            return this.max;
-        }
+        public TimeSeriesItem GetMaxItem() => this.max;
 
-        public TimeSeriesItem GetMinItem()
-        {
-            return this.min;
-        }
+        public TimeSeriesItem GetMinItem() => this.min;
 
         //TODO: rewrite it
         public virtual int GetIndex(DateTime datetime, IndexOption option = IndexOption.Null)
@@ -317,10 +366,7 @@ namespace SmartQuant
         }
 
 
-        public double GetMax()
-        {
-            return this.max != null ? this.max.Value : double.NaN;
-        }
+        public double GetMax() => this.max != null ? this.max.Value : double.NaN;
 
         public double GetMax(int index1, int index2)
         {
@@ -345,15 +391,9 @@ namespace SmartQuant
             return result != null ? result.Value : double.NaN;
         }
 
-        public virtual double GetMax(int index1, int index2, BarData barData)
-        {
-            return GetMax(index1, index2);
-        }
+        public virtual double GetMax(int index1, int index2, BarData barData) => GetMax(index1, index2);
 
-        public double GetMin()
-        {
-            return this.min != null ? this.min.Value : double.NaN;
-        }
+        public double GetMin() => this.min != null ? this.min.Value : double.NaN;
 
         public double GetMin(int index1, int index2)
         {
@@ -378,10 +418,7 @@ namespace SmartQuant
             return result != null ? result.Value : double.NaN;
         }
 
-        public virtual double GetMin(int index1, int index2, BarData barData)
-        {
-            return GetMin(index1, index2);
-        }
+        public virtual double GetMin(int index1, int index2, BarData barData) => GetMin(index1, index2);
 
         public static TimeSeries operator +(TimeSeries series1, TimeSeries series2)
         {

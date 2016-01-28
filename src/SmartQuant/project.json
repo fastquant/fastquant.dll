@@ -3,7 +3,7 @@
     "Newtonsoft.Json": "7.0.1",
     "xunit": "2.1.0-*",
     "xunit.runner.dnx": "2.1.0-*",
-	"xunit.runner.visualstudio": "2.2.0-beta1-*"
+    "xunit.runner.visualstudio": "2.2.0-beta1-*"
   },
   "frameworks": {
     "dnx451": {
@@ -17,7 +17,7 @@
         "netcoreshim": "",
         "System.Collections": "4.0.11-beta-*",
         "System.Console": "4.0.0-beta-*",
-        "System.Net.Sockets": "4.0.10-beta-*",
+        "System.Net.Sockets": "4.1.0-beta-*",
         "System.Linq": "4.0.1-beta-*",
         "System.Runtime.Extensions": "4.0.11-beta-*",
         "System.Threading.Tasks.Parallel": "4.0.1-beta-*",

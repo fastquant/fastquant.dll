@@ -89,5 +89,4 @@
 
         public override int Type => PortfolioStatisticsType.LossTradesPnL;
     }
-
 }

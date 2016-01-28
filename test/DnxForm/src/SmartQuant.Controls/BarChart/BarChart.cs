@@ -126,12 +126,12 @@ namespace SmartQuant.Controls.BarChart
             switch (groupEvent.Obj.TypeId)
             {
                 case DataObjectType.Bar:
-                    object bs;
+                    BarSeries bs;
                     if (tuple == null)
                     {
                         bs = new BarSeries("", "", -1);
                         int padNumber = item.PadNumber;
-                        this.EnsurePadExists(padNumber, item.Format);
+                        EnsurePadExists(padNumber, item.Format);
                         int viewerIndex = this.GetViewerIndex(groupEvent.Group, padNumber);
                         Viewer viewer = this.chart.Pads[padNumber].Insert(viewerIndex, bs as BarSeries);
                         this.chart.Pads[padNumber].Legend.Add(groupEvent.Group.Name, Color.Black);
@@ -139,10 +139,10 @@ namespace SmartQuant.Controls.BarChart
                     }
                     else
                         bs = tuple.Item2 as BarSeries;
-                    (bs as BarSeries).Add(groupEvent.Obj as Bar);
+                    bs.Add(groupEvent.Obj as Bar);
                     break;
                 case DataObjectType.Fill:
-                    object fs;
+                    FillSeries fs;
                     if (tuple == null)
                     {
                         fs = new FillSeries("");
@@ -154,10 +154,10 @@ namespace SmartQuant.Controls.BarChart
                     }
                     else
                         fs = tuple.Item2 as FillSeries;
-                    (fs as FillSeries).Add(groupEvent.Obj as Fill);
+                    fs.Add(groupEvent.Obj as Fill);
                     break;
                 case DataObjectType.TimeSeriesItem:
-                    object ts;
+                    TimeSeries ts;
                     if (tuple == null)
                     {
                         ts = new TimeSeries();
@@ -175,7 +175,7 @@ namespace SmartQuant.Controls.BarChart
                     }
                     else
                         ts = tuple.Item2 as TimeSeries;
-                    (ts as TimeSeries).Add((groupEvent.Obj as TimeSeriesItem).DateTime, (groupEvent.Obj as TimeSeriesItem).Value);
+                    ts.Add((groupEvent.Obj as TimeSeriesItem).DateTime, (groupEvent.Obj as TimeSeriesItem).Value);
                     break;
             }
         }

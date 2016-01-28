@@ -6,8 +6,8 @@
   </PropertyGroup>
   <Import Project="$(VSToolsPath)\DNX\Microsoft.DNX.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
-    <ProjectGuid>f4077158-088f-43cc-b30b-0e52051fee44</ProjectGuid>
-    <RootNamespace>SmartQuant.Tests</RootNamespace>
+    <ProjectGuid>9bd3b606-4892-4377-a23b-85aae1642b7f</ProjectGuid>
+    <RootNamespace>DnxForm.Original</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">..\..\artifacts\obj\$(MSBuildProjectName)</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">..\..\artifacts\bin\$(MSBuildProjectName)\</OutputPath>
   </PropertyGroup>
