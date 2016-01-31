@@ -196,21 +196,9 @@
     <Compile Include="..\DnxForm\src\SmartQuant.Controls\Data\Import\Instruments\InstrumentViewItem.cs">
       <Link>SmartQuant.Controls\Data\Import\Instruments\InstrumentViewItem.cs</Link>
     </Compile>
-    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Orders\ExecutionCommandViewItem.cs">
-      <Link>SmartQuant.Controls\Orders\ExecutionCommandViewItem.cs</Link>
-    </Compile>
-    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Orders\ExecutionReportViewItem.cs">
-      <Link>SmartQuant.Controls\Orders\ExecutionReportViewItem.cs</Link>
-    </Compile>
-    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Orders\MyDelegate.cs">
-      <Link>SmartQuant.Controls\Orders\MyDelegate.cs</Link>
-    </Compile>
     <Compile Include="..\DnxForm\src\SmartQuant.Controls\Orders\OrderManagerWindow.cs">
       <Link>SmartQuant.Controls\Orders\OrderManagerWindow.cs</Link>
       <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="..\DnxForm\src\SmartQuant.Controls\Orders\OrderViewItem.cs">
-      <Link>SmartQuant.Controls\Orders\OrderViewItem.cs</Link>
     </Compile>
     <Compile Include="..\DnxForm\src\SmartQuant.Controls\Portfolios\ChildrenStatistics.cs">
       <Link>SmartQuant.Controls\Portfolios\ChildrenStatistics.cs</Link>

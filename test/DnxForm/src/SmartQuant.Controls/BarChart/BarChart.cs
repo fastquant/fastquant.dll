@@ -155,6 +155,7 @@ namespace SmartQuant.Controls.BarChart
                     else
                         fs = tuple.Item2 as FillSeries;
                     fs.Add(groupEvent.Obj as Fill);
+                    Console.WriteLine(groupEvent.Obj as Fill);
                     break;
                 case DataObjectType.TimeSeriesItem:
                     TimeSeries ts;

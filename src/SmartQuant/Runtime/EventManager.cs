@@ -39,6 +39,7 @@ namespace SmartQuant
         private Thread thread;
 
         private Stopwatch stopwatch = new Stopwatch();
+
         private delegate void Delegate(Event e);
         private IdArray<Delegate> gates = new IdArray<Delegate>(256);
         public IdArray<bool> Enabled { get; } = new IdArray<bool>(256);

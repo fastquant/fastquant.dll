@@ -1808,15 +1808,6 @@ namespace SmartQuant
         protected Portfolio GetOrCreatePortfolio(string name)
         {
             return this.framework.GetOrCreatePortfolio(name);
-            //Portfolio portfolio;
-            //if (PortfolioManager.Portfolios.Contains(name))
-            //    portfolio = PortfolioManager.Portfolios.GetByName(name);
-            //else
-            //{
-            //    portfolio = new Portfolio(this.framework, name);
-            //    PortfolioManager.Add(portfolio, true);
-            //}
-            //return portfolio;
         }
 
         [NotOriginal]

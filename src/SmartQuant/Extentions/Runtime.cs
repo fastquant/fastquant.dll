@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace SmartQuant
 {
+    [NotOriginal]
     public static class FrameworkExtensions
     {
         public static Portfolio GetOrCreatePortfolio(this Framework framework, string name, bool emitEvent = true)

@@ -4,7 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using static System.Math;
+ 
 namespace SmartQuant
 {
     public enum Cross
@@ -127,15 +128,15 @@ namespace SmartQuant
 
         public Cross Crosses(TimeSeries series, DateTime dateTime)
         {
-            int num = this.IndexOf(dateTime, SearchOption.ExactFirst);
-            int num2 = series.IndexOf(dateTime, SearchOption.ExactFirst);
-            if (num <= 0 || (long)num >= this.series.Count)
+            var num = IndexOf(dateTime);
+            var num2 = series.IndexOf(dateTime);
+            if (num <= 0 || num >= this.series.Count)
             {
                 return Cross.None;
             }
             if (num2 > 0 && num2 < series.Count)
             {
-                DateTime dateTime2 = this.GetDateTime(num - 1);
+                DateTime dateTime2 = GetDateTime(num - 1);
                 DateTime dateTime3 = series.GetDateTime(num2 - 1);
                 if (dateTime2 == dateTime3)
                 {
@@ -281,16 +282,15 @@ namespace SmartQuant
             this.series.Add(item);
 
             // Update the dependent indicators
-            foreach (var indicator in Indicators)
-                if (indicator.AutoUpdate)
-                    indicator.Update((int)this.series.Count - 1);
+            foreach (var indicator in Indicators.Where(i => i.AutoUpdate))
+                indicator.Update((int)this.series.Count - 1);
         }
 
         public void Remove(int index) => this.series.Remove(index);
 
         public TimeSeriesItem GetByDateTime(DateTime dateTime, SearchOption option = SearchOption.ExactFirst)
         {
-            int i = IndexOf(dateTime, option);
+            var i = IndexOf(dateTime, option);
             return i == -1 ? null : GetItem(i);
         }
 
@@ -365,8 +365,7 @@ namespace SmartQuant
             return num;
         }
 
-
-        public double GetMax() => this.max != null ? this.max.Value : double.NaN;
+        public double GetMax() => this.max?.Value ?? double.NaN;
 
         public double GetMax(int index1, int index2)
         {
@@ -376,46 +375,46 @@ namespace SmartQuant
                 var item = this.series[i] as TimeSeriesItem;
                 result = result == null ? item : item.Value > result.Value ? item : result;
             }
-            return result != null ? result.Value : double.NaN;
+            return result?.Value ?? double.NaN;
         }
 
         public virtual double GetMax(DateTime dateTime1, DateTime dateTime2)
         {
             TimeSeriesItem result = null;
-            for (int i = 0; i < this.series.Count; ++i)
+            for (var i = 0; i < this.series.Count; ++i)
             {
                 var item = this.series[i] as TimeSeriesItem;
                 if (dateTime1 <= item.DateTime && item.DateTime <= dateTime2)
                     result = result == null ? item : item.Value > result.Value ? item : result;
             }
-            return result != null ? result.Value : double.NaN;
+            return result?.Value ?? double.NaN;
         }
 
         public virtual double GetMax(int index1, int index2, BarData barData) => GetMax(index1, index2);
 
-        public double GetMin() => this.min != null ? this.min.Value : double.NaN;
+        public double GetMin() => this.min?.Value ?? double.NaN;
 
         public double GetMin(int index1, int index2)
         {
             TimeSeriesItem result = null;
-            for (int i = index1; i <= index2; ++i)
+            for (var i = index1; i <= index2; ++i)
             {
                 var item = this.series[i] as TimeSeriesItem;
                 result = result == null ? item : item.Value < result.Value ? item : result;
             }
-            return result != null ? result.Value : double.NaN;
+            return result?.Value ?? double.NaN;
         }
 
         public virtual double GetMin(DateTime dateTime1, DateTime dateTime2)
         {
             TimeSeriesItem result = null;
-            for (int i = 0; i < this.series.Count; ++i)
+            for (var i = 0; i < this.series.Count; ++i)
             {
                 var item = this.series[i] as TimeSeriesItem;
                 if (dateTime1 <= item.DateTime && item.DateTime <= dateTime2)
                     result = result == null ? item : item.Value < result.Value ? item : result;
             }
-            return result != null ? result.Value : double.NaN;
+            return result?.Value ?? double.NaN;
         }
 
         public virtual double GetMin(int index1, int index2, BarData barData) => GetMin(index1, index2);
@@ -446,7 +445,6 @@ namespace SmartQuant
         {
             EnsureNotNull(series1, series2);
             var name = $"({series1.Name}/{series2.Name})";
-            var ts = new TimeSeries(name, "", -1);
             return OpTwoTimeSeries(series1, series2, name, opMul, true);
 
         }
@@ -455,7 +453,6 @@ namespace SmartQuant
         {
             EnsureNotNull(series);
             var name = $"({series.Name}+{Value:F2})";
-            var ts = new TimeSeries(name, "", -1);
             return OpTimeSeriesAndValue(series, Value, name, opAdd, valueAsSecond: true, checkZero: false);
         }
 
@@ -463,16 +460,13 @@ namespace SmartQuant
         {
             EnsureNotNull(series);
             var name = $"({series.Name}-{Value:F2})";
-            var ts = new TimeSeries(name, "", -1);
             return OpTimeSeriesAndValue(series, Value, name, opSub, valueAsSecond: true, checkZero: false);
-
         }
 
         public static TimeSeries operator *(TimeSeries series, double Value)
         {
             EnsureNotNull(series);
             var name = $"({series.Name}*{Value:F2})";
-            var ts = new TimeSeries(name, "", -1);
             return OpTimeSeriesAndValue(series, Value, name, opMul, valueAsSecond: true, checkZero: false);
         }
 
@@ -480,7 +474,6 @@ namespace SmartQuant
         {
             EnsureNotNull(series);
             var name = $"({series.Name}/{Value:F2})";
-            var ts = new TimeSeries(name, "", -1);
             return OpTimeSeriesAndValue(series, Value, name, opDiv, valueAsSecond: true, checkZero: true);
         }
 
@@ -488,7 +481,6 @@ namespace SmartQuant
         {
             EnsureNotNull(series);
             var name = $"({Value:F2}+{series.Name})";
-            var ts = new TimeSeries(name, "", -1);
             return OpTimeSeriesAndValue(series, Value, name, opAdd, valueAsSecond: false, checkZero: false);
         }
 
@@ -496,7 +488,6 @@ namespace SmartQuant
         {
             EnsureNotNull(series);
             var name = $"({Value:F2}-{series.Name})";
-            var ts = new TimeSeries(name, "", -1);
             return OpTimeSeriesAndValue(series, Value, name, opSub, valueAsSecond: false, checkZero: false);
         }
 
@@ -504,7 +495,6 @@ namespace SmartQuant
         {
             EnsureNotNull(series);
             var name = $"({Value:F2}*{series.Name})";
-            var ts = new TimeSeries(name, "", -1);
             return OpTimeSeriesAndValue(series, Value, name, opMul, valueAsSecond: false, checkZero: false);
         }
 
@@ -512,13 +502,12 @@ namespace SmartQuant
         {
             EnsureNotNull(series);
             var name = $"({Value:F2}/{series.Name})";
-            var ts = new TimeSeries(name, "", -1);
             return OpTimeSeriesAndValue(series, Value, name, opDiv, valueAsSecond: false, checkZero: true);
         }
 
         public double Ago(int n)
         {
-            int i = Count - n - 1;
+            var i = Count - n - 1;
             if (i < 0)
                 throw new ArgumentException($"TimeSeries::Ago Can not return an entry {n} entries ago: time series is too short.");
             return this[i];
@@ -527,18 +516,18 @@ namespace SmartQuant
         public TimeSeries Shift(int offset)
         {
             var ts = new TimeSeries(this.name, this.description, -1);
-            int num = offset < 0 ? Math.Abs(offset) : 0;
+            var num = offset < 0 ? Math.Abs(offset) : 0;
 
-            for (int i = num; i < Count; i++)
+            for (var i = num; i < Count; i++)
             {
-                int num2 = i + offset;
-                if (num2 >= this.Count)
+                var num2 = i + offset;
+                if (num2 >= Count)
                 {
                     break;
                 }
-                DateTime dateTime = GetDateTime(num2);
-                double value = this[i];
-                ts[dateTime, SearchOption.ExactFirst] = value;
+                var dateTime = GetDateTime(num2);
+                var value = this[i];
+                ts[dateTime] = value;
             }
             return ts;
         }
@@ -570,6 +559,7 @@ namespace SmartQuant
         #endregion
 
         #region Statistics Functions
+
         public double GetSum() => this.dirty ? this.sum = GetSum(0, Count - 1, 0) : this.sum;
 
         public double GetSum(int index1, int index2, int row)
@@ -684,6 +674,18 @@ namespace SmartQuant
             return count <= 1 ? 0 : sum / (count - 1);
         }
 
+        public double GetStdDev() => Math.Sqrt(GetVariance());
+
+        public double GetStdDev(int row) => Math.Sqrt(GetVariance(row));
+
+        public double GetStdDev(int index1, int index2) => Math.Sqrt(this.GetVariance(index1, index2));
+
+        public double GetStdDev(DateTime dateTime1, DateTime dateTime2) => Math.Sqrt(this.GetVariance(dateTime1, dateTime2));
+
+        public double GetStdDev(int index1, int index2, int row) => Math.Sqrt(this.GetVariance(index1, index2, row));
+
+        public double GetStdDev(DateTime dateTime1, DateTime dateTime2, int row) => Math.Sqrt(this.GetVariance(dateTime1, dateTime2, row));
+
         public double GetMoment(int k, int index1, int index2, int row)
         {
             EnsureNotEmpty($"Can not calculate momentum. Series {this.name} is empty.");
@@ -693,7 +695,180 @@ namespace SmartQuant
             return Enumerable.Range(index1, count).Sum(i => Math.Pow(this[i, row] - m, k)) / count;
         }
 
+        public double GetAsymmetry(int index1, int index2, int row)
+        {
+            EnsureIndexInRange(index1, index2);
+            var sd = GetStdDev(index1, index2, row);
+            return sd == 0 ? 0 : GetMoment(3, index1, index2, row)/Math.Pow(sd, 3.0);
+        }
+
+        public double GetExcess(int index1, int index2, int row)
+        {
+            EnsureNotEmpty($"Can not calculate excess. Series {this.name} is empty.");
+            EnsureIndexInRange(index1,index2);
+            double sd = GetStdDev(index1, index2, row);
+            return sd == 0 ? 0 : GetMoment(4, index1, index2, row)/Math.Pow(sd, 4);
+        }
+
+        public double GetAutoCorrelation(int lag) => GetAutoCovariance(lag)/GetVariance();
+
+        public virtual double GetAutoCovariance(int lag)
+        {
+            if (lag >= Count)
+                throw new ArgumentException("Not enough data points in the series to calculate autocovariance");
+            var m = GetMean();
+            return Enumerable.Range(lag, Count - lag).Sum(i => (this[i, 0] - m)*(this[i - lag, 0] - m))/(Count - lag);
+        }
+
+        public double GetCorrelation(TimeSeries series) => GetCovariance(series)/(GetStdDev()*series.GetStdDev());
+
+        public double GetCorrelation(int row1, int row2, int index1, int index2)
+        {
+            return GetCovariance(row1, row2, index1, index2) / (GetStdDev(index1, index2, row1) * GetStdDev(index1, index2, row2));
+        }
+
+        public virtual double GetPositiveVariance() => GetPositiveVariance(0);
+
+        public virtual double GetPositiveVariance(int row) => GetPositiveVariance(0, Count - 1, row);
+
+        public virtual double GetPositiveVariance(int index1, int index2) => GetPositiveVariance(index1, index2, 0);
+
+        public virtual double GetPositiveVariance(DateTime dateTime1, DateTime dateTime2) => GetPositiveVariance(dateTime1, dateTime2, 0);
+
+        public double GetPositiveVariance(int index1, int index2, int row)
+        {
+            EnsureAtLeastOneElement();
+            EnsureIndexInRange(index1, index2);
+
+            int cnt = 0;
+            double pmean = 0;
+            for (var i = index1; i <= index2; i++)
+            {
+                if (this[i, row] > 0)
+                {
+                    pmean += this[i, row];
+                    cnt++;
+                }
+            }
+            pmean /= cnt;
+
+            double pv = 0;
+            for (var i = index1; i <= index2; i++)
+                if (this[i, row] > 0.0)
+                    pv += (pmean - this[i, row])*(pmean - this[i, row]);
+            return pv/cnt;
+        }
+
+        public virtual double GetPositiveVariance(DateTime dateTime1, DateTime dateTime2, int row)
+        {
+            EnsureAtLeastOneElement();
+            int i1, i2;
+            EnsureIndexInRange(dateTime1, dateTime2, out i1, out i2);
+            return GetPositiveVariance(i1, i2, row);
+        }
+
+        public double GetPositiveStdDev() => Math.Sqrt(GetPositiveVariance());
+
+        public double GetPositiveStdDev(int row) => Math.Sqrt(GetPositiveVariance(row));
+
+        public double GetPositiveStdDev(int index1, int index2) => Math.Sqrt(GetPositiveVariance(index1, index2));
+
+        public double GetPositiveStdDev(DateTime dateTime1, DateTime dateTime2) => Math.Sqrt(GetPositiveVariance(dateTime1, dateTime2));
+
+        public double GetPositiveStdDev(int index1, int index2, int row) => Math.Sqrt(GetPositiveVariance(index1, index2, row));
+
+        public double GetPositiveStdDev(DateTime dateTime1, DateTime dateTime2, int row) => Math.Sqrt(GetPositiveVariance(dateTime1, dateTime2, row));
+
+        public virtual double GetNegativeVariance() => GetNegativeVariance(0);
+
+        public virtual double GetNegativeVariance(int row) => GetNegativeVariance(0, Count - 1, row);
+
+        public virtual double GetNegativeVariance(int index1, int index2) => GetNegativeVariance(index1, index2, 0);
+
+        public virtual double GetNegativeVariance(DateTime dateTime1, DateTime dateTime2) => GetNegativeVariance(dateTime1, dateTime2, 0);
+
+        public double GetNegativeVariance(int index1, int index2, int row)
+        {
+            EnsureAtLeastOneElement();
+            EnsureIndexInRange(index1, index2);
+
+            int cnt = 0;
+            double nmean = 0;
+            for (int i = index1; i <= index2; i++)
+            {
+                if (this[i, row] < 0)
+                {
+                    nmean += this[i, row];
+                    cnt++;
+                }
+            }
+            nmean /= (double) cnt;
+
+            double nv = 0.0;
+            for (int j = index1; j <= index2; j++)
+                if (this[j, row] < 0)
+                    nv += (nmean - this[j, row])*(nmean - this[j, row]);
+            return nv/(double) cnt;
+        }
+
+        public virtual double GetNegativeVariance(DateTime dateTime1, DateTime dateTime2, int row)
+        {
+            EnsureAtLeastOneElement();
+            int i1, i2;
+            EnsureIndexInRange(dateTime1,dateTime2,out i1,out i2);
+            return GetNegativeVariance(i1, i2, row);
+        }
+
+        public double GetNegativeStdDev() => Math.Sqrt(GetNegativeVariance());
+
+        public double GetNegativeStdDev(int row) => Math.Sqrt(GetNegativeVariance(row));
+
+        public double GetNegativeStdDev(int index1, int index2) => Math.Sqrt(GetNegativeVariance(index1, index2));
+
+        public double GetNegativeStdDev(DateTime dateTime1, DateTime dateTime2) => Math.Sqrt(GetNegativeVariance(dateTime1, dateTime2));
+
+        public double GetNegativeStdDev(int index1, int index2, int row) => Math.Sqrt(GetNegativeVariance(index1, index2, row));
+
+        public double GetNegativeStdDev(DateTime dateTime1, DateTime dateTime2, int row) => Math.Sqrt(GetNegativeVariance(dateTime1, dateTime2, row));
+
         #endregion
+
+        public virtual TimeSeries GetPositiveSeries()
+        {
+            var ts = new TimeSeries();
+            for (int i = 0; i < Count; i++)
+                if (this[i] > 0)
+                    ts.Add(GetDateTime(i), this[i]);
+            return ts;
+        }
+
+        public virtual TimeSeries GetNegativeSeries()
+        {
+            var ts = new TimeSeries();
+            for (int i = 0; i < Count; i++)
+                if (this[i] < 0)
+                    ts.Add(GetDateTime(i), this[i]);
+            return ts;
+        }
+
+        public virtual TimeSeries GetReturnSeries()
+        {
+            var ts = new TimeSeries(this.name, this.description + " (return)", -1);
+            if (Count <= 1)
+                return ts;
+
+            double p0 = this[0];
+            for (var i = 0; i < Count; i++)
+            {
+                var p1 = this[i];
+                ts.Add(GetDateTime(i), p0 != 0 ? p1/p0 : 0);
+                p0 = p1;
+            }
+            return ts;
+        }
+
+
+        [NotOriginal]
         private static TimeSeries OpTwoTimeSeries(TimeSeries ts1, TimeSeries ts2, string name, Func<double, double, double> op, bool checkZero = false)
         {
             var ts = new TimeSeries(name, "", -1);
@@ -710,6 +885,7 @@ namespace SmartQuant
             return ts;
         }
 
+        [NotOriginal]
         private static TimeSeries OpTimeSeriesAndValue(TimeSeries series, double value, string name, Func<double, double, double> op, bool valueAsSecond = true, bool checkZero = false)
         {
             var ts = new TimeSeries(name, "", -1);
@@ -718,9 +894,7 @@ namespace SmartQuant
                 var dt = series.GetDateTime(i);
                 var sv = series[i, 0];
                 if (valueAsSecond)
-                {
                     ts.Add(dt, op(sv, value));
-                }
                 else
                 {
                     if (!checkZero || sv != 0.0)
@@ -730,24 +904,28 @@ namespace SmartQuant
             return ts;
         }
 
+        [NotOriginal]
         private static void EnsureNotNull(params object[] objs)
         {
             if (objs.Any(o => o == null))
                 throw new ArgumentNullException($"Operator argument can not be null");
         }
 
+        [NotOriginal]
         private void EnsureAtLeastOneElement(string message = "")
         {
             if (Count <= 1)
                 throw new ArgumentException("Can not calculate. Insufficient number of elements in the array.");
         }
 
+        [NotOriginal]
         private void EnsureNotEmpty(string message = "")
         {
             if (Count <= 0)
                 throw new ArgumentException(message);
         }
 
+        [NotOriginal]
         private void EnsureIndexInRange(int index1, int index2)
         {
             if (index1 > index2)
@@ -758,6 +936,7 @@ namespace SmartQuant
                 throw new ArgumentOutOfRangeException($"{nameof(index2)} is out of range");
         }
 
+        [NotOriginal]
         private void EnsureIndexInRange(DateTime dt1, DateTime dt2, out int idx1, out int idx2)
         {
             if (dt1 >= dt2)

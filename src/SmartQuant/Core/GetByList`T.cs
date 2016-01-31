@@ -14,11 +14,10 @@ namespace SmartQuant
         private readonly Dictionary<string, T> dictionary;
         private readonly IdArray<T> array;
         private readonly List<T> list;
-
-        public int Count => this.list.Count;
-
         private readonly MethodInfo nameMethod;
         private readonly MethodInfo idMethod;
+
+        public int Count => this.list.Count;
 
         public T this[int index]
         {
@@ -44,7 +43,7 @@ namespace SmartQuant
 
         public bool Contains(T obj)
         {
-            string name = (string)this.nameMethod.Invoke(obj, new object[0]);
+            var name = (string)this.nameMethod.Invoke(obj, new object[0]);
             return Contains(name);
         }
 
@@ -58,7 +57,7 @@ namespace SmartQuant
             if (this.array[id] == null)
             {
                 this.list.Add(obj);
-                string name = (string)this.nameMethod.Invoke(obj, new object[0]);
+                var name = (string)this.nameMethod.Invoke(obj, new object[0]);
                 if (name != null)
                     this.dictionary[name] = obj;
                 this.array[id] = obj;
@@ -69,13 +68,20 @@ namespace SmartQuant
 
         public void Remove(int id)
         {
-            throw new NotImplementedException("don't use it");
+            if (Contains(id))
+            {
+                var item = this.array[id];
+                var name = (string)this.nameMethod.Invoke(item, new object[0]);
+                this.list.Remove(item);
+                this.array.Remove(id);
+                this.dictionary.Remove(name);
+            }
         }
 
         public void Remove(T obj)
         {
-            string name = (string)this.nameMethod.Invoke(obj, new object[0]);
-            int id = (int)this.idMethod.Invoke(obj, new object[0]);
+            var name = (string)this.nameMethod.Invoke(obj, new object[0]);
+            var id = (int)this.idMethod.Invoke(obj, new object[0]);
             this.list.Remove(obj);
             if (name != null)
                 this.dictionary.Remove(name);

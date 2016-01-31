@@ -161,7 +161,7 @@ namespace SmartQuant
             return position;
         }
 
-        public Position GetPosition(Instrument instrument) => Positions[instrument.Id];
+        public Position GetPosition(Instrument instrument) => PositionsByInstrumentId[instrument.Id];
 
         public double GetPositionValue(byte currencyId) => Positions.Where(p => p.Instrument.CurrencyId == currencyId).Sum(p => p.Value);
 

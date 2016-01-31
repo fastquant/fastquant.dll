@@ -162,6 +162,31 @@ namespace SmartQuant
         void Send(ExecutionCommand command);
     }
 
+    public interface ISellSideProvider : IProvider
+    {
+        void AuthSucceed(string guid);
+
+        void AuthFailed(string guid, ProviderError error);
+
+        void SendMessage(string guid, Event msgEvent);
+
+        void AddMessage(string guid, Event msgEvent);
+
+        void SendMessages(string guid);
+
+        void CloseConnection(string guid);
+
+        bool IsStopped { get; }
+
+        event EventHandler<OnLogin> NewLoginAttempt;
+
+        event EventHandler<Tuple<string, Event>> NewMessage;
+
+        event EventHandler Started;
+
+        event EventHandler Stopped;
+    }
+
     public interface IDataSimulator : IDataProvider
     {
         DateTime DateTime1 { get; set; }

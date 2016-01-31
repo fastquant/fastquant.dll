@@ -138,7 +138,7 @@ namespace Demo
             this.ClientSize = new System.Drawing.Size(800, 600);
             this.Controls.Add(this.tabControl1);
             this.Name = "MainForm";
-            this.Text = "SmartQuant Charts Demo";
+            this.Text = "Strategy Result Display";
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);

@@ -18,7 +18,7 @@ namespace SmartQuant.Statistics
 
         protected double GetStdDev(TimeSeries ts, double avg)
         {
-            return ts.Count > 1 ? Sqrt(Enumerable.Range(0, ts.Count).Sum(i => Pow(ts[i] - avg, 2)) / (ts.Count - 1)) : 0;
+            return ts.Count > 1 ? Sqrt(Enumerable.Range(0, ts.Count).Sum(i => Pow(ts[i] - avg, 2))/(ts.Count - 1)) : 0;
         }
 
         protected internal override void OnInit()
@@ -62,7 +62,7 @@ namespace SmartQuant.Statistics
 
     public class DailyReturnPercentStdDev : StandardDeviation
     {
-        public DailyReturnPercentStdDev():base(PortfolioStatisticsType.DailyReturnPercent)
+        public DailyReturnPercentStdDev() : base(PortfolioStatisticsType.DailyReturnPercent)
         {
         }
 

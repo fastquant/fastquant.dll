@@ -28,7 +28,7 @@ namespace SmartQuant
     {
         internal List<Bar> Bars = new List<Bar>();
         internal DateTime CloseDateTime= DateTime.MinValue;
-        internal int barCount = 0;
+        internal int barCount;
     }
 
     public class BarSliceFactory
@@ -36,7 +36,8 @@ namespace SmartQuant
         private const int SecondsPerDay = (int)(TimeSpan.TicksPerDay / TimeSpan.TicksPerSecond);
 
         private Framework framework;
-        private IdArray<BarSliceItem> items = new IdArray<BarSliceItem>(SecondsPerDay);
+
+        private readonly IdArray<BarSliceItem> items = new IdArray<BarSliceItem>(SecondsPerDay);
 
         public BarSliceFactory(Framework framework)
         {

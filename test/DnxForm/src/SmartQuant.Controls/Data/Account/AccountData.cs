@@ -41,6 +41,7 @@ namespace SmartQuant.Controls.Data.Account
             return this.key;
         }
     }
+
     public class AccountData : FrameworkControl
     {
         private Dictionary<int, AccountDataViewer> viewers;
@@ -108,8 +109,8 @@ namespace SmartQuant.Controls.Data.Account
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing && this.components != null)
-                this.components.Dispose();
+            if (disposing)
+                this.components?.Dispose();
             base.Dispose(disposing);
         }
 
@@ -118,16 +119,13 @@ namespace SmartQuant.Controls.Data.Account
             this.tabViewers = new TabControl();
             this.SuspendLayout();
             this.tabViewers.Dock = DockStyle.Fill;
-            this.tabViewers.Location = new Point(0, 0);
             this.tabViewers.Name = "tabViewers";
             this.tabViewers.SelectedIndex = 0;
-            this.tabViewers.Size = new Size(660, 464);
             this.tabViewers.TabIndex = 0;
             this.AutoScaleDimensions = new SizeF(6f, 13f);
             this.AutoScaleMode = AutoScaleMode.Font;
-            this.Controls.Add((Control)this.tabViewers);
+            this.Controls.Add(this.tabViewers);
             this.Name = "AccountData";
-            this.Size = new Size(660, 464);
             this.ResumeLayout(false);
         }
     }

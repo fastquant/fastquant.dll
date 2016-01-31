@@ -118,15 +118,9 @@ namespace SmartQuant
             this.shortValues = new TimeSeries($"{Name} Short", "");
         }
 
-        public void Subscribe(int itemType)
-        {
-            this.statistics.Subscribe(this, itemType);
-        }
+        public void Subscribe(int itemType) => this.statistics.Subscribe(this, itemType);
 
-        public void Unsubscribe(int itemType)
-        {
-            this.statistics.Unsubscribe(this, itemType);
-        }
+        public void Unsubscribe(int itemType) => this.statistics.Unsubscribe(this, itemType);
 
         protected internal void Emit()
         {
@@ -210,7 +204,12 @@ namespace SmartQuant
 
         public bool Contains(int type) => this.items.Contains(type);
 
-        public void Add(PortfolioStatisticsItem item) => this.items.Add(item);
+        public void Add(PortfolioStatisticsItem item)
+        {
+            if (Contains(item.Type))
+                Remove(item.Type);
+            this.items.Add(item);
+        }
 
         public void Remove(int type) => this.items.Remove(type);
 
@@ -228,8 +227,11 @@ namespace SmartQuant
     public class PortfolioStatistics
     {
         private Portfolio portfolio;
+
         internal IdArray<TradeDetector> detectors = new IdArray<TradeDetector>(10240);
+
         internal IdArray<List<int>> subscriptions = new IdArray<List<int>>();
+
         public PortfolioStatisticsItemList Items { get; } = new PortfolioStatisticsItemList();
 
         public PortfolioStatistics(Portfolio portfolio)
@@ -242,16 +244,15 @@ namespace SmartQuant
 
         public void Add(PortfolioStatisticsItem item)
         {
-            if (item.statistics != null)
+            if (item.statistics == null)
             {
-                Console.WriteLine($"PortfolioStatistics::Add Error. Item already belongs to other statistics {item}");
-                return;
+                item.statistics = this;
+                item.portfolio = this.portfolio;
+                Items.Add(item);
+                item.OnInit();
             }
-
-            item.statistics = this;
-            item.portfolio = this.portfolio;
-            Items.Add(item);
-            item.OnInit();
+            else
+                Console.WriteLine($"PortfolioStatistics::Add Error. Item already belongs to other statistics {item}");
         }
 
         public PortfolioStatisticsItem Get(int type) => Items.GetByType(type);
@@ -260,14 +261,11 @@ namespace SmartQuant
         {
             if (Items.GetByType(type) == null)
                 Add(this.portfolio.framework.StatisticsManager.Clone(type));
-            if (this.subscriptions[type] == null)
-                this.subscriptions[type] = new List<int>();
-            else if (this.subscriptions[type].Contains(item.Type))
-            {
+            var subscription = this.subscriptions[type] = this.subscriptions[type] ?? new List<int>();
+            if (subscription.Contains(item.Type))
                 Console.WriteLine($"PortfolioStatistics::Subscribe Item {item.Type} is already subscribed for item {type}");
-                return;
-            }
-            this.subscriptions[type].Add(item.Type);
+            else
+                subscription.Add(item.Type);
         }
 
         internal void Unsubscribe(PortfolioStatisticsItem item, int type)
@@ -334,19 +332,16 @@ namespace SmartQuant
 
         internal void OnStatistics(PortfolioStatisticsItem item)
         {
-            var list = this.subscriptions[item.Type];
-            if (list != null)
-            {
-                foreach (int type in list)
+            var subscription = this.subscriptions[item.Type];
+            if (subscription != null)
+                foreach (var type in subscription)
                     Items.GetByType(type).OnStatistics(item);
-            }
         }
 
         internal void OnStatistics(Portfolio portfolio, PortfolioStatisticsItem item)
         {
-            foreach (var i in Items)
-                if (i != item)
-                    i.OnStatistics(portfolio, item);
+            foreach (var i in Items.Where(i => i != item))
+                i.OnStatistics(portfolio, item);
         }
 
         internal void OnClear()
@@ -357,7 +352,7 @@ namespace SmartQuant
 
         internal void OnEquity(double value)
         {
-            for (int i = 0; i < this.detectors.Size; i++)
+            for (var i = 0; i < this.detectors.Size; i++)
                 this.detectors[i]?.OnEquity(value);
      
             foreach (var item in Items)

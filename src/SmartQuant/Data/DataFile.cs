@@ -365,7 +365,55 @@ namespace SmartQuant
 
     public class DataFile
     {
-        private static int HEAD_SIZE = 62;
+        private static readonly int HEAD_SIZE = 62;
+
+        private string label = "SmartQuant";
+
+        private string name;
+
+        private List<FreeKey> freeKeys = new List<FreeKey>();
+
+        private BinaryWriter writer;
+
+        private bool opened;
+
+        internal bool changed;
+
+        private bool disposed;
+
+        private byte version = 1;
+
+        private FileMode mode;
+
+        private int oKeysKeySize;
+
+        private int fKeysKeySize;
+
+        private int oKeysCount;
+
+        private int fKeysCount;
+
+        private long headSize;
+
+        private long newKeyPosition;
+
+        private long oKeysKeyPosition;
+
+        private long fKeysKeyPosition;
+
+        private MemoryStream mstream;
+
+        private ObjectKey oKeysKey;
+
+        private ObjectKey fKeysKey;
+
+        private Stream stream;
+
+        public byte CompressionLevel { get; set; } = 1;
+
+        public byte CompressionMethod { get; set; } = 1;
+
+        public Dictionary<string, ObjectKey> Keys { get; private set; } = new Dictionary<string, ObjectKey>();
 
         public object Sync { get; } = new object();
 
@@ -396,127 +444,162 @@ namespace SmartQuant
         public void Dispose()
         {
             Console.WriteLine("DataFile::Dispose");
-            Dispose(true);
+            lock (Sync)
+                Dispose(true);
             GC.SuppressFinalize(this);
         }
 
         public virtual void Open(FileMode mode = FileMode.OpenOrCreate)
         {
-            if (mode != FileMode.OpenOrCreate && mode != FileMode.Create)
+            lock (Sync)
             {
-                Console.WriteLine($"DataFile::Open Can not open file in {mode} mode. DataFile suppports FileMode.OpenOrCreate and FileMode.Create modes.");
-                return;
-            }
-            if (this.opened)
-            {
-                Console.WriteLine($"DataFile::Open File is already open: {this.name}");
-                return;
-            }
-
-            this.mode = mode;
-            if (!OpenFileStream(this.name, mode))
-            {
-                // when it is empty
-                this.headSize = HEAD_SIZE;
-                this.newKeyPosition = HEAD_SIZE;
-                Reset();
-            }
-            else
-            {
-                if (!ReadHeader())
+                if (mode != FileMode.OpenOrCreate && mode != FileMode.Create)
                 {
-                    Console.WriteLine($"DataFile::Open Error opening file {this.name}");
+                    Console.WriteLine($"DataFile::Open Can not open file in {mode} mode. DataFile suppports FileMode.OpenOrCreate and FileMode.Create modes.");
                     return;
                 }
-                if (this.oKeysKeyPosition == -1 || this.fKeysKeyPosition == -1)
+                if (this.opened)
                 {
-                    Console.WriteLine("DataFile::Open The file was not properly closed and needs to be recovered!");
-                    Recover();
+                    Console.WriteLine($"DataFile::Open File is already open: {this.name}");
+                    return;
                 }
-                ReadKeys();
-                ReadFree();
+
+                this.mode = mode;
+                if (!OpenFileStream(this.name, mode))
+                {
+                    // when it is empty
+                    this.headSize = HEAD_SIZE;
+                    this.newKeyPosition = HEAD_SIZE;
+                    Reset();
+                }
+                else
+                {
+                    if (!ReadHeader())
+                    {
+                        Console.WriteLine($"DataFile::Open Error opening file {this.name}");
+                        return;
+                    }
+                    if (this.oKeysKeyPosition == -1 || this.fKeysKeyPosition == -1)
+                    {
+                        Console.WriteLine("DataFile::Open The file was not properly closed and needs to be recovered!");
+                        Recover();
+                    }
+                    ReadKeys();
+                    ReadFree();
+                }
+                this.opened = true;
+
             }
-            this.opened = true;
         }
 
         public virtual void Close()
         {
-            if (!this.opened)
+            lock (Sync)
             {
-                Console.WriteLine($"DataFile::Close File is not open: {this.name}");
-                return;
+                if (!this.opened)
+                {
+                    Console.WriteLine($"DataFile::Close File is not open: {this.name}");
+                    return;
+                }
+                Flush();
+                CloseFileStream();
+                this.opened = false;
             }
-            Flush();
-            CloseFileStream();
-            this.opened = false;
         }
 
         protected virtual bool OpenFileStream(string name, FileMode mode)
         {
-            this.stream = new FileStream(name, mode);
-            return this.stream.Length != 0;
+            try
+            {
+                this.stream = new FileStream(name, mode);
+                return this.stream.Length != 0;
+            }
+            catch (Exception)
+            {
+                Console.WriteLine($"DataFile::OpenFileStream Can not open file {name}");
+                return false;
+            }
         }
 
         protected virtual void CloseFileStream()
         {
-            this.stream.Dispose();
+            try
+            {
+                this.stream.Dispose();
+            }
+            catch (Exception)
+            {
+                Console.WriteLine($"DataFile::CloseFileStream Can not close file {this.name}");
+            }
         }
 
         public virtual void Delete(string name)
         {
-            ObjectKey key;
-            Keys.TryGetValue(name, out key);
-            if (key != null)
-                DeleteObjectKey(key, true, true);
+            lock (Sync)
+            {
+                ObjectKey key;
+                Keys.TryGetValue(name, out key);
+                if (key != null)
+                    DeleteObjectKey(key, true, true);
+            }
         }
 
         public void Dump()
         {
-            if (this.opened)
+            lock (Sync)
             {
-                Console.WriteLine($"DataFile::Dump DataFile  {this.name} is open in {this.mode}  mode and contains {Keys.Values.Count} objects:");
-                foreach (var k in Keys.Values)
-                    k.Dump();
-                Console.WriteLine($"Free objects = {this.fKeysCount}");
-            }
-            else
-            {
-                Console.WriteLine($"DataFile::Dump DataFile {this.name} is closed");
+                if (this.opened)
+                {
+                    Console.WriteLine(
+                        $"DataFile::Dump DataFile  {this.name} is open in {this.mode}  mode and contains {Keys.Values.Count} objects:");
+                    foreach (var k in Keys.Values)
+                        k.Dump();
+                    Console.WriteLine($"Free objects = {this.fKeysCount}");
+                }
+                else
+                    Console.WriteLine($"DataFile::Dump DataFile {this.name} is closed");
             }
         }
 
         public virtual void Flush()
         {
-            if (!this.opened)
+            lock (Sync)
             {
-                Console.WriteLine($"DataFile::Flush Can not flush file which is not open {this.name}");
-                return;
-            }
-
-            if (this.changed)
-            {
-                foreach (var k in Keys.Values)
+                if (!this.opened)
                 {
-                    if (k.TypeId == ObjectType.DataSeries && k.obj != null)
-                    {
-                        var dataSeries = (DataSeries)k.obj;
-                        if (dataSeries.changed)
-                            dataSeries.Flush();
-                    }
+                    Console.WriteLine($"DataFile::Flush Can not flush file which is not open {this.name}");
+                    return;
                 }
-                SaveOKeys();
-                SaveFKeys();
-                WriteHeader();
-                this.stream.Flush();
+
+                if (this.changed)
+                {
+                    foreach (var k in Keys.Values)
+                    {
+                        if (k.TypeId == ObjectType.DataSeries && k.obj != null)
+                        {
+                            var dataSeries = (DataSeries) k.obj;
+                            if (dataSeries.changed)
+                                dataSeries.Flush();
+                        }
+                    }
+                    SaveOKeys();
+                    SaveFKeys();
+                    WriteHeader();
+                    this.stream.Flush();
+                }
+                this.changed = false;
             }
-            this.changed = false;
         }
 
         public virtual object Get(string name)
         {
-            ObjectKey key;
-            Keys.TryGetValue(name, out key);
-            return key?.GetObject();
+            lock (Sync)
+            {
+                ObjectKey key;
+                Keys.TryGetValue(name, out key);
+                return key?.GetObject();                
+            }
+
         }
 
         protected void StreamFlush()
@@ -533,34 +616,28 @@ namespace SmartQuant
 
         protected int StreamRead(byte[] buffer, int offset, int count)
         {
-            int result;
             try
             {
-                int num = this.stream.Read(buffer, offset, count);
-                result = num;
+                return this.stream.Read(buffer, offset, count);
             }
             catch (Exception)
             {
                 Console.WriteLine($"DataFile::StreamRead Can not read from file {this.name}");
-                result = 0;
+                return 0;
             }
-            return result;
         }
 
         protected long StreamSeek(long offset, SeekOrigin origin)
         {
-            long result;
             try
             {
-                long num = this.stream.Seek(offset, origin);
-                result = num;
+                return this.stream.Seek(offset, origin);
             }
             catch (Exception)
             {
                 Console.WriteLine($"DataFile::StreamSeek Can not seek in file {this.name}");
-                result = 0L;
+                return 0;
             }
-            return result;
         }
 
         protected void StreamWrite(byte[] buffer, int offset, int count)
@@ -587,126 +664,115 @@ namespace SmartQuant
             }
         }
 
-        //public virtual void Write(string name, object obj)
-        //{
-        //    lock (Sync)
-        //    {
-        //        ObjectKey key;
-        //        Keys.TryGetValue(name, out key);
-        //        if (key != null)
-        //        {
-        //            key.obj = obj;
-        //            key.Init(this);
-        //        }
-        //        else
-        //        {
-        //            key = new ObjectKey(this, name, obj);
-        //            Keys.Add(name, key);
-        //            this.oKeysCount++;
-        //        }
-        //        key.DateTime = DateTime.Now;
-        //        if (key.TypeId == ObjectType.DataSeries)
-        //        {
-        //            ((DataSeries)obj).Init(this, key);
-        //        }
-        //        WriteObjectKey(key);
-        //    }
-        //}
-
         internal bool ReadHeader()
         {
-            var buffer = new byte[HEAD_SIZE];
-            ReadBuffer(buffer, 0, buffer.Length);
-            using (var input = new MemoryStream(buffer))
+            lock (Sync)
             {
-                using (var reader = new BinaryReader(input))
+                var buffer = new byte[HEAD_SIZE];
+                ReadBuffer(buffer, 0, buffer.Length);
+                using (var input = new MemoryStream(buffer))
                 {
-                    var label = reader.ReadString();
-                    if (label != "SmartQuant")
+                    using (var reader = new BinaryReader(input))
                     {
-                        Console.WriteLine("DataFile::ReadHeader This is not SmartQuant data file!");
-                        return false;
+                        var label = reader.ReadString();
+                        if (label != "SmartQuant")
+                        {
+                            Console.WriteLine("DataFile::ReadHeader This is not SmartQuant data file!");
+                            return false;
+                        }
+                        this.label = label;
+                        this.version = reader.ReadByte();
+                        this.headSize = reader.ReadInt64();
+                        this.newKeyPosition = reader.ReadInt64();
+                        this.oKeysKeyPosition = reader.ReadInt64();
+                        this.fKeysKeyPosition = reader.ReadInt64();
+                        this.oKeysKeySize = reader.ReadInt32();
+                        this.fKeysKeySize = reader.ReadInt32();
+                        this.oKeysCount = reader.ReadInt32();
+                        this.fKeysCount = reader.ReadInt32();
+                        CompressionMethod = reader.ReadByte();
+                        CompressionLevel = reader.ReadByte();
+                        return true;
                     }
-                    this.label = label;
-                    this.version = reader.ReadByte();
-                    this.headSize = reader.ReadInt64();
-                    this.newKeyPosition = reader.ReadInt64();
-                    this.oKeysKeyPosition = reader.ReadInt64();
-                    this.fKeysKeyPosition = reader.ReadInt64();
-                    this.oKeysKeySize = reader.ReadInt32();
-                    this.fKeysKeySize = reader.ReadInt32();
-                    this.oKeysCount = reader.ReadInt32();
-                    this.fKeysCount = reader.ReadInt32();
-                    CompressionMethod = reader.ReadByte();
-                    CompressionLevel = reader.ReadByte();
-                    return true;
                 }
             }
         }
 
         internal void WriteHeader()
         {
-            using (var mstream = new MemoryStream())
+            lock (Sync)
             {
-                using (var writer = new BinaryWriter(mstream))
+                using (var mstream = new MemoryStream())
                 {
-                    writer.Write(this.label);                 // 11
-                    writer.Write(this.version);               // 12
-                    writer.Write(this.headSize);              // 20
-                    writer.Write(this.newKeyPosition);        // 28
-                    writer.Write(this.oKeysKeyPosition);      // 36
-                    writer.Write(this.fKeysKeyPosition);      // 44
-                    writer.Write(this.oKeysKeySize);          // 48
-                    writer.Write(this.fKeysKeySize);          // 52
-                    writer.Write(this.oKeysCount);            // 56
-                    writer.Write(this.fKeysCount);            // 60
-                    writer.Write(CompressionMethod);          // 61
-                    writer.Write(CompressionLevel);           // 62
-                    var buf = mstream.ToArray();
-                    WriteBuffer(buf, 0, buf.Length);
+                    using (var writer = new BinaryWriter(mstream))
+                    {
+                        writer.Write(this.label);                 // 11
+                        writer.Write(this.version);               // 12
+                        writer.Write(this.headSize);              // 20
+                        writer.Write(this.newKeyPosition);        // 28
+                        writer.Write(this.oKeysKeyPosition);      // 36
+                        writer.Write(this.fKeysKeyPosition);      // 44
+                        writer.Write(this.oKeysKeySize);          // 48
+                        writer.Write(this.fKeysKeySize);          // 52
+                        writer.Write(this.oKeysCount);            // 56
+                        writer.Write(this.fKeysCount);            // 60
+                        writer.Write(CompressionMethod);          // 61
+                        writer.Write(CompressionLevel);           // 62
+                        var buf = mstream.ToArray();
+                        WriteBuffer(buf, 0, buf.Length);
+                    }
                 }
             }
         }
 
         internal void Reset()
         {
-            this.changed = true;
-            this.oKeysKeyPosition = -1;
-            this.fKeysKeyPosition = -1;
-            WriteHeader();
+            lock (Sync)
+            {
+                this.changed = true;
+                this.oKeysKeyPosition = this.fKeysKeyPosition = -1;
+                WriteHeader();                
+            }
         }
 
         internal ObjectKey ReadKey(long position)
         {
-            var buffer = new byte[ObjectKey.HEADER_SIZE];
-            ReadBuffer(buffer, position, buffer.Length);
-            var input = new MemoryStream(buffer);
-            var reader = new BinaryReader(input);
-            string text = reader.ReadString();
-
-            var key = new ObjectKey(this, null, null);
-            key.Label = text;
-            key.ReadHeader(reader);
-
-            buffer = new byte[key.headSize];
-            ReadBuffer(buffer, position, buffer.Length);
-            input = new MemoryStream(buffer);
-            reader = new BinaryReader(input);
-            if (text.StartsWith("OK"))
+            lock (Sync)
             {
-                key = new ObjectKey(this, null, null);
-            }
-            else
-            {
-                if (!text.StartsWith("DK"))
+                var buffer = new byte[ObjectKey.HEADER_SIZE];
+                ReadBuffer(buffer, position, buffer.Length);
+                ObjectKey key;
+                string text;
+                
+                using (var ms = new MemoryStream(buffer))
                 {
-                    Console.WriteLine($"DataFile::ReadKey This is not object or data key : {text}");
-                    return null;
+                    using (var rdr = new BinaryReader(ms))
+                    {
+                        text = rdr.ReadString();
+                        key = new ObjectKey(this, null, null) { Label = text };
+                        key.ReadHeader(rdr);
+                    }
                 }
-                key = new DataKey(this, null, -1, -1);
+
+                buffer = new byte[key.headSize];
+                ReadBuffer(buffer, position, buffer.Length);
+                if (text.StartsWith("OK"))
+                    key = new ObjectKey(this, null, null);
+                else
+                {
+                    if (!text.StartsWith("DK"))
+                    {
+                        Console.WriteLine($"DataFile::ReadKey This is not object or data key : {text}");
+                        return null;
+                    }
+                    key = new DataKey(this, null, -1, -1);
+                }
+
+                using (var ms = new MemoryStream(buffer))
+                using (var rdr = new BinaryReader(ms))
+                    key.Read(rdr, true);
+                return key;
             }
-            key.Read(reader, true);
-            return key;
         }
 
         private FreeKey GetFreeKeyWithEnoughLength(int size)
@@ -716,72 +782,83 @@ namespace SmartQuant
 
         internal void DeleteObjectKey(ObjectKey key, bool remove = true, bool recycle = true)
         {
-            key.freed = true;
-            WriteBuffer(new byte[] { 1 }, key.position + ObjectKey.LABEL_SIZE, 1);
-            if (remove)
+            lock (Sync)
             {
-                Keys.Remove(key.Name);
-                this.oKeysCount--;
+                key.freed = true;
+                WriteBuffer(new byte[] { 1 }, key.position + ObjectKey.LABEL_SIZE, 1);
+                if (remove)
+                {
+                    Keys.Remove(key.Name);
+                    this.oKeysCount--;
+                }
+                if (recycle)
+                {
+                    this.freeKeys.Add(new FreeKey(key));
+                    this.freeKeys.Sort();
+                    this.fKeysCount++;
+                }
+                this.changed = true;                
             }
-            if (recycle)
-            {
-                this.freeKeys.Add(new FreeKey(key));
-                this.freeKeys.Sort();
-                this.fKeysCount++;
-            }
-            this.changed = true;
         }
 
         internal ObjectKey ReadObjectKey(long position, int length)
         {
-            var buffer = new byte[length];
-            ReadBuffer(buffer, position, buffer.Length);
-            var reader = new BinaryReader(new MemoryStream(buffer));
-            var key = new ObjectKey(this, null, null);
-            key.Read(reader, true);
-            key.position = position;
-            return key;
+            lock (Sync)
+            {
+                var buffer = new byte[length];
+                ReadBuffer(buffer, position, buffer.Length);
+                var key = new ObjectKey(this, null, null);
+                using (var ms = new MemoryStream(buffer))
+                using (var rdr = new BinaryReader(ms))
+                    key.Read(rdr, true);
+                key.position = position;
+                return key;                
+            }
+
         }
 
         internal void WriteObjectKey(ObjectKey key)
         {
-            this.mstream.SetLength(0);
-            key.Write(this.writer);
-            if (key.position != -1)
+            lock (Sync)
             {
-                if (this.mstream.Length > key.totalSize)
+                this.mstream.SetLength(0);
+                key.Write(this.writer);
+                if (key.position != -1)
                 {
-                    DeleteObjectKey(key, false, true);
-                    key.totalSize = (int)this.mstream.Length;
-                    var fKey = key == this.fKeysKey ? GetFreeKeyWithEnoughLength(key.headSize + key.contentSize - FreeKey.HEADER_SIZE) : GetFreeKeyWithEnoughLength(key.headSize + key.contentSize);
-                    if (fKey != null)
+                    if (this.mstream.Length > key.totalSize)
                     {
-                        key.position = fKey.position;
-                        key.totalSize = fKey.size;
-                        this.freeKeys.Remove(fKey);
-                        this.fKeysCount--;
-                        if (key == this.fKeysKey)
+                        DeleteObjectKey(key, false, true);
+                        key.totalSize = (int)this.mstream.Length;
+                        var fKey = key == this.fKeysKey ? GetFreeKeyWithEnoughLength(key.headSize + key.contentSize - FreeKey.HEADER_SIZE) : GetFreeKeyWithEnoughLength(key.headSize + key.contentSize);
+                        if (fKey != null)
                         {
-                            this.mstream.SetLength(0);
-                            key.Write(this.writer);
+                            key.position = fKey.position;
+                            key.totalSize = fKey.size;
+                            this.freeKeys.Remove(fKey);
+                            this.fKeysCount--;
+                            if (key == this.fKeysKey)
+                            {
+                                this.mstream.SetLength(0);
+                                key.Write(this.writer);
+                            }
+                        }
+                        else
+                        {
+                            key.position = this.stream.Length;
+                            this.newKeyPosition = key.position;
                         }
                     }
-                    else
-                    {
-                        key.position = this.stream.Length;
-                        this.newKeyPosition = key.position;
-                    }
                 }
+                else
+                {
+                    key.position = this.stream.Length;
+                    this.newKeyPosition = key.position;
+                }
+                var buf = this.mstream.ToArray();
+                WriteBuffer(buf, key.position, buf.Length);
+                key.changed = false;
+                this.changed = true;
             }
-            else
-            {
-                key.position = this.stream.Length;
-                this.newKeyPosition = key.position;
-            }
-            var buf = this.mstream.ToArray();
-            WriteBuffer(buf, key.position, buf.Length);
-            key.changed = false;
-            this.changed = true;
         }
 
         private void SaveOKeys()
@@ -810,8 +887,11 @@ namespace SmartQuant
 
         protected internal virtual void ReadBuffer(byte[] buffer, long position, int length)
         {
-            lock (this)
+            lock (Sync)
             {
+                StreamSeek(position, SeekOrigin.Begin);
+                StreamRead(buffer, 0, length);
+
                 this.stream.Seek(position, SeekOrigin.Begin);
                 this.stream.Read(buffer, 0, length);
             }
@@ -819,10 +899,10 @@ namespace SmartQuant
 
         protected internal virtual void WriteBuffer(byte[] buffer, long position, int length)
         {
-            lock (this)
+            lock (Sync)
             {
-                this.stream.Seek(position, SeekOrigin.Begin);
-                this.stream.Write(buffer, 0, length);
+                StreamSeek(position, SeekOrigin.Begin);
+                StreamWrite(buffer, 0, length);
                 if (!this.changed)
                     Reset();
             }
@@ -922,76 +1002,33 @@ namespace SmartQuant
 
         public virtual void Write(string name, object obj)
         {
-            ObjectKey key;
-            Keys.TryGetValue(name, out key);
-            if (key != null)
+            lock (Sync)
             {
-                key.obj = obj;
-                key.Init(this);
+                ObjectKey key;
+                Keys.TryGetValue(name, out key);
+                if (key != null)
+                {
+                    key.obj = obj;
+                    key.Init(this);
+                }
+                else
+                {
+                    key = new ObjectKey(this, name, obj);
+                    Keys.Add(name, key);
+                    this.oKeysCount++;
+                }
+                key.DateTime = DateTime.Now;
+                if (key.TypeId == ObjectType.DataSeries)
+                {
+                    ((DataSeries)obj).Init(this, key);
+                }
+                WriteObjectKey(key);
             }
-            else
-            {
-                key = new ObjectKey(this, name, obj);
-                Keys.Add(name, key);
-                this.oKeysCount++;
-            }
-            key.DateTime = DateTime.Now;
-            if (key.TypeId == ObjectType.DataSeries)
-            {
-                ((DataSeries)obj).Init(this, key);
-            }
-            WriteObjectKey(key);
         }
 
-        public byte CompressionLevel { get; set; } = 1;
-
-        public byte CompressionMethod { get; set; } = 1;
-
-        public Dictionary<string, ObjectKey> Keys { get; private set; } = new Dictionary<string, ObjectKey>();
-
-        private List<FreeKey> freeKeys = new List<FreeKey>();
-
-        private BinaryWriter writer;
-
-        private bool opened;
-
-        internal bool changed;
-
-        private bool disposed;
-
-        private byte version = 1;
-
-        private FileMode mode;
-
-        private int oKeysKeySize;
-
-        private int fKeysKeySize;
-
-        private int oKeysCount;
-
-        private int fKeysCount;
-
-        private long headSize;
-
-        private long newKeyPosition;
-
-        private long oKeysKeyPosition;
-
-        private long fKeysKeyPosition;
-
-        private MemoryStream mstream;
-
-        private ObjectKey oKeysKey;
-
-        private ObjectKey fKeysKey;
-
-        private Stream stream;
-
-        private string label = "SmartQuant";
-
-        private string name;
 
         #region Testing Functions
+        [NotOriginal]
         public ObjectKey GetKey(string name)
         {
             ObjectKey key;

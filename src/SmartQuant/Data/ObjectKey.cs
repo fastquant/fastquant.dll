@@ -197,11 +197,11 @@ namespace SmartQuant
             return compress && CompressionLevel != 0 ? new QuickLZ().Compress(data) : data;
         }
 
-        public byte CompressionLevel { get; set; } = 1;
+        public byte CompressionLevel { get; internal set; } = 1;
 
-        public byte CompressionMethod { get; set; } = 1;
+        public byte CompressionMethod { get; internal set; } = 1;
 
-        public DateTime DateTime { get; set; }
+        public DateTime DateTime { get; internal set; }
 
         public string Name { get; private set; }
 

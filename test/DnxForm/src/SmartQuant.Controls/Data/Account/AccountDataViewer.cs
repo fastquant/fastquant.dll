@@ -9,25 +9,17 @@ namespace SmartQuant.Controls.Data.Account
 {
     class PositionKey : AccountDataKey
     {
-        public PositionKey(SmartQuant.AccountData data)
-          : base(data)
+        public PositionKey(SmartQuant.AccountData data) : base(data)
         {
-            this.key = string.Join(" ", (IEnumerable<string>)new List<string>()
-      {
-        this.GetFieldAsString("Symbol"),
-        this.GetFieldAsString("Maturity"),
-        this.GetFieldAsString("PutOrCall"),
-        this.GetFieldAsString("Strike")
-      });
+            this.key = $"{GetFieldAsString("Symbol")} {GetFieldAsString("Maturity")} {GetFieldAsString("PutOrCall")} {GetFieldAsString("Strike")}";
         }
     }
 
     class OrderKey : AccountDataKey
     {
-        public OrderKey(SmartQuant.AccountData data)
-          : base(data)
+        public OrderKey(SmartQuant.AccountData data) : base(data)
         {
-            this.key = this.GetFieldAsString("OrderID");
+            this.key = GetFieldAsString("OrderID");
         }
     }
 
