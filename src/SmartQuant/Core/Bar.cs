@@ -124,13 +124,13 @@ namespace SmartQuant
 
         public double Range => High - Low;
 
-        public double Median => (High + Low) / 2;
+        public double Median => (High + Low)/2;
 
-        public double Typical => (High + Low + Close) / 3;
+        public double Typical => (High + Low + Close)/3;
 
-        public double Weighted => (High + Low + 2 * Close) / 4;
+        public double Weighted => (High + Low + 2*Close)/4;
 
-        public double Average => (Open + High + Low + Close) / 4;
+        public double Average => (Open + High + Low + Close)/4;
 
         public double this[byte index]
         {
@@ -156,13 +156,6 @@ namespace SmartQuant
                 this[mapping[name]] = value;
             }
         }
-
-        //static Bar()
-        //{
-        //    mapping = new Dictionary<string, byte>();
-        //    foreach (var field in Enum.GetNames(typeof(BarData)))
-        //        AddField(field, Convert.ToByte(Enum.Parse(typeof(BarData), field)));
-        //}
 
         public Bar(DateTime openDateTime, DateTime closeDateTime, int instrumentId, BarType type, long size, double open = 0, double high = 0, double low = 0, double close = 0.0, long volume = 0, long openInt = 0)
            : base(closeDateTime)

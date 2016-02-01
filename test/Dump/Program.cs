@@ -3,7 +3,46 @@ using SmartQuant;
 using System.IO;
 using System.Diagnostics;
 
-namespace HelloWorldSample 
+namespace FastQua
+{
+    public interface IIdNamedItem
+    {
+        int Id { get; }
+    }
+}
+
+namespace FastQua.Licensing
+{
+
+        public enum License
+        {
+            Demo,
+            Retail,
+            Professional,
+            Enterprise
+        }
+}
+
+namespace FastQua
+{
+
+    public enum IndexOption
+    {
+        Null,
+        Next,
+        Prev
+    }
+
+    public interface ISeries
+    {
+        string Name { get; }
+
+        string Description { get; }
+
+    }
+}
+
+namespace HelloWorld 
 {
 	public static class Program 
 	{

@@ -221,7 +221,7 @@ namespace SmartQuant
             this.completionTime = time;
             this.stopPrice = GetInstrumentPrice();
             if (this.completionTime > this.creationTime)
-                strategy.framework.Clock.AddReminder(new Reminder(new ReminderCallback(this.method_9), this.completionTime, null));
+                strategy.framework.Clock.AddReminder(new Reminder(this.method_9, this.completionTime, null));
         }
 
         public void Cancel()
@@ -272,7 +272,7 @@ namespace SmartQuant
         public void Disconnect()
         {
             if (Type == StopType.Time)
-                this.strategy.framework.Clock.RemoveReminder(new ReminderCallback(OnConnect), this.completionTime);
+                this.strategy.framework.Clock.RemoveReminder(OnConnect, this.completionTime);
             else
                 this.connected = false;
         }

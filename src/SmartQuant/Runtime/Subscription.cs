@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SmartQuant
 {
@@ -124,7 +125,7 @@ namespace SmartQuant
     {
         private Framework framework;
 
-        public bool ConnectOnSubscribe { get; private set; } = true;
+        public bool ConnectOnSubscribe { get; } = true;
 
         private Dictionary<int, Dictionary<Instrument, int>> submap = new Dictionary<int, Dictionary<Instrument, int>>();
 
@@ -274,18 +275,15 @@ namespace SmartQuant
         {
             if (this.submap.ContainsKey(dataProvider.Id))
             {
-                foreach (Instrument i in this.submap[dataProvider.Id].Keys)
+                foreach (var i in this.submap[dataProvider.Id].Keys.Where(k => this.submap[dataProvider.Id][k] != 0))
                 {
-                    if (this.submap[dataProvider.Id][i] != 0)
-                    {
-                        Console.WriteLine($"SubscriptionManager::OnProviderConnected {dataProvider.Name} resubscribing {i.Symbol}");
-                        dataProvider.Subscribe(i);
-                    }
+                    Console.WriteLine($"SubscriptionManager::OnProviderConnected {dataProvider.Name} resubscribing {i.Symbol}");
+                    dataProvider.Subscribe(i);
                 }
             }
         }
 
-        internal void OnProviderDisconnected(IDataProvider idataProvider_0)
+        internal void OnProviderDisconnected(IDataProvider provider)
         {
             // noop
         }

@@ -4,11 +4,12 @@ using System.Collections.Generic;
 
 namespace SmartQuant
 {
-
     public class QuoteSeries : IEnumerable<Quote>, IDataSeries
     {
         public string Name { get; }
+
         public string Description { get; }
+
         private List<Quote> quotes = new List<Quote>();
 
         public int Count => this.quotes.Count;
@@ -69,9 +70,9 @@ namespace SmartQuant
             var i = this.quotes.BinarySearch(new Quote { DateTime = dateTime }, new DataObjectComparer());
             if (i >= 0)
                 return i;
-            else if (option == IndexOption.Next)
+            if (option == IndexOption.Next)
                 return ~i;
-            else if (option == IndexOption.Prev)
+            if (option == IndexOption.Prev)
                 return ~i - 1;
             return -1; // option == IndexOption.Null   
         }

@@ -44,7 +44,7 @@ namespace SmartQuant
         {
             get
             {
-                double num = (Instrument.Factor == 0.0) ? 1.0 : this.Instrument.Factor;
+                double num = (Instrument.Factor == 0.0) ? 1.0 : Instrument.Factor;
                 double num2 = num * Qty * (ExitPrice - EntryPrice) * (IsLong ? 1 : -1);
                 num2 -= EntryCost + ExitCost;
                 if (this.Instrument.CurrencyId != this.BaseCurrencyId)
@@ -54,7 +54,7 @@ namespace SmartQuant
                         return this.double_3;
                     }
                     this.double_1 = num2;
-                    num2 = this.Instrument.Framework.CurrencyConverter.Convert(num2, Instrument.CurrencyId, BaseCurrencyId);
+                    num2 = Instrument.Framework.CurrencyConverter.Convert(num2, Instrument.CurrencyId, BaseCurrencyId);
                     this.double_3 = num2;
                 }
                 return num2;

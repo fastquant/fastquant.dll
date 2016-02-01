@@ -48,7 +48,7 @@ namespace SmartQuant
 
     public class Report
     {
-        private List<ReportItem> reports = new List<ReportItem>();
+        private readonly List<ReportItem> reports = new List<ReportItem>();
 
         public void Add(ReportItem item)
         {
@@ -79,6 +79,8 @@ namespace SmartQuant
 
     public class RiskManager
     {
+        protected Framework framework;
+
         public RiskManager(Framework framework)
         {
             this.framework = framework;
@@ -93,7 +95,5 @@ namespace SmartQuant
         {
             // noop
         }
-
-        protected Framework framework;
     }
 }

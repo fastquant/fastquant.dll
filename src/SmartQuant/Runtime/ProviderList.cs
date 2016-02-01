@@ -6,7 +6,7 @@ namespace SmartQuant
 {
     public class ProviderList : IEnumerable<IProvider>
     {
-        private GetByList<IProvider> list = new GetByList<IProvider>("Id", "Name");
+        private readonly GetByList<IProvider> list = new GetByList<IProvider>("Id", "Name");
 
         public int Count => this.list.Count;
 

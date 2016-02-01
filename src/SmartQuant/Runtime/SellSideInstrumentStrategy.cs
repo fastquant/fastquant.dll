@@ -27,7 +27,7 @@ namespace SmartQuant
             }
             set
             {
-                Id = (byte)value;
+                Id = value;
             }
         }
 
@@ -226,9 +226,6 @@ namespace SmartQuant
                 {
                     foreach (var instrument in Instruments.Where(i => this.childrenByInstrument[i.Id] == null))
                         CreateChildSellSideInstrumentStrategy(instrument, true, false);
-                    //foreach (var instrument in Instruments)
-                    //    if (this.childrenStrategiesByInstrument[instrument.Id] == null)
-                    //        CreateSubSellSideInstrumentStrategy(instrument, true, false);
                 }
                 this.initialized = true;
             }
@@ -249,10 +246,8 @@ namespace SmartQuant
         }
         public override void Unsubscribe(InstrumentList instruments)
         {
-            foreach (Instrument current in instruments)
-            {
-                this.Unsubscribe(current);
-            }
+            foreach (var current in instruments)
+                Unsubscribe(current);
         }
         public override void Unsubscribe(Instrument instrument)
         {
@@ -352,25 +347,14 @@ namespace SmartQuant
         private void SetSubStrategyParameters(SellSideInstrumentStrategy strategy)
         {
             var fields = strategy.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            foreach (var f in fields)
-                if (f.GetCustomAttributes(typeof(ParameterAttribute), true).Any())
-                    f.SetValue(strategy, f.GetValue(this));
+            foreach (var f in fields.Where(f => f.GetCustomAttributes(typeof(ParameterAttribute), true).Any()))
+                f.SetValue(strategy, f.GetValue(this));
         }
 
         [NotOriginal]
         private LinkedList<Strategy> GetOrCreateChildrenStrategiesForInstrumennt(Instrument instrument)
         {
-            LinkedList<Strategy> list;
-            if (this.childrenByInstrument[instrument.Id] == null)
-            {
-                list = new LinkedList<Strategy>();
-                this.childrenByInstrument[instrument.Id] = list;
-            }
-            else
-            {
-                list = this.childrenByInstrument[instrument.Id];
-            }
-            return list;
+            return this.childrenByInstrument[instrument.Id] = this.childrenByInstrument[instrument.Id] ?? new LinkedList<Strategy>();
         }
     }
 }

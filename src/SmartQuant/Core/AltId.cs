@@ -69,6 +69,6 @@ namespace SmartQuant
 
         public int Count => this.list.Count;
 
-        public AltId this[int i]=> this.list[i];
+        public AltId this[int i] => this.list[i];
     }
 }

@@ -9,15 +9,13 @@ namespace SmartQuant
 {
     public class Transaction
     {
-        private List<Fill> fills = new List<Fill>();
+        public List<Fill> Fills { get; } = new List<Fill>();
 
-        public List<Fill> Fills => this.fills;
+        public Instrument Instrument => Fills[0].Instrument;
 
-        public Instrument Instrument=> Fills[0].Instrument;
+        public Order Order => Fills[0].Order;
 
-        public Order Order=> Fills[0].Order;
-
-        public OrderSide Side=> Fills[0].Side;
+        public OrderSide Side => Fills[0].Side;
 
         public string Text => Fills[0].Order.Text;
 
@@ -29,7 +27,7 @@ namespace SmartQuant
 
         public bool IsDone { get; internal set; }
 
-        public double Amount => Side == OrderSide.Buy? Qty : -Qty;
+        public double Amount => Side == OrderSide.Buy ? Qty : -Qty;
 
         public virtual double Value => Instrument.Factor != 0 ? Qty * Price * Instrument.Factor : Qty * Price;
 
@@ -51,7 +49,7 @@ namespace SmartQuant
             Fills.Add(fill);
             Qty += fill.Qty;
             Commission += fill.Commission;
-            Price = Fills.Sum(f => f.Qty * f.Price) / Qty;
+            Price = Fills.Sum(f => f.Qty*f.Price)/Qty;
         }
 
         public override string ToString() => $"{Side} {Qty} {Instrument.Symbol} {Price}";

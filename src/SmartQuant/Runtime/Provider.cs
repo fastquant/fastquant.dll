@@ -492,22 +492,24 @@ namespace SmartQuant
 
         protected void Reject(ExecutionCommand command, string format, params object[] args)
         {
-            var report = new ExecutionReport();
-            report.DateTime = this.framework.Clock.DateTime;
-            report.Order = command.Order;
-            report.OrderId = command.OrderId;
-            report.Instrument = command.Instrument;
-            report.InstrumentId = command.InstrumentId;
-            report.CurrencyId = command.Instrument.CurrencyId;
-            report.OrdType = command.Order.Type;
-            report.Side = command.Order.Side;
-            report.OrdQty = command.Order.Qty;
-            report.Price = command.Order.Price;
-            report.StopPx = command.Order.StopPx;
-            report.TimeInForce = command.Order.TimeInForce;
-            report.AvgPx = command.Order.AvgPx;
-            report.CumQty = command.Order.CumQty;
-            report.LeavesQty = command.Order.LeavesQty;
+            var report = new ExecutionReport
+            {
+                DateTime = this.framework.Clock.DateTime,
+                Order = command.Order,
+                OrderId = command.OrderId,
+                Instrument = command.Instrument,
+                InstrumentId = command.InstrumentId,
+                CurrencyId = command.Instrument.CurrencyId,
+                OrdType = command.Order.Type,
+                Side = command.Order.Side,
+                OrdQty = command.Order.Qty,
+                Price = command.Order.Price,
+                StopPx = command.Order.StopPx,
+                TimeInForce = command.Order.TimeInForce,
+                AvgPx = command.Order.AvgPx,
+                CumQty = command.Order.CumQty,
+                LeavesQty = command.Order.LeavesQty
+            };
             switch (command.Type)
             {
                 case ExecutionCommandType.Send:
@@ -539,7 +541,7 @@ namespace SmartQuant
                 var converter = TypeDescriptor.GetConverter(p.PropertyType);
                 if (converter.CanConvertFrom(typeof(string)))
                 {
-                    string value = properties.GetStringValue(p.Name, null);
+                    var value = properties.GetStringValue(p.Name, null);
                     //if (value != null && converter.IsValid(value))
                     if (value != null)
                         p.SetValue(this, converter.ConvertFromInvariantString(value), null);
