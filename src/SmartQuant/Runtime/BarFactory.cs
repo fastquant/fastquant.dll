@@ -107,18 +107,20 @@ namespace SmartQuant
             if (this.bar == null)
             {
                 // new bar begins!
-                this.bar = new Bar();
-                this.bar.InstrumentId = tick.InstrumentId;
-                this.bar.Type = this.barType;
-                this.bar.Size = this.barSize;
-                this.bar.OpenDateTime = GetBarOpenDateTime(obj);
-                this.bar.DateTime = this.GetDataObjectDateTime(obj, ClockType.Local);
-                this.bar.Open = tick.Price;
-                this.bar.High = tick.Price;
-                this.bar.Low = tick.Price;
-                this.bar.Close = tick.Price;
-                this.bar.Volume = tick.Size;
-                this.bar.Status = BarStatus.Open;
+                this.bar = new Bar
+                {
+                    InstrumentId = tick.InstrumentId,
+                    Type = this.barType,
+                    Size = this.barSize,
+                    OpenDateTime = GetBarOpenDateTime(obj),
+                    DateTime = this.GetDataObjectDateTime(obj, ClockType.Local),
+                    Open = tick.Price,
+                    High = tick.Price,
+                    Low = tick.Price,
+                    Close = tick.Price,
+                    Volume = tick.Size,
+                    Status = BarStatus.Open
+                };
                 this.factory.Framework.EventServer.OnEvent(this.bar);
             }
             else

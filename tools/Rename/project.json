@@ -1,0 +1,23 @@
+{
+  "compilationOptions": {
+    "emitEntryPoint": true
+  },
+  "dependencies": {
+    "Microsoft.CodeAnalysis.CSharp": "1.1.0-rc1-*",
+    "Microsoft.CodeAnalysis.CSharp.Workspaces": "1.1.1",
+    "Microsoft.CodeAnalysis.Workspaces.Dnx": "1.4.1"
+  },
+  "commands": {
+    "app": "Rename"
+  },
+  "frameworks": {
+    "dnx451": {
+      "frameworkAssemblies": {
+        "System.Runtime": "4.0.10.0",
+        "System.Threading.Tasks": "4.0.0.0",
+        "System.IO": "4.0.0.0",
+        "System.Text.Encoding": "4.0.0.0"
+      }
+    }
+  }
+}

@@ -46,7 +46,7 @@ namespace SmartQuant
         public const int ClosePosition = 38;
     }
 
-    public class Message : Event
+    public partial class Message : Event
     {
         private static int counter;
 
@@ -149,7 +149,7 @@ namespace SmartQuant
         public const int User = 12;
     }
 
-    public class Response : Message
+    public partial class Response : Message
     {
         public override byte TypeId => EventType.Response;
 
@@ -178,9 +178,10 @@ namespace SmartQuant
         #endregion
     }
 
-    public class Command : Message
+    public partial class Command : Message
     {
         public override byte TypeId => EventType.Command;
+
         public Command()
         {
         }
