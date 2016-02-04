@@ -271,9 +271,9 @@ namespace SmartQuant
             EventBus = new EventBus(this);
             OutputManager = new OutputManager(this);
             Clock = new Clock(this, ClockType.Local);
-            EventBus.LocalClockEventQueue = Clock.ReminderEventQueue;
+            EventBus.LocalClockEventQueue = Clock.ReminderQueue;
             ExchangeClock = new Clock(this, ClockType.Exchange);
-            EventBus.ExchangeClockEventQueue = ExchangeClock.ReminderEventQueue;
+            EventBus.ExchangeClockEventQueue = ExchangeClock.ReminderQueue;
             if (externalBus != null)
                 externalBus.Attach(EventBus);
             EventServer = new EventServer(this, EventBus);
@@ -402,6 +402,11 @@ namespace SmartQuant
         {
             //var text = File.ReadAllText(Path.Combine(Installation.ConfigDir.FullName, "configuration.xml"));
             Configuration = Configuration.DefaultConfiguaration();
+        }
+
+        private void SaveConfiguration()
+        {
+            throw new NotImplementedException();
         }
     }
 

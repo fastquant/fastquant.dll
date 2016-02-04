@@ -10,83 +10,47 @@ namespace SmartQuant
         LIFO
     }
 
-    class EventArgs1 : EventArgs
+    class TradeInfoEventArgs : EventArgs
     {
-        public TradeInfo TradeInfo { get; set; }
-        public EventArgs1(TradeInfo tradeInfo)
+        public TradeInfo TradeInfo { get; }
+
+        public TradeInfoEventArgs(TradeInfo tradeInfo)
         {
             TradeInfo = tradeInfo;
         }
     }
 
-    internal delegate void Delegate1(object sender, EventArgs1 e);
+    internal delegate void TradeInfoEventHandler(object sender, TradeInfoEventArgs args);
 
-    internal interface Interface0
+    internal interface IFillSet
     {
-        void imethod_0(Fill fill_0);
+        void Push(Fill fill);
 
-        Fill imethod_1();
+        Fill Pop();
 
         Fill Peek();
     }
 
-
-    internal class Class46 : Interface0
+    class QueueFillSet : IFillSet
     {
-        public Class46()
-        {
-            this.queue_0 = new Queue<Fill>();
-        }
+        private Queue<Fill> queue = new Queue<Fill>();
 
-        public void imethod_0(Fill fill_0)
-        {
-            this.queue_0.Enqueue(fill_0);
-        }
+        public void Push(Fill fill) => this.queue.Enqueue(fill);
 
-        public Fill imethod_1()
-        {
-            return this.queue_0.Dequeue();
-        }
+        public Fill Pop() => this.queue.Dequeue();
 
-        public Fill Peek()
-        {
-            if (this.queue_0.Count == 0)
-            {
-                return null;
-            }
-            return this.queue_0.Peek();
-        }
-
-        private Queue<Fill> queue_0;
-
+        public Fill Peek() => this.queue.Count != 0 ? this.queue.Peek() : null;
     }
-    internal class Class47 : Interface0
+
+    class StackFillSet : IFillSet
     {
-        public Class47()
-        {
-            this.stack_0 = new Stack<Fill>();
-        }
+        private Stack<Fill> stack = new Stack<Fill>();
 
-        public void imethod_0(Fill fill_0)
-        {
-            this.stack_0.Push(fill_0);
-        }
+        public void Push(Fill fill) => this.stack.Push(fill);
 
-        public Fill imethod_1()
-        {
-            return this.stack_0.Pop();
-        }
+        public Fill Pop() => this.stack.Pop();
 
-        public Fill Peek()
-        {
-            if (this.stack_0.Count == 0)
-            {
-                return null;
-            }
-            return this.stack_0.Peek();
-        }
-
-        private Stack<Fill> stack_0;
+        public Fill Peek() => this.stack.Count != 0 ? this.stack.Peek() : null;
     }
 
     public class TradeDetector
@@ -96,11 +60,11 @@ namespace SmartQuant
             this.portfolio_0 = portfolio;
             if (type == TradeDetectionType.FIFO)
             {
-                this.interface0_0 = new Class46();
+                this.interface0_0 = new QueueFillSet();
             }
             else
             {
-                this.interface0_0 = new Class47();
+                this.interface0_0 = new StackFillSet();
             }
             this.list_0 = new List<TradeInfo>();
             this.timeSeries_0 = new TimeSeries();
@@ -130,7 +94,7 @@ namespace SmartQuant
                         return;
                     }
                     this.BotEqOqmKI(this.method_2(fill2, fill, fill2.Qty));
-                    this.interface0_0.imethod_1();
+                    this.interface0_0.Pop();
                     this.double_0 -= Math.Round(fill2.Qty, 5);
                     num -= Math.Round(fill2.Qty, 5);
                     if (this.double_0 > 0.0 && num > 0.0)
@@ -142,7 +106,7 @@ namespace SmartQuant
                 {
                     this.double_0 = num;
                     Fill fill3 = this.method_0(fill, num);
-                    this.interface0_0.imethod_0(fill3);
+                    this.interface0_0.Push(fill3);
                 }
                 if (this.fill_0 != null)
                 {
@@ -150,14 +114,14 @@ namespace SmartQuant
                 }
                 return;
             }
-            this.interface0_0.imethod_0(fill);
+            this.interface0_0.Push(fill);
             this.double_0 += fill.Qty;
         }
 
         private void BotEqOqmKI(TradeInfo tradeInfo_0)
         {
             this.list_0.Add(tradeInfo_0);
-            Detected?.Invoke(this.portfolio_0, new EventArgs1(tradeInfo_0));
+            TradeDetected?.Invoke(this.portfolio_0, new TradeInfoEventArgs(tradeInfo_0));
             
         }
 
@@ -277,7 +241,7 @@ namespace SmartQuant
             }
         }
 
-        internal event Delegate1 Detected;
+        internal event TradeInfoEventHandler TradeDetected;
 
 
      //   private Delegate1 delegate1_0;
@@ -288,7 +252,7 @@ namespace SmartQuant
 
         private Instrument instrument_0;
 
-        private Interface0 interface0_0;
+        private IFillSet interface0_0;
 
         private List<TradeInfo> list_0;
 

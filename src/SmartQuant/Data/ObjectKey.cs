@@ -3,7 +3,7 @@ using System.IO;
 
 namespace SmartQuant
 {
-    public class DataKeyIdArray
+    class DataKeyIdArray
     {
         public DataKeyIdArray(IdArray<DataKey> keys)
         {
@@ -70,11 +70,11 @@ namespace SmartQuant
             }
         }
 
-        public int CompareTo(ObjectKey other) => other == null ? 1 : this.totalSize.CompareTo(other.totalSize);
+        public int CompareTo(ObjectKey other) => other == null ? 1 : this.recLength.CompareTo(other.recLength);
 
         public virtual void Dump()
         {
-            var streamer = this.dataFile.StreamerManager.Get(TypeId);
+            var streamer = this.file.StreamerManager.Get(TypeId);
             var stype = streamer != null ? $"{streamer.Type}" : $"Unknown streamer, typeId = {TypeId}";
             Console.WriteLine($"{Name} of typeId {TypeId} ({stype}) position = {this.position}");
         }
@@ -84,22 +84,22 @@ namespace SmartQuant
             if (this.obj != null)
                 return this.obj;
 
-            if (this.contentSize == -1)
+            if (this.objLength == -1)
                 return null;
 
             var input = new MemoryStream(ReadObjectData(true));
             var reader = new BinaryReader(input);
-            var streamer = this.dataFile.StreamerManager.Get(TypeId);
+            var streamer = this.file.StreamerManager.Get(TypeId);
             byte version = reader.ReadByte();
             this.obj = streamer.Read(reader, version);
             if (TypeId == ObjectType.DataSeries)
-                ((DataSeries)this.obj).Init(this.dataFile, this);
+                ((DataSeries)this.obj).Init(this.file, this);
             return this.obj;
         }
 
         public void Init(DataFile file)
         {
-            this.dataFile = file;
+            this.file = file;
             if (this.obj != null)
             {
                 ObjectStreamer streamer;
@@ -113,8 +113,8 @@ namespace SmartQuant
 
         internal byte[] ReadObjectData(bool compress = true)
         {
-            var data = new byte[this.contentSize];
-            this.dataFile.ReadBuffer(data, this.position + this.headSize, data.Length);
+            var data = new byte[this.objLength];
+            this.file.ReadBuffer(data, this.position + this.keyLength, data.Length);
             return compress && CompressionLevel != 0 ? new QuickLZ().Decompress(data) : data;
         }
 
@@ -134,12 +134,12 @@ namespace SmartQuant
 
         protected internal void ReadHeader(BinaryReader reader)
         {
-            this.freed = reader.ReadBoolean();
+            this.deleted = reader.ReadBoolean();
             DateTime = new DateTime(reader.ReadInt64());
             this.position = reader.ReadInt64();
-            this.headSize = reader.ReadInt32();
-            this.contentSize = reader.ReadInt32();
-            this.totalSize = reader.ReadInt32();
+            this.keyLength = reader.ReadInt32();
+            this.objLength = reader.ReadInt32();
+            this.recLength = reader.ReadInt32();
             CompressionMethod = reader.ReadByte();
             CompressionLevel = reader.ReadByte();
             TypeId = reader.ReadByte();
@@ -147,8 +147,8 @@ namespace SmartQuant
 
         public override string ToString()
         {
-            if (this.dataFile.StreamerManager.Get(TypeId) != null)
-                return $"ObjectKey {Name} of typeId {TypeId} ({this.dataFile.StreamerManager.Get(TypeId).Type}) position = {this.position}";
+            if (this.file.StreamerManager.Get(TypeId) != null)
+                return $"ObjectKey {Name} of typeId {TypeId} ({this.file.StreamerManager.Get(TypeId).Type}) position = {this.position}";
             else
                 return $"ObjectKey {Name} of typeId {TypeId} (Unknown streamer, typeId = {TypeId}) position = {this.position}";
         }
@@ -157,10 +157,10 @@ namespace SmartQuant
         {
             var data = WriteObjectData(true);
             // TODO: string length != byte[] buffer size
-            this.headSize = HEADER_SIZE + Name.Length + 1;
-            this.contentSize = data.Length;
-            if (this.totalSize == -1)
-                this.totalSize = this.headSize + this.contentSize;
+            this.keyLength = HEADER_SIZE + Name.Length + 1;
+            this.objLength = data.Length;
+            if (this.recLength == -1)
+                this.recLength = this.keyLength + this.objLength;
             WriteKey(writer);
             writer.Write(data, 0, data.Length);
         }
@@ -168,12 +168,12 @@ namespace SmartQuant
         protected internal void WriteHeader(BinaryWriter writer)
         {
             writer.Write(Label);                // 5
-            writer.Write(this.freed);           // 6
+            writer.Write(this.deleted);         // 6
             writer.Write(DateTime.Ticks);       // 14
             writer.Write(this.position);        // 22
-            writer.Write(this.headSize);        // 26
-            writer.Write(this.contentSize);     // 30
-            writer.Write(this.totalSize);       // 34
+            writer.Write(this.keyLength);       // 26
+            writer.Write(this.objLength);       // 30
+            writer.Write(this.recLength);       // 34
             writer.Write(CompressionMethod);    // 35
             writer.Write(CompressionLevel);     // 36
             writer.Write(TypeId);               // 37
@@ -190,7 +190,7 @@ namespace SmartQuant
             var mstream = new MemoryStream();
             var writer = new BinaryWriter(mstream);
             Type type = this.obj.GetType();
-            var streamer = this.dataFile.StreamerManager.Get(type);
+            var streamer = this.file.StreamerManager.Get(type);
             writer.Write(streamer.GetVersion(this.obj));
             streamer.Write(writer, this.obj);
             var data = mstream.ToArray();
@@ -213,15 +213,15 @@ namespace SmartQuant
 
         internal object obj;
 
-        internal DataFile dataFile;
+        internal DataFile file;
 
-        internal bool freed;
+        internal bool deleted;
 
-        internal int headSize = -1;
+        internal int keyLength = -1;
 
-        internal int contentSize = -1;
+        internal int objLength = -1;
 
-        internal int totalSize = -1;
+        internal int recLength = -1;
 
         internal long position = -1;
     }

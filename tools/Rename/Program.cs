@@ -12,15 +12,21 @@ namespace SmartRenamer
 {
     public static class Program
     {
-        public static void Main()
+        public static void Main(string[] args)
         {
-            var ws = new ProjectJsonWorkspace(@"C:\Users\alex\works\smartquant.dll\src\SmartQuant");
+            var slnPath = args[0];
+            var outputPath = args[1];
+            if (string.IsNullOrEmpty(slnPath))
+                throw new ArgumentException(nameof(slnPath));
+            if (string.IsNullOrEmpty(outputPath))
+                throw new ArgumentException(nameof(outputPath));
+            var ws = new ProjectJsonWorkspace(slnPath);
             var solution = ws.CurrentSolution;
             solution = RenameNamespace("SmartQuant", "FastQuant", solution);
             solution = RenameClass("Message", "Message_", solution);
             solution = RenameClass("Command", "Command_", solution);
             solution = RenameClass("Response", "Response_", solution);
-            GenerateDll("d:\\SQ.dll", solution.Projects.First().GetCompilationAsync().Result);
+            GenerateDll(outputPath, solution.Projects.First().GetCompilationAsync().Result);
             Console.WriteLine("Done");
         }
 
@@ -31,7 +37,6 @@ namespace SmartRenamer
                 SymbolFinder.FindDeclarationsAsync(proj, oldName, false)
                     .Result.First(s => s.Kind == SymbolKind.Namespace);
             var sln = Renamer.RenameSymbolAsync(proj.Solution, sym, newName, null).Result;
-            //GenerateDll("d:\\SQ.dll", s.Projects.First().GetCompilationAsync().Result);
             return sln;
         }
 
@@ -42,7 +47,6 @@ namespace SmartRenamer
                 SymbolFinder.FindDeclarationsAsync(proj, fromClsName, false)
                     .Result.First(s => s.Kind == SymbolKind.NamedType);
             var sln = Renamer.RenameSymbolAsync(proj.Solution, sym, toClsName, null).Result;
-            //GenerateDll($"d:\\SQ.{fromClsName}.dll", sln.Projects.First().GetCompilationAsync().Result);
             return sln;
         }
 

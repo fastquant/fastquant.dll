@@ -24,9 +24,9 @@ namespace SmartQuant
     public class EventBus
     {
         private Framework framework;
-        private EventQueue[] queues = new EventQueue[1024];
+        private EventQueue[] attached = new EventQueue[1024];
 
-        private int queueCount;
+        private int attachedCount;
 
         private Event @event;
 
@@ -64,9 +64,9 @@ namespace SmartQuant
             ServicePipe.Clear();
             HistoricalPipe.Clear();
             ExecutionPipe.Clear();
-            for (int i = 0; i < this.queueCount; i++)
-                this.queues[i] = null;
-            this.queueCount = 0;
+            for (int i = 0; i < this.attachedCount; i++)
+                this.attached[i] = null;
+            this.attachedCount = 0;
         }
 
         public void ResetCounts()
@@ -83,19 +83,19 @@ namespace SmartQuant
             };
             q.Enqueue(new OnQueueOpened(q));
             bus.DataPipe.Add(q);
-            this.queues[this.queueCount++] = q;
+            this.attached[this.attachedCount++] = q;
         }
 
         public void Detach(EventBus bus)
         {
             string name = "attached " + bus.framework.Name;
-            var index = Array.FindIndex(this.queues, 0, this.queueCount, q => q.Name == name);
+            var index = Array.FindIndex(this.attached, 0, this.attachedCount, q => q.Name == name);
             if (index != -1)
             {
-                var found = this.queues[index];
-                for (int i = index; i < this.queueCount - 1; ++i)
-                    this.queues[i] = this.queues[i + 1];
-                this.queueCount--;
+                var found = this.attached[index];
+                for (int i = index; i < this.attachedCount - 1; ++i)
+                    this.attached[i] = this.attached[i + 1];
+                this.attachedCount--;
                 bus.DataPipe.Remove(found);
             }
             else
@@ -168,9 +168,9 @@ namespace SmartQuant
                         // forward the event to externally attached queues
                         var e = this.@event;
                         this.@event = null;
-                        for (int i = 0; i < this.queueCount; i++)
+                        for (int i = 0; i < this.attachedCount; i++)
                             if (e.TypeId != EventType.OnQueueOpened && e.TypeId != EventType.OnQueueClosed)
-                                this.queues[i].Enqueue(e);
+                                this.attached[i].Enqueue(e);
                         return e;
                     }
 
@@ -335,11 +335,11 @@ namespace SmartQuant
                 IL_2B1:
                 Event event2 = this.@event;
                 this.@event = null;
-                for (int i = 0; i < this.queueCount; i++)
+                for (int i = 0; i < this.attachedCount; i++)
                 {
                     if (event2.TypeId != 205 && event2.TypeId != 206)
                     {
-                        this.queues[i].Enqueue(event2);
+                        this.attached[i].Enqueue(event2);
                     }
                 }
                 return event2;

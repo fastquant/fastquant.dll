@@ -64,7 +64,7 @@ namespace SmartQuant
         private Stopwatch stopwatch;
         private Thread thread;
 
-        internal IEventQueue ReminderEventQueue { get; } = new ReminderEventQueue();
+        internal IEventQueue ReminderQueue { get; } = new ReminderEventQueue();
 
         public ClockResolution Resolution { get; set; }
 
@@ -187,13 +187,13 @@ namespace SmartQuant
                 return false;
             }
             reminder.Clock = this;
-            ReminderEventQueue.Enqueue(reminder);
+            ReminderQueue.Enqueue(reminder);
             return true;
         }
 
         public void RemoveReminder(ReminderCallback callback, DateTime dateTime)
         {
-            ((ReminderEventQueue)ReminderEventQueue).Remove(callback, dateTime);
+            ((ReminderEventQueue)ReminderQueue).Remove(callback, dateTime);
         }
 
         public void Clear()

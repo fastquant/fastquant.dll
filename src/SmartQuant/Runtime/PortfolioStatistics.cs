@@ -282,7 +282,7 @@ namespace SmartQuant
             if (this.detectors[id] == null)
             {
                 var detector = new TradeDetector(TradeDetectionType.FIFO, this.portfolio);
-                detector.Detected += (sender, e) =>
+                detector.TradeDetected += (sender, e) =>
                 {
                     var info = e.TradeInfo;
                     foreach (var item in Items)
