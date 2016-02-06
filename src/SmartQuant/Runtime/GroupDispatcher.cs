@@ -27,6 +27,7 @@ namespace SmartQuant
     public class GroupEventAgrs : EventArgs
     {
         public Group Group { get; }
+
         public GroupEventAgrs(Group group)
         {
             Group = group;
@@ -53,11 +54,11 @@ namespace SmartQuant
     {
         private Framework framework;
 
-        private Dictionary<IGroupListener, List<int>> groupIdsByListener = new Dictionary<IGroupListener, List<int>>();
+        private readonly Dictionary<IGroupListener, List<int>> groupIdsByListener = new Dictionary<IGroupListener, List<int>>();
 
-        private IdArray<List<IGroupListener>> listenersByGroupId = new IdArray<List<IGroupListener>>();
+        private readonly IdArray<List<IGroupListener>> listenersByGroupId = new IdArray<List<IGroupListener>>();
 
-        private List<IGroupListener> listeners = new List<IGroupListener>();
+        private readonly List<IGroupListener> listeners = new List<IGroupListener>();
 
         public GroupDispatcher(Framework framework)
         {
@@ -75,7 +76,7 @@ namespace SmartQuant
                 this.listeners.Add(listener);
                 this.groupIdsByListener[listener] = new List<int>();
                 foreach(var group in this.framework.GroupManager.GroupList)
-                    AddListener(listener, group);
+                    ProcessGroup(listener, group);
             }
         }
 
@@ -135,21 +136,16 @@ namespace SmartQuant
         private void OnNewGroup(object sender, GroupEventAgrs args)
         {
             foreach (var listener in this.listeners)
-                AddListener(listener, args.Group);
+                ProcessGroup(listener, args.Group);
         }
 
-        private void AddListener(IGroupListener listener, Group group)
+        private void ProcessGroup(IGroupListener listener, Group group)
         {
             if (listener.OnNewGroup(group))
             {
-                var list = this.listenersByGroupId[group.Id];
-                if (list == null)
-                {
-                    list = new List<IGroupListener>();
-                    this.listenersByGroupId[group.Id] = list;
-                }
-                this.groupIdsByListener[listener].Add(group.Id);
+                var list = this.listenersByGroupId[group.Id] = this.listenersByGroupId[group.Id] ?? new List<IGroupListener>();
                 list.Add(listener);
+                this.groupIdsByListener[listener].Add(group.Id);
                 foreach (var e in group.Events)
                     listener.Queue.Enqueue(e);
             }

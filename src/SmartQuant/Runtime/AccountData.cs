@@ -155,10 +155,7 @@ namespace SmartQuant
 
         public void Clear() => _fields.Clear();
 
-        public AccountDataField[] ToArray()
-        {
-            return (from logger in this._fields from field in logger.Value select new AccountDataField(logger.Key, field.Key, field.Value)).ToArray();
-        }
+        public AccountDataField[] ToArray() => _fields.SelectMany(name => name.Value, (logger, field) => new AccountDataField(logger.Key, field.Key, field.Value)).ToArray();
 
         public void CopyTo(Array array, int index) => ToArray().CopyTo(array, index);
 

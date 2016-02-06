@@ -383,7 +383,7 @@ namespace SmartQuant.Quant
         public Matrix EigenVectors(Vector eigenValues)
         {
             if (!this.IsSymmetric)
-                throw new ApplicationException("Not yet implemented for non-symmetric matrix");
+                throw new NotImplementedException("Not yet implemented for non-symmetric matrix");
             var matrix = new Matrix(this.Rows, this.Cols);
             for (int index1 = 0; index1 < this.Rows; ++index1)
                 for (int index2 = 0; index2 < this.Cols; ++index2)
@@ -647,7 +647,7 @@ namespace SmartQuant.Quant
                     }
                 }
                 if (num1 < 1E-35)
-                    throw new ApplicationException("Element max value less than required minimum.");
+                    throw new ArgumentException("Element max value less than required minimum.");
                 if (index2 != index1)
                 {
                     for (int index3 = index1; index3 < 2 * rows; ++index3)

@@ -218,7 +218,7 @@ namespace SmartQuant
 
     public class CurrencyConverterFX : ICurrencyConverter
     {
-        private IdArray<IdArray<Instrument>> mappings = new IdArray<IdArray<Instrument>>(256);
+        private readonly IdArray<IdArray<Instrument>> mappings = new IdArray<IdArray<Instrument>>(256);
 
         public DataManager DataManager => Framework.DataManager;
 
@@ -262,7 +262,7 @@ namespace SmartQuant
             return amount;
         }
 
-        private double GetPrice(Instrument instrument)
+        private static double GetPrice(Instrument instrument)
         {
             if (instrument.Bid != null)
                 return instrument.Bid.Price;

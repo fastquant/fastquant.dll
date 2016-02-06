@@ -44,10 +44,6 @@ namespace SmartQuant.FinChart.Objects
             this.y = y;
         }
 
-        private void EmitUpdated()
-        {
-            if (Updated != null)
-                Updated(this, EventArgs.Empty);
-        }
+        private void EmitUpdated() => Updated?.Invoke(this, EventArgs.Empty);
     }
 }

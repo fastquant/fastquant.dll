@@ -203,26 +203,22 @@ namespace SmartQuant
         public void Add(IEventQueue queue)
         {
             if (queue.IsEmpty())
-            {
-                throw new Exception("EventTree::Add Can not add queue, the queue is empty : " + queue.Name);
-            }
-            EventTreeItem eventTreeItem_ = new EventTreeItem(queue);
+                throw new Exception($"EventTree::Add Can not add queue, the queue is empty : {queue.Name}");
+
+            var item = new EventTreeItem(queue);
             if (this.eventTreeItem_0 == null)
             {
-                this.eventTreeItem_0 = eventTreeItem_;
+                this.eventTreeItem_0 = item;
                 return;
             }
-            this.method_0(eventTreeItem_);
+            this.method_0(item);
         }
 
-        // Token: 0x060006AF RID: 1711 RVA: 0x0000688A File Offset: 0x00004A8A
         public void Clear()
         {
-            this.eventTreeItem_0 = null;
-            this.eventTreeItem_1 = null;
+            this.eventTreeItem_0 = this.eventTreeItem_1 = null;
         }
 
-        // Token: 0x060006AA RID: 1706 RVA: 0x0002ACDC File Offset: 0x00028EDC
         public bool IsEmpty()
         {
             if (this.eventTreeItem_0 == null && this.eventTreeItem_1 == null)
@@ -242,29 +238,28 @@ namespace SmartQuant
             return false;
         }
 
-        // Token: 0x060006AC RID: 1708 RVA: 0x0002AE0C File Offset: 0x0002900C
-        private void method_0(EventTreeItem eventTreeItem_2)
+        private void method_0(EventTreeItem item)
         {
-            eventTreeItem_2.eventTreeItem_1 = null;
-            eventTreeItem_2.eventTreeItem_0 = null;
-            eventTreeItem_2.eventTreeItem_2 = null;
-            eventTreeItem_2.eventTreeItem_3 = null;
-            eventTreeItem_2.eventTreeItem_4 = eventTreeItem_2;
-            eventTreeItem_2.dateTime = eventTreeItem_2.queue.PeekDateTime();
+            item.eventTreeItem_1 = null;
+            item.eventTreeItem_0 = null;
+            item.eventTreeItem_2 = null;
+            item.eventTreeItem_3 = null;
+            item.eventTreeItem_4 = item;
+            item.dateTime = item.queue.PeekDateTime();
             if (this.eventTreeItem_0 == null)
             {
-                this.eventTreeItem_0 = eventTreeItem_2;
+                this.eventTreeItem_0 = item;
                 return;
             }
             EventTreeItem eventTreeItem = this.eventTreeItem_0;
             EventTreeItem eventTreeItem2 = null;
-            while (!(eventTreeItem.dateTime == eventTreeItem_2.dateTime))
+            while (!(eventTreeItem.dateTime == item.dateTime))
             {
-                if (eventTreeItem_2.dateTime > eventTreeItem.dateTime)
+                if (item.dateTime > eventTreeItem.dateTime)
                 {
                     if (eventTreeItem.eventTreeItem_1 == null)
                     {
-                        eventTreeItem.eventTreeItem_1 = eventTreeItem_2;
+                        eventTreeItem.eventTreeItem_1 = item;
                         return;
                     }
                     eventTreeItem2 = eventTreeItem;
@@ -274,32 +269,31 @@ namespace SmartQuant
                 {
                     if (eventTreeItem.eventTreeItem_0 == null)
                     {
-                        eventTreeItem.eventTreeItem_0 = eventTreeItem_2;
+                        eventTreeItem.eventTreeItem_0 = item;
                         return;
                     }
                     eventTreeItem2 = eventTreeItem;
                     eventTreeItem = eventTreeItem.eventTreeItem_0;
                 }
             }
-            eventTreeItem_2.eventTreeItem_3 = eventTreeItem;
-            eventTreeItem.eventTreeItem_2 = eventTreeItem_2;
-            eventTreeItem_2.eventTreeItem_4 = eventTreeItem.eventTreeItem_4;
-            eventTreeItem_2.eventTreeItem_1 = eventTreeItem.eventTreeItem_1;
-            eventTreeItem_2.eventTreeItem_0 = eventTreeItem.eventTreeItem_0;
+            item.eventTreeItem_3 = eventTreeItem;
+            eventTreeItem.eventTreeItem_2 = item;
+            item.eventTreeItem_4 = eventTreeItem.eventTreeItem_4;
+            item.eventTreeItem_1 = eventTreeItem.eventTreeItem_1;
+            item.eventTreeItem_0 = eventTreeItem.eventTreeItem_0;
             if (eventTreeItem2 == null)
             {
-                this.eventTreeItem_0 = eventTreeItem_2;
+                this.eventTreeItem_0 = item;
                 return;
             }
-            if (eventTreeItem_2.dateTime > eventTreeItem2.dateTime)
+            if (item.dateTime > eventTreeItem2.dateTime)
             {
-                eventTreeItem2.eventTreeItem_1 = eventTreeItem_2;
+                eventTreeItem2.eventTreeItem_1 = item;
                 return;
             }
-            eventTreeItem2.eventTreeItem_0 = eventTreeItem_2;
+            eventTreeItem2.eventTreeItem_0 = item;
         }
 
-        // Token: 0x060006AB RID: 1707 RVA: 0x0002AD30 File Offset: 0x00028F30
         public Event Read()
         {
             if (this.eventTreeItem_1 != null)
@@ -351,16 +345,13 @@ namespace SmartQuant
             return @event;
         }
 
-        // Token: 0x060006AE RID: 1710 RVA: 0x0000687E File Offset: 0x00004A7E
         public void Remove(IEventQueue queue)
         {
             Console.WriteLine("EventTree::Remove is called");
         }
 
-        // Token: 0x04000340 RID: 832
         internal EventTreeItem eventTreeItem_0;
 
-        // Token: 0x04000341 RID: 833
         internal EventTreeItem eventTreeItem_1;
     }
 }

@@ -123,7 +123,7 @@ namespace SmartQuant
         {
             get
             {
-                return DetermineDataProvider(this, null); // NOTE: called with non arg
+                return GetDataProvider(this, null); // NOTE: called with non arg
             }
             set
             {
@@ -137,7 +137,7 @@ namespace SmartQuant
         {
             get
             {
-                return DetermineExecutionProvider(null); // NOTE: called with non arg
+                return GetExecutionProvider(null); // NOTE: called with non arg
             }
             set
             {
@@ -151,7 +151,7 @@ namespace SmartQuant
         {
             get
             {
-                return this.ViqNiQdFkq(null);
+                return this.GetFundamentalProvider(null);
             }
             set
             {
@@ -257,7 +257,7 @@ namespace SmartQuant
             strategy.Status = Status;
             if (Status == StrategyStatus.Running)
             {
-                PapareStrategyForStartRecursively(strategy, strategy.Instruments, strategy.Id);
+                RegisterStrategy(strategy, strategy.Instruments, strategy.Id);
                 if (callOnStrategyStart)
                     strategy.EmitStrategyStart();
             }
@@ -293,7 +293,7 @@ namespace SmartQuant
 
         public virtual void AddInstrument(Instrument instrument)
         {
-            AddInstrument(instrument, DetermineDataProvider(this, instrument));
+            AddInstrument(instrument, GetDataProvider(this, instrument));
         }
 
         /// <summary>
@@ -357,8 +357,8 @@ namespace SmartQuant
             Instruments.Remove(instrument);
             var instrumentList = new InstrumentList();
             instrumentList.Add(instrument);
-            StrategyManager.UnregisterMarketDataRequest(this.DetermineDataProvider(this, instrument), instrumentList);
-            Parent?.method_4(this, instrumentList, Id);
+            StrategyManager.UnregisterMarketDataRequest(this.GetDataProvider(this, instrument), instrumentList);
+            Parent?.UnregisterStrategy(this, instrumentList, Id);
             EmitInstrumentRemoved(instrument);
         }
 
@@ -370,7 +370,7 @@ namespace SmartQuant
             var instrumentList = new InstrumentList();
             instrumentList.Add(instrument);
             StrategyManager.UnregisterMarketDataRequest(dataProvider, instrumentList);
-            Parent?.method_4(this, instrumentList, Id);
+            Parent?.UnregisterStrategy(this, instrumentList, Id);
             EmitInstrumentRemoved(instrument);
         }
 
@@ -490,7 +490,7 @@ namespace SmartQuant
 
         public Order Order(Instrument instrument, OrderType type, OrderSide side, double qty, double stopPx, double price, string text = "")
         {
-            var order = new Order(DetermineExecutionProvider(instrument), Portfolio, instrument, type, side, qty, 0, 0, TimeInForce.Day, 0, "");
+            var order = new Order(GetExecutionProvider(instrument), Portfolio, instrument, type, side, qty, 0, 0, TimeInForce.Day, 0, "");
             order.StrategyId = Id;
             order.ClientId = ClientId;
             order.Text = text;
@@ -551,7 +551,7 @@ namespace SmartQuant
 
         public Order BuyOrder(Instrument instrument, double qty, string text = "")
         {
-            var order = new Order(DetermineExecutionProvider(instrument), Portfolio, instrument, OrderType.Market,
+            var order = new Order(GetExecutionProvider(instrument), Portfolio, instrument, OrderType.Market,
                 OrderSide.Buy, qty, 0, 0, TimeInForce.Day, 0, "")
             {
                 StrategyId = Id,
@@ -564,7 +564,7 @@ namespace SmartQuant
 
         public Order SellOrder(Instrument instrument, double qty, string text = "")
         {
-            var order = new Order(DetermineExecutionProvider(instrument), Portfolio, instrument, OrderType.Market,
+            var order = new Order(GetExecutionProvider(instrument), Portfolio, instrument, OrderType.Market,
                 OrderSide.Sell, qty, 0.0, 0.0, TimeInForce.Day, 0, "")
             {
                 StrategyId = Id,
@@ -577,7 +577,7 @@ namespace SmartQuant
 
         public Order Buy(Instrument instrument, double qty, string text = "")
         {
-            return Buy(DetermineExecutionProvider(instrument), instrument, qty, text);
+            return Buy(GetExecutionProvider(instrument), instrument, qty, text);
         }
 
         public Order Buy(IExecutionProvider provider, Instrument instrument, double qty, string text = "")
@@ -597,7 +597,7 @@ namespace SmartQuant
 
         public Order Buy(Instrument instrument, OrderType type, double qty, double price, double stopPx, string text = "")
         {
-            return Buy(this.DetermineExecutionProvider(instrument), instrument, type, qty, price, stopPx, text);
+            return Buy(this.GetExecutionProvider(instrument), instrument, type, qty, price, stopPx, text);
         }
 
         public Order Buy(short providerId, Instrument instrument, OrderType type, double qty, double price, double stopPx, string text = "")
@@ -617,7 +617,7 @@ namespace SmartQuant
 
         public Order Sell(Instrument instrument, double qty, string text = "")
         {
-            return Sell(this.DetermineExecutionProvider(instrument), instrument, qty, text);
+            return Sell(this.GetExecutionProvider(instrument), instrument, qty, text);
         }
 
         public Order Sell(IExecutionProvider provider, Instrument instrument, double qty, string text = "")
@@ -637,7 +637,7 @@ namespace SmartQuant
 
         public Order Sell(Instrument instrument, OrderType type, double qty, double price, double stopPx, string text = "")
         {
-            return Sell(this.DetermineExecutionProvider(instrument), instrument, type, qty, price, stopPx, text);
+            return Sell(this.GetExecutionProvider(instrument), instrument, type, qty, price, stopPx, text);
         }
 
         public Order Sell(IExecutionProvider provider, Instrument instrument, OrderType type, double qty, double price, double stopPx, string text = "")
@@ -657,7 +657,7 @@ namespace SmartQuant
 
         public Order BuyLimitOrder(Instrument instrument, double qty, double price, string text = "")
         {
-            var order = new Order(this.DetermineExecutionProvider(instrument), Portfolio, instrument, OrderType.Limit, OrderSide.Buy, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
+            var order = new Order(this.GetExecutionProvider(instrument), Portfolio, instrument, OrderType.Limit, OrderSide.Buy, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
             order.StrategyId = Id;
             order.ClientId = ClientId;
             order.Text = text;
@@ -668,7 +668,7 @@ namespace SmartQuant
 
         public Order SellLimitOrder(Instrument instrument, double qty, double price, string text = "")
         {
-            Order order = new Order(this.DetermineExecutionProvider(instrument), Portfolio, instrument, OrderType.Limit, OrderSide.Sell, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
+            Order order = new Order(this.GetExecutionProvider(instrument), Portfolio, instrument, OrderType.Limit, OrderSide.Sell, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
             order.StrategyId = Id;
             order.ClientId = ClientId;
             order.Text = text;
@@ -679,7 +679,7 @@ namespace SmartQuant
 
         public Order BuyLimit(Instrument instrument, double qty, double price, string text = "")
         {
-            return this.BuyLimit(this.DetermineExecutionProvider(instrument), instrument, qty, price, text);
+            return this.BuyLimit(this.GetExecutionProvider(instrument), instrument, qty, price, text);
         }
 
         public Order BuyLimit(IExecutionProvider provider, Instrument instrument, double qty, double price, string text = "")
@@ -700,7 +700,7 @@ namespace SmartQuant
 
         public Order SellLimit(Instrument instrument, double qty, double price, string text = "")
         {
-            return this.SellLimit(this.DetermineExecutionProvider(instrument), instrument, qty, price, text);
+            return this.SellLimit(this.GetExecutionProvider(instrument), instrument, qty, price, text);
         }
 
         public Order SellLimit(IExecutionProvider provider, Instrument instrument, double qty, double price, string text = "")
@@ -721,7 +721,7 @@ namespace SmartQuant
 
         public Order BuyStopLimitOrder(Instrument instrument, double qty, double stopPx, double price, string text = "")
         {
-            Order order = new Order(this.DetermineExecutionProvider(instrument), Portfolio, instrument, OrderType.StopLimit, OrderSide.Buy, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
+            Order order = new Order(this.GetExecutionProvider(instrument), Portfolio, instrument, OrderType.StopLimit, OrderSide.Buy, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
             order.StrategyId = Id;
             order.ClientId = ClientId;
             order.Text = text;
@@ -733,7 +733,7 @@ namespace SmartQuant
 
         public Order SellStopLimitOrder(Instrument instrument, double qty, double stopPx, double price, string text = "")
         {
-            Order order = new Order(this.DetermineExecutionProvider(instrument), Portfolio, instrument, OrderType.StopLimit, OrderSide.Sell, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
+            Order order = new Order(this.GetExecutionProvider(instrument), Portfolio, instrument, OrderType.StopLimit, OrderSide.Sell, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
             order.StrategyId = Id;
             order.ClientId = ClientId;
             order.Text = text;
@@ -745,7 +745,7 @@ namespace SmartQuant
 
         public Order BuyStopLimit(Instrument instrument, double qty, double stopPx, double price, string text = "")
         {
-            return BuyStopLimit(this.DetermineExecutionProvider(instrument), instrument, qty, stopPx, price, text);
+            return BuyStopLimit(this.GetExecutionProvider(instrument), instrument, qty, stopPx, price, text);
         }
 
         public Order BuyStopLimit(IExecutionProvider provider, Instrument instrument, double qty, double stopPx, double price, string text = "")
@@ -767,7 +767,7 @@ namespace SmartQuant
 
         public Order SellStopLimit(Instrument instrument, double qty, double stopPx, double price, string text = "")
         {
-            return SellStopLimit(this.DetermineExecutionProvider(instrument), instrument, qty, stopPx, price, text);
+            return SellStopLimit(this.GetExecutionProvider(instrument), instrument, qty, stopPx, price, text);
         }
 
         public Order SellStopLimit(IExecutionProvider provider, Instrument instrument, double qty, double stopPx, double price, string text = "")
@@ -789,7 +789,7 @@ namespace SmartQuant
 
         public Order BuyStopOrder(Instrument instrument, double qty, double stopPx, string text = "")
         {
-            var order = new Order(this.DetermineExecutionProvider(instrument), Portfolio, instrument, OrderType.Stop, OrderSide.Buy, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
+            var order = new Order(this.GetExecutionProvider(instrument), Portfolio, instrument, OrderType.Stop, OrderSide.Buy, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
             order.StrategyId = Id;
             order.ClientId = ClientId;
             order.Text = text;
@@ -800,7 +800,7 @@ namespace SmartQuant
 
         public Order SellStopOrder(Instrument instrument, double qty, double stopPx, string text = "")
         {
-            Order order = new Order(this.DetermineExecutionProvider(instrument), Portfolio, instrument, OrderType.Stop, OrderSide.Sell, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
+            Order order = new Order(this.GetExecutionProvider(instrument), Portfolio, instrument, OrderType.Stop, OrderSide.Sell, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
             order.StrategyId = Id;
             order.ClientId = ClientId;
             order.Text = text;
@@ -811,7 +811,7 @@ namespace SmartQuant
 
         public Order BuyStop(Instrument instrument, double qty, double stopPx, string text = "")
         {
-            return BuyStop(this.DetermineExecutionProvider(instrument), instrument, qty, stopPx, text);
+            return BuyStop(this.GetExecutionProvider(instrument), instrument, qty, stopPx, text);
         }
 
         public Order BuyStop(IExecutionProvider provider, Instrument instrument, double qty, double stopPx, string text = "")
@@ -832,7 +832,7 @@ namespace SmartQuant
 
         public Order SellStop(Instrument instrument, double qty, double stopPx, string text = "")
         {
-            return this.SellStop(this.DetermineExecutionProvider(instrument), instrument, qty, stopPx, text);
+            return this.SellStop(this.GetExecutionProvider(instrument), instrument, qty, stopPx, text);
         }
 
         public Order SellStop(IExecutionProvider provider, Instrument instrument, double qty, double stopPx, string text = "")
@@ -853,7 +853,7 @@ namespace SmartQuant
 
         public Order BuyPegged(Instrument instrument, double qty, double offset, string text = "")
         {
-            return BuyPegged(this.DetermineExecutionProvider(instrument), instrument, qty, offset, text);
+            return BuyPegged(this.GetExecutionProvider(instrument), instrument, qty, offset, text);
         }
 
         public Order BuyPegged(IExecutionProvider provider, Instrument instrument, double qty, double offset, string text = "")
@@ -874,7 +874,7 @@ namespace SmartQuant
 
         public Order SellPegged(Instrument instrument, double qty, double offset, string text = "")
         {
-            return SellPegged(this.DetermineExecutionProvider(instrument), instrument, qty, offset, text);
+            return SellPegged(this.GetExecutionProvider(instrument), instrument, qty, offset, text);
         }
 
         public Order SellPegged(IExecutionProvider provider, Instrument instrument, double qty, double offset, string text = "")
@@ -895,7 +895,7 @@ namespace SmartQuant
 
         #endregion
         // TODO: reduce it!
-        internal IDataProvider DetermineDataProvider(Strategy strategy, Instrument instrument = null)
+        internal IDataProvider GetDataProvider(Strategy strategy, Instrument instrument = null)
         {
             IDataProvider dataProvider = null;
             if (instrument != null && instrument.DataProvider != null)
@@ -914,7 +914,7 @@ namespace SmartQuant
         }
 
         // TODO: reduce it!
-        internal IExecutionProvider DetermineExecutionProvider(Instrument instrument = null)
+        internal IExecutionProvider GetExecutionProvider(Instrument instrument = null)
         {
             IExecutionProvider executionProvider = null;
             if (instrument != null && instrument.ExecutionProvider != null)
@@ -932,7 +932,7 @@ namespace SmartQuant
             return ProviderManager.ExecutionSimulator;
         }
 
-        private IFundamentalProvider ViqNiQdFkq(Instrument instrument_0 = null) => this.framework.Mode == FrameworkMode.Simulation ? null : this.rawFundamentalProvider;
+        private IFundamentalProvider GetFundamentalProvider(Instrument instrument = null) => this.framework.Mode == FrameworkMode.Simulation ? null : this.rawFundamentalProvider;
 
         /// <summary>
         /// Connect the provier if needed
@@ -941,16 +941,16 @@ namespace SmartQuant
         {
             var instrumentList = new InstrumentList();
             instrumentList.Add(instrument);
-            var executionProvider = DetermineExecutionProvider(instrument);
+            var executionProvider = GetExecutionProvider(instrument);
             if (dataProvider != null && dataProvider.Status == ProviderStatus.Disconnected)
                 dataProvider.Connect();
             if (executionProvider != null && executionProvider.Status == ProviderStatus.Disconnected)
                 executionProvider.Connect();
             StrategyManager.RegisterMarketDataRequest(dataProvider, instrumentList);
-            Parent?.PapareStrategyForStartRecursively(this, instrumentList, Id);
+            Parent?.RegisterStrategy(this, instrumentList, Id);
         }
 
-        internal void PapareStrategyForStartRecursively(Strategy strategy, InstrumentList instruments, int strategyId)
+        internal void RegisterStrategy(Strategy strategy, InstrumentList instruments, int orderRouteId)
         {
             strategy.Init();
             strategy.Portfolio.Parent = Portfolio;
@@ -965,8 +965,8 @@ namespace SmartQuant
             foreach (var instrument in instruments)
             {
                 // connect its provider for each instrument
-                var dataProvider = DetermineDataProvider(strategy, instrument);
-                var executionProvider = strategy.DetermineExecutionProvider(instrument);
+                var dataProvider = GetDataProvider(strategy, instrument);
+                var executionProvider = strategy.GetExecutionProvider(instrument);
                 if (dataProvider.Status == ProviderStatus.Disconnected)
                     dataProvider.Connect();
                 if (executionProvider.Status == ProviderStatus.Disconnected)
@@ -984,10 +984,10 @@ namespace SmartQuant
                 StrategyManager.RegisterMarketDataRequest(sub.Key, sub.Value);
 
             var rootStrategy = GetRootStrategy();
-            if (strategy.Id == strategyId)
-                rootStrategy.idArray_1[strategyId] = strategy;
+            if (strategy.Id == orderRouteId)
+                rootStrategy.idArray_1[orderRouteId] = strategy;
 
-            Parent?.PapareStrategyForStartRecursively(this, instruments, strategyId);
+            Parent?.RegisterStrategy(this, instruments, orderRouteId);
         }
 
         #region EventHandlers
@@ -1731,7 +1731,7 @@ namespace SmartQuant
             foreach (var s in Strategies)
             {
                 s.Status = StrategyStatus.Running;
-                PapareStrategyForStartRecursively(s, s.Instruments, s.Id);
+                RegisterStrategy(s, s.Instruments, s.Id);
                 s.EmitStrategyStart();
             }
         }
@@ -1747,26 +1747,23 @@ namespace SmartQuant
 
         #endregion
 
-        internal void method_4(Strategy childStrategy, InstrumentList instruments, int strategyId)
+        internal void UnregisterStrategy(Strategy childStrategy, InstrumentList instruments, int orderRouteId)
         {
             childStrategy.Portfolio.Parent = Portfolio;
-            foreach (Instrument current in instruments)
+            foreach (var current in instruments)
             {
                 var linkedList = this.childrenByInstrument[current.Id];
-                if (linkedList != null)
-                {
-                    linkedList.Remove(childStrategy);
-                }
-                linkedList.Add(childStrategy);
+                linkedList?.Remove(childStrategy);
+                linkedList?.Add(childStrategy);
                 this.idArray_2[current.Id] -= 1;
                 if (this.idArray_2[current.Id] == 0)
                     Instruments.Remove(current);
             }
             var dictionary = new Dictionary<IDataProvider, InstrumentList>();
-            foreach (Instrument current2 in instruments)
+            foreach (var current2 in instruments)
             {
                 InstrumentList instrumentList = null;
-                IDataProvider key = this.DetermineDataProvider(childStrategy, current2);
+                IDataProvider key = GetDataProvider(childStrategy, current2);
                 if (!dictionary.TryGetValue(key, out instrumentList))
                 {
                     instrumentList = new InstrumentList();
@@ -1778,8 +1775,8 @@ namespace SmartQuant
             foreach (var current3 in dictionary)
                 StrategyManager.UnregisterMarketDataRequest(current3.Key, current3.Value);
 
-            this.idArray_1[strategyId] = null;
-            Parent?.method_4(this, instruments, strategyId);
+            this.idArray_1[orderRouteId] = null;
+            Parent?.UnregisterStrategy(this, instruments, orderRouteId);
         }
 
         internal virtual void vmethod_2()

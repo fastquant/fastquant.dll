@@ -41,7 +41,7 @@ namespace SmartQuant
 
         public List<IDataSeries> Series { get; set; } = new List<IDataSeries>();
 
-        private LinkedList<DataSeriesEmitter> emitters = new LinkedList<DataSeriesEmitter>();
+        private LinkedList<DataSeriesObject> emitters = new LinkedList<DataSeriesObject>();
 
         public DataSimulator(Framework framework) : base(framework)
         {
@@ -76,7 +76,7 @@ namespace SmartQuant
                 };
                 q.Enqueue(new OnQueueOpened(q));
                 this.framework.EventBus.DataPipe.Add(q);
-                this.emitters.Add(new DataSeriesEmitter(s, DateTime1, DateTime2, q, Processor));
+                this.emitters.Add(new DataSeriesObject(s, DateTime1, DateTime2, q, Processor));
             }
         }
 
@@ -120,14 +120,14 @@ namespace SmartQuant
                 this.exit = false;
                 while (!this.exit)
                 {
-                    LinkedListNode<DataSeriesEmitter> lastNode = null;
+                    LinkedListNode<DataSeriesObject> lastNode = null;
                     var node = this.emitters.First;
                     while (node != null)
                     {
                         var emitter = node.Data;
                         if (!emitter.Done)
                         {
-                            if (emitter.Emit())
+                            if (emitter.Enqueue())
                                 this.objCount++;
                             lastNode = node;
                         }
@@ -238,7 +238,7 @@ namespace SmartQuant
                 this.emitters.Add(CreateDataSeriesEmitter(s, dateTime1, dateTime2));
         }
 
-        private DataSeriesEmitter CreateDataSeriesEmitter(DataSeries series, DateTime dateTime1, DateTime dateTime2)
+        private DataSeriesObject CreateDataSeriesEmitter(DataSeries series, DateTime dateTime1, DateTime dateTime2)
         {
             var q = new EventQueue(EventQueueId.Data, EventQueueType.Master, EventQueuePriority.Normal, 25600, null)
             {
@@ -247,13 +247,13 @@ namespace SmartQuant
             };
             q.Enqueue(new OnQueueOpened(q));
             this.framework.EventBus.DataPipe.Add(q);
-            return new DataSeriesEmitter(series, dateTime1, dateTime2, q, Processor);
+            return new DataSeriesObject(series, dateTime1, dateTime2, q, Processor);
         }
     }
 
-    class DataSeriesEmitter
+    class DataSeriesObject
     {
-        public DataSeriesEmitter(IDataSeries series, DateTime dateTime1, DateTime dateTime2, EventQueue dataQueue, DataProcessor processor)
+        public DataSeriesObject(IDataSeries series, DateTime dateTime1, DateTime dateTime2, EventQueue dataQueue, DataProcessor processor)
         {
             this.queue = new EventQueue(EventQueueId.All, EventQueueType.Master, EventQueuePriority.Normal, 128, null);
             this.series = series;
@@ -262,48 +262,12 @@ namespace SmartQuant
             this.index1 = dateTime1 == DateTime.MinValue || dateTime1 < series.DateTime1 ? 0 : series.GetIndex(dateTime1, SearchOption.Next);
             this.index2 = dateTime2 == DateTime.MaxValue || dateTime2 > series.DateTime2 ? series.Count - 1 : series.GetIndex(dateTime2, SearchOption.Prev);
             this.current = this.index1;
-            this.step = (int)Math.Ceiling((this.index2 - this.index1 + 1) / 100.0);
-            this.count = this.step;
+            this.delta = (int)Math.Ceiling((this.index2 - this.index1 + 1) / 100.0);
+            this.count = this.delta;
             this.percent = 0;
         }
 
-        //internal bool Emit()
-        //{
-        //    if (this.dataQueue.IsFull())
-        //        return false;
-        //    DataObject obj;
-        //    while (this.queue.IsEmpty())
-        //    {
-        //        if (this.obj != null)
-        //        {
-        //            obj = this.obj;
-        //            this.obj = null;
-        //            IL_B3:
-        //            this.dataQueue.Write(obj);
-        //            if (this.long_3 == this.count)
-        //            {
-        //                this.count += this.step;
-        //                this.percent++;
-        //                this.dataQueue.Enqueue(new OnSimulatorProgress(this.count, this.percent));
-        //            }
-        //            return true;
-        //        }
-        //        if (this.current > this.index2)
-        //        {
-        //            Done = true;
-        //            return false;
-        //        }
-        //        this.obj = this.series[this.current];
-        //        this.obj = this.processor.Process(this);
-        //        this.current += 1;
-        //        this.long_3 += 1;
-        //    }
-        //    obj = (DataObject)this.queue.Read();
-        //    goto IL_B3;
-        //}
-
-
-        internal bool Emit()
+        internal bool Enqueue()
         {
             if (this.dataQueue.IsFull())
                 return false;
@@ -319,7 +283,7 @@ namespace SmartQuant
                     this.dataQueue.Write(obj);
                     if (this.long_3 == this.count)
                     {
-                        this.count += this.step;
+                        this.count += this.delta;
                         this.percent++;
                         this.dataQueue.Enqueue(new OnSimulatorProgress(this.count, this.percent));
                     }
@@ -341,7 +305,7 @@ namespace SmartQuant
             this.dataQueue.Write(obj);
             if (this.long_3 == this.count)
             {
-                this.count += this.step;
+                this.count += this.delta;
                 this.percent++;
                 this.dataQueue.Enqueue(new OnSimulatorProgress(this.count, this.percent));
             }
@@ -360,7 +324,7 @@ namespace SmartQuant
 
         private IDataSeries series;
 
-        private int step;
+        private int delta;
 
         private long count;
 

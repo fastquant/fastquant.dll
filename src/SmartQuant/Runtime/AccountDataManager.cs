@@ -1,48 +1,47 @@
-﻿using System;
+﻿// Copyright (c) FastQuant Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
 using System.Collections.Generic;
 using System.Linq;
 
 namespace SmartQuant
 {
-    class Class3
+    internal class AccountDataKey
     {
-        public Class3(AccountData data, params string[] fieldNames)
+        public AccountDataKey(AccountData data, params string[] fieldNames)
         {
-            this.text = string.Join("\u0001", fieldNames.Select(f => this.method_0(data, f)));
+            _key = string.Join("\u0001", fieldNames.Select(f => GetValue(data, f)));
         }
 
-        public override bool Equals(object obj) => obj is Class3 ? this.text.Equals(((Class3)obj).text) : base.Equals(obj);
+        public override bool Equals(object obj) => obj is AccountDataKey ? _key.Equals(((AccountDataKey) obj)._key) : base.Equals(obj);
 
-        public override int GetHashCode() => this.text.GetHashCode();
+        public override int GetHashCode() => _key.GetHashCode();
 
-        private string method_0(AccountData data, string name)
-        {
-            return data.Fields[name]?.ToString() ?? string.Empty;
-        }
+        private static string GetValue(AccountData data, string fieldName) => data.Fields[fieldName]?.ToString() ?? string.Empty;
 
-        public override string ToString() => this.text;
+        public override string ToString() => _key;
 
-        private string text;
+        private readonly string _key;
     }
 
-    class Class5
+    internal class AccountDataTableItem
     {
-        public AccountDataFieldList accountDataFieldList_0 = new AccountDataFieldList();
+        public AccountDataFieldList Values { get; }= new AccountDataFieldList();
 
-        public IDictionary<Class3, AccountDataFieldList> idictionary_0 = new Dictionary<Class3, AccountDataFieldList>();
+        public IDictionary<AccountDataKey, AccountDataFieldList> Positions { get; } = new Dictionary<AccountDataKey, AccountDataFieldList>();
 
-        public IDictionary<Class3, AccountDataFieldList> idictionary_1 = new Dictionary<Class3, AccountDataFieldList>();
+        public IDictionary<AccountDataKey, AccountDataFieldList> Orders { get; }= new Dictionary<AccountDataKey, AccountDataFieldList>();
     }
 
-    class Class4
+    internal class AccountDataTable
     {
-        public IDictionary<string, Class5> dict { get; set; } = new Dictionary<string, Class5>();
+        public IDictionary<string, AccountDataTableItem> Items { get; } = new Dictionary<string, AccountDataTableItem>();
     }
 
     public class AccountDataManager
     {
         private readonly Framework framework;
-        private readonly Dictionary<int, Class4> items = new Dictionary<int, Class4>();
+        private readonly Dictionary<int, AccountDataTable> tables = new Dictionary<int, AccountDataTable>();
 
         internal AccountDataManager(Framework framework)
         {
@@ -51,31 +50,31 @@ namespace SmartQuant
 
         public AccountDataSnapshot GetSnapshot(byte providerId, byte route)
         {
-            Class4 @class = Get(providerId, route, false);
-            if (@class == null)
+            var table = GetTable(providerId, route, false);
+            if (table == null)
                 return new AccountDataSnapshot(new AccountDataEntry[0]);
 
             AccountDataSnapshot result;
-            lock (@class)
+            lock (table)
             {
                 var list = new List<AccountDataEntry>();
-                foreach (string current in @class.dict.Keys)
+                foreach (string current in table.Items.Keys)
                 {
-                    var class2 = @class.dict[current];
+                    var class2 = table.Items[current];
                     var accountData = new AccountData(this.framework.Clock.DateTime, AccountDataType.AccountValue, current, providerId, route);
-                    this.AddWith(class2.accountDataFieldList_0, accountData.Fields);
+                    CopyFields(class2.Values, accountData.Fields);
                     var list2 = new List<AccountData>();
-                    foreach (var current2 in class2.idictionary_0.Values)
+                    foreach (var current2 in class2.Positions.Values)
                     {
                         var accountData2 = new AccountData(this.framework.Clock.DateTime, AccountDataType.Position, current, providerId, route);
-                        this.AddWith(current2, accountData2.Fields);
+                        CopyFields(current2, accountData2.Fields);
                         list2.Add(accountData2);
                     }
                     var list3 = new List<AccountData>();
-                    foreach (var current3 in class2.idictionary_1.Values)
+                    foreach (var current3 in class2.Orders.Values)
                     {
                         var accountData3 = new AccountData(this.framework.Clock.DateTime, AccountDataType.Order, current, providerId, route);
-                        this.AddWith(current3, accountData3.Fields);
+                        CopyFields(current3, accountData3.Fields);
                         list3.Add(accountData3);
                     }
                     list.Add(new AccountDataEntry(current, accountData, list2.ToArray(), list3.ToArray()));
@@ -87,83 +86,74 @@ namespace SmartQuant
 
         public AccountDataSnapshot[] GetSnapshots()
         {
-            var list = new List<AccountDataSnapshot>();
-            lock (this.items)
-            {
-                foreach (int current in this.items.Keys)
-                {
-                    byte providerId = (byte)(current / 256);
-                    byte route = (byte)(current % 256);
-                    list.Add(GetSnapshot(providerId, route));
-                }
-            }
-            return list.ToArray();
+            lock (this.tables)
+                return this.tables.Keys.Select(k => GetSnapshot((byte) (k/256), (byte) (k%256))).ToArray();
         }
 
         internal void Clear()
         {
-            lock (this.items)
-                this.items.Clear();
+            lock (this.tables)
+                this.tables.Clear();
         }
 
         internal void OnAccountData(AccountData data)
         {
-            Class4 @class = Get(data.ProviderId, data.Route, true);
+            AccountDataTable @class = GetTable(data.ProviderId, data.Route, true);
             lock (@class)
             {
-                Class5 class2;
-                if (!@class.dict.TryGetValue(data.Account, out class2))
+                AccountDataTableItem class2;
+                if (!@class.Items.TryGetValue(data.Account, out class2))
                 {
-                    class2 = new Class5();
-                    @class.dict.Add(data.Account, class2);
+                    class2 = new AccountDataTableItem();
+                    @class.Items.Add(data.Account, class2);
                 }
                 switch (data.Type)
                 {
                     case AccountDataType.AccountValue:
-                        UpdateWith(data.Fields, class2.accountDataFieldList_0);
+                        MergeFields(data.Fields, class2.Values);
                         break;
                     case AccountDataType.Position:
                         {
-                            Class3 key = new Class3(data, new[] { "Symbol", "Maturity", "PutOrCall", "Strike" });
+                            AccountDataKey key = new AccountDataKey(data, new[] { "Symbol", "Maturity", "PutOrCall", "Strike" });
                             AccountDataFieldList list;
-                            if (!class2.idictionary_0.TryGetValue(key, out list))
+                            if (!class2.Positions.TryGetValue(key, out list))
                             {
                                 list = new AccountDataFieldList();
-                                class2.idictionary_0.Add(key, list);
+                                class2.Positions.Add(key, list);
                             }
                             list.Clear();
-                            this.AddWith(data.Fields, list);
+                            CopyFields(data.Fields, list);
                             break;
                         }
                     case AccountDataType.Order:
                         {
-                            Class3 key2 = new Class3(data, new[] { "OrderID" });
+                            AccountDataKey key2 = new AccountDataKey(data, new[] { "OrderID" });
                             AccountDataFieldList list;
-                            if (!class2.idictionary_1.TryGetValue(key2, out list))
+                            if (!class2.Orders.TryGetValue(key2, out list))
                             {
                                 list = new AccountDataFieldList();
-                                class2.idictionary_1.Add(key2, list);
+                                class2.Orders.Add(key2, list);
                             }
                             list.Clear();
-                            this.AddWith(data.Fields, list);
+                            CopyFields(data.Fields, list);
                             break;
                         }
                 }
             }
         }
 
-        private Class4 Get(byte providerId, byte route, bool createNotExist)
+        private AccountDataTable GetTable(byte providerId, byte route, bool addNew)
         {
-            int key = providerId * 256 + route;
-            Class4 value;
-            lock (this.items)
+            var key = providerId * 256 + route;
+            AccountDataTable value;
+            lock (this.tables)
             {
-                if (!this.items.TryGetValue(key, out value))
+                if (!this.tables.TryGetValue(key, out value))
                 {
-                    if (createNotExist)
+                    if (addNew)
                     {
-                        value = new Class4();
-                        this.items.Add(key, value);
+                        value = new AccountDataTable();
+                        this.tables.Add(key, value);
                     }
                     else
                     {
@@ -174,16 +164,16 @@ namespace SmartQuant
             return value;
         }
 
-        private void UpdateWith(AccountDataFieldList list1, AccountDataFieldList list2)
+        private static void MergeFields(AccountDataFieldList srcList, AccountDataFieldList dstList)
         {
-            foreach (AccountDataField f in list1)
-                list2[f.Name, f.Currency] = f.Value;
+            foreach (AccountDataField f in srcList)
+                dstList[f.Name, f.Currency] = f.Value;
         }
 
-        private void AddWith(AccountDataFieldList list1, AccountDataFieldList list2)
+        private static void CopyFields(AccountDataFieldList srcList, AccountDataFieldList dstList)
         {
-            foreach (AccountDataField f in list1)
-                list2.Add(f.Name, f.Currency, f.Value);
+            foreach (AccountDataField f in srcList)
+                dstList.Add(f.Name, f.Currency, f.Value);
         }
     }
 }

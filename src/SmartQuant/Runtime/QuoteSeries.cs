@@ -61,7 +61,7 @@ namespace SmartQuant
                 case SearchOption.Prev:
                     return GetIndex(dateTime, IndexOption.Prev);
                 default:
-                    throw new ApplicationException("Unsupported search option");
+                    throw new ArgumentException("Unsupported search option");
             }
         }
 

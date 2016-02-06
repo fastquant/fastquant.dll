@@ -1,10 +1,9 @@
 {
   "compilationOptions": {},
   "dependencies": {
-    "Newtonsoft.Json": "7.0.1",
+    "Newtonsoft.Json": "8.0.2",
     "xunit": "2.1.0-*",
-    "xunit.runner.dnx": "2.1.0-*",
-    "xunit.runner.visualstudio": "2.2.0-beta1-*"
+    "xunit.runner.dnx": "2.1.0-*"
   },
   "frameworks": {
     "dnx451": {
@@ -16,17 +15,10 @@
     "dnxcore50": {
       "dependencies": {
         "netcoreshim": "",
-        "System.Collections": "4.0.11-beta-*",
-        "System.Console": "4.0.0-beta-*",
-        "System.Net.Sockets": "4.1.0-beta-*",
-        "System.Linq": "4.0.1-beta-*",
-        "System.Runtime.Extensions": "4.0.11-beta-*",
-        "System.Threading.Tasks.Parallel": "4.0.1-beta-*",
-        "System.Threading.Thread": "4.0.0-beta-*",
-        "System.ComponentModel.TypeConverter": "4.0.1-beta-*",
-        "System.Reflection.Extensions": "4.0.1-beta-*",
-        "System.Reflection.TypeExtensions": "4.1.0-beta-*",
-        "System.Xml.XmlSerializer": "4.0.11-beta-*"
+        "NETStandard.Library": "1.0.0-rc2-*",
+        "System.Xml.XmlSerializer": "4.0.11-rc2-*",
+        "System.Threading.Tasks.Parallel": "4.0.1-rc2-*",
+        "System.ComponentModel.TypeConverter": "4.0.1-rc2-*"
       }
     }
   },

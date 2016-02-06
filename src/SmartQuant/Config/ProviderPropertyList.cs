@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Serialization;
 
 namespace SmartQuant
@@ -38,17 +39,17 @@ namespace SmartQuant
 
     public class ProviderPropertyList
     {
-        private readonly Dictionary<string, string> properties  = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _properties  = new Dictionary<string, string>();
 
         public void SetValue(string name, string value)
         {
-            this.properties[name] = value;
+            _properties[name] = value;
         }
 
         public string GetStringValue(string name, string defaultValue)
         {
             string s;
-            return this.properties.TryGetValue(name, out s) ? s : defaultValue;
+            return _properties.TryGetValue(name, out s) ? s : defaultValue;
         }
 
         public ProviderPropertyList()
@@ -61,17 +62,6 @@ namespace SmartQuant
                 SetValue(p.Name, p.Value);
         }
 
-        internal List<XmlProviderProperty> ToXmlProviderProperties()
-        {
-            var list = new List<XmlProviderProperty>();
-            foreach (var p in properties)
-            {
-                XmlProviderProperty xml;
-                xml.Name = p.Key;
-                xml.Value = p.Value;
-                list.Add(xml);
-            }
-            return list;
-        }
+        internal List<XmlProviderProperty> ToXmlProviderProperties() => _properties.Select(p => new XmlProviderProperty {Name = p.Key, Value = p.Value}).ToList();
     }
 }

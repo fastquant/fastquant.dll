@@ -10,13 +10,13 @@ namespace SmartQuant
 
         public IList<Tick> Asks { get; } = new List<Tick>();
 
-        public int GetAskVolume() => this.GetTotalSize(Asks);
+        public int GetAskVolume() => this.GetVolume(Asks);
 
-        public double GetAvgAskPrice() => GetAvgPx(Asks);
+        public double GetAvgAskPrice() => GetAvgPrice(Asks);
 
-        public double GetAvgBidPrice() => GetAvgPx(Bids);
+        public double GetAvgBidPrice() => GetAvgPrice(Bids);
 
-        public int GetBidVolume() => GetTotalSize(Bids);
+        public int GetBidVolume() => GetVolume(Bids);
 
         public Quote GetQuote(int level)
         {
@@ -84,9 +84,9 @@ namespace SmartQuant
             }
         }
 
-        private int GetTotalSize(IList<Tick> ticks) => ticks.Sum(t => t.Size);
+        private int GetVolume(IList<Tick> ticks) => ticks.Sum(t => t.Size);
 
-        private double GetAvgPx(IList<Tick> ticks)
+        private double GetAvgPrice(IList<Tick> ticks)
         {
             double sum = 0;
             int size = 0;

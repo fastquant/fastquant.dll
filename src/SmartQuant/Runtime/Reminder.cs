@@ -29,10 +29,7 @@ namespace SmartQuant
             Data = data;
         }
 
-        internal void Execute()
-        {
-            Callback(DateTime, Data);
-        }
+        internal void Execute() => Callback(DateTime, Data);
 
         public override string ToString() => $"{nameof(Reminder)} {DateTime}";
     }

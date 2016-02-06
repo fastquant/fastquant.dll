@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SmartQuant
 {
@@ -80,15 +81,7 @@ namespace SmartQuant
             this.session2 = session2;
         }
 
-        protected virtual bool InSession(DateTime dateTime) => !this.sessionEnabled || (this.session1 <= dateTime.TimeOfDay && dateTime.TimeOfDay <= this.session2);
-        //protected virtual bool InSession(DateTime dateTime)
-        //{
-        //    if (this.sessionEnabled && !(this.session1 <= dateTime.TimeOfDay && dateTime.TimeOfDay <= this.session2))
-        //    {
-        //          return false;
-        //    }
-        //    return true;
-        //}
+        protected virtual bool InSession(DateTime dateTime) => !this.sessionEnabled || this.session1 <= dateTime.TimeOfDay && dateTime.TimeOfDay <= this.session2;
 
         internal void Process(DataObject obj)
         {
@@ -280,7 +273,7 @@ namespace SmartQuant
 
         protected override void OnData(DataObject obj)
         {
-            Tick tick = (Tick)obj;
+            var tick = (Tick)obj;
             if (this.bar != null) // when the bar is not new
             {
                 if ((tick.Price > this.bar.High || tick.Price < this.bar.Low) && 10000 * (this.bar.High - this.bar.Low) >= this.barSize)
@@ -334,8 +327,7 @@ namespace SmartQuant
             base.OnData(obj);
             if (barOpen)
             {
-                var success = AddReminder(GetBarCloseDateTime(obj), this.type);
-                if (!success)
+                if (!AddReminder(GetBarCloseDateTime(obj), this.type))
                 {
                     if (!(obj is Tick))
                         Console.WriteLine($"SessionBarFactoryItem::OnData Can not add reminder. Object is not tick! Clock = {this.type} local datetime = {this.factory.Framework.Clock.DateTime} exchange datetime = {this.factory.Framework.ExchangeClock.DateTime} object = {obj} reminder datetime = {GetBarCloseDateTime(obj)}");
@@ -375,7 +367,8 @@ namespace SmartQuant
     {
         private Framework framework;
 
-        private SortedList<DateTime, SortedList<long, List<BarFactoryItem>>> orderedItemLists = new SortedList<DateTime, SortedList<long, List<BarFactoryItem>>>();
+        private readonly SortedList<DateTime, SortedList<long, List<BarFactoryItem>>> reminderTable =
+            new SortedList<DateTime, SortedList<long, List<BarFactoryItem>>>();
 
         public IdArray<List<BarFactoryItem>> ItemLists { get; } = new IdArray<List<BarFactoryItem>>(256);
 
@@ -395,7 +388,11 @@ namespace SmartQuant
             item.factory = this;
             int id = item.Instrument.Id;
             var items = ItemLists[id] = ItemLists[id] ?? new List<BarFactoryItem>();
-            if (items.Exists(match => item.barType == match.barType && item.barSize == match.barSize && item.barInput == match.barInput && item.providerId == match.providerId))
+            if (
+                items.Exists(
+                    match =>
+                        item.barType == match.barType && item.barSize == match.barSize &&
+                        item.barInput == match.barInput && item.providerId == match.providerId))
                 Console.WriteLine($"{DateTime.Now} BarFactory::Add Item '{item}' is already added");
             else
                 items.Add(item);
@@ -403,32 +400,39 @@ namespace SmartQuant
 
         public void Add(Instrument instrument, TimeSpan session1, TimeSpan session2, int providerId = -1)
         {
-            this.Add(instrument, BarType.Session, (session2 - session1).Seconds, BarInput.Trade, ClockType.Local, session1, session2, providerId);
+            this.Add(instrument, BarType.Session, (session2 - session1).Seconds, BarInput.Trade, ClockType.Local,
+                session1, session2, providerId);
         }
 
         public void Add(string symbol, TimeSpan session1, TimeSpan session2, int providerId = -1)
         {
-            Add(this.framework.InstrumentManager[symbol], BarType.Session, (session2 - session1).Seconds, BarInput.Trade, ClockType.Local, session1, session2, providerId);
+            Add(this.framework.InstrumentManager[symbol], BarType.Session, (session2 - session1).Seconds, BarInput.Trade,
+                ClockType.Local, session1, session2, providerId);
         }
 
-        public void Add(string symbol, BarType barType, long barSize, BarInput barInput = BarInput.Trade, int providerId = -1)
+        public void Add(string symbol, BarType barType, long barSize, BarInput barInput = BarInput.Trade,
+            int providerId = -1)
         {
             Add(this.framework.InstrumentManager[symbol], barType, barSize, barInput, ClockType.Local, providerId);
         }
 
-        public void Add(InstrumentList instruments, BarType barType, long barSize, BarInput barInput = BarInput.Trade, int providerId = -1)
+        public void Add(InstrumentList instruments, BarType barType, long barSize, BarInput barInput = BarInput.Trade,
+            int providerId = -1)
         {
             foreach (var i in instruments)
                 Add(i, barType, barSize, barInput, ClockType.Local, providerId);
         }
 
-        public void Add(string[] symbols, BarType barType, long barSize, BarInput barInput = BarInput.Trade, int providerId = -1)
+        public void Add(string[] symbols, BarType barType, long barSize, BarInput barInput = BarInput.Trade,
+            int providerId = -1)
         {
-            foreach(var symbol in symbols)
-                Add(this.framework.InstrumentManager.Get(symbol), barType, barSize, barInput, ClockType.Local, providerId);
+            foreach (var symbol in symbols)
+                Add(this.framework.InstrumentManager.Get(symbol), barType, barSize, barInput, ClockType.Local,
+                    providerId);
         }
 
-        public void Add(Instrument instrument, BarType barType, long barSize, BarInput barInput = BarInput.Trade, ClockType type = ClockType.Local, int providerId = -1)
+        public void Add(Instrument instrument, BarType barType, long barSize, BarInput barInput = BarInput.Trade,
+            ClockType type = ClockType.Local, int providerId = -1)
         {
             BarFactoryItem item;
             switch (barType)
@@ -446,46 +450,56 @@ namespace SmartQuant
                     item = new RangeBarFactoryItem(instrument, barSize, barInput, providerId);
                     break;
                 case BarType.Session:
-                    throw new ArgumentException("BarFactory::Add Can not create SessionBarFactoryItem without session parameters");
+                    throw new ArgumentException(
+                        "BarFactory::Add Can not create SessionBarFactoryItem without session parameters");
                 default:
                     throw new ArgumentException($"Unknown bar type - {barType}");
             }
             Add(item);
         }
 
-        public void Add(string symbol, BarType barType, long barSize, BarInput barInput = BarInput.Trade, ClockType type = ClockType.Local, int providerId = -1)
+        public void Add(string symbol, BarType barType, long barSize, BarInput barInput = BarInput.Trade,
+            ClockType type = ClockType.Local, int providerId = -1)
         {
             Add(this.framework.InstrumentManager[symbol], barType, barSize, barInput, type, providerId);
         }
 
-        public void Add(InstrumentList instruments, BarType barType, long barSize, BarInput barInput = BarInput.Trade, ClockType type = ClockType.Local, int providerId = -1)
+        public void Add(InstrumentList instruments, BarType barType, long barSize, BarInput barInput = BarInput.Trade,
+            ClockType type = ClockType.Local, int providerId = -1)
         {
             foreach (var i in instruments)
                 Add(i, barType, barSize, barInput, type, providerId);
         }
 
-        public void Add(string[] symbols, BarType barType, long barSize, BarInput barInput = BarInput.Trade, ClockType type = ClockType.Local, int providerId = -1)
+        public void Add(string[] symbols, BarType barType, long barSize, BarInput barInput = BarInput.Trade,
+            ClockType type = ClockType.Local, int providerId = -1)
         {
-            foreach(var symbol in symbols)
+            foreach (var symbol in symbols)
                 Add(this.framework.InstrumentManager.Get(symbol), barType, barSize, barInput, type, providerId);
         }
 
-        public void Add(Instrument instrument, BarType barType, long barSize, TimeSpan session1, TimeSpan session2, int providerId = -1)
+        public void Add(Instrument instrument, BarType barType, long barSize, TimeSpan session1, TimeSpan session2,
+            int providerId = -1)
         {
             Add(instrument, barType, barSize, BarInput.Trade, ClockType.Local, session1, session2, providerId);
         }
 
-        public void Add(string symbol, BarType barType, long barSize, TimeSpan session1, TimeSpan session2, int providerId = -1)
+        public void Add(string symbol, BarType barType, long barSize, TimeSpan session1, TimeSpan session2,
+            int providerId = -1)
         {
-            Add(this.framework.InstrumentManager[symbol], barType, barSize, BarInput.Trade, ClockType.Local, session1, session2, providerId);
+            Add(this.framework.InstrumentManager[symbol], barType, barSize, BarInput.Trade, ClockType.Local, session1,
+                session2, providerId);
         }
 
-        public void Add(string symbol, BarInput barInput, ClockType type, TimeSpan session1, TimeSpan session2, int providerId = -1)
+        public void Add(string symbol, BarInput barInput, ClockType type, TimeSpan session1, TimeSpan session2,
+            int providerId = -1)
         {
-            Add(this.framework.InstrumentManager[symbol], BarType.Session, (session2 - session1).Seconds, barInput, type, session1, session2, providerId);
+            Add(this.framework.InstrumentManager[symbol], BarType.Session, (session2 - session1).Seconds, barInput, type,
+                session1, session2, providerId);
         }
 
-        public void Add(Instrument instrument, BarType barType, long barSize, BarInput barInput, ClockType type, TimeSpan session1, TimeSpan session2, int providerId = -1)
+        public void Add(Instrument instrument, BarType barType, long barSize, BarInput barInput, ClockType type,
+            TimeSpan session1, TimeSpan session2, int providerId = -1)
         {
             BarFactoryItem item;
             switch (barType)
@@ -511,9 +525,11 @@ namespace SmartQuant
             Add(item);
         }
 
-        public void Add(string symbol, BarType barType, long barSize, BarInput barInput, ClockType type, TimeSpan session1, TimeSpan session2, int providerId = -1)
+        public void Add(string symbol, BarType barType, long barSize, BarInput barInput, ClockType type,
+            TimeSpan session1, TimeSpan session2, int providerId = -1)
         {
-            Add(this.framework.InstrumentManager[symbol], barType, barSize, barInput, type, session1, session2, providerId);
+            Add(this.framework.InstrumentManager[symbol], barType, barSize, barInput, type, session1, session2,
+                providerId);
         }
 
         public void Remove(BarFactoryItem item)
@@ -522,14 +538,16 @@ namespace SmartQuant
             if (list == null)
                 return;
 
-            var found = list.Find(x => x.barType == item.barType && x.barSize == item.barSize && x.barInput == item.barInput);
+            var found =
+                list.Find(x => x.barType == item.barType && x.barSize == item.barSize && x.barInput == item.barInput);
             if (found != null)
                 list.Remove(found);
             else
                 Console.WriteLine($"{DateTime.Now} BarFactory::Remove Item '{item}' is already removed");
         }
 
-        public void Remove(Instrument instrument, BarType barType, long barSize, BarInput barInput = BarInput.Trade, ClockType type = ClockType.Local)
+        public void Remove(Instrument instrument, BarType barType, long barSize, BarInput barInput = BarInput.Trade,
+            ClockType type = ClockType.Local)
         {
             BarFactoryItem item;
             switch (barType)
@@ -547,7 +565,8 @@ namespace SmartQuant
                     item = new RangeBarFactoryItem(instrument, barSize, barInput, -1);
                     break;
                 case BarType.Session:
-                    throw new ArgumentException("BarFactory::Remove Can not create SessionBarFactoryItem without session parameters");
+                    throw new ArgumentException(
+                        "BarFactory::Remove Can not create SessionBarFactoryItem without session parameters");
                 default:
                     throw new ArgumentException($"Unknown bar type - {barType}");
             }
@@ -557,7 +576,7 @@ namespace SmartQuant
         public void Clear()
         {
             ItemLists.Clear();
-            this.orderedItemLists.Clear();
+            this.reminderTable.Clear();
         }
 
         // TODO: rewrite it using goto statement!!!
@@ -656,15 +675,15 @@ namespace SmartQuant
                             i++;
                         }
             */
-            Tick tick = (Tick)obj;
-            List<BarFactoryItem> list = ItemLists[tick.InstrumentId];
-            if (list != null)
+            var tick = (Tick) obj;
+            var items = ItemLists[tick.InstrumentId];
+            if (items != null)
             {
                 int i = 0;
-                while (i < list.Count)
+                while (i < items.Count)
                 {
-                    BarFactoryItem barFactoryItem = list[i];
-                    switch (barFactoryItem.barInput)
+                    var item = items[i];
+                    switch (item.barInput)
                     {
                         case BarInput.Trade:
                             if (tick.TypeId == DataObjectType.Trade)
@@ -688,29 +707,31 @@ namespace SmartQuant
                             switch (tick.TypeId)
                             {
                                 case DataObjectType.Bid:
+                                {
+                                    var ask = this.framework.DataManager.GetAsk(tick.InstrumentId);
+                                    if (ask == null)
                                     {
-                                        Ask ask = this.framework.DataManager.GetAsk(tick.InstrumentId);
-                                        if (ask == null)
-                                        {
-                                            goto IL_1A3;
-                                        }
-                                        tick = new Tick(obj.dateTime, tick.ProviderId, tick.InstrumentId, (ask.Price + tick.Price) / 2.0, (ask.Size + tick.Size) / 2);
-                                        break;
+                                        goto IL_1A3;
                                     }
+                                    tick = new Tick(obj.dateTime, tick.ProviderId, tick.InstrumentId,
+                                        (ask.Price + tick.Price)/2.0, (ask.Size + tick.Size)/2);
+                                    break;
+                                }
                                 case DataObjectType.Ask:
+                                {
+                                    var bid = this.framework.DataManager.GetBid(tick.InstrumentId);
+                                    if (bid == null)
                                     {
-                                        Bid bid = this.framework.DataManager.GetBid(tick.InstrumentId);
-                                        if (bid == null)
-                                        {
-                                            goto IL_1A3;
-                                        }
-                                        tick = new Tick(obj.dateTime, tick.ProviderId, tick.InstrumentId, (bid.Price + tick.Price) / 2.0, (bid.Size + tick.Size) / 2);
-                                        break;
+                                        goto IL_1A3;
                                     }
+                                    tick = new Tick(obj.dateTime, tick.ProviderId, tick.InstrumentId,
+                                        (bid.Price + tick.Price)/2.0, (bid.Size + tick.Size)/2);
+                                    break;
+                                }
                                 case DataObjectType.Trade:
                                     goto IL_1A3;
                             }
-                            if (obj.TypeId != 3)
+                            if (obj.TypeId != DataObjectType.Ask)
                             {
                                 goto IL_19C;
                             }
@@ -724,14 +745,14 @@ namespace SmartQuant
                             }
                             break;
                         default:
-                            Console.WriteLine("BarFactory::OnData BarInput is not supported : " + barFactoryItem.barInput);
+                            Console.WriteLine($"BarFactory::OnData BarInput is not supported : {item.barInput}");
                             break;
                     }
                     IL_1A3:
                     i++;
                     continue;
                     IL_19C:
-                    barFactoryItem.Process(tick);
+                    item.Process(tick);
                     goto IL_1A3;
                 }
             }
@@ -742,10 +763,10 @@ namespace SmartQuant
         {
             bool created = false;
             SortedList<long, List<BarFactoryItem>> slistByBarSize;
-            if (!this.orderedItemLists.TryGetValue(dateTime, out slistByBarSize))
+            if (!this.reminderTable.TryGetValue(dateTime, out slistByBarSize))
             {
                 slistByBarSize = new SortedList<long, List<BarFactoryItem>>();
-                this.orderedItemLists.Add(dateTime, slistByBarSize);
+                this.reminderTable.Add(dateTime, slistByBarSize);
                 created = true;
             }
 
@@ -761,19 +782,20 @@ namespace SmartQuant
             if (created)
             {
                 var clock = type == ClockType.Exchange ? this.framework.ExchangeClock : this.framework.Clock;
-                return clock.AddReminder((dt, obj) =>
-                {
-                    SortedList<long, List<BarFactoryItem>> sList;
-                    if (this.orderedItemLists.TryGetValue(dt, out sList))
-                    {
-                        this.orderedItemLists.Remove(dt);
-                        foreach (var lst in sList.Values)
-                            foreach (var itm in lst)
-                                itm.OnReminder(dt);
-                    }
-                }, dateTime);
+                return clock.AddReminder(OnReminder, dateTime);
             }
             return true;
+        }
+
+        private void OnReminder(DateTime datetime, object data)
+        {
+            SortedList<long, List<BarFactoryItem>> sList;
+            if (this.reminderTable.TryGetValue(datetime, out sList))
+            {
+                this.reminderTable.Remove(datetime);
+                foreach (var item in sList.Values.SelectMany(list => list))
+                    item.OnReminder(datetime);
+            }
         }
     }
 }

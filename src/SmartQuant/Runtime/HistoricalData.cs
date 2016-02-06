@@ -57,6 +57,7 @@ namespace SmartQuant
             End = end;
         }
     }
+
     public class HistoricalDataRequest
     {
         public string RequestId { get; set; }
@@ -89,5 +90,4 @@ namespace SmartQuant
     public delegate void HistoricalDataEventHandler(object sender, HistoricalDataEventArgs args);
 
     public delegate void HistoricalDataEndEventHandler(object sender, HistoricalDataEndEventArgs args);
-
 }

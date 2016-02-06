@@ -1,5 +1,5 @@
-﻿// Licensed under the Apache License, Version 2.0. 
-// Copyright (c) Alex Lee. All rights reserved.
+﻿// Copyright (c) FastQuant Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using SmartQuant.FinChart;
 using System;
@@ -66,8 +66,8 @@ namespace SmartQuant.FinChart.Objects
             int y1 = 0;
             foreach (var point in this.path.Points)
             {
-                int x2 = this.Pad.ClientX(point.X);
-                int y2 = this.Pad.ClientY(point.Y);
+                var x2 = Pad.ClientX(point.X);
+                var y2 = Pad.ClientY(point.Y);
                 if (x1 != int.MaxValue)
                     path.AddLine(new Point(x1, y1), new Point(x2, y2));
                 x1 = x2;

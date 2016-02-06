@@ -4,7 +4,7 @@ namespace SmartQuant
 {
     public class DataProcessor
     {
-        internal DataSeriesEmitter emitter;
+        internal DataSeriesObject emitter;
 
         protected void Emit(DataObject obj)
         {
@@ -18,7 +18,7 @@ namespace SmartQuant
         {
             if (obj.TypeId == DataObjectType.Bar)
             {
-                Bar bar = (Bar)obj;
+                var bar = (Bar)obj;
                 if (EmitBarOpen)
                     Emit(new Bar(bar.OpenDateTime, bar.OpenDateTime, bar.InstrumentId, bar.Type, bar.Size, bar.Open, 0, 0, 0, 0, 0));
 
@@ -63,7 +63,7 @@ namespace SmartQuant
         public bool EmitBarOpenTrade { get; set; }
         public bool EmitBarCloseTrade { get; set; }
 
-        internal DataObject Process(DataSeriesEmitter emitter)
+        internal DataObject Process(DataSeriesObject emitter)
         {
             this.emitter = emitter;
             return OnData(emitter.obj);

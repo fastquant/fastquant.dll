@@ -14,37 +14,37 @@ namespace SmartQuant.Shared
         public void Add(IUpdatableToolWindow window)
         {
             Start();
-            lock (this.windows)
-                this.windows.Add(window);
+            lock (_windows)
+                _windows.Add(window);
         }
 
         public void Remove(IUpdatableToolWindow window)
         {
-            lock (this.windows)
-                this.windows.Remove(window);
+            lock (_windows)
+                _windows.Remove(window);
         }
 
         public void Start()
         {
-            if (this.started)
+            if (_started)
                 return;
-            this.started = true;
-            this.timer = new Timer {Interval = 1000};
-            this.timer.Tick += OnTick;
-            this.timer.Start();
+            _started = true;
+            _timer = new Timer {Interval = 1000};
+            _timer.Tick += OnTick;
+            _timer.Start();
         }
 
         private void OnTick(object sender, EventArgs e)
         {
             try
             {
-                this.timer.Stop();
-                lock (this.windows)
-                    foreach (var current in this.windows)
+                _timer.Stop();
+                lock (_windows)
+                    foreach (var current in _windows)
                         current.Update();
 
-                this.timer.Interval = 1000;
-                this.timer.Enabled = true;
+                _timer.Interval = 1000;
+                _timer.Enabled = true;
             }
             catch (Exception arg)
             {
@@ -52,10 +52,10 @@ namespace SmartQuant.Shared
             }
         }
 
-        private bool started;
+        private bool _started;
 
-        private Timer timer;
+        private Timer _timer;
 
-        private readonly List<IUpdatableToolWindow> windows = new List<IUpdatableToolWindow>();
+        private readonly List<IUpdatableToolWindow> _windows = new List<IUpdatableToolWindow>();
     }
 }

@@ -120,7 +120,6 @@ namespace SmartQuant
         public void AddDefaultStreamers()
         {
             var types = new string[] {};
-
             foreach (var name in types)
             {
                 Type t = Type.GetType(name);

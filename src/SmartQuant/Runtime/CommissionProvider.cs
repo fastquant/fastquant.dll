@@ -37,10 +37,10 @@ namespace SmartQuant
             switch (Type)
             {
                 case CommissionType.PerShare:
-                    val = Commission * report.CumQty;
+                    val = Commission*report.CumQty;
                     break;
                 case CommissionType.Percent:
-                    val = Commission * report.CumQty * report.AvgPx;
+                    val = Commission*report.CumQty*report.AvgPx;
                     break;
                 case CommissionType.Absolute:
                     val = Commission;

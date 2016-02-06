@@ -20,7 +20,7 @@ namespace SmartQuant
         {
             get
             {
-                return DetermineDataProvider(this, Instrument); // called with not-non args
+                return GetDataProvider(this, Instrument); // called with not-non args
             }
             set
             {
@@ -34,7 +34,7 @@ namespace SmartQuant
         {
             get
             {
-                return DetermineExecutionProvider(Instrument); // called with not-non args
+                return GetExecutionProvider(Instrument); // called with not-non args
             }
             set
             {
@@ -107,7 +107,7 @@ namespace SmartQuant
             foreach (var s in Strategies)
             {
                 s.Status = StrategyStatus.Running;
-                PapareStrategyForStartRecursively(s, s.Instruments, s.Id);
+                RegisterStrategy(s, s.Instruments, s.Id);
                 s.OnStrategyStart();
             }
         }
@@ -130,10 +130,10 @@ namespace SmartQuant
         private Strategy CreateChildInstrumentStrategy(Instrument instrument)
         {
             var name = $"{Name} ({instrument.Symbol})";
-            var strategy = (InstrumentStrategy)Activator.CreateInstance(GetType(), new object[] { this.framework, name });
+            var strategy = (InstrumentStrategy)Activator.CreateInstance(GetType(), this.framework, name);
             strategy.Instrument = instrument;
             strategy.Instruments.Add(instrument);
-            strategy.SubscriptionList.Add(instrument, DetermineDataProvider(this, instrument));
+            strategy.SubscriptionList.Add(instrument, GetDataProvider(this, instrument));
             strategy.Portfolio = GetOrCreatePortfolio(strategy.Name);
             strategy.Portfolio.GetOrCreatePosition(instrument);
             strategy.raiseEvents = true;

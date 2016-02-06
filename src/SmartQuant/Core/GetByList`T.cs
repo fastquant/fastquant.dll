@@ -34,8 +34,8 @@ namespace SmartQuant
         public GetByList(string idPropName, string namePropName, int size = 1024)
         {
             var t = typeof(T);
-            this.idMethod = t.GetProperty(idPropName).GetGetMethod();
-            this.nameMethod = t.GetProperty(namePropName).GetGetMethod();
+            this.idMethod = t.GetProperty(idPropName).GetMethod;
+            this.nameMethod = t.GetProperty(namePropName).GetMethod;
             this.dictionary = new Dictionary<string, T>();
             this.array = new IdArray<T>(size);
             this.list = new List<T>();
@@ -53,7 +53,7 @@ namespace SmartQuant
 
         public void Add(T obj)
         {
-            int id = Convert.ToInt32(this.idMethod.Invoke(obj, new object[0]));
+            var id = Convert.ToInt32(this.idMethod.Invoke(obj, new object[0]));
             if (this.array[id] == null)
             {
                 this.list.Add(obj);

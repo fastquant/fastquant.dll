@@ -18,12 +18,19 @@ namespace SmartQuant.Component
     {
         protected internal Framework framework;
         protected internal ComponentStrategy strategy;
+
         public BarSeries Bars => this.strategy.Bars;
+
         public Instrument Instrument => this.strategy.Instrument;
+
         public InstrumentManager InstrumentManager => this.framework.InstrumentManager;
+
         public OrderManager OrderManager => this.framework.OrderManager;
+
         public GroupManager GroupManager => this.framework.GroupManager;
+
         public Portfolio Portfolio => this.strategy.Portfolio;
+
         public Position Position => this.strategy.Position;
 
         public void Signal(double value)
@@ -63,87 +70,99 @@ namespace SmartQuant.Component
 
         public void Buy(double qty)
         {
-            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument, OrderType.Market, OrderSide.Buy, qty, 0, 0, TimeInForce.Day, 0, "");
-            order.StrategyId = this.strategy.Id;
+            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument,
+                OrderType.Market, OrderSide.Buy, qty, 0, 0, TimeInForce.Day, 0, "") {StrategyId = this.strategy.Id};
             this.strategy.ExecutionComponent.OnOrder(order);
         }
 
         public void Buy(double qty, string text)
         {
-            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument, OrderType.Market, OrderSide.Buy, qty, 0.0, 0.0, TimeInForce.Day, 0, "");
-            order.Text = text;
-            order.StrategyId = this.strategy.Id;
+            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument,
+                OrderType.Market, OrderSide.Buy, qty, 0.0, 0.0, TimeInForce.Day, 0, "")
+            {
+                Text = text,
+                StrategyId = this.strategy.Id
+            };
             this.strategy.ExecutionComponent.OnOrder(order);
         }
 
         public void BuyLimit(double qty, double price)
         {
-            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument, OrderType.Limit, OrderSide.Buy, qty, price, 0, TimeInForce.Day, 0, "");
-            order.StrategyId = this.strategy.Id;
+            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument,
+                OrderType.Limit, OrderSide.Buy, qty, price, 0, TimeInForce.Day, 0, "") {StrategyId = this.strategy.Id};
             this.strategy.ExecutionComponent.OnOrder(order);
         }
 
         public void BuyLimit(double qty, double price, string text)
         {
-            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument, OrderType.Limit, OrderSide.Buy, qty, price, 0, TimeInForce.Day, 0, text);
-            order.StrategyId = this.strategy.Id;
+            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument,
+                OrderType.Limit, OrderSide.Buy, qty, price, 0, TimeInForce.Day, 0, text) {StrategyId = this.strategy.Id};
             this.strategy.ExecutionComponent.OnOrder(order);
         }
 
         public void BuyStop(double qty, double stopPx)
         {
-            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument, OrderType.Stop, OrderSide.Buy, qty, 0.0, stopPx, TimeInForce.Day, 0, "");
-            order.StrategyId = this.strategy.Id;
+            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument,
+                OrderType.Stop, OrderSide.Buy, qty, 0.0, stopPx, TimeInForce.Day, 0, "") {StrategyId = this.strategy.Id};
             this.strategy.ExecutionComponent.OnOrder(order);
         }
 
         public void BuyStop(double qty, double stopPx, string text)
         {
-            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument, OrderType.Stop, OrderSide.Buy, qty, 0, stopPx, TimeInForce.Day, 0, text);
-            order.StrategyId = this.strategy.Id;
+            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument,
+                OrderType.Stop, OrderSide.Buy, qty, 0, stopPx, TimeInForce.Day, 0, text) {StrategyId = this.strategy.Id};
             this.strategy.ExecutionComponent.OnOrder(order);
         }
 
         public void Sell(double qty)
         {
-            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument, OrderType.Market, OrderSide.Sell, qty, 0, 0, TimeInForce.Day, 0, "");
-            order.StrategyId = this.strategy.Id;
+            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument,
+                OrderType.Market, OrderSide.Sell, qty, 0, 0, TimeInForce.Day, 0, "") {StrategyId = this.strategy.Id};
             this.strategy.ExecutionComponent.OnOrder(order);
         }
 
         public void Sell(double qty, string text)
         {
-            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument, OrderType.Market, OrderSide.Sell, qty, 0, 0, TimeInForce.Day, 0, "");
-            order.Text = text;
-            order.StrategyId = this.strategy.Id;
+            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument,
+                OrderType.Market, OrderSide.Sell, qty, 0, 0, TimeInForce.Day, 0, "")
+            {
+                Text = text,
+                StrategyId = this.strategy.Id
+            };
             this.strategy.ExecutionComponent.OnOrder(order);
         }
 
         public void SellLimit(double qty, double price)
         {
-            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument, OrderType.Limit, OrderSide.Sell, qty, price, 0, TimeInForce.Day, 0, "");
-            order.StrategyId = this.strategy.Id;
+            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument,
+                OrderType.Limit, OrderSide.Sell, qty, price, 0, TimeInForce.Day, 0, "") {StrategyId = this.strategy.Id};
             this.strategy.ExecutionComponent.OnOrder(order);
         }
 
         public void SellLimit(double qty, double price, string text)
         {
-            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument, OrderType.Limit, OrderSide.Sell, qty, price, 0, TimeInForce.Day, 0, text);
-            order.StrategyId = this.strategy.Id;
+            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument,
+                OrderType.Limit, OrderSide.Sell, qty, price, 0, TimeInForce.Day, 0, text)
+            {
+                StrategyId = this.strategy.Id
+            };
             this.strategy.ExecutionComponent.OnOrder(order);
         }
 
         public void SellStop(double qty, double stopPx)
         {
-            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument, OrderType.Stop, OrderSide.Sell, qty, 0, stopPx, TimeInForce.Day, 0, "");
-            order.StrategyId = this.strategy.Id;
+            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument,
+                OrderType.Stop, OrderSide.Sell, qty, 0, stopPx, TimeInForce.Day, 0, "") {StrategyId = this.strategy.Id};
             this.strategy.ExecutionComponent.OnOrder(order);
         }
 
         public void SellStop(double qty, double stopPx, string text)
         {
-            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument, OrderType.Stop, OrderSide.Sell, qty, 0, stopPx, TimeInForce.Day, 0, text);
-            order.StrategyId = this.strategy.Id;
+            var order = new Order(this.strategy.ExecutionProvider, this.strategy.Portfolio, this.strategy.Instrument,
+                OrderType.Stop, OrderSide.Sell, qty, 0, stopPx, TimeInForce.Day, 0, text)
+            {
+                StrategyId = this.strategy.Id
+            };
             this.strategy.ExecutionComponent.OnOrder(order);
         }
 
@@ -341,7 +360,7 @@ namespace SmartQuant.Component
 
         public virtual void OnOrder(Order order)
         {
-            order.Provider = this.strategy.DetermineExecutionProvider(Instrument);
+            order.Provider = this.strategy.GetExecutionProvider(Instrument);
             order.StrategyId = this.strategy.Id;
             this.strategy.framework.OrderManager.Send(order);
         }

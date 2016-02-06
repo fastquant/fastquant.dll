@@ -13,14 +13,16 @@ namespace SmartQuant
         {
             barType = BarType.Time;
             barSize = 0;
-            string[] parts = series.Name.Split(new char[] { '.' }, StringSplitOptions.None);
-            return parts.Length >= 3 && GetDataType(series) == DataObjectType.Bar && Enum.TryParse<BarType>(parts[parts.Length - 3], out barType) && long.TryParse(parts[parts.Length - 2], out barSize);
+            var parts = series.Name.Split(new[] { '.' }, StringSplitOptions.None);
+            return parts.Length >= 3 && GetDataType(series) == DataObjectType.Bar &&
+                   Enum.TryParse<BarType>(parts[parts.Length - 3], out barType) &&
+                   long.TryParse(parts[parts.Length - 2], out barSize);
         }
 
         public static Instrument GetInstrument(DataSeries series, Framework framework)
         {
-            string[] parts = series.Name.Split(new char[] { '.' }, StringSplitOptions.None);
-            int id = GetDataType(series) == DataObjectType.Bar ? int.Parse(parts[parts.Length - 4]) : int.Parse(parts[parts.Length - 2]);
+            var parts = series.Name.Split(new[] { '.' }, StringSplitOptions.None);
+            var id = GetDataType(series) == DataObjectType.Bar ? int.Parse(parts[parts.Length - 4]) : int.Parse(parts[parts.Length - 2]);
             return framework.InstrumentManager.GetById(id);
         }
 
@@ -28,8 +30,8 @@ namespace SmartQuant
 
         public static string GetSymbol(string seriesName)
         {
-            string[] parts = seriesName.Split(new char[] { '.' }, StringSplitOptions.None);
-            int which = parts[parts.Length - 1] == "Bar" ? 4 : 2;
+            var parts = seriesName.Split(new[] { '.' }, StringSplitOptions.None);
+            var which = parts[parts.Length - 1] == "Bar" ? 4 : 2;
             return string.Join(".", parts, 0, parts.Length - which);
         }
 
@@ -37,7 +39,7 @@ namespace SmartQuant
 
         private static byte GetDataTypeFromName(string seriesName)
         {
-            string[] parts = seriesName.Split(new char[] { '.' }, StringSplitOptions.None);
+            var parts = seriesName.Split(new[] { '.' }, StringSplitOptions.None);
             switch (parts[parts.Length - 1])
             {
                 case "Tick":

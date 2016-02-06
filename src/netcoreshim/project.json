@@ -2,7 +2,7 @@
   "frameworks": {
     "dnxcore50": {
       "dependencies": {
-        "System.Console": "4.0.0-beta-*"
+        "NETStandard.Library": "1.0.0-rc2-*"
       }
     }
   }

@@ -52,7 +52,7 @@ namespace SmartQuant.Indicators
 
         public override void Calculate(int index)
         {
-            double smv = Value(this.input, index, this.length, this.barData);
+            var smv = Value(this.input, index, this.length, this.barData);
             if (!double.IsNaN(smv))
                 Add(this.input.GetDateTime(index), smv);
         }
@@ -61,7 +61,7 @@ namespace SmartQuant.Indicators
         {
             if (index >= length - 1)
             {
-                double sma = SMA.Value(input, index, length, barData);
+                var sma = SMA.Value(input, index, length, barData);
                 return Enumerable.Range(index - length + 1, length)
                     .Sum(i => (sma - input[i, barData])*(sma - input[i, barData]))/length;
             }

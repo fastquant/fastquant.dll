@@ -51,13 +51,13 @@ namespace SmartQuant
         public void Clear()
         {
             this.readPosition = this.writePosition = 0;
-             FullCount = EmptyCount = EnqueueCount = DequeueCount = 0;
+            FullCount = EmptyCount = EnqueueCount = DequeueCount = 0;
             Array.Clear(this.events, 0, this.events.Length);
         }
 
         public Event Peek() => this.events[this.readPosition];
 
-        public DateTime PeekDateTime() => Peek().DateTime;
+        public DateTime PeekDateTime() => this.events[this.readPosition].DateTime;
 
         public Event Read()
         {

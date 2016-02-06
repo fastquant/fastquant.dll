@@ -129,9 +129,9 @@ namespace SmartQuant.FinChart.Objects
 
         private double GetLineValueAt(int x)
         {
-            double num1 = (double) this.pad.MainSeries.GetIndex(this.line.X1, IndexOption.Null);
-            double num2 = (double) this.pad.MainSeries.GetIndex(this.line.X2, IndexOption.Null);
-            return this.line.Y1 + ((double) x - num1) / (num2 - num1) * (this.line.Y2 - this.line.Y1);
+            double num1 = this.pad.MainSeries.GetIndex(this.line.X1);
+            double num2 = this.pad.MainSeries.GetIndex(this.line.X2);
+            return this.line.Y1 + (x - num1)/(num2 - num1)*(this.line.Y2 - this.line.Y1);
         }
     }
 }

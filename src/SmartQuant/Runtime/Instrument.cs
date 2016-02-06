@@ -198,7 +198,7 @@ namespace SmartQuant
 
     public class InstrumentList : IEnumerable<Instrument>
     {
-        private GetByList<Instrument> list = new GetByList<Instrument>("Id", "Symbol");
+        private readonly GetByList<Instrument> list = new GetByList<Instrument>("Id", "Symbol");
 
         public int Count => this.list.Count;
 
