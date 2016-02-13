@@ -59,6 +59,8 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Rename", "tools\Rename\Rena
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Profilable", "test\Profilable\Profilable.csproj", "{CA9825E6-7164-438E-A7C1-56E2312A3D49}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartQuant.Tests.MsBuild", "test\SmartQuant.Tests.MsBuild\SmartQuant.Tests.MsBuild.csproj", "{2FD4F69F-C9F9-483C-8B59-7B842F1DE53A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -147,6 +149,10 @@ Global
 		{CA9825E6-7164-438E-A7C1-56E2312A3D49}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA9825E6-7164-438E-A7C1-56E2312A3D49}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA9825E6-7164-438E-A7C1-56E2312A3D49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FD4F69F-C9F9-483C-8B59-7B842F1DE53A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FD4F69F-C9F9-483C-8B59-7B842F1DE53A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FD4F69F-C9F9-483C-8B59-7B842F1DE53A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FD4F69F-C9F9-483C-8B59-7B842F1DE53A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -173,5 +179,6 @@ Global
 		{50B74A8A-0094-4573-A2E1-B8AF45AE674E} = {D4C04A70-7D16-43EA-8681-E56515C97FC1}
 		{FFF11D53-276E-4588-A3F7-071C444C04EC} = {62243352-748F-474A-9FFE-A3065CBFB56A}
 		{CA9825E6-7164-438E-A7C1-56E2312A3D49} = {B5999BD6-099D-437A-B1B7-BB269E4D469E}
+		{2FD4F69F-C9F9-483C-8B59-7B842F1DE53A} = {B5999BD6-099D-437A-B1B7-BB269E4D469E}
 	EndGlobalSection
 EndGlobal

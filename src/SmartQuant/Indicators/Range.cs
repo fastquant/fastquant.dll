@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) FastQuant Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
+using System;
 using System.ComponentModel;
 
 namespace SmartQuant.Indicators
@@ -6,6 +9,22 @@ namespace SmartQuant.Indicators
     [Serializable]
     public class Range : Indicator
     {
+        protected int length;
+
+        [Category("Parameters"), Description("")]
+        public int Length
+        {
+            get
+            {
+                return this.length;
+            }
+            set
+            {
+                this.length = value;
+                Init();
+            }
+        }
+
         public Range(ISeries input, int length):base(input)
         {
             this.length = length;
@@ -14,11 +33,9 @@ namespace SmartQuant.Indicators
 
         public override void Calculate(int index)
         {
-            double num = Range.Value(this.input, index, this.length);
+            var num = Value(this.input, index, this.length);
             if (!double.IsNaN(num))
-            {
                 base.Add(this.input.GetDateTime(index), num);
-            }
         }
 
         protected override void Init()
@@ -37,23 +54,8 @@ namespace SmartQuant.Indicators
                 var max = input.GetMax(index - length + 1, index, BarData.High);
                 return Math.Log(max/min);
             }
-            return double.NaN;
+            else 
+                return double.NaN;
         }
-
-        [Category("Parameters"), Description("")]
-        public int Length
-        {
-            get
-            {
-                return this.length;
-            }
-            set
-            {
-                this.length = value;
-                Init();
-            }
-        }
-
-        protected int length;
     }
 }

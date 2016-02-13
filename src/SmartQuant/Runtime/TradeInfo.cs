@@ -44,10 +44,10 @@ namespace SmartQuant
         {
             get
             {
-                double num = (Instrument.Factor == 0.0) ? 1.0 : Instrument.Factor;
-                double num2 = num * Qty * (ExitPrice - EntryPrice) * (IsLong ? 1 : -1);
+                double factor = Instrument.Factor == 0.0 ? 1.0 : Instrument.Factor;
+                double num2 = factor * Qty * (ExitPrice - EntryPrice) * (IsLong ? 1 : -1);
                 num2 -= EntryCost + ExitCost;
-                if (this.Instrument.CurrencyId != this.BaseCurrencyId)
+                if (Instrument.CurrencyId != BaseCurrencyId)
                 {
                     if (this.double_1 == num2)
                     {
@@ -65,7 +65,7 @@ namespace SmartQuant
         {
             get
             {
-                double factor = (Instrument.Factor == 0) ? 1 : Instrument.Factor;
+                double factor = Instrument.Factor == 0.0 ? 1 : Instrument.Factor;
                 double num2 = factor * Qty * (ExitPrice - EntryPrice) * (IsLong ? 1 : -1);
                 if (Instrument.CurrencyId != BaseCurrencyId)
                 {

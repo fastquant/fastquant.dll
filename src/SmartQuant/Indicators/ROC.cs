@@ -1,13 +1,10 @@
-﻿// Copyright (c) FastQuant Foundation. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
-
 using System;
 using System.ComponentModel;
 
 namespace SmartQuant.Indicators
 {
     [Serializable]
-    public class SMD : Indicator
+    public class ROC : Indicator
     {
         protected int length;
         protected BarData barData;
@@ -15,7 +12,10 @@ namespace SmartQuant.Indicators
         [Category("Parameters"), Description("")]
         public int Length
         {
-            get { return this.length; }
+            get
+            {
+                return this.length;
+            }
             set
             {
                 this.length = value;
@@ -26,7 +26,10 @@ namespace SmartQuant.Indicators
         [Category("Parameters"), Description("")]
         public BarData BarData
         {
-            get { return this.barData; }
+            get
+            {
+                return this.barData;
+            }
             set
             {
                 this.barData = value;
@@ -34,7 +37,7 @@ namespace SmartQuant.Indicators
             }
         }
 
-        public SMD(ISeries input, int length, BarData barData = BarData.Close) : base(input)
+        public ROC(ISeries input, int length, BarData barData = BarData.Close) : base(input)
         {
             this.length = length;
             this.barData = barData;
@@ -43,22 +46,24 @@ namespace SmartQuant.Indicators
 
         protected override void Init()
         {
-            this.name = $"SMD ({this.length}, {this.barData})";
-            this.description = "Simple Moving Deviation";
+            this.name = this.input is BarSeries ? $"ROC ({this.length}, {this.barData}" : $"ROC ({this.length})";
+            this.description = "Price Rate of Change";
             Clear();
             this.calculate = true;
         }
 
         public override void Calculate(int index)
         {
-            var smd = Value(this.input, index, this.length, this.barData);
-            if (!double.IsNaN(smd))
-                Add(this.input.GetDateTime(index), smd);
+            var value = Value(this.input, index, this.length, this.barData);
+            if (!double.IsNaN(value))
+                Add(this.input.GetDateTime(index), value);
         }
 
         public static double Value(ISeries input, int index, int length, BarData barData = BarData.Close)
         {
-            return index < length - 1 ? double.NaN : Math.Sqrt(SMV.Value(input, index, length, barData));
+            return index < length
+                ? double.NaN
+                : (input[index, barData] - input[index - length, barData])/input[index - length, barData]*100;
         }
     }
 }

@@ -1,16 +1,13 @@
-﻿// Copyright (c) FastQuant Foundation. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
-
 using System;
 using System.ComponentModel;
 
 namespace SmartQuant.Indicators
 {
     [Serializable]
-    public class BBL : Indicator
+    public class ENVL : Indicator
     {
         protected int length;
-        protected double k;
+        protected double shift;
         protected BarData barData;
 
         [Category("Parameters"), Description("")]
@@ -28,15 +25,15 @@ namespace SmartQuant.Indicators
         }
 
         [Category("Parameters"), Description("")]
-        public double K
+        public new double Shift
         {
             get
             {
-                return this.k;
+                return this.shift;
             }
             set
             {
-                this.k = value;
+                this.shift = value;
                 Init();
             }
         }
@@ -55,34 +52,32 @@ namespace SmartQuant.Indicators
             }
         }
 
-        public BBL(ISeries input, int length, double k, BarData barData = BarData.Close) : base(input)
+        public ENVL(ISeries input, int length, double shift, BarData barData = BarData.Close) : base(input)
         {
             this.length = length;
-            this.k = k;
+            this.shift = shift;
             this.barData = barData;
             Init();
         }
 
-        public override void Calculate(int index)
-        {
-            var bbl = Value(this.input, index, this.length, this.k, this.barData);
-            if (!double.IsNaN(bbl))
-                Add(this.input.GetDateTime(index), bbl);
-        }
-
         protected override void Init()
         {
-            this.name = $"BBL ({this.length}, {this.k}, {this.barData})";
-            this.description = "Bollinger Band Lower";
+            this.name = this.input is BarSeries ? $"ENVL ({this.length}, {this.shift}, {this.barData}" : $"ENVL ({this.length}, {this.shift})";
+            this.description = "Envelope Lower";
             Clear();
             this.calculate = true;
         }
 
-        public static double Value(ISeries input, int index, int length, double k, BarData barData = BarData.Close)
+        public override void Calculate(int index)
         {
-            return index >= length - 1
-                ? SMA.Value(input, index, length, barData) - k*SMD.Value(input, index, length, barData)
-                : double.NaN;
+            var value = Value(this.input, index, this.length, this.shift, this.barData);
+            if (!double.IsNaN(value))
+                Add(this.input.GetDateTime(index), value);
+        }
+
+        public static double Value(ISeries input, int index, int length, double shift, BarData barData = BarData.Close)
+        {
+            return index < length - 1 ? double.NaN : SMA.Value(input, index, length, barData)*(1 - shift/100.0);
         }
     }
 }

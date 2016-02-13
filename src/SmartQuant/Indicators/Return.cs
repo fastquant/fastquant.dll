@@ -13,7 +13,7 @@ namespace SmartQuant.Indicators
 
         public override void Calculate(int index)
         {
-            Add(this.input.GetDateTime(index), index > 0 ? this.input[index, BarData.Close] / this.input[index - 1, BarData.Close] - 1 : 0);
+            Add(this.input.GetDateTime(index), index > 0 ? this.input[index, BarData.Close]/this.input[index - 1, BarData.Close] - 1 : 0);
         }
     }
 
@@ -25,7 +25,7 @@ namespace SmartQuant.Indicators
 
         public override void Calculate(int index)
         {
-            Add(this.input.GetDateTime(index), index > 0 ? Math.Log(this.input[index, BarData.Close] / this.input[index - 1, BarData.Close]) : 0);
+            Add(this.input.GetDateTime(index), index > 0 ? Math.Log(this.input[index, BarData.Close]/this.input[index - 1, BarData.Close]) : 0);
         }
     }
 }

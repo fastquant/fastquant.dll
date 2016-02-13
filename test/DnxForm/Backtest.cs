@@ -35,7 +35,7 @@ namespace Demo
         {
         }
 
-        protected internal override void OnStrategyStart()
+        protected override void OnStrategyStart()
         {
             Portfolio.Account.Deposit(AllocationPerInstrument, CurrencyId.USD, "Initial allocation");
 

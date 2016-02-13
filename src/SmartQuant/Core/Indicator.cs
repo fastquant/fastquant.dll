@@ -12,6 +12,12 @@ namespace SmartQuant
             QuantStudio,
             MetaStock
         }
+
+        public enum RegressionDistanceMode
+        {
+            Time,
+            Index
+        }
     }
 
     public class Indicator : TimeSeries
@@ -33,15 +39,9 @@ namespace SmartQuant
             // noop
         }
 
-        public void Attach()
-        {
-            this.input.Indicators.Add(this);
-        }
+        public void Attach() => this.input.Indicators.Add(this);
 
-        public void Detach()
-        {
-            this.input.Indicators.Remove(this);
-        }
+        public void Detach() => this.input.Indicators.Remove(this);
 
         protected virtual void Calculate()
         {
@@ -49,10 +49,8 @@ namespace SmartQuant
             {
                 this.calculate = false;
                 (this.input as Indicator)?.Calculate();
-                for (int i = 0; i < this.input.Count; i++)
-                {
+                for (var i = 0; i < this.input.Count; i++)
                     Update(i);
-                }
             }
         }
 

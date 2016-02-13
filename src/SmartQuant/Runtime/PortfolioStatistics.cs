@@ -113,7 +113,7 @@ namespace SmartQuant
 
         public PortfolioStatisticsItem()
         {
-            this.totalValues = new TimeSeries($"{Name}", "");
+            this.totalValues = new TimeSeries(Name, "");
             this.longValues = new TimeSeries($"{Name} Long", "");
             this.shortValues = new TimeSeries($"{Name} Short", "");
         }

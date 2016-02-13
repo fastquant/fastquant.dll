@@ -13,7 +13,7 @@ namespace SmartQuant
             _key = string.Join("\u0001", fieldNames.Select(f => GetValue(data, f)));
         }
 
-        public override bool Equals(object obj) => obj is AccountDataKey ? _key.Equals(((AccountDataKey) obj)._key) : base.Equals(obj);
+        public override bool Equals(object obj) => obj is AccountDataKey ? _key.Equals(((AccountDataKey)obj)._key) : base.Equals(obj);
 
         public override int GetHashCode() => _key.GetHashCode();
 
@@ -26,11 +26,11 @@ namespace SmartQuant
 
     internal class AccountDataTableItem
     {
-        public AccountDataFieldList Values { get; }= new AccountDataFieldList();
+        public AccountDataFieldList Values { get; } = new AccountDataFieldList();
 
         public IDictionary<AccountDataKey, AccountDataFieldList> Positions { get; } = new Dictionary<AccountDataKey, AccountDataFieldList>();
 
-        public IDictionary<AccountDataKey, AccountDataFieldList> Orders { get; }= new Dictionary<AccountDataKey, AccountDataFieldList>();
+        public IDictionary<AccountDataKey, AccountDataFieldList> Orders { get; } = new Dictionary<AccountDataKey, AccountDataFieldList>();
     }
 
     internal class AccountDataTable
@@ -87,7 +87,7 @@ namespace SmartQuant
         public AccountDataSnapshot[] GetSnapshots()
         {
             lock (this.tables)
-                return this.tables.Keys.Select(k => GetSnapshot((byte) (k/256), (byte) (k%256))).ToArray();
+                return this.tables.Keys.Select(k => GetSnapshot((byte)(k / 256), (byte)(k % 256))).ToArray();
         }
 
         internal void Clear()
@@ -98,7 +98,7 @@ namespace SmartQuant
 
         internal void OnAccountData(AccountData data)
         {
-            AccountDataTable @class = GetTable(data.ProviderId, data.Route, true);
+            var @class = GetTable(data.ProviderId, data.Route, true);
             lock (@class)
             {
                 AccountDataTableItem class2;

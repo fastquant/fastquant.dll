@@ -42,25 +42,16 @@ namespace SmartQuant.Indicators
             Init();
         }
 
-        //TODO: reduce it!
         public override void Calculate(int index)
         {
             if (index >= this.length - 1)
             {
-                double num = 0;
+                double sma;
                 if (index == this.length - 1)
-                {
-                    for (int i = index; i >= index - this.length + 1; i--)
-                    {
-                        num += this.input[i, this.barData]/this.length;
-                    }
-                }
+                    sma = Value(this.input, index, this.length, this.barData);
                 else
-                {
-                    num = base[this.input.GetDateTime(index - 1), SearchOption.ExactFirst] +
-                          (this.input[index, this.barData] - this.input[index - this.length, this.barData])/this.length;
-                }
-                Add(this.input.GetDateTime(index), num);
+                    sma = base[this.input.GetDateTime(index - 1)] + (this.input[index, this.barData] - this.input[index - this.length, this.barData])/this.length;
+                Add(this.input.GetDateTime(index), sma);
             }
         }
 
