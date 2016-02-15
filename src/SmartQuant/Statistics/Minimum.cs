@@ -21,11 +21,11 @@ namespace SmartQuant.Statistics
             if (statistics.Type == this.type)
             {
                 this.longValue = Min(this.longValue, statistics.LongValue);
-                this.longValues.Add(Clock.DateTime, this.longValue);
+                LongValues.Add(Clock.DateTime, this.longValue);
                 this.shortValue = Min(this.shortValue, statistics.ShortValue);
-                this.shortValues.Add(Clock.DateTime, this.shortValue);
+                ShortValues.Add(Clock.DateTime, this.shortValue);
                 this.totalValue = Min(this.totalValue, statistics.TotalValue);
-                this.totalValues.Add(Clock.DateTime, this.totalValue);
+                TotalValues.Add(Clock.DateTime, this.totalValue);
                 Emit();
             }
         }
@@ -60,5 +60,4 @@ namespace SmartQuant.Statistics
 
         public override int Type => PortfolioStatisticsType.MaxDrawdownPercent;
     }
-
 }

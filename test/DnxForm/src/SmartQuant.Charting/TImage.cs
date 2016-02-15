@@ -1,16 +1,12 @@
-﻿// Licensed under the Apache License, Version 2.0. 
-// Copyright (c) Alex Lee. All rights reserved.
-
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Drawing;
-using System.Text;
 
 namespace SmartQuant.Charting
 {
     public class TImage : IDrawable, IMovable
     {
-        private Image Image { get; set; }
+        private Image Image { get; }
 
         [Category("Position")]
         [Description("X position of this image on the pad. (World coordinate system)")]
@@ -64,12 +60,14 @@ namespace SmartQuant.Charting
 
         public TDistance Distance(double x, double y)
         {
-            var d = new TDistance();
-            d.X = X;
-            d.Y = Y;
-            d.dX = Math.Abs(x - X);
-            d.dY = Math.Abs(y - Y);
-            d.ToolTipText = string.Format(ToolTipFormat, X, Y);
+            var d = new TDistance
+            {
+                X = X,
+                Y = Y,
+                dX = Math.Abs(x - X),
+                dY = Math.Abs(y - Y),
+                ToolTipText = string.Format(ToolTipFormat, X, Y)
+            };
             return d;
         }
 

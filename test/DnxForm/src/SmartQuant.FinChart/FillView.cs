@@ -81,7 +81,7 @@ namespace SmartQuant.FinChart
                     return this.fill.DateTime;
                 int index = this.pad.Series.GetIndex(this.fill.DateTime, IndexOption.Prev);
                 Bar bar = index >= 0 ? (this.pad.Series as BarSeries)[index] : null;
-                return bar != null ? bar.DateTime : DateTime.MinValue;
+                return bar?.DateTime ?? DateTime.MinValue;
             }
         }
 

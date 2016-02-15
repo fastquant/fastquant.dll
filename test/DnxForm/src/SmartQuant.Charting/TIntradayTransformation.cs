@@ -59,7 +59,7 @@ namespace SmartQuant.Charting
 
         public void GetFirstGridDivision(ref EGridSize gridSize, ref double min, ref double max, ref DateTime firstDateTime)
         {
-            if ((max - min) / (double)Session <= 10.0)
+            if ((max - min) / Session <= 10.0)
             {
                 gridSize = Axis.CalculateSize(max - min);
                 max = min + CalculateRealQuantityOfTicks_Right(min, max);

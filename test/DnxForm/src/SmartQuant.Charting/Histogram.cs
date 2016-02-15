@@ -63,7 +63,7 @@ namespace SmartQuant.Charting
         {
             if (x < this.fXMin || x >= this.fXMax)
                 return;
-            int index = (int)((double)this.fNBins * (x - this.fXMin) / (this.fXMax - this.fXMin));
+            int index = (int)(this.fNBins * (x - this.fXMin) / (this.fXMax - this.fXMin));
             ++this.fBins[index];
             if (this.fBins[index] > this.fYMax)
                 this.fYMax = this.fBins[index];
@@ -74,32 +74,20 @@ namespace SmartQuant.Charting
         {
             if (x < this.fXMin || x >= this.fXMax)
                 return;
-            int index = (int)((double)this.fNBins * (x - this.fXMin) / (this.fXMax - this.fXMin));
+            int index = (int)(this.fNBins * (x - this.fXMin) / (this.fXMax - this.fXMin));
             this.fBins[index] = value;
             if (this.fBins[index] > this.fYMax)
                 this.fYMax = this.fBins[index];
             this.fIntegralChanged = true;
         }
 
-        public double GetBinSize()
-        {
-            return this.fBinSize;
-        }
+        public double GetBinSize() => this.fBinSize;
 
-        public double GetBinMin(int index)
-        {
-            return this.fXMin + this.fBinSize * index;
-        }
+        public double GetBinMin(int index) => this.fXMin + this.fBinSize * index;
 
-        public double GetBinMax(int index)
-        {
-            return this.fXMin + this.fBinSize * (index + 1);
-        }
+        public double GetBinMax(int index) => this.fXMin + this.fBinSize * (index + 1);
 
-        public double GetBinCentre(int index)
-        {
-            return this.fXMin + this.fBinSize * (index + 0.5);
-        }
+        public double GetBinCentre(int index) => this.fXMin + this.fBinSize * (index + 0.5);
 
         public double[] GetIntegral()
         {
@@ -121,10 +109,7 @@ namespace SmartQuant.Charting
             return this.fIntegral;
         }
 
-        public double GetSum()
-        {
-            return this.fBins.Sum();
-        }
+        public double GetSum() => this.fBins.Sum();
 
         public double GetMean()
         {
@@ -133,7 +118,7 @@ namespace SmartQuant.Charting
             for (int i = 0; i < this.fNBins; ++i)
             {
                 num1 += this.fBins[i];
-                num2 += this.GetBinCentre(i) * this.fBins[i];
+                num2 += GetBinCentre(i) * this.fBins[i];
             }
             if (num1 != 0.0)
                 return num2 / num1;
@@ -164,13 +149,13 @@ namespace SmartQuant.Charting
         public virtual void Paint(Pad pad, double xMin, double xMax, double yMin, double yMax)
         {
             var pen = new Pen(LineColor);
-            Brush brush = this.fFillBrush != null ? this.fFillBrush : new SolidBrush(FillColor);
-            for (int i = 0; i < this.fNBins; ++i)
+            var brush = this.fFillBrush ?? new SolidBrush(FillColor);
+            for (var i = 0; i < this.fNBins; ++i)
             {
-                pad.Graphics.FillRectangle(brush, pad.ClientX(this.GetBinMin(i)), pad.ClientY(this.fBins[i]), Math.Abs(pad.ClientX(this.GetBinMax(i)) - pad.ClientX(this.GetBinMin(i))), Math.Abs(pad.ClientY(this.fBins[i]) - pad.ClientY(0.0)));
-                pad.DrawLine(pen, this.GetBinMin(i), 0.0, this.GetBinMin(i), this.fBins[i]);
-                pad.DrawLine(pen, this.GetBinMin(i), this.fBins[i], this.GetBinMax(i), this.fBins[i]);
-                pad.DrawLine(pen, this.GetBinMax(i), this.fBins[i], this.GetBinMax(i), 0.0);
+                pad.Graphics.FillRectangle(brush, pad.ClientX(GetBinMin(i)), pad.ClientY(this.fBins[i]), Math.Abs(pad.ClientX(GetBinMax(i)) - pad.ClientX(GetBinMin(i))), Math.Abs(pad.ClientY(this.fBins[i]) - pad.ClientY(0.0)));
+                pad.DrawLine(pen, GetBinMin(i), 0.0, GetBinMin(i), this.fBins[i]);
+                pad.DrawLine(pen, GetBinMin(i), this.fBins[i], GetBinMax(i), this.fBins[i]);
+                pad.DrawLine(pen, GetBinMax(i), this.fBins[i], GetBinMax(i), 0.0);
             }
         }
 

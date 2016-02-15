@@ -38,6 +38,7 @@ namespace SmartQuant.ChartViewers
             return new PadRange(minPx, maxPx);
         }
 
+        // TODO: review it
         public override void Paint(object obj, Pad pad)
         {
             var tickSeries = obj as TickSeries;

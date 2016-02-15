@@ -12,6 +12,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4557E8C2-3EDA-47A0-BA33-D7ADBE163192}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{62243352-748F-474A-9FFE-A3065CBFB56A}"
+	ProjectSection(SolutionItems) = preProject
+		tools\GenSQLibs.csx = tools\GenSQLibs.csx
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{D4C04A70-7D16-43EA-8681-E56515C97FC1}"
 EndProject

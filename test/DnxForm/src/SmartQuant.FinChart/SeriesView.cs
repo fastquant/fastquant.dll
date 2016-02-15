@@ -173,8 +173,8 @@ namespace SmartQuant.FinChart
             Brush brush2 = new SolidBrush(UpColor);
             long num1 = -1L;
             long num2 = -1L;
-            int index1 = this.series.GetIndex(this.firstDate, IndexOption.Null);
-            int index2 = this.series.GetIndex(this.lastDate, IndexOption.Null);
+            int index1 = this.series.GetIndex(this.firstDate);
+            int index2 = this.series.GetIndex(this.lastDate);
             if (index1 == -1 || index2 == -1)
                 return;
             int width = (int)Math.Max(2.0, (double)(int)this.pad.IntervalWidth / 1.4);
@@ -265,7 +265,7 @@ namespace SmartQuant.FinChart
         public override Distance Distance(int x, double y)
         {
             var d = new Distance();
-            var bar = (MainSeries as BarSeries)[this.pad.GetDateTime(x), IndexOption.Null];
+            var bar = (MainSeries as BarSeries)[this.pad.GetDateTime(x)];
             d.DX = 0;
             d.DY = bar.Low <= y && y <= bar.High ? 0 : d.DY;
             if (d.DX == double.MaxValue || d.DY == double.MaxValue)
@@ -281,7 +281,7 @@ namespace SmartQuant.FinChart
 
         public override ISeries MainSeries => this.series;
 
-        public SearchOption Option { get; private set; }
+        public SearchOption Option { get; }
 
         internal SmoothingMode SmoothingMode { get; set; }
 
@@ -482,7 +482,7 @@ namespace SmartQuant.FinChart
             {
                 if (!this.series.Contains(dateTime))
                     return null;
-                num = this.series[dateTime, SearchOption.ExactFirst];
+                num = this.series[dateTime];
             }
             if (Option == SearchOption.Next)
             {

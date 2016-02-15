@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Linq;
 using System.Text;
 
 namespace SmartQuant.Charting
@@ -197,7 +199,7 @@ namespace SmartQuant.Charting
 
     public interface IMovable
     {
-        void Move(double X, double Y, double dX, double dY);
+        void Move(double x, double y, double dX, double dY);
     }
 
     public interface IZoomable
@@ -320,7 +322,7 @@ namespace SmartQuant.Charting
         public Color LineColor { get; set; }
 
         [Browsable(false)]
-        public ArrayList Points { get; private set; }
+        public ArrayList Points { get; }
 
         [Browsable(false)]
         public double MinX { get; private set; }
@@ -415,9 +417,7 @@ namespace SmartQuant.Charting
         public virtual void Draw(string option)
         {
             if (Chart.Pad == null)
-            {
-                var canvas = new Canvas("Canvas", "Canvas");
-            }
+                new Canvas("Canvas", "Canvas");
             Chart.Pad.Add(this);
             Chart.Pad.Title.Add(Name, LineColor);
             Chart.Pad.Legend.Add(Name, LineColor);
@@ -428,6 +428,7 @@ namespace SmartQuant.Charting
 
         public virtual void Draw() => Draw("");
 
+        // TODO: review
         public virtual void Paint(Pad pad, double xMin, double xMax, double yMin, double yMax)
         {
             if (Style == EGraphStyle.Line && LineEnabled)
@@ -482,45 +483,59 @@ namespace SmartQuant.Charting
             switch (MoveStyle)
             {
                 case EGraphMoveStyle.Graph:
-                    IEnumerator enumerator1 = Points.GetEnumerator();
-                    try
+                    foreach (var tmarker in Points.Cast<TMarker>())
                     {
-                        while (enumerator1.MoveNext())
-                        {
-                            TMarker tmarker = (TMarker)enumerator1.Current;
-                            tmarker.X += dX;
-                            tmarker.Y += dY;
-                        }
-                        break;
+                        tmarker.X = dX;
+                        tmarker.Y = dY;
                     }
-                    finally
-                    {
-                        IDisposable disposable = enumerator1 as IDisposable;
-                        if (disposable != null)
-                            disposable.Dispose();
-                    }
+                    break;
+                    //IEnumerator enumerator1 = Points.GetEnumerator();
+                    //try
+                    //{
+                    //    while (enumerator1.MoveNext())
+                    //    {
+                    //        TMarker tmarker = (TMarker)enumerator1.Current;
+                    //        tmarker.X += dX;
+                    //        tmarker.Y += dY;
+                    //    }
+                    //    break;
+                    //}
+                    //finally
+                    //{
+                    //    IDisposable disposable = enumerator1 as IDisposable;
+                    //    if (disposable != null)
+                    //        disposable.Dispose();
+                    //}
                 case EGraphMoveStyle.Point:
-                    IEnumerator enumerator2 = Points.GetEnumerator();
-                    try
+                    foreach (var tmarker in Points.Cast<TMarker>().Where(marker => marker.X == x && marker.Y == y))
                     {
-                        while (enumerator2.MoveNext())
-                        {
-                            TMarker tmarker = (TMarker)enumerator2.Current;
-                            if (tmarker.X == x && tmarker.Y == y)
-                            {
-                                tmarker.X += dX;
-                                tmarker.Y += dY;
-                                break;
-                            }
-                        }
+                        tmarker.X = dX;
+                        tmarker.Y = dY;
                         break;
                     }
-                    finally
-                    {
-                        IDisposable disposable = enumerator2 as IDisposable;
-                        if (disposable != null)
-                            disposable.Dispose();
-                    }
+                    break;
+
+                    //IEnumerator enumerator2 = Points.GetEnumerator();
+                    //try
+                    //{
+                    //    while (enumerator2.MoveNext())
+                    //    {
+                    //        TMarker tmarker = (TMarker)enumerator2.Current;
+                    //        if (tmarker.X == x && tmarker.Y == y)
+                    //        {
+                    //            tmarker.X += dX;
+                    //            tmarker.Y += dY;
+                    //            break;
+                    //        }
+                    //    }
+                    //    break;
+                    //}
+                    //finally
+                    //{
+                    //    IDisposable disposable = enumerator2 as IDisposable;
+                    //    if (disposable != null)
+                    //        disposable.Dispose();
+                    //}
             }
         }
     }

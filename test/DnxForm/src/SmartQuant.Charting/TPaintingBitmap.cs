@@ -10,13 +10,11 @@ namespace SmartQuant.Charting
     {
         public const PixelFormat pixel_format = PixelFormat.Format32bppRgb;
         private int[] m;
-        private int width;
-        private int height;
         private int sz;
 
-        public int Width => this.width;
+        public int Width { get; private set; }
 
-        public int Height => this.height;
+        public int Height { get; private set; }
 
         public bool Valid => this.m != null;
 
@@ -31,8 +29,8 @@ namespace SmartQuant.Charting
 
         public bool BeginDrawing(int w, int h)
         {
-            this.width = w;
-            this.height = h;
+            Width = w;
+            Height = h;
             this.sz = w * h;
             this.m = new int[this.sz];
             return true;
@@ -40,25 +38,25 @@ namespace SmartQuant.Charting
 
         public Bitmap Get()
         {
-            Bitmap bitmap = new Bitmap(this.width, this.height, PixelFormat.Format32bppRgb);
-            Rectangle rect = new Rectangle(0, 0, this.width, this.height);
-            BitmapData bitmapdata = bitmap.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format32bppRgb);
+            var bitmap = new Bitmap(Width, Height, PixelFormat.Format32bppRgb);
+            var rect = new Rectangle(0, 0, Width, Height);
+            var bitmapdata = bitmap.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format32bppRgb);
             Marshal.Copy(this.m, 0, bitmapdata.Scan0, this.sz);
             bitmap.UnlockBits(bitmapdata);
             return bitmap;
         }
 
-        public int intGetPixel(int x, int y) => this.m[this.width * y + x];
+        public int intGetPixel(int x, int y) => this.m[this.Width * y + x];
 
-        public Color ColorGetPixel(int x, int y) => Color.FromArgb(this.m[this.width * y + x]);
+        public Color ColorGetPixel(int x, int y) => Color.FromArgb(this.m[this.Width * y + x]);
 
-        public void SetPixel(int x, int y, int c) => this.m[this.width * y + x] = c;
+        public void SetPixel(int x, int y, int c) => this.m[this.Width * y + x] = c;
 
-        public void SetPixel(int x, int y, Color c) => this.m[this.width * y + x] = c.ToArgb();
+        public void SetPixel(int x, int y, Color c) => this.m[this.Width * y + x] = c.ToArgb();
 
         public void Fill(int c)
         {
-            for (int i = 0; i < this.sz; ++i)
+            for (var i = 0; i < this.sz; ++i)
                 this.m[i] = c;
         }
 
@@ -66,10 +64,10 @@ namespace SmartQuant.Charting
 
         public unsafe void FillRectangle(int c, int x, int y, int w, int h)
         {
-            if (x + w > this.width)
-                w -= x + w - this.width;
-            if (y + h > this.height)
-                h -= y + h - this.height;
+            if (x + w > Width)
+                w -= x + w - Width;
+            if (y + h > Height)
+                h -= y + h - Height;
             if (x < 0)
             {
                 w += x;
@@ -82,7 +80,7 @@ namespace SmartQuant.Charting
             }
             fixed (int* numPtr1 = this.m)
             {
-                int* numPtr2 = numPtr1 + this.width * y + x;
+                int* numPtr2 = numPtr1 + Width * y + x;
                 int num = y + h;
                 while (y < num)
                 {
@@ -90,7 +88,7 @@ namespace SmartQuant.Charting
                     for (int* numPtr4 = numPtr2 + w; numPtr3 < numPtr4; ++numPtr3)
                         *numPtr3 = c;
                     ++y;
-                    numPtr2 += this.width;
+                    numPtr2 += this.Width;
                 }
             }
         }

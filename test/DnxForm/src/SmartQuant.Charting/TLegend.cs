@@ -28,6 +28,7 @@ namespace SmartQuant.Charting
         {
         }
     }
+
     public class TLegend
     {
         private int width;

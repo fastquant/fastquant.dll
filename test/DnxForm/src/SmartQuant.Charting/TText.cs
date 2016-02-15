@@ -1,7 +1,4 @@
-﻿// Licensed under the Apache License, Version 2.0. 
-// Copyright (c) Alex Lee. All rights reserved.
-
-using System;
+﻿using System;
 using System.Collections;
 using System.ComponentModel;
 using System.Drawing;
@@ -150,9 +147,7 @@ namespace SmartQuant.Charting
         public virtual void Draw()
         {
             if (Chart.Pad == null)
-            {
-                Canvas canvas = new Canvas("Canvas", "Canvas");
-            }
+                new Canvas("Canvas", "Canvas");
             Chart.Pad.Add((object)this);
         }
 
@@ -165,17 +160,17 @@ namespace SmartQuant.Charting
             switch (this.fPosition)
             {
                 case ETextPosition.RightBottom:
-                    pad.Graphics.DrawString(this.fText, this.fFont, (Brush)new SolidBrush(this.fColor), (float)pad.ClientX(this.fX), (float)pad.ClientY(this.fY));
+                    pad.Graphics.DrawString(this.fText, this.fFont, new SolidBrush(this.fColor), pad.ClientX(this.fX), pad.ClientY(this.fY));
                     break;
                 case ETextPosition.LeftBottom:
-                    pad.Graphics.DrawString(this.fText, this.fFont, (Brush)new SolidBrush(this.fColor), (float)(pad.ClientX(this.fX) - num1), (float)pad.ClientY(this.fY));
+                    pad.Graphics.DrawString(this.fText, this.fFont, new SolidBrush(this.fColor), pad.ClientX(this.fX) - num1, pad.ClientY(this.fY));
                     break;
                 case ETextPosition.CentreBottom:
-                    pad.Graphics.DrawString(this.fText, this.fFont, (Brush)new SolidBrush(this.fColor), (float)(pad.ClientX(this.fX) - num1 / 2), (float)pad.ClientY(this.fY));
+                    pad.Graphics.DrawString(this.fText, this.fFont, new SolidBrush(this.fColor), pad.ClientX(this.fX) - num1 / 2, pad.ClientY(this.fY));
                     break;
             }
         }
 
-        public TDistance Distance(double X, double Y) => null;
+        public TDistance Distance(double x, double y) => null;
     }
 }

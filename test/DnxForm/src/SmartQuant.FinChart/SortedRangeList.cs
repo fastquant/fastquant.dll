@@ -48,21 +48,21 @@ namespace SmartQuant.FinChart
             if (Contains(item.DateTime))
                 this[item.DateTime].Add(item);
             else
-                this.list.Add(item.DateTime, new ArrayList() { item });
+                this.list.Add(item.DateTime, new ArrayList { item });
         }
 
         public void Clear() => this.list.Clear();
 
         public int GetNextIndex(DateTime dateTime)
         {
-            var willAt = WillAtIndex(dateTime);
-            return willAt == this.list.Count ? -1 : willAt;
+            var index = WillAtIndex(dateTime);
+            return index == this.list.Count ? -1 : index;
         }
 
         public int GetPrevIndex(DateTime dateTime)
         {
-            var willAt = WillAtIndex(dateTime);
-            return willAt == 0 ? -1 : willAt - 1;
+            var index = WillAtIndex(dateTime);
+            return index == 0 ? -1 : index - 1;
         }
 
         public DateTime GetDateTime(int index) => (DateTime)this.list.GetKey(index);
@@ -78,7 +78,7 @@ namespace SmartQuant.FinChart
             if (Contains(dateTime))
                 return this.list.IndexOfKey(dateTime);
             this.list.Add(dateTime, null);
-            int i = this.list.IndexOfKey(dateTime);
+            var i = this.list.IndexOfKey(dateTime);
             this.list.Remove(dateTime);
             return i;
         }

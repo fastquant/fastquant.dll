@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using static System.Math;
 
 namespace SmartQuant.Charting.Draw3D
@@ -37,7 +36,11 @@ namespace SmartQuant.Charting.Draw3D
             SetTicks();
 
             // Set tick positions
-            Parallel.ForEach(ticks, t => t.Position =  this.origin + (this.end - this.origin) * (t.Value - this.valO) / (this.valEnd - this.valO));
+            for (var i = 0; i < ticks.Length; i++)
+            {
+                var t = ticks[i];
+                t.Position = this.origin + (this.end - this.origin)*(t.Value - this.valO)/(this.valEnd - this.valO);
+            }
         }
 
         public double TickVal(int i) => ticks[i].Value;

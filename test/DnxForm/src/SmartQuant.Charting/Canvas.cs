@@ -16,9 +16,7 @@ namespace SmartQuant.Charting
     [Serializable]
     public class Canvas : Form
     {
-       // private Chart chart;
-
-        public static bool FileEnabled { get; set; } = false;
+        public static bool FileEnabled { get; set; }
 
         public static string FileDir { get; set; } = "";
 
@@ -222,8 +220,8 @@ namespace SmartQuant.Charting
             Width = width;
             Height = height;
             CanvasManager.Add(this);
-            FileEnabled = fileName != null ? true : FileEnabled;
-            Chart.FileName = fileName != null ? fileName : FileEnabled ? Path.Combine(FileDir, $"{FileNamePrefix}{Name}{DateTime.Now:MMddyyyhhmmss}{FileNameSuffix}.gif") : Chart.FileName;
+            FileEnabled = fileName != null || FileEnabled;
+            Chart.FileName = fileName ?? (FileEnabled ? Path.Combine(FileDir, $"{FileNamePrefix}{Name}{DateTime.Now:MMddyyyhhmmss}{FileNameSuffix}.gif") : Chart.FileName);
             if (!FileEnabled)
                 Show();
         }

@@ -37,7 +37,7 @@ namespace SmartQuant.Charting
     {
         private Pad pad;
 
-        public ArrayList Items { get; private set; }
+        public ArrayList Items { get; }
 
         public bool ItemsEnabled { get; set; }
 
@@ -53,21 +53,9 @@ namespace SmartQuant.Charting
 
         public int Y { get; set; }
 
-        public int Width
-        {
-            get
-            {
-                return (int)this.pad.Graphics.MeasureString(GetText(), Font).Width;
-            }
-        }
+        public int Width => (int)this.pad.Graphics.MeasureString(GetText(), Font).Width;
 
-        public int Height
-        {
-            get
-            {
-                return (int)this.pad.Graphics.MeasureString(GetText(), Font).Height;
-            }
-        }
+        public int Height => (int)this.pad.Graphics.MeasureString(GetText(), Font).Height;
 
         public ETitleStrategy Strategy { get; set; }
 
@@ -85,9 +73,9 @@ namespace SmartQuant.Charting
             Y = 0;
         }
 
-        public void Add(string Text, Color Color) => Items.Add(new TTitleItem(Text, Color));
+        public void Add(string text, Color color) => Items.Add(new TTitleItem(text, color));
 
-        private string GetText() => Text + string.Join(" ", Items.ToArray().Select(i => ((TTitleItem)i).Text));
+        private string GetText() => Text + string.Join(" ", Items.Cast<TTitleItem>().Select(i => i.Text));
 
         public void Paint()
         {

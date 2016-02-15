@@ -301,10 +301,10 @@ namespace SmartQuant.Charting.Draw3D
             var points1 = TVec3.PointArray(v);
             var points2 = new Point[]
             {
-                (Point)v[index1],
-                (Point)v[index2],
-                (Point)(v[index2] + this.Lz),
-                (Point)(v[index1] + this.Lz)
+                v[index1],
+                v[index2],
+                v[index2] + this.Lz,
+                v[index1] + this.Lz
             };
             var points3 = new Point[]
             {

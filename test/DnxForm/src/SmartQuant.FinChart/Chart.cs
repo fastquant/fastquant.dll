@@ -5,7 +5,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-
+using System.Linq;
 #if GTK
 using Compatibility.Gtk;
 
@@ -62,11 +62,13 @@ namespace SmartQuant.FinChart
         year10 = 10 * year1,
         year20 = 20 * year1,
     }
+
     public enum ChartActionType
     {
         Cross,
         None
     }
+
     enum ChartCursorType
     {
         Default,
@@ -74,6 +76,7 @@ namespace SmartQuant.FinChart
         Hand,
         Cross
     }
+
     public enum BSStyle
     {
         Candle,
@@ -122,8 +125,6 @@ namespace SmartQuant.FinChart
         private ChartActionType actionType = ChartActionType.None;
         protected ChartUpdateStyle updateStyle = ChartUpdateStyle.Trailing;
         protected int minAxisGap = 50;
-        private bool contextMenuEnabled = true;
-        private int labelDigitsCount = 2;
         private int rightAxesFontSize = 7;
         private Color dateTipRectangleColor = Color.LightGray;
         private Color dateTipTextColor = Color.Black;
@@ -149,8 +150,6 @@ namespace SmartQuant.FinChart
         private DateTime lastDate = DateTime.MaxValue;
         private DateTime polosaDate = DateTime.MinValue;
         private IContainer components;
-        private Image primitiveDeleteImage;
-        private Image primitivePropertiesImage;
         protected Color sessionGridColor;
         protected TimeSpan sessionStart;
         protected TimeSpan sessionEnd;
@@ -175,21 +174,10 @@ namespace SmartQuant.FinChart
         protected bool volumePadShown;
         protected PadScaleStyle scaleStyle;
 
-        private bool drawItems;
         internal Font RightAxesFont;
         private Color chartBackColor;
 
-        public bool ContextMenuEnabled
-        {
-            get
-            {
-                return this.contextMenuEnabled;
-            }
-            set
-            {
-                this.contextMenuEnabled = value;
-            }
-        }
+        public bool ContextMenuEnabled { get; set; } = true;
 
         public int RightAxesFontSize
         {
@@ -204,54 +192,14 @@ namespace SmartQuant.FinChart
             }
         }
 
-        public int LabelDigitsCount
-        {
-            get
-            {
-                return this.labelDigitsCount;
-            }
-            set
-            {
-                this.labelDigitsCount = value;
-            }
-        }
+        public int LabelDigitsCount { get; set; } = 2;
 
-        public Image PrimitiveDeleteImage
-        {
-            get
-            {
-                return this.primitiveDeleteImage;
-            }
-            set
-            {
-                this.primitiveDeleteImage = value;
-            }
-        }
+        public Image PrimitiveDeleteImage { get; set; }
 
-        public Image PrimitivePropertiesImage
-        {
-            get
-            {
-                return this.primitivePropertiesImage;
-            }
-            set
-            {
-                this.primitivePropertiesImage = value;
-            }
-        }
+        public Image PrimitivePropertiesImage { get; set; }
 
         [Browsable(false)]
-        public bool DrawItems
-        {
-            get
-            {
-                return this.drawItems;
-            }
-            set
-            {
-                this.drawItems = value;
-            }
-        }
+        public bool DrawItems { get; set; }
 
         [Browsable(false)]
         public bool VolumePadVisible
@@ -290,7 +238,7 @@ namespace SmartQuant.FinChart
             }
             set
             {
-                this.drawItems = true;
+                this.DrawItems = true;
                 if (this.barSeriesStyle == value)
                     return;
                 lock (this.lockObject)
@@ -376,21 +324,9 @@ namespace SmartQuant.FinChart
             }
         }
 
-        public double IntervalWidth
-        {
-            get
-            {
-                return this.intervalWidth;
-            }
-        }
+        public double IntervalWidth => this.intervalWidth;
 
-        public Graphics Graphics
-        {
-            get
-            {
-                return this.graphics;
-            }
-        }
+        public Graphics Graphics => this.graphics;
 
         public SmoothingMode SmoothingMode
         {
@@ -404,45 +340,15 @@ namespace SmartQuant.FinChart
             }
         }
 
-        internal ISeries Series
-        {
-            get
-            {
-                return this.series;
-            }
-        }
+        internal ISeries Series => this.series;
 
-        public ISeries MainSeries
-        {
-            get
-            {
-                return this.mainSeries;
-            }
-        }
+        public ISeries MainSeries => this.mainSeries;
 
-        public int FirstIndex
-        {
-            get
-            {
-                return this.firstIndex;
-            }
-        }
+        public int FirstIndex => this.firstIndex;
 
-        public int LastIndex
-        {
-            get
-            {
-                return this.lastIndex;
-            }
-        }
+        public int LastIndex => this.lastIndex;
 
-        public int PadCount
-        {
-            get
-            {
-                return this.pads.Count;
-            }
-        }
+        public int PadCount => Pads.Count;
 
         public Color CanvasColor
         {
@@ -510,13 +416,7 @@ namespace SmartQuant.FinChart
             }
         }
 
-        public PadList Pads
-        {
-            get
-            {
-                return this.pads;
-            }
-        }
+        public PadList Pads => this.pads;
 
         public Color SelectedFillHighlightColor
         {
@@ -783,8 +683,8 @@ namespace SmartQuant.FinChart
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing && this.components != null)
-                this.components.Dispose();
+            if (disposing)
+                this.components?.Dispose();
             base.Dispose(disposing);
         }
 
@@ -1047,7 +947,7 @@ namespace SmartQuant.FinChart
                         break;
                     }
                 }
-                string valTip = num2.ToString("F" + this.labelDigitsCount);
+                string valTip = num2.ToString("F" + this.LabelDigitsCount);
                 var valTipSize = graphics.MeasureString(valTip, this.Font);
                 graphics.FillRectangle(new SolidBrush(ValTipRectangleColor),  Width - this.canvasRightOffset, this.mouseY - valTipSize.Height / 2 - 2f, valTipSize.Width, valTipSize.Height + 2f);
                 graphics.DrawString(valTip, Font, new SolidBrush(ValTipTextColor), Width - this.canvasRightOffset + 2f, this.mouseY - valTipSize.Height / 2 - 1f);
@@ -1191,8 +1091,7 @@ namespace SmartQuant.FinChart
             base.OnResize(e);
             SetPadSizes();
             this.contentUpdated = true;
-            if (this.axisBottom != null)
-                this.axisBottom.SetBounds(this.canvasLeftOffset, Width - this.canvasRightOffset, Height - this.canvasBottomOffset);
+            this.axisBottom?.SetBounds(this.canvasLeftOffset, Width - this.canvasRightOffset, Height - this.canvasBottomOffset);
             Invalidate();
         }
 
@@ -1227,13 +1126,10 @@ namespace SmartQuant.FinChart
 
         public void UnSelectAll()
         {
-            foreach (Pad pad in this.pads)
+            foreach (var pad in Pads.Cast<Pad>().Where(p => p.SelectedPrimitive != null))
             {
-                if (pad.SelectedPrimitive != null)
-                {
-                    pad.SelectedPrimitive.UnSelect();
-                    pad.SelectedPrimitive = null;
-                }
+                pad.SelectedPrimitive.UnSelect();
+                pad.SelectedPrimitive = null;
             }
         }
 
@@ -1462,32 +1358,27 @@ namespace SmartQuant.FinChart
 
         private void EmitUpdateStyleChanged()
         {
-            if (UpdateStyleChanged != null)
-                UpdateStyleChanged(this, EventArgs.Empty);
+            UpdateStyleChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void EmitVolumeVisibleChanged()
         {
-            if (VolumeVisibleChanged != null)
-                VolumeVisibleChanged(this, EventArgs.Empty);
+            VolumeVisibleChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void EmitBarSeriesStyleChanged()
         {
-            if (BarSeriesStyleChanged != null)
-                BarSeriesStyleChanged(this, EventArgs.Empty);
+            BarSeriesStyleChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void EmitActionTypeChanged()
         {
-            if (ActionTypeChanged != null)
-                ActionTypeChanged(this, EventArgs.Empty);
+            ActionTypeChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void EmitScaleStyleChanged()
         {
-            if (ScaleStyleChanged != null)
-                ScaleStyleChanged(this, EventArgs.Empty);
+            ScaleStyleChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public void EnsureVisible(Fill fill)

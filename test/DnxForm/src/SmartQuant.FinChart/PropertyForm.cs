@@ -59,8 +59,8 @@ namespace SmartQuant.FinChart
             this.AutoScaleBaseSize = new Size(5, 13);
             this.ClientSize = new Size(232, 310);
             this.ControlBox = false;
-            this.Controls.Add((Control) this.btnClose);
-            this.Controls.Add((Control) this.propertyGrid);
+            this.Controls.Add(this.btnClose);
+            this.Controls.Add(this.propertyGrid);
             this.Name = "PropertyForm";
             this.ShowInTaskbar = false;
             this.StartPosition = FormStartPosition.CenterScreen;

@@ -13,7 +13,7 @@ namespace SmartQuant.Statistics
 
         protected internal override void OnStatistics(PortfolioStatisticsItem statistics)
         {
-            bool changed = false;
+            var changed = false;
             if (statistics.Type == PortfolioStatisticsType.CompoundAnnualGrowthRate)
             {
                 this.cagr = statistics;

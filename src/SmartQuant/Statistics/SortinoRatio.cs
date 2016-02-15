@@ -1,6 +1,5 @@
 ﻿namespace SmartQuant.Statistics
 {
-
     public class SortinoRatio : PortfolioStatisticsItem
     {
         protected internal override void OnInit()

@@ -1,7 +1,4 @@
-﻿// Licensed under the Apache License, Version 2.0. 
-// Copyright (c) Alex Lee. All rights reserved.
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace SmartQuant.Charting
@@ -12,7 +9,7 @@ namespace SmartQuant.Charting
 
         public Type Type { get; set; }
 
-        public virtual bool IsZoomable { get; private set; }
+        public virtual bool IsZoomable { get; }
 
         public virtual PadRange GetPadRangeX(object obj, Pad pad) => null;
 

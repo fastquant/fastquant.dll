@@ -10,7 +10,6 @@ namespace SmartQuant.Charting
     [Serializable]
     public class TLabel : TMarker
     {
-
         [Category("Text")]
         [Description("Text that this label displays")]
         public new string Text { get; set; }

@@ -21,6 +21,7 @@ build/
 bld/
 [Bb]in/
 [Oo]bj/
+output/
 
 # Visual Studo 2015 cache/options directory
 .vs/
@@ -198,3 +199,4 @@ FakesAssemblies/
 # DNX
 project.lock.json
 artifacts/
+/tools/nuget.exe

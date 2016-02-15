@@ -19,6 +19,7 @@ namespace SmartQuant.Charting
         Right,
         Centre,
     }
+
     public enum EAxisPosition
     {
         Left,
@@ -27,6 +28,7 @@ namespace SmartQuant.Charting
         Bottom,
         None
     }
+
     public enum EAxisTitlePosition
     {
         Left,
@@ -218,7 +220,7 @@ namespace SmartQuant.Charting
             LabelEnabled = true;
             LabelFont = new Font("Arial", 8f);
             LabelColor = Color.Black;
-            LabelFormat = (string)null;
+            LabelFormat = null;
             LabelOffset = 2;
             LabelAlignment = EAxisLabelAlignment.Centre;
             GridEnabled = true;
@@ -288,10 +290,10 @@ namespace SmartQuant.Charting
             switch (Position)
             {
                 case EAxisPosition.Left:
-                    this.SetRange(this.pad.YMin, this.pad.YMax);
+                    SetRange(this.pad.YMin, this.pad.YMax);
                     break;
                 case EAxisPosition.Bottom:
-                    this.SetRange(this.pad.XMin, this.pad.XMax);
+                    SetRange(this.pad.XMin, this.pad.XMax);
                     break;
             }
             Zoomed = false;
@@ -303,7 +305,7 @@ namespace SmartQuant.Charting
 
         public static long GetNextMajor(long prevMajor, EGridSize gridSize)
         {
-            string name = typeof(EGridSize).GetEnumName(gridSize);
+            var name = typeof(EGridSize).GetEnumName(gridSize);
             var m = new Regex(@"^([a-z]+)(\d*)$").Match(name);
             var unit = m.Groups[1].ToString();
             var num = int.Parse(m.Groups[2].ToString());
@@ -320,10 +322,9 @@ namespace SmartQuant.Charting
 
         public static EGridSize CalculateSize(double ticks)
         {
-            foreach (object value in typeof(EGridSize).GetEnumValues())
+            foreach (long size in typeof(EGridSize).GetEnumValues())
             {
-                long size = (long)value;
-                double n = Math.Floor(ticks / size);
+                var n = Math.Floor(ticks / size);
                 if (3 <= n && n <= 10)
                     return (EGridSize)size;
             }
@@ -346,7 +347,7 @@ namespace SmartQuant.Charting
             Pen2.DashStyle = GridDashStyle;
             Pen3.Width = MinorGridWidth;
             Pen3.DashStyle = MinorGridDashStyle;
-            DateTime firstDateTime = new DateTime();
+            var firstDateTime = new DateTime();
             double min = Min;
             double max = Max;
             firstDateTime = new DateTime(Math.Max(0, (long)min));
@@ -361,27 +362,27 @@ namespace SmartQuant.Charting
                 case EGridSize.year10:
                     dateTime2 = new DateTime(firstDateTime.Year, 1, 1);
                     dateTime2 = dateTime2.AddYears(1 + (9 - firstDateTime.Year % 10));
-                    num2 = (double)dateTime2.Ticks;
+                    num2 = dateTime2.Ticks;
                     break;
                 case EGridSize.year20:
                     dateTime2 = new DateTime(firstDateTime.Year, 1, 1);
                     dateTime2 = dateTime2.AddYears(1 + (19 - firstDateTime.Year % 20));
-                    num2 = (double)dateTime2.Ticks;
+                    num2 = dateTime2.Ticks;
                     break;
                 case EGridSize.year4:
                     dateTime2 = new DateTime(firstDateTime.Year, 1, 1);
                     dateTime2 = dateTime2.AddYears(1 + (3 - firstDateTime.Year % 4));
-                    num2 = (double)dateTime2.Ticks;
+                    num2 = dateTime2.Ticks;
                     break;
                 case EGridSize.year5:
                     dateTime2 = new DateTime(firstDateTime.Year, 1, 1);
                     dateTime2 = dateTime2.AddYears(1 + (4 - firstDateTime.Year % 5));
-                    num2 = (double)dateTime2.Ticks;
+                    num2 = dateTime2.Ticks;
                     break;
                 case EGridSize.year2:
                     dateTime2 = new DateTime(firstDateTime.Year, 1, 1);
                     dateTime2 = dateTime2.AddYears(1 + (1 - firstDateTime.Year % 2));
-                    num2 = (double)dateTime2.Ticks;
+                    num2 = dateTime2.Ticks;
                     break;
                 case EGridSize.year3:
                     dateTime2 = new DateTime(firstDateTime.Year, 1, 1);
@@ -468,7 +469,7 @@ namespace SmartQuant.Charting
                     num2 = (double)dateTime2.Ticks;
                     break;
                 case EGridSize.min20:
-                    num2 = (double)new DateTime(firstDateTime.Year, firstDateTime.Month, firstDateTime.Day, firstDateTime.Hour, firstDateTime.Minute, 0).AddMinutes((double)(1 + (19 - (int)new TimeSpan(firstDateTime.Ticks).TotalMinutes % 20))).Ticks;
+                    num2 = new DateTime(firstDateTime.Year, firstDateTime.Month, firstDateTime.Day, firstDateTime.Hour, firstDateTime.Minute, 0).AddMinutes((double)(1 + (19 - (int)new TimeSpan(firstDateTime.Ticks).TotalMinutes % 20))).Ticks;
                     break;
                 case EGridSize.min30:
                     num2 = (double)new DateTime(firstDateTime.Year, firstDateTime.Month, firstDateTime.Day, firstDateTime.Hour, firstDateTime.Minute, 0).AddMinutes((double)(1 + (29 - (int)new TimeSpan(firstDateTime.Ticks).TotalMinutes % 30))).Ticks;
@@ -1008,7 +1009,7 @@ namespace SmartQuant.Charting
                 switch (Position)
                 {
                     case EAxisPosition.Left:
-                        if (X1 - 10 <= Event.X && X1 >= (double)Event.X && (Y1 <= (double)Event.Y && Y2 >= (double)Event.Y))
+                        if (X1 - 10 <= Event.X && X1 >= Event.X && (Y1 <= Event.Y && Y2 >= Event.Y))
                         {
                             this.UnZoom();
                             break;
@@ -1016,7 +1017,7 @@ namespace SmartQuant.Charting
                         else
                             break;
                     case EAxisPosition.Bottom:
-                        if (X1 <= (double)Event.X && X2 >= (double)Event.X && (Y1 <= (double)Event.Y && Y1 + 10.0 >= (double)Event.Y))
+                        if (X1 <= Event.X && X2 >= Event.X && (Y1 <= Event.Y && Y1 + 10.0 >= Event.Y))
                         {
                             this.UnZoom();
                             break;

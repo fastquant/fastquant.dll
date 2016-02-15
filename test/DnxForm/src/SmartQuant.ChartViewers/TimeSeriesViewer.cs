@@ -49,6 +49,7 @@ namespace SmartQuant.ChartViewers
             return new PadRange(min, max);
         }
 
+        // TODO: review it
         public override void Paint(object obj, Pad pad)
         {
             var ts = obj as TimeSeries;

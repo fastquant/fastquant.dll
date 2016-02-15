@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Linq;
 using System.Resources;
 
 #if GTK
@@ -20,7 +21,7 @@ namespace SmartQuant.Charting
     [Serializable]
     public class Pad
     {
-        private Dictionary<System.Type, Viewer> viewers = new Dictionary<System.Type, Viewer>();
+        private Dictionary<Type, Viewer> viewers = new Dictionary<Type, Viewer>();
         private List<ObjectViewer> objectViewers = new List<ObjectViewer>();
         private TFeatures3D Features3D;
         [Browsable(false)]
@@ -1959,10 +1960,8 @@ namespace SmartQuant.Charting
 
         public void Set(object obj, string name, object value)
         {
-            Viewer viewer = this.GetViewer(obj);
-            if (viewer == null)
-                return;
-            viewer.Set(obj, name, value);
+            var viewer = GetViewer(obj);
+            viewer?.Set(obj, name, value);
         }
 
         public void ResetLastTickTime()
@@ -2285,13 +2284,10 @@ namespace SmartQuant.Charting
             }
             else
             {
-                foreach (var objectViewer in this.objectViewers)
+                foreach (var objectViewer in this.objectViewers.Where(objectViewer => objectViewer.Object == obj))
                 {
-                    if (objectViewer.Object == obj)
-                    {
-                        this.objectViewers.Remove(objectViewer);
-                        break;
-                    }
+                    this.objectViewers.Remove(objectViewer);
+                    break;
                 }
             }
         }

@@ -7,15 +7,15 @@
             if (trade.IsLong)
             {
                 this.longValue = trade.MAE;
-                this.longValues.Add(base.Clock.DateTime, this.longValue);
+                this.longValues.Add(Clock.DateTime, this.longValue);
             }
             else
             {
                 this.shortValue = trade.MAE;
-                this.shortValues.Add(base.Clock.DateTime, this.shortValue);
+                this.shortValues.Add(Clock.DateTime, this.shortValue);
             }
             this.totalValue = trade.MAE;
-            this.totalValues.Add(base.Clock.DateTime, this.totalValue);
+            this.totalValues.Add(Clock.DateTime, this.totalValue);
             base.Emit();
         }
 
@@ -35,16 +35,16 @@
             if (trade.IsLong)
             {
                 this.longValue = trade.MFE;
-                this.longValues.Add(base.Clock.DateTime, this.longValue);
+                this.longValues.Add(Clock.DateTime, this.longValue);
             }
             else
             {
                 this.shortValue = trade.MFE;
-                this.shortValues.Add(base.Clock.DateTime, this.shortValue);
+                this.shortValues.Add(Clock.DateTime, this.shortValue);
             }
             this.totalValue = trade.MFE;
-            this.totalValues.Add(base.Clock.DateTime, this.totalValue);
-            base.Emit();
+            this.totalValues.Add(Clock.DateTime, this.totalValue);
+            Emit();
         }
 
         public override string Category => "Trades";

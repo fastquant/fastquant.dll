@@ -1,10 +1,8 @@
-﻿// Licensed under the Apache License, Version 2.0. 
-// Copyright (c) Alex Lee. All rights reserved.
-
-using System;
+﻿using System;
 using System.Collections;
 using System.ComponentModel;
 using System.Drawing;
+using System.Linq;
 
 namespace SmartQuant.Charting
 {
@@ -56,7 +54,7 @@ namespace SmartQuant.Charting
 
         public Color BackColor { get; set; }
 
-        public ArrayList Items { get; private set; }
+        public ArrayList Items { get; }
 
         public TTextBox() : this(10, 10)
         {
@@ -92,24 +90,19 @@ namespace SmartQuant.Charting
 
         private float GetWidth(Pad pad)
         {
-            Width = 0;
-            foreach (TTextBoxItem item in Items)
-            {
-                int num = (int)pad.Graphics.MeasureString(item.Text, item.Font).Width;
-                if (num > Width)
-                    Width = num;
-            }
+            //Width = 0;
+            Width = Items.Cast<TTextBoxItem>().Max(i => (int)pad.Graphics.MeasureString(i.Text, i.Font).Width);
             Width += 12;
-            return (float)Width;
+            return Width;
         }
 
         private float GetHeight(Pad pad)
         {
-            Height = 0;
-            foreach (TTextBoxItem ttextBoxItem in Items)
-                Height += (int)pad.Graphics.MeasureString(ttextBoxItem.Text, ttextBoxItem.Font).Height + 2;
+            Height = Items.Cast<TTextBoxItem>().Sum(i => (int) pad.Graphics.MeasureString(i.Text, i.Font).Height + 2);
+            //foreach (TTextBoxItem ttextBoxItem in Items)
+            //    Height += (int)pad.Graphics.MeasureString(ttextBoxItem.Text, ttextBoxItem.Font).Height + 2;
             Height += 2;
-            return (float)Height;
+            return Height;
         }
 
         public virtual void Paint(Pad pad, double minX, double maxX, double minY, double maxY)
@@ -137,13 +130,13 @@ namespace SmartQuant.Charting
                     y = (float)(pad.ClientY() + pad.ClientHeight() - Y) - height;
                     break;
             }
-            pad.Graphics.FillRectangle((Brush)new SolidBrush(BackColor), x, y, width, height);
+            pad.Graphics.FillRectangle(new SolidBrush(BackColor), x, y, width, height);
             if (BorderEnabled)
                 pad.Graphics.DrawRectangle(new Pen(BorderColor), x, y, width, height);
             foreach (TTextBoxItem ttextBoxItem in Items)
             {
                 int num = (int)pad.Graphics.MeasureString(ttextBoxItem.Text, ttextBoxItem.Font).Height;
-                pad.Graphics.DrawString(ttextBoxItem.Text, ttextBoxItem.Font, (Brush)new SolidBrush(ttextBoxItem.Color), x + 5f, y);
+                pad.Graphics.DrawString(ttextBoxItem.Text, ttextBoxItem.Font, new SolidBrush(ttextBoxItem.Color), x + 5f, y);
                 y += (float)(2 + num);
             }
         }

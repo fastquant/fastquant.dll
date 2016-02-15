@@ -1,9 +1,8 @@
 using System;
+using System.IO;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.FindSymbols;
 using Microsoft.CodeAnalysis.Rename;
 using Microsoft.CodeAnalysis.Workspaces.Dnx;
@@ -12,21 +11,25 @@ namespace SmartRenamer
 {
     public static class Program
     {
+        private static string SlnPath = Path.Combine("..", "..", "src", "SmartQuant");
+        private static string OutputPath = Path.Combine("..", "..", "output");
+
         public static void Main(string[] args)
         {
-            var slnPath = args[0];
-            var outputPath = args[1];
-            if (string.IsNullOrEmpty(slnPath))
-                throw new ArgumentException(nameof(slnPath));
-            if (string.IsNullOrEmpty(outputPath))
-                throw new ArgumentException(nameof(outputPath));
-            var ws = new ProjectJsonWorkspace(slnPath);
+
+            var ws = new ProjectJsonWorkspace(SlnPath);
             var solution = ws.CurrentSolution;
             solution = RenameNamespace("SmartQuant", "FastQuant", solution);
             solution = RenameClass("Message", "Message_", solution);
             solution = RenameClass("Command", "Command_", solution);
             solution = RenameClass("Response", "Response_", solution);
-            GenerateDll(outputPath, solution.Projects.First().GetCompilationAsync().Result);
+            foreach (var p in solution.Projects)
+            {
+                GenerateDll(p);
+                Console.WriteLine(p.Name);
+                Console.WriteLine(p.OutputFilePath);
+            }
+
             Console.WriteLine("Done");
         }
 
@@ -50,8 +53,11 @@ namespace SmartRenamer
             return sln;
         }
 
-        private static void GenerateDll(string fileName, Compilation c)
+        private static void GenerateDll(Project p)
         {
+            var c = p.GetCompilationAsync().Result;
+            var fileName = Path.Combine(OutputPath, p.Name, p.AssemblyName + ".dll");
+            Directory.CreateDirectory(Path.GetDirectoryName(fileName));
             var result = c.Emit(fileName);
             if (!result.Success)
             {

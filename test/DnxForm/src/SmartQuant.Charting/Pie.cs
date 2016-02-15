@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Drawing;
+using System.Linq;
 
 namespace SmartQuant.Charting
 {
@@ -33,7 +34,7 @@ namespace SmartQuant.Charting
 
         public string ToolTipFormat { get; set; }
 
-        public ArrayList Pieces { get; private set; }
+        public ArrayList Pieces { get; }
 
         public bool EnableContour { get; set; }
 
@@ -95,9 +96,7 @@ namespace SmartQuant.Charting
                     tpieItem.Color = this.palette[num1 * 160 / Pieces.Count];
                 ++num1;
             }
-            double num2 = 0.0;
-            foreach (TPieItem tpieItem in Pieces)
-                num2 += tpieItem.Weight;
+            double num2 = Pieces.Cast<TPieItem>().Sum(tpieItem => tpieItem.Weight);
             foreach (TPieItem tpieItem in Pieces)
             {
                 double num3 = tpieItem.Weight / num2;
@@ -109,16 +108,16 @@ namespace SmartQuant.Charting
 
         public virtual void Draw() => Draw("");
 
-        private Color[] CreatePalette(Color LowColor, Color HighColor, int NColors)
+        private Color[] CreatePalette(Color lowColor, Color highColor, int NColors)
         {
             Color[] colorArray = new Color[NColors];
-            double num1 = (double)((int)HighColor.R - (int)LowColor.R) / (double)NColors;
-            double num2 = (double)((int)HighColor.G - (int)LowColor.G) / (double)NColors;
-            double num3 = (double)((int)HighColor.B - (int)LowColor.B) / (double)NColors;
-            double num4 = (double)LowColor.R;
-            double num5 = (double)LowColor.G;
-            double num6 = (double)LowColor.B;
-            colorArray[0] = LowColor;
+            double num1 = (double)((int)highColor.R - (int)lowColor.R) / (double)NColors;
+            double num2 = (double)((int)highColor.G - (int)lowColor.G) / (double)NColors;
+            double num3 = (double)((int)highColor.B - (int)lowColor.B) / (double)NColors;
+            double num4 = (double)lowColor.R;
+            double num5 = (double)lowColor.G;
+            double num6 = (double)lowColor.B;
+            colorArray[0] = lowColor;
             for (int index = 1; index < NColors; ++index)
             {
                 num4 += num1;
@@ -148,9 +147,7 @@ namespace SmartQuant.Charting
 
         public virtual void Paint(Pad pad, double xMin, double xMax, double yMin, double yMax)
         {
-            double num1 = 0.0;
-            for (int index = 0; index < Pieces.Count; ++index)
-                num1 += ((TPieItem)Pieces[index]).Weight;
+            var num1 = Pieces.Cast<TPieItem>().Sum(item => item.Weight);
             int num2 = pad.ClientX(0.0);
             int num3 = pad.ClientY(100.0);
             int num4 = Math.Abs(pad.ClientX(100.0) - pad.ClientX(0.0));

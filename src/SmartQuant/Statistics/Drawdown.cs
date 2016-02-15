@@ -28,11 +28,11 @@ namespace SmartQuant.Statistics
             if (this.longAccValue == 0 && this.shortAccValue == 0)
                 this.longAccValue = this.shortAccValue = this.portfolio.AccountValue;
 
-            double longValue = this.longAccValue;
-            double shortValue = this.shortAccValue;
-            foreach (Position position in this.portfolio.Positions)
+            var longValue = this.longAccValue;
+            var shortValue = this.shortAccValue;
+            foreach (var position in this.portfolio.Positions)
             {
-                double value = position.Value;
+                var value = position.Value;
                 if (position.Side == PositionSide.Long)
                     longValue += value;
                 else
@@ -71,7 +71,7 @@ namespace SmartQuant.Statistics
         protected internal override void OnPositionSideChanged(Position position)
         {
             var fill = position.Fills[position.Fills.Count - 1];
-            double v = fill.CashFlow * (fill.Qty - position.Qty) / fill.Qty;
+            var v = fill.CashFlow * (fill.Qty - position.Qty) / fill.Qty;
             if (fill.Side == OrderSide.Sell)
             {
                 this.longAccValue += v;

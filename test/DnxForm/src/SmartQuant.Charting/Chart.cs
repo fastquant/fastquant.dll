@@ -136,21 +136,15 @@ namespace SmartQuant.Charting
         {
             get
             {
-                return Chart.fPad;
+                return fPad;
             }
             set
             {
-                Chart.fPad = value;
+                fPad = value;
             }
         }
 
-        public ToolTip ToolTip
-        {
-            get
-            {
-                return this.fToolTip;
-            }
-        }
+        public ToolTip ToolTip => this.fToolTip;
 
         public PrintDocument PrintDocument
         {
@@ -159,7 +153,7 @@ namespace SmartQuant.Charting
                 if (this.fPrintDocument == null)
                 {
                     this.fPrintDocument = new PrintDocument();
-                    this.fPrintDocument.PrintPage += new PrintPageEventHandler(this.OnPrintPage);
+                    this.fPrintDocument.PrintPage += OnPrintPage;
                     this.fPrintDocument.DefaultPageSettings.Landscape = this.fPrintLayout == EPrintLayout.Landscape;
                 }
                 return this.fPrintDocument;
@@ -167,9 +161,9 @@ namespace SmartQuant.Charting
             set
             {
                 if (this.fPrintDocument != null)
-                    this.fPrintDocument.PrintPage -= new PrintPageEventHandler(this.OnPrintPage);
+                    this.fPrintDocument.PrintPage -= OnPrintPage;
                 this.fPrintDocument = value;
-                this.fPrintDocument.PrintPage += new PrintPageEventHandler(this.OnPrintPage);
+                this.fPrintDocument.PrintPage += OnPrintPage;
             }
         }
 
@@ -434,9 +428,9 @@ namespace SmartQuant.Charting
         public virtual Pad AddPad(double x1, double y1, double x2, double y2)
         {
             var pad = new Pad(this, x1, y1, x2, y2);
-            pad.Name = string.Format("Pad {0}", this.fPads.Count + 1);
+            pad.Name = $"Pad {this.fPads.Count + 1}";
             pad.ForeColor = this.fPadsForeColor;
-            pad.Zoom += new ZoomEventHandler(ZoomChanged);
+            pad.Zoom += ZoomChanged;
             this.fPads.Add(pad);
             return Chart.fPad = pad;
         }
@@ -444,13 +438,13 @@ namespace SmartQuant.Charting
         public void Connect()
         {
             foreach (Pad pad in this.fPads)
-                pad.Zoom += new ZoomEventHandler(this.ZoomChanged);
+                pad.Zoom += ZoomChanged;
         }
 
         public void Disconnect()
         {
             foreach (Pad pad in this.fPads)
-                pad.Zoom -= new ZoomEventHandler(this.ZoomChanged);
+                pad.Zoom -= ZoomChanged;
         }
 
         protected void ZoomChanged(object sender, ZoomEventArgs e)
@@ -500,10 +494,10 @@ namespace SmartQuant.Charting
         public void Divide(int x, int y, double[] widths, double[] heights)
         {
             this.fPads.Clear();
-            var xs = Enumerable.Concat(new double[] { 0 }, widths).CumulativeSum().ToArray();
-            var ys = Enumerable.Concat(new double[] { 0 }, heights).CumulativeSum().ToArray();
-            for (int i = 1; i < ys.Length; ++i)
-                for (int j = 1; j < xs.Length; ++j)
+            var xs = new double[] { 0 }.Concat(widths).CumulativeSum().ToArray();
+            var ys = new double[] { 0 }.Concat(heights).CumulativeSum().ToArray();
+            for (var i = 1; i < ys.Length; ++i)
+                for (var j = 1; j < xs.Length; ++j)
                     AddPad(xs[j - 1], ys[i - 1], xs[j], ys[i]);
         }
 
@@ -736,17 +730,15 @@ namespace SmartQuant.Charting
                     return;
                 }
             }
-            foreach (Pad pad in this.fPads)
-                if (PointInPad(pad, e.Location))
-                    pad.MouseMove(e);
+            foreach (var pad in this.fPads.Cast<Pad>().Where(pad => PointInPad(pad, e.Location)))
+                pad.MouseMove(e);
             base.OnMouseMove(e);
         }
 
         protected override void OnMouseWheel(MouseEventArgs e)
         {
-            foreach (Pad pad in this.fPads)
-                if (PointInPad(pad, e.Location))
-                    pad.MouseWheel(e);
+            foreach (var pad in this.fPads.Cast<Pad>().Where(pad => PointInPad(pad, e.Location)))
+                pad.MouseWheel(e);
             base.OnMouseWheel(e);
         }
 
@@ -761,9 +753,8 @@ namespace SmartQuant.Charting
                     return;
                 }
             }
-            foreach (Pad pad in this.fPads)
-                if (PointInPad(pad, e.Location))
-                    pad.MouseDown(e);
+            foreach (var pad in this.fPads.Cast<Pad>().Where(pad => PointInPad(pad, e.Location)))
+                pad.MouseDown(e);
             base.OnMouseDown(e);
         }
 
@@ -792,9 +783,8 @@ namespace SmartQuant.Charting
             #else
             var p = this.PointToClient(Cursor.Position);
             #endif
-            foreach (Pad pad in this.fPads)
-                if (PointInPad(pad, p))
-                    pad.DoubleClick(p.X, p.Y); 
+            foreach (var pad in this.fPads.Cast<Pad>().Where(pad => PointInPad(pad, p)))
+                pad.DoubleClick(p.X, p.Y); 
             base.OnDoubleClick(e);
         }
 
@@ -807,7 +797,7 @@ namespace SmartQuant.Charting
 
         #region extra helper functions
 
-        private bool PointInPad(Pad pad, Point p)
+        private static bool PointInPad(Pad pad, Point p)
         {
             return pad.X1 <= p.X && pad.X2 >= p.X && pad.Y1 <= p.Y && p.Y <= pad.Y2;
         }

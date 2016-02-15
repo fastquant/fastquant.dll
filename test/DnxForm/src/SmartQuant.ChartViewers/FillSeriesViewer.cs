@@ -28,6 +28,7 @@ namespace SmartQuant.ChartViewers
 
         public override PadRange GetPadRangeY(object obj, Pad pad) => null;
 
+        // TODO: review it
         public override void Paint(object obj, Pad pad)
         {
             var fs = obj as FillSeries;
@@ -62,7 +63,7 @@ namespace SmartQuant.ChartViewers
                 int x = pad.ClientX((double)fill.DateTime.Ticks);
                 int y = pad.ClientY(fill.Price);
                 float num3 = 12f;
-                string str = string.Format("{0} {1} @ {2} {3}", fill.Side, fill.Qty, fill.Price.ToString(fill.Instrument.PriceFormat), fill.Text);
+                string str = $"{fill.Side} {fill.Qty} @ {fill.Price.ToString(fill.Instrument.PriceFormat)} {fill.Text}";
                 Font font = new Font("Arial", 8f);
                 switch (fill.Side)
                 {
