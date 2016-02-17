@@ -1,4 +1,8 @@
-﻿using SmartQuant;
+﻿#if USE_FASTQUANT
+using FastQuant;
+#else
+using SmartQuant;
+#endif
 using System;
 using System.Threading;
 

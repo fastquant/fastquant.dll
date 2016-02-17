@@ -146,10 +146,10 @@ namespace SmartQuant.Controls.Portfolios
     {
       this.chrtStatistics.Reset();
       this.chrtStatistics.SetMainSeries((ISeries) this.selectedItem.TotalValues, false, Color.White);
-      SmartQuant.Charting.Chart.Pad = this.chrtHist.Pads[0];
-      SmartQuant.Charting.Chart.Pad.Clear();
-      SmartQuant.Charting.Chart.Pad.Title.Items.Clear();
-      SmartQuant.Charting.Chart.Pad.Legend.Items.Clear();
+            SmartQuant.Charting.Chart.Pad = this.chrtHist.Pads[0];
+            SmartQuant.Charting.Chart.Pad.Clear();
+            SmartQuant.Charting.Chart.Pad.Title.Items.Clear();
+            SmartQuant.Charting.Chart.Pad.Legend.Items.Clear();
       TimeSeries totalValues = this.selectedItem.TotalValues;
       if (totalValues.Count > 1)
       {
@@ -161,7 +161,7 @@ namespace SmartQuant.Controls.Portfolios
           histogram.Add(totalValues[index]);
         histogram.Draw();
       }
-      SmartQuant.Charting.Chart.Pad.Update();
+            SmartQuant.Charting.Chart.Pad.Update();
       this.ltvData.Items.Clear();
       for (int index = 0; index < this.selectedItem.TotalValues.Count; ++index)
         this.ltvData.Items.Add(new ListViewItem(new string[2]

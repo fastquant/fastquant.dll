@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,12 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -47,690 +43,690 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\SmartQuant\DataSimulator.cs">
-      <Link>SmartQuant\DataSimulator.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\ExecutionSimulator.cs">
-      <Link>SmartQuant\ExecutionSimulator.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\FileDataServer.cs">
-      <Link>SmartQuant\FileDataServer.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\FileInstrumentServer.cs">
-      <Link>SmartQuant\FileInstrumentServer.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\FileOrderServer.cs">
-      <Link>SmartQuant\FileOrderServer.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\FilePortfolioServer.cs">
-      <Link>SmartQuant\FilePortfolioServer.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\MatchingEngine.cs">
-      <Link>SmartQuant\MatchingEngine.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\XmlUserServer.cs">
-      <Link>SmartQuant\XmlUserServer.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Config\Configuration.cs">
-      <Link>SmartQuant\Config\Configuration.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Config\Installation.cs">
-      <Link>SmartQuant\Config\Installation.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Config\ProviderPropertyList.cs">
-      <Link>SmartQuant\Config\ProviderPropertyList.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\AltId.cs">
-      <Link>SmartQuant\Core\AltId.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\Ask.cs">
-      <Link>SmartQuant\Core\Ask.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\Bar.cs">
-      <Link>SmartQuant\Core\Bar.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\BarFilter.cs">
-      <Link>SmartQuant\Core\BarFilter.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\BarSeries.cs">
-      <Link>SmartQuant\Core\BarSeries.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\Bid.cs">
-      <Link>SmartQuant\Core\Bid.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\Command.cs">
-      <Link>SmartQuant\Core\Command.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\DataObject.cs">
-      <Link>SmartQuant\Core\DataObject.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\DataObjects.cs">
-      <Link>SmartQuant\Core\DataObjects.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\Event.cs">
-      <Link>SmartQuant\Core\Event.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\GetByList`T.cs">
-      <Link>SmartQuant\Core\GetByList`T.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\Global.cs">
-      <Link>SmartQuant\Core\Global.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\IdArray`T.cs">
-      <Link>SmartQuant\Core\IdArray`T.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\IDataSeries.cs">
-      <Link>SmartQuant\Core\IDataSeries.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\IdNamedList.cs">
-      <Link>SmartQuant\Core\IdNamedList.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\IEventQueue.cs">
-      <Link>SmartQuant\Core\IEventQueue.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\Indicator.cs">
-      <Link>SmartQuant\Core\Indicator.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\ISeries.cs">
-      <Link>SmartQuant\Core\ISeries.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\Level2.cs">
-      <Link>SmartQuant\Core\Level2.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\LicenseManager.cs">
-      <Link>SmartQuant\Core\LicenseManager.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\LinkedList`T.cs">
-      <Link>SmartQuant\Core\LinkedList`T.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\MemorySeries.cs">
-      <Link>SmartQuant\Core\MemorySeries.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\Message.cs">
-      <Link>SmartQuant\Core\Message.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\News.cs">
-      <Link>SmartQuant\Core\News.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\NonOriginalAttribute.cs">
-      <Link>SmartQuant\Core\NonOriginalAttribute.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\ObjectStreamer.cs">
-      <Link>SmartQuant\Core\ObjectStreamer.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\ObjectTable.cs">
-      <Link>SmartQuant\Core\ObjectTable.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\Parameter.cs">
-      <Link>SmartQuant\Core\Parameter.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\PermanentQueue`T.cs">
-      <Link>SmartQuant\Core\PermanentQueue`T.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\PriceComparer.cs">
-      <Link>SmartQuant\Core\PriceComparer.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\QuickLZ.cs">
-      <Link>SmartQuant\Core\QuickLZ.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\Quote.cs">
-      <Link>SmartQuant\Core\Quote.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\SimpleEvents.cs">
-      <Link>SmartQuant\Core\SimpleEvents.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\StrategyRelated.cs">
-      <Link>SmartQuant\Core\StrategyRelated.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\StreamerManager.cs">
-      <Link>SmartQuant\Core\StreamerManager.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\Tick.cs">
-      <Link>SmartQuant\Core\Tick.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\TickSeries.cs">
-      <Link>SmartQuant\Core\TickSeries.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\TimeSeries.cs">
-      <Link>SmartQuant\Core\TimeSeries.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\Trade.cs">
-      <Link>SmartQuant\Core\Trade.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\Quant\FinMath.cs">
-      <Link>SmartQuant\Core\Quant\FinMath.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\Quant\Matrix.cs">
-      <Link>SmartQuant\Core\Quant\Matrix.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\Quant\Random.cs">
-      <Link>SmartQuant\Core\Quant\Random.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Core\Quant\Vector.cs">
-      <Link>SmartQuant\Core\Quant\Vector.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Data\DataFile.cs">
-      <Link>SmartQuant\Data\DataFile.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Data\DataSeries.cs">
-      <Link>SmartQuant\Data\DataSeries.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Data\ObjectKey.cs">
-      <Link>SmartQuant\Data\ObjectKey.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Extentions\Core.cs">
-      <Link>SmartQuant\Extentions\Core.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Extentions\Runtime.cs">
-      <Link>SmartQuant\Extentions\Runtime.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\AD.cs">
-      <Link>SmartQuant\Indicators\AD.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\ADX.cs">
-      <Link>SmartQuant\Indicators\ADX.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\ADXR.cs">
-      <Link>SmartQuant\Indicators\ADXR.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\AroonL.cs">
-      <Link>SmartQuant\Indicators\AroonL.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\AroonU.cs">
-      <Link>SmartQuant\Indicators\AroonU.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\ATR.cs">
-      <Link>SmartQuant\Indicators\ATR.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\B.cs">
-      <Link>SmartQuant\Indicators\B.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\BBL.cs">
-      <Link>SmartQuant\Indicators\BBL.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\BBU.cs">
-      <Link>SmartQuant\Indicators\BBU.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\CAD.cs">
-      <Link>SmartQuant\Indicators\CAD.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\CCI.cs">
-      <Link>SmartQuant\Indicators\CCI.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\CMO.cs">
-      <Link>SmartQuant\Indicators\CMO.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\DPO.cs">
-      <Link>SmartQuant\Indicators\DPO.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\DX.cs">
-      <Link>SmartQuant\Indicators\DX.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\D_Fast.cs">
-      <Link>SmartQuant\Indicators\D_Fast.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\D_Slow.cs">
-      <Link>SmartQuant\Indicators\D_Slow.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\EMA.cs">
-      <Link>SmartQuant\Indicators\EMA.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\EMV.cs">
-      <Link>SmartQuant\Indicators\EMV.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\ENVL.cs">
-      <Link>SmartQuant\Indicators\ENVL.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\ENVU.cs">
-      <Link>SmartQuant\Indicators\ENVU.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\FO.cs">
-      <Link>SmartQuant\Indicators\FO.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\HV.cs">
-      <Link>SmartQuant\Indicators\HV.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\KCL.cs">
-      <Link>SmartQuant\Indicators\KCL.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\KCU.cs">
-      <Link>SmartQuant\Indicators\KCU.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\KRI.cs">
-      <Link>SmartQuant\Indicators\KRI.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\K_Fast.cs">
-      <Link>SmartQuant\Indicators\K_Fast.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\K_Slow.cs">
-      <Link>SmartQuant\Indicators\K_Slow.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\LRI.cs">
-      <Link>SmartQuant\Indicators\LRI.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\LRS.cs">
-      <Link>SmartQuant\Indicators\LRS.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\MACD.cs">
-      <Link>SmartQuant\Indicators\MACD.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\MarketFI.cs">
-      <Link>SmartQuant\Indicators\MarketFI.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\MASS.cs">
-      <Link>SmartQuant\Indicators\MASS.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\MDI.cs">
-      <Link>SmartQuant\Indicators\MDI.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\MDM.cs">
-      <Link>SmartQuant\Indicators\MDM.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\Mess.cs">
-      <Link>SmartQuant\Indicators\Mess.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\MFI.cs">
-      <Link>SmartQuant\Indicators\MFI.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\MOM.cs">
-      <Link>SmartQuant\Indicators\MOM.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\NVI.cs">
-      <Link>SmartQuant\Indicators\NVI.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\OBV.cs">
-      <Link>SmartQuant\Indicators\OBV.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\OSC.cs">
-      <Link>SmartQuant\Indicators\OSC.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\PCL.cs">
-      <Link>SmartQuant\Indicators\PCL.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\PCU.cs">
-      <Link>SmartQuant\Indicators\PCU.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\PDI.cs">
-      <Link>SmartQuant\Indicators\PDI.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\PDM.cs">
-      <Link>SmartQuant\Indicators\PDM.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\PERF.cs">
-      <Link>SmartQuant\Indicators\PERF.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\PVI.cs">
-      <Link>SmartQuant\Indicators\PVI.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\PVT.cs">
-      <Link>SmartQuant\Indicators\PVT.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\R.cs">
-      <Link>SmartQuant\Indicators\R.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\Range.cs">
-      <Link>SmartQuant\Indicators\Range.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\Return.cs">
-      <Link>SmartQuant\Indicators\Return.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\ROC.cs">
-      <Link>SmartQuant\Indicators\ROC.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\RSI.cs">
-      <Link>SmartQuant\Indicators\RSI.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\SMA.cs">
-      <Link>SmartQuant\Indicators\SMA.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\SMD.cs">
-      <Link>SmartQuant\Indicators\SMD.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\SMV.cs">
-      <Link>SmartQuant\Indicators\SMV.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\TH.cs">
-      <Link>SmartQuant\Indicators\TH.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\TL.cs">
-      <Link>SmartQuant\Indicators\TL.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\TR.cs">
-      <Link>SmartQuant\Indicators\TR.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\VCH.cs">
-      <Link>SmartQuant\Indicators\VCH.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\VHF.cs">
-      <Link>SmartQuant\Indicators\VHF.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\VOSC.cs">
-      <Link>SmartQuant\Indicators\VOSC.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\VROC.cs">
-      <Link>SmartQuant\Indicators\VROC.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\VWAP.cs">
-      <Link>SmartQuant\Indicators\VWAP.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\WAD.cs">
-      <Link>SmartQuant\Indicators\WAD.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Indicators\WMA.cs">
-      <Link>SmartQuant\Indicators\WMA.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Properties\AssemblyInfo.cs">
-      <Link>SmartQuant\Properties\AssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\Account.cs">
-      <Link>SmartQuant\Runtime\Account.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\AccountData.cs">
-      <Link>SmartQuant\Runtime\AccountData.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\AccountDataManager.cs">
-      <Link>SmartQuant\Runtime\AccountDataManager.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\BarFactory.cs">
-      <Link>SmartQuant\Runtime\BarFactory.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\BarSlice.cs">
-      <Link>SmartQuant\Runtime\BarSlice.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\Clock.cs">
-      <Link>SmartQuant\Runtime\Clock.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\CommissionProvider.cs">
-      <Link>SmartQuant\Runtime\CommissionProvider.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\ComponentStrategy.cs">
-      <Link>SmartQuant\Runtime\ComponentStrategy.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\CurrencyConverter.cs">
-      <Link>SmartQuant\Runtime\CurrencyConverter.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\DataFileManager.cs">
-      <Link>SmartQuant\Runtime\DataFileManager.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\DataManager.cs">
-      <Link>SmartQuant\Runtime\DataManager.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\DataProcessor.cs">
-      <Link>SmartQuant\Runtime\DataProcessor.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\DataSeriesNameHelper.cs">
-      <Link>SmartQuant\Runtime\DataSeriesNameHelper.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\DataServer.cs">
-      <Link>SmartQuant\Runtime\DataServer.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\DataStore.cs">
-      <Link>SmartQuant\Runtime\DataStore.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\EventBus.cs">
-      <Link>SmartQuant\Runtime\EventBus.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\EventClient.cs">
-      <Link>SmartQuant\Runtime\EventClient.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\EventDispatcher.cs">
-      <Link>SmartQuant\Runtime\EventDispatcher.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\EventLogger.cs">
-      <Link>SmartQuant\Runtime\EventLogger.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\EventManager.cs">
-      <Link>SmartQuant\Runtime\EventManager.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\EventPipe.cs">
-      <Link>SmartQuant\Runtime\EventPipe.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\EventQueue.cs">
-      <Link>SmartQuant\Runtime\EventQueue.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\Events.cs">
-      <Link>SmartQuant\Runtime\Events.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\EventServer.cs">
-      <Link>SmartQuant\Runtime\EventServer.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\EventTree.cs">
-      <Link>SmartQuant\Runtime\EventTree.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\ExecutionMessage.cs">
-      <Link>SmartQuant\Runtime\ExecutionMessage.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\Fill.cs">
-      <Link>SmartQuant\Runtime\Fill.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\FillSeries.cs">
-      <Link>SmartQuant\Runtime\FillSeries.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\Framework.cs">
-      <Link>SmartQuant\Runtime\Framework.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\Group.cs">
-      <Link>SmartQuant\Runtime\Group.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\GroupDispatcher.cs">
-      <Link>SmartQuant\Runtime\GroupDispatcher.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\HistoricalData.cs">
-      <Link>SmartQuant\Runtime\HistoricalData.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\Instrument.cs">
-      <Link>SmartQuant\Runtime\Instrument.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\InstrumentManager.cs">
-      <Link>SmartQuant\Runtime\InstrumentManager.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\InstrumentServer.cs">
-      <Link>SmartQuant\Runtime\InstrumentServer.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\InstrumentStrategy.cs">
-      <Link>SmartQuant\Runtime\InstrumentStrategy.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\Leg.cs">
-      <Link>SmartQuant\Runtime\Leg.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\MetaStrategy.cs">
-      <Link>SmartQuant\Runtime\MetaStrategy.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\MulticoreOptimizer.cs">
-      <Link>SmartQuant\Runtime\MulticoreOptimizer.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\Order.cs">
-      <Link>SmartQuant\Runtime\Order.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\OrderBook.cs">
-      <Link>SmartQuant\Runtime\OrderBook.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\OrderBookAggr.cs">
-      <Link>SmartQuant\Runtime\OrderBookAggr.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\OrderFactory.cs">
-      <Link>SmartQuant\Runtime\OrderFactory.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\OrderManager.cs">
-      <Link>SmartQuant\Runtime\OrderManager.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\OrderServer.cs">
-      <Link>SmartQuant\Runtime\OrderServer.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\OutputManager.cs">
-      <Link>SmartQuant\Runtime\OutputManager.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\PerformanceStrategy.cs">
-      <Link>SmartQuant\Runtime\PerformanceStrategy.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\Portfolio.cs">
-      <Link>SmartQuant\Runtime\Portfolio.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\PortfolioManager.cs">
-      <Link>SmartQuant\Runtime\PortfolioManager.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\PortfolioPerformance.cs">
-      <Link>SmartQuant\Runtime\PortfolioPerformance.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\PortfolioServer.cs">
-      <Link>SmartQuant\Runtime\PortfolioServer.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\PortfolioStatistics.cs">
-      <Link>SmartQuant\Runtime\PortfolioStatistics.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\Position.cs">
-      <Link>SmartQuant\Runtime\Position.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\Pricer.cs">
-      <Link>SmartQuant\Runtime\Pricer.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\Provider.cs">
-      <Link>SmartQuant\Runtime\Provider.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\ProviderList.cs">
-      <Link>SmartQuant\Runtime\ProviderList.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\ProviderManager.cs">
-      <Link>SmartQuant\Runtime\ProviderManager.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\QuoteSeries.cs">
-      <Link>SmartQuant\Runtime\QuoteSeries.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\Reminder.cs">
-      <Link>SmartQuant\Runtime\Reminder.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\Report.cs">
-      <Link>SmartQuant\Runtime\Report.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\Scenario.cs">
-      <Link>SmartQuant\Runtime\Scenario.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\SellSideInstrumentStrategy.cs">
-      <Link>SmartQuant\Runtime\SellSideInstrumentStrategy.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\SlippageProvider.cs">
-      <Link>SmartQuant\Runtime\SlippageProvider.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\StatisticsManager.cs">
-      <Link>SmartQuant\Runtime\StatisticsManager.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\Stop.cs">
-      <Link>SmartQuant\Runtime\Stop.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\Strategy.cs">
-      <Link>SmartQuant\Runtime\Strategy.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\StrategyManager.cs">
-      <Link>SmartQuant\Runtime\StrategyManager.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\Subscription.cs">
-      <Link>SmartQuant\Runtime\Subscription.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\TradeDetector.cs">
-      <Link>SmartQuant\Runtime\TradeDetector.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\TradeInfo.cs">
-      <Link>SmartQuant\Runtime\TradeInfo.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\Transaction.cs">
-      <Link>SmartQuant\Runtime\Transaction.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\UnclassifiedEnums.cs">
-      <Link>SmartQuant\Runtime\UnclassifiedEnums.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Runtime\User.cs">
-      <Link>SmartQuant\Runtime\User.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Statistics\AnnualReturn.cs">
-      <Link>SmartQuant\Statistics\AnnualReturn.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Statistics\Average.cs">
-      <Link>SmartQuant\Statistics\Average.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Statistics\CompoundAnnualGrowthRate.cs">
-      <Link>SmartQuant\Statistics\CompoundAnnualGrowthRate.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Statistics\Drawdown.cs">
-      <Link>SmartQuant\Statistics\Drawdown.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Statistics\Excursion.cs">
-      <Link>SmartQuant\Statistics\Excursion.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Statistics\GrossLoss.cs">
-      <Link>SmartQuant\Statistics\GrossLoss.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Statistics\GrossProfit.cs">
-      <Link>SmartQuant\Statistics\GrossProfit.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Statistics\MARRatio.cs">
-      <Link>SmartQuant\Statistics\MARRatio.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Statistics\Maximum.cs">
-      <Link>SmartQuant\Statistics\Maximum.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Statistics\Minimum.cs">
-      <Link>SmartQuant\Statistics\Minimum.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Statistics\NetProfit.cs">
-      <Link>SmartQuant\Statistics\NetProfit.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Statistics\NumOfTrades.cs">
-      <Link>SmartQuant\Statistics\NumOfTrades.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Statistics\PayoffRatio.cs">
-      <Link>SmartQuant\Statistics\PayoffRatio.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Statistics\ProfitablePercent.cs">
-      <Link>SmartQuant\Statistics\ProfitablePercent.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Statistics\ProfitFactor.cs">
-      <Link>SmartQuant\Statistics\ProfitFactor.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Statistics\RecoveryFactor.cs">
-      <Link>SmartQuant\Statistics\RecoveryFactor.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Statistics\SharpeRatio.cs">
-      <Link>SmartQuant\Statistics\SharpeRatio.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Statistics\SortinoRatio.cs">
-      <Link>SmartQuant\Statistics\SortinoRatio.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Statistics\StandardDeviation.cs">
-      <Link>SmartQuant\Statistics\StandardDeviation.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Statistics\TradesDuration.cs">
-      <Link>SmartQuant\Statistics\TradesDuration.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Statistics\TradesPnL.cs">
-      <Link>SmartQuant\Statistics\TradesPnL.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Statistics\ValueAtRisk.cs">
-      <Link>SmartQuant\Statistics\ValueAtRisk.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Streamers\AttributeStreamer.cs">
-      <Link>SmartQuant\Streamers\AttributeStreamer.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Streamers\BasicObjectStreamers.cs">
-      <Link>SmartQuant\Streamers\BasicObjectStreamers.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Streamers\BasicTypeSteamers.cs">
-      <Link>SmartQuant\Streamers\BasicTypeSteamers.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Streamers\GroupStreamers.cs">
-      <Link>SmartQuant\Streamers\GroupStreamers.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Streamers\MessageStreamers.cs">
-      <Link>SmartQuant\Streamers\MessageStreamers.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Streamers\ObjectStreamers.cs">
-      <Link>SmartQuant\Streamers\ObjectStreamers.cs</Link>
-    </Compile>
-    <Compile Include="..\SmartQuant\Streamers\TickStreamers.cs">
-      <Link>SmartQuant\Streamers\TickStreamers.cs</Link>
-    </Compile>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <Compile Include="..\FastQuant\DataSimulator.cs">
+      <Link>FastQuant\DataSimulator.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\ExecutionSimulator.cs">
+      <Link>FastQuant\ExecutionSimulator.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\FileDataServer.cs">
+      <Link>FastQuant\FileDataServer.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\FileInstrumentServer.cs">
+      <Link>FastQuant\FileInstrumentServer.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\FileOrderServer.cs">
+      <Link>FastQuant\FileOrderServer.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\FilePortfolioServer.cs">
+      <Link>FastQuant\FilePortfolioServer.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\MatchingEngine.cs">
+      <Link>FastQuant\MatchingEngine.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\XmlUserServer.cs">
+      <Link>FastQuant\XmlUserServer.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Config\Configuration.cs">
+      <Link>FastQuant\Config\Configuration.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Config\Installation.cs">
+      <Link>FastQuant\Config\Installation.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Config\ProviderPropertyList.cs">
+      <Link>FastQuant\Config\ProviderPropertyList.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\AltId.cs">
+      <Link>FastQuant\Core\AltId.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\Ask.cs">
+      <Link>FastQuant\Core\Ask.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\Bar.cs">
+      <Link>FastQuant\Core\Bar.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\BarFilter.cs">
+      <Link>FastQuant\Core\BarFilter.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\BarSeries.cs">
+      <Link>FastQuant\Core\BarSeries.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\Bid.cs">
+      <Link>FastQuant\Core\Bid.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\Command.cs">
+      <Link>FastQuant\Core\Command.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\DataObject.cs">
+      <Link>FastQuant\Core\DataObject.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\DataObjects.cs">
+      <Link>FastQuant\Core\DataObjects.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\Event.cs">
+      <Link>FastQuant\Core\Event.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\GetByList`T.cs">
+      <Link>FastQuant\Core\GetByList`T.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\Global.cs">
+      <Link>FastQuant\Core\Global.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\IdArray`T.cs">
+      <Link>FastQuant\Core\IdArray`T.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\IDataSeries.cs">
+      <Link>FastQuant\Core\IDataSeries.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\IdNamedList.cs">
+      <Link>FastQuant\Core\IdNamedList.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\IEventQueue.cs">
+      <Link>FastQuant\Core\IEventQueue.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\Indicator.cs">
+      <Link>FastQuant\Core\Indicator.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\ISeries.cs">
+      <Link>FastQuant\Core\ISeries.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\Level2.cs">
+      <Link>FastQuant\Core\Level2.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\LicenseManager.cs">
+      <Link>FastQuant\Core\LicenseManager.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\LinkedList`T.cs">
+      <Link>FastQuant\Core\LinkedList`T.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\MemorySeries.cs">
+      <Link>FastQuant\Core\MemorySeries.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\Message.cs">
+      <Link>FastQuant\Core\Message.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\News.cs">
+      <Link>FastQuant\Core\News.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\NonOriginalAttribute.cs">
+      <Link>FastQuant\Core\NonOriginalAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\ObjectStreamer.cs">
+      <Link>FastQuant\Core\ObjectStreamer.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\ObjectTable.cs">
+      <Link>FastQuant\Core\ObjectTable.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\Parameter.cs">
+      <Link>FastQuant\Core\Parameter.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\PermanentQueue`T.cs">
+      <Link>FastQuant\Core\PermanentQueue`T.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\PriceComparer.cs">
+      <Link>FastQuant\Core\PriceComparer.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\QuickLZ.cs">
+      <Link>FastQuant\Core\QuickLZ.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\Quote.cs">
+      <Link>FastQuant\Core\Quote.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\SimpleEvents.cs">
+      <Link>FastQuant\Core\SimpleEvents.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\StrategyRelated.cs">
+      <Link>FastQuant\Core\StrategyRelated.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\StreamerManager.cs">
+      <Link>FastQuant\Core\StreamerManager.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\Tick.cs">
+      <Link>FastQuant\Core\Tick.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\TickSeries.cs">
+      <Link>FastQuant\Core\TickSeries.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\TimeSeries.cs">
+      <Link>FastQuant\Core\TimeSeries.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\Trade.cs">
+      <Link>FastQuant\Core\Trade.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\Quant\FinMath.cs">
+      <Link>FastQuant\Core\Quant\FinMath.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\Quant\Matrix.cs">
+      <Link>FastQuant\Core\Quant\Matrix.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\Quant\Random.cs">
+      <Link>FastQuant\Core\Quant\Random.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Core\Quant\Vector.cs">
+      <Link>FastQuant\Core\Quant\Vector.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Data\DataFile.cs">
+      <Link>FastQuant\Data\DataFile.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Data\DataSeries.cs">
+      <Link>FastQuant\Data\DataSeries.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Data\ObjectKey.cs">
+      <Link>FastQuant\Data\ObjectKey.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Extentions\Core.cs">
+      <Link>FastQuant\Extentions\Core.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Extentions\Runtime.cs">
+      <Link>FastQuant\Extentions\Runtime.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\AD.cs">
+      <Link>FastQuant\Indicators\AD.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\ADX.cs">
+      <Link>FastQuant\Indicators\ADX.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\ADXR.cs">
+      <Link>FastQuant\Indicators\ADXR.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\AroonL.cs">
+      <Link>FastQuant\Indicators\AroonL.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\AroonU.cs">
+      <Link>FastQuant\Indicators\AroonU.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\ATR.cs">
+      <Link>FastQuant\Indicators\ATR.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\B.cs">
+      <Link>FastQuant\Indicators\B.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\BBL.cs">
+      <Link>FastQuant\Indicators\BBL.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\BBU.cs">
+      <Link>FastQuant\Indicators\BBU.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\CAD.cs">
+      <Link>FastQuant\Indicators\CAD.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\CCI.cs">
+      <Link>FastQuant\Indicators\CCI.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\CMO.cs">
+      <Link>FastQuant\Indicators\CMO.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\DPO.cs">
+      <Link>FastQuant\Indicators\DPO.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\DX.cs">
+      <Link>FastQuant\Indicators\DX.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\D_Fast.cs">
+      <Link>FastQuant\Indicators\D_Fast.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\D_Slow.cs">
+      <Link>FastQuant\Indicators\D_Slow.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\EMA.cs">
+      <Link>FastQuant\Indicators\EMA.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\EMV.cs">
+      <Link>FastQuant\Indicators\EMV.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\ENVL.cs">
+      <Link>FastQuant\Indicators\ENVL.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\ENVU.cs">
+      <Link>FastQuant\Indicators\ENVU.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\FO.cs">
+      <Link>FastQuant\Indicators\FO.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\HV.cs">
+      <Link>FastQuant\Indicators\HV.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\KCL.cs">
+      <Link>FastQuant\Indicators\KCL.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\KCU.cs">
+      <Link>FastQuant\Indicators\KCU.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\KRI.cs">
+      <Link>FastQuant\Indicators\KRI.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\K_Fast.cs">
+      <Link>FastQuant\Indicators\K_Fast.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\K_Slow.cs">
+      <Link>FastQuant\Indicators\K_Slow.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\LRI.cs">
+      <Link>FastQuant\Indicators\LRI.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\LRS.cs">
+      <Link>FastQuant\Indicators\LRS.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\MACD.cs">
+      <Link>FastQuant\Indicators\MACD.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\MarketFI.cs">
+      <Link>FastQuant\Indicators\MarketFI.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\MASS.cs">
+      <Link>FastQuant\Indicators\MASS.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\MDI.cs">
+      <Link>FastQuant\Indicators\MDI.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\MDM.cs">
+      <Link>FastQuant\Indicators\MDM.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\Mess.cs">
+      <Link>FastQuant\Indicators\Mess.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\MFI.cs">
+      <Link>FastQuant\Indicators\MFI.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\MOM.cs">
+      <Link>FastQuant\Indicators\MOM.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\NVI.cs">
+      <Link>FastQuant\Indicators\NVI.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\OBV.cs">
+      <Link>FastQuant\Indicators\OBV.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\OSC.cs">
+      <Link>FastQuant\Indicators\OSC.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\PCL.cs">
+      <Link>FastQuant\Indicators\PCL.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\PCU.cs">
+      <Link>FastQuant\Indicators\PCU.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\PDI.cs">
+      <Link>FastQuant\Indicators\PDI.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\PDM.cs">
+      <Link>FastQuant\Indicators\PDM.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\PERF.cs">
+      <Link>FastQuant\Indicators\PERF.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\PVI.cs">
+      <Link>FastQuant\Indicators\PVI.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\PVT.cs">
+      <Link>FastQuant\Indicators\PVT.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\R.cs">
+      <Link>FastQuant\Indicators\R.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\Range.cs">
+      <Link>FastQuant\Indicators\Range.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\Return.cs">
+      <Link>FastQuant\Indicators\Return.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\ROC.cs">
+      <Link>FastQuant\Indicators\ROC.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\RSI.cs">
+      <Link>FastQuant\Indicators\RSI.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\SMA.cs">
+      <Link>FastQuant\Indicators\SMA.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\SMD.cs">
+      <Link>FastQuant\Indicators\SMD.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\SMV.cs">
+      <Link>FastQuant\Indicators\SMV.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\TH.cs">
+      <Link>FastQuant\Indicators\TH.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\TL.cs">
+      <Link>FastQuant\Indicators\TL.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\TR.cs">
+      <Link>FastQuant\Indicators\TR.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\VCH.cs">
+      <Link>FastQuant\Indicators\VCH.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\VHF.cs">
+      <Link>FastQuant\Indicators\VHF.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\VOSC.cs">
+      <Link>FastQuant\Indicators\VOSC.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\VROC.cs">
+      <Link>FastQuant\Indicators\VROC.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\VWAP.cs">
+      <Link>FastQuant\Indicators\VWAP.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\WAD.cs">
+      <Link>FastQuant\Indicators\WAD.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Indicators\WMA.cs">
+      <Link>FastQuant\Indicators\WMA.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Properties\AssemblyInfo.cs">
+      <Link>FastQuant\Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\Account.cs">
+      <Link>FastQuant\Runtime\Account.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\AccountData.cs">
+      <Link>FastQuant\Runtime\AccountData.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\AccountDataManager.cs">
+      <Link>FastQuant\Runtime\AccountDataManager.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\BarFactory.cs">
+      <Link>FastQuant\Runtime\BarFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\BarSlice.cs">
+      <Link>FastQuant\Runtime\BarSlice.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\Clock.cs">
+      <Link>FastQuant\Runtime\Clock.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\CommissionProvider.cs">
+      <Link>FastQuant\Runtime\CommissionProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\ComponentStrategy.cs">
+      <Link>FastQuant\Runtime\ComponentStrategy.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\CurrencyConverter.cs">
+      <Link>FastQuant\Runtime\CurrencyConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\DataFileManager.cs">
+      <Link>FastQuant\Runtime\DataFileManager.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\DataManager.cs">
+      <Link>FastQuant\Runtime\DataManager.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\DataProcessor.cs">
+      <Link>FastQuant\Runtime\DataProcessor.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\DataSeriesNameHelper.cs">
+      <Link>FastQuant\Runtime\DataSeriesNameHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\DataServer.cs">
+      <Link>FastQuant\Runtime\DataServer.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\DataStore.cs">
+      <Link>FastQuant\Runtime\DataStore.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\EventBus.cs">
+      <Link>FastQuant\Runtime\EventBus.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\EventClient.cs">
+      <Link>FastQuant\Runtime\EventClient.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\EventDispatcher.cs">
+      <Link>FastQuant\Runtime\EventDispatcher.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\EventLogger.cs">
+      <Link>FastQuant\Runtime\EventLogger.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\EventManager.cs">
+      <Link>FastQuant\Runtime\EventManager.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\EventPipe.cs">
+      <Link>FastQuant\Runtime\EventPipe.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\EventQueue.cs">
+      <Link>FastQuant\Runtime\EventQueue.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\Events.cs">
+      <Link>FastQuant\Runtime\Events.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\EventServer.cs">
+      <Link>FastQuant\Runtime\EventServer.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\EventTree.cs">
+      <Link>FastQuant\Runtime\EventTree.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\ExecutionMessage.cs">
+      <Link>FastQuant\Runtime\ExecutionMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\Fill.cs">
+      <Link>FastQuant\Runtime\Fill.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\FillSeries.cs">
+      <Link>FastQuant\Runtime\FillSeries.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\Framework.cs">
+      <Link>FastQuant\Runtime\Framework.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\Group.cs">
+      <Link>FastQuant\Runtime\Group.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\GroupDispatcher.cs">
+      <Link>FastQuant\Runtime\GroupDispatcher.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\HistoricalData.cs">
+      <Link>FastQuant\Runtime\HistoricalData.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\Instrument.cs">
+      <Link>FastQuant\Runtime\Instrument.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\InstrumentManager.cs">
+      <Link>FastQuant\Runtime\InstrumentManager.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\InstrumentServer.cs">
+      <Link>FastQuant\Runtime\InstrumentServer.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\InstrumentStrategy.cs">
+      <Link>FastQuant\Runtime\InstrumentStrategy.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\Leg.cs">
+      <Link>FastQuant\Runtime\Leg.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\MetaStrategy.cs">
+      <Link>FastQuant\Runtime\MetaStrategy.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\MulticoreOptimizer.cs">
+      <Link>FastQuant\Runtime\MulticoreOptimizer.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\Order.cs">
+      <Link>FastQuant\Runtime\Order.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\OrderBook.cs">
+      <Link>FastQuant\Runtime\OrderBook.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\OrderBookAggr.cs">
+      <Link>FastQuant\Runtime\OrderBookAggr.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\OrderFactory.cs">
+      <Link>FastQuant\Runtime\OrderFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\OrderManager.cs">
+      <Link>FastQuant\Runtime\OrderManager.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\OrderServer.cs">
+      <Link>FastQuant\Runtime\OrderServer.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\OutputManager.cs">
+      <Link>FastQuant\Runtime\OutputManager.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\PerformanceStrategy.cs">
+      <Link>FastQuant\Runtime\PerformanceStrategy.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\Portfolio.cs">
+      <Link>FastQuant\Runtime\Portfolio.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\PortfolioManager.cs">
+      <Link>FastQuant\Runtime\PortfolioManager.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\PortfolioPerformance.cs">
+      <Link>FastQuant\Runtime\PortfolioPerformance.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\PortfolioServer.cs">
+      <Link>FastQuant\Runtime\PortfolioServer.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\PortfolioStatistics.cs">
+      <Link>FastQuant\Runtime\PortfolioStatistics.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\Position.cs">
+      <Link>FastQuant\Runtime\Position.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\Pricer.cs">
+      <Link>FastQuant\Runtime\Pricer.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\Provider.cs">
+      <Link>FastQuant\Runtime\Provider.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\ProviderList.cs">
+      <Link>FastQuant\Runtime\ProviderList.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\ProviderManager.cs">
+      <Link>FastQuant\Runtime\ProviderManager.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\QuoteSeries.cs">
+      <Link>FastQuant\Runtime\QuoteSeries.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\Reminder.cs">
+      <Link>FastQuant\Runtime\Reminder.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\Report.cs">
+      <Link>FastQuant\Runtime\Report.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\Scenario.cs">
+      <Link>FastQuant\Runtime\Scenario.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\SellSideInstrumentStrategy.cs">
+      <Link>FastQuant\Runtime\SellSideInstrumentStrategy.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\SlippageProvider.cs">
+      <Link>FastQuant\Runtime\SlippageProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\StatisticsManager.cs">
+      <Link>FastQuant\Runtime\StatisticsManager.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\Stop.cs">
+      <Link>FastQuant\Runtime\Stop.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\Strategy.cs">
+      <Link>FastQuant\Runtime\Strategy.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\StrategyManager.cs">
+      <Link>FastQuant\Runtime\StrategyManager.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\Subscription.cs">
+      <Link>FastQuant\Runtime\Subscription.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\TradeDetector.cs">
+      <Link>FastQuant\Runtime\TradeDetector.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\TradeInfo.cs">
+      <Link>FastQuant\Runtime\TradeInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\Transaction.cs">
+      <Link>FastQuant\Runtime\Transaction.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\UnclassifiedEnums.cs">
+      <Link>FastQuant\Runtime\UnclassifiedEnums.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Runtime\User.cs">
+      <Link>FastQuant\Runtime\User.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Statistics\AnnualReturn.cs">
+      <Link>FastQuant\Statistics\AnnualReturn.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Statistics\Average.cs">
+      <Link>FastQuant\Statistics\Average.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Statistics\CompoundAnnualGrowthRate.cs">
+      <Link>FastQuant\Statistics\CompoundAnnualGrowthRate.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Statistics\Drawdown.cs">
+      <Link>FastQuant\Statistics\Drawdown.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Statistics\Excursion.cs">
+      <Link>FastQuant\Statistics\Excursion.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Statistics\GrossLoss.cs">
+      <Link>FastQuant\Statistics\GrossLoss.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Statistics\GrossProfit.cs">
+      <Link>FastQuant\Statistics\GrossProfit.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Statistics\MARRatio.cs">
+      <Link>FastQuant\Statistics\MARRatio.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Statistics\Maximum.cs">
+      <Link>FastQuant\Statistics\Maximum.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Statistics\Minimum.cs">
+      <Link>FastQuant\Statistics\Minimum.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Statistics\NetProfit.cs">
+      <Link>FastQuant\Statistics\NetProfit.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Statistics\NumOfTrades.cs">
+      <Link>FastQuant\Statistics\NumOfTrades.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Statistics\PayoffRatio.cs">
+      <Link>FastQuant\Statistics\PayoffRatio.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Statistics\ProfitablePercent.cs">
+      <Link>FastQuant\Statistics\ProfitablePercent.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Statistics\ProfitFactor.cs">
+      <Link>FastQuant\Statistics\ProfitFactor.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Statistics\RecoveryFactor.cs">
+      <Link>FastQuant\Statistics\RecoveryFactor.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Statistics\SharpeRatio.cs">
+      <Link>FastQuant\Statistics\SharpeRatio.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Statistics\SortinoRatio.cs">
+      <Link>FastQuant\Statistics\SortinoRatio.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Statistics\StandardDeviation.cs">
+      <Link>FastQuant\Statistics\StandardDeviation.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Statistics\TradesDuration.cs">
+      <Link>FastQuant\Statistics\TradesDuration.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Statistics\TradesPnL.cs">
+      <Link>FastQuant\Statistics\TradesPnL.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Statistics\ValueAtRisk.cs">
+      <Link>FastQuant\Statistics\ValueAtRisk.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Streamers\AttributeStreamer.cs">
+      <Link>FastQuant\Streamers\AttributeStreamer.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Streamers\BasicObjectStreamers.cs">
+      <Link>FastQuant\Streamers\BasicObjectStreamers.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Streamers\BasicTypeSteamers.cs">
+      <Link>FastQuant\Streamers\BasicTypeSteamers.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Streamers\GroupStreamers.cs">
+      <Link>FastQuant\Streamers\GroupStreamers.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Streamers\MessageStreamers.cs">
+      <Link>FastQuant\Streamers\MessageStreamers.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Streamers\ObjectStreamers.cs">
+      <Link>FastQuant\Streamers\ObjectStreamers.cs</Link>
+    </Compile>
+    <Compile Include="..\FastQuant\Streamers\TickStreamers.cs">
+      <Link>FastQuant\Streamers\TickStreamers.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

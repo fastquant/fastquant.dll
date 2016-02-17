@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using SmartQuant;
 using SmartQuant.Charting;
 using SmartQuant.ChartViewers;
 using System.ComponentModel;

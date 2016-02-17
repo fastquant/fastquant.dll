@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Drawing;
+#if USE_FASTQUANT
+using FastQuant;
+using FastQuant.Indicators;
+#else
 using SmartQuant;
 using SmartQuant.Indicators;
-
+#endif
 namespace Demo
 {
     public class MyStrategy : InstrumentStrategy
@@ -34,8 +38,11 @@ namespace Demo
             : base(framework, name)
         {
         }
-
+#if USE_SOURCE
+        protected internal override void OnStrategyStart()
+#else
         protected override void OnStrategyStart()
+#endif
         {
             Portfolio.Account.Deposit(AllocationPerInstrument, CurrencyId.USD, "Initial allocation");
 

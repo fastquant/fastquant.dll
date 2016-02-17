@@ -23,7 +23,7 @@ namespace SmartQuant.Controls.Data
 
     protected override string[] GetCustomSubItems(int index)
     {
-      SmartQuant.DataObject dataObject = this.dataSeries[(long) index];
+            SmartQuant.DataObject dataObject = this.dataSeries[(long) index];
       if (dataObject == null)
         return new string[2]
         {

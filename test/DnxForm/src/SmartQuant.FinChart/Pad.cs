@@ -1,4 +1,3 @@
-using SmartQuant;
 using System;
 using System.Collections;
 using System.Drawing;

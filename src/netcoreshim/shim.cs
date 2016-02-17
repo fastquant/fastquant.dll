@@ -84,13 +84,12 @@ namespace System.ComponentModel
     {
         public DescriptionAttribute()
         {
-
         }
         public DescriptionAttribute(string description)
         {
-
         }
     }
+
     [AttributeUsage(AttributeTargets.All)]
     public class CategoryAttribute : Attribute
     {
@@ -100,7 +99,6 @@ namespace System.ComponentModel
         }
         public CategoryAttribute(string category)
         {
-
         }
     }
 }

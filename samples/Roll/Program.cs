@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using SmartQuant;
-using SmartQuant.Indicators;
+using FastQuant;
+using FastQuant.Indicators;
 using System.Linq;
 
 namespace Samples.Roll

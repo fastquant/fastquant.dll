@@ -1,4 +1,3 @@
-using SmartQuant;
 using SmartQuant.FinChart.Objects;
 using System;
 using System.Collections;

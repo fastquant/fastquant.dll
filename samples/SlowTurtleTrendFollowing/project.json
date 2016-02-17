@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "SmartQuant": ""
+    "FastQuant": ""
   },
   "frameworks": {
     "dnx451": { },

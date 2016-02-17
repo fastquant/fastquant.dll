@@ -17,7 +17,7 @@ namespace Demo
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.barChart2 = new SmartQuant.Controls.BarChart.BarChart2();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.chart3 = new SmartQuant.FinChart.Chart();
+            this.chart3 = new Chart();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -153,7 +153,7 @@ namespace Demo
         private System.Windows.Forms.TabPage tabPage2;
         private BarChart barChart;
         private BarChart2 barChart2;
-        private Chart chart3;
+        private global::SmartQuant.FinChart.Chart chart3;
         private TabPage tabPage3;
         private OrderManagerWindow orderManager;
         private AccountData accountData;

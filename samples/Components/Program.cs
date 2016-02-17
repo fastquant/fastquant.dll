@@ -1,9 +1,9 @@
 using System;
 using System.Drawing;
-using SmartQuant;
-using SmartQuant.Indicators;
+using FastQuant;
+using FastQuant.Indicators;
 using System.Linq;
-using SmartQuant.Component;
+using FastQuant.Component;
 
 namespace Samples.Components
 {

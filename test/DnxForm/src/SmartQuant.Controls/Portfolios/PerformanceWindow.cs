@@ -4,7 +4,6 @@
 // MVID: EFEF2D43-0E96-48AE-8F56-611B584714E6
 // Assembly location: C:\Program Files\SmartQuant Ltd\OpenQuant 2014\SmartQuant.Controls.dll
 
-using SmartQuant;
 using SmartQuant.FinChart;
 using System;
 using System.ComponentModel;
@@ -21,15 +20,9 @@ namespace SmartQuant.Controls.Portfolios
     private IContainer components;
     private Chart chart;
 
-    public SmartQuant.Portfolio Portfolio
-    {
-      get
-      {
-        return this.portfolio;
-      }
-    }
+    public SmartQuant.Portfolio Portfolio => this.portfolio;
 
-    public PerformanceWindow()
+      public PerformanceWindow()
     {
       this.InitializeComponent();
     }
@@ -66,8 +59,8 @@ namespace SmartQuant.Controls.Portfolios
 
     protected override void Dispose(bool disposing)
     {
-      if (disposing && this.components != null)
-        this.components.Dispose();
+      if (disposing)
+        this.components?.Dispose();
       base.Dispose(disposing);
     }
 

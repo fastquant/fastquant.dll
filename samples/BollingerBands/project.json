@@ -3,7 +3,7 @@
     "emitEntryPoint": true
   },
   "dependencies": {
-    "SmartQuant": ""
+    "FastQuant": ""
   },
   "commands": {
     "app": "BollingerBands"

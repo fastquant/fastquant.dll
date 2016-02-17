@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using SmartQuant;
-using SmartQuant.Indicators;
+using FastQuant;
+using FastQuant.Indicators;
 using System.Linq;
-using SmartQuant.Optimization;
+using FastQuant.Optimization;
 
 namespace Samples.SMACrossover
 {

@@ -19,7 +19,7 @@ namespace SmartRenamer
             var ws = MSBuildWorkspace.Create();
             var proj = ws.OpenProjectAsync(PrjPath).Result;
             var solution = proj.Solution;
-            solution = RenameNamespace("SmartQuant", "FastQuant", solution);
+            solution = RenameNamespace("FastQuant", "SmartQuant", solution);
             solution = RenameClass("Message", "Message_", solution);
             solution = RenameClass("Command", "Command_", solution);
             solution = RenameClass("Response", "Response_", solution);

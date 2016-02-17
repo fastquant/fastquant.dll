@@ -7,7 +7,7 @@
         "System.Xml": "4.0.0.0"
       },
       "bin": {
-        "assembly": "..\\..\\tools\\libs\\SQ.dll"
+        "assembly": "../../tools/libs/SQ.dll"
       }
     }
   }
