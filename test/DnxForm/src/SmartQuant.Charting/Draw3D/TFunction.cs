@@ -80,7 +80,7 @@ namespace SmartQuant.Charting.Draw3D
         {
             if (this.Look != EChartLook.SurfaceOnly)
                 return;
-            Graphics g = Graphics.FromImage((Image) bm);
+            var g = Graphics.FromImage(bm);
             TView.View(pad).PaintAxes(g, pad, 0, 0, this.H);
         }
 

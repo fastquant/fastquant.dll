@@ -387,9 +387,11 @@ namespace SmartQuant.Charting
 
         public void Add(double x, double y, string text, Color markerColor, Color textColor)
         {
-            var label = new TLabel(text, x, y, markerColor, textColor);
-            label.Style = this.markerStyle;
-            label.Size = this.markerSize;
+            var label = new TLabel(text, x, y, markerColor, textColor)
+            {
+                Style = this.markerStyle,
+                Size = this.markerSize
+            };
             Points.Add(label);
             MinMax(x, y);
         }
@@ -433,8 +435,7 @@ namespace SmartQuant.Charting
         {
             if (Style == EGraphStyle.Line && LineEnabled)
             {
-                Pen Pen = new Pen(LineColor);
-                Pen.DashStyle = LineDashStyle;
+                var Pen = new Pen(LineColor) {DashStyle = LineDashStyle};
                 double X1 = 0.0;
                 double Y1 = 0.0;
                 bool flag = true;

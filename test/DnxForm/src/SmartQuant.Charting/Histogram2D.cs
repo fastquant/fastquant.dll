@@ -7,10 +7,10 @@ namespace SmartQuant.Charting
     [Serializable]
     public class Histogram2D : IDrawable
     {
-        private Histogram2D.TDraw3DChart Draw3DChart = new Histogram2D.TDraw3DChart();
-        private Histogram2D.TDraw3DChartSmoothedLinear Draw3DChartSmoothedLinear = new Histogram2D.TDraw3DChartSmoothedLinear();
-        private Histogram2D.TDraw3DChartMulticolor Draw3DChartMulticolor = new Histogram2D.TDraw3DChartMulticolor();
-        private Histogram2D.TDraw3DChartMulticolorSmoothedLinear Draw3DChartMulticolorSmoothedLinear = new Histogram2D.TDraw3DChartMulticolorSmoothedLinear();
+        private TDraw3DChart Draw3DChart = new TDraw3DChart();
+        private TDraw3DChartSmoothedLinear Draw3DChartSmoothedLinear = new TDraw3DChartSmoothedLinear();
+        private TDraw3DChartMulticolor Draw3DChartMulticolor = new TDraw3DChartMulticolor();
+        private TDraw3DChartMulticolorSmoothedLinear Draw3DChartMulticolorSmoothedLinear = new TDraw3DChartMulticolorSmoothedLinear();
         public const double epsilon = 1E-09;
         protected string fName;
         protected string fTitle;
@@ -133,27 +133,15 @@ namespace SmartQuant.Charting
             }
         }
 
-        public double dX
-        {
-            get
-            {
-                return (this.fXMax - this.fXMin) / (double)this.fNBinsX;
-            }
-        }
+        public double dX => (this.fXMax - this.fXMin) / this.fNBinsX;
 
-        public double dY
-        {
-            get
-            {
-                return (this.fYMax - this.fYMin) / (double)this.fNBinsY;
-            }
-        }
+        public double dY => (this.fYMax - this.fYMin) / (double)this.fNBinsY;
 
-        public Histogram2D(string Name, string Title, int NBinsX, double XMin, double XMax, int NBinsY, double YMin, double YMax)
+        public Histogram2D(string name, string title, int nBinsX, double xMin, double xMax, int nBinsY, double yMin, double yMax)
         {
-            this.fName = Name;
-            this.fTitle = Title;
-            this.Init(NBinsX, XMin, XMax, NBinsY, YMin, YMax);
+            this.fName = name;
+            this.fTitle = title;
+            this.Init(nBinsX, xMin, xMax, nBinsY, yMin, yMax);
         }
 
         public Histogram2D(string Name, int NBinsX, double XMin, double XMax, int NBinsY, double YMin, double YMax)
@@ -206,9 +194,9 @@ namespace SmartQuant.Charting
             this.SetPalette(EPalette.Rainbow);
         }
 
-        private int Index(double a, double Min, double K)
+        private int Index(double a, double min, double K)
         {
-            return (int)(K * (a - Min) + 1E-09);
+            return (int)(K * (a - min) + 1E-09);
         }
 
         private int IndexX(double X)
@@ -257,44 +245,32 @@ namespace SmartQuant.Charting
                 return this.fBins[this.IndexX(X), this.IndexY(Y)];
         }
 
-        public double GetBinSizeX()
+        public double GetBinSizeX() => this.fBinSizeX;
+
+        public double GetBinSizeY() => this.fBinSizeY;
+
+        public double GetBinMinX(int index) => this.fXMin + this.fBinSizeX * (double)index;
+
+        public double GetBinMinY(int index) => this.fYMin + this.fBinSizeY * (double)index;
+
+        public double GetBinMaxX(int index)
         {
-            return this.fBinSizeX;
+            return this.fXMin + this.fBinSizeX * (double)(index + 1);
         }
 
-        public double GetBinSizeY()
+        public double GetBinMaxY(int index)
         {
-            return this.fBinSizeY;
+            return this.fYMin + this.fBinSizeY * (double)(index + 1);
         }
 
-        public double GetBinMinX(int Index)
+        public double GetBinCentreX(int index)
         {
-            return this.fXMin + this.fBinSizeX * (double)Index;
+            return this.fXMin + this.fBinSizeX * ((double)index + 0.5);
         }
 
-        public double GetBinMinY(int Index)
+        public double GetBinCentreY(int index)
         {
-            return this.fYMin + this.fBinSizeY * (double)Index;
-        }
-
-        public double GetBinMaxX(int Index)
-        {
-            return this.fXMin + this.fBinSizeX * (double)(Index + 1);
-        }
-
-        public double GetBinMaxY(int Index)
-        {
-            return this.fYMin + this.fBinSizeY * (double)(Index + 1);
-        }
-
-        public double GetBinCentreX(int Index)
-        {
-            return this.fXMin + this.fBinSizeX * ((double)Index + 0.5);
-        }
-
-        public double GetBinCentreY(int Index)
-        {
-            return this.fYMin + this.fBinSizeY * ((double)Index + 0.5);
+            return this.fYMin + this.fBinSizeY * ((double)index + 0.5);
         }
 
         public double GetSum()
@@ -319,88 +295,50 @@ namespace SmartQuant.Charting
             return num;
         }
 
-        public double GetMin()
-        {
-            return this.fBinMin;
-        }
+        public double GetMin() => this.fBinMin;
 
-        public double GetMax()
-        {
-            return this.fBinMax;
-        }
+        public double GetMax() => this.fBinMax;
 
-        public void ShowMaxZ(double MaxZ)
-        {
-            this.fShowMaxZ = MaxZ;
-        }
+        public void ShowMaxZ(double maxZ) => this.fShowMaxZ = maxZ;
 
-        public void ShowUnnormalizedZ()
-        {
-            this.ShowMaxZ(this.GetMax());
-        }
+        public void ShowUnnormalizedZ() => ShowMaxZ(GetMax());
 
-        public bool IsNormalized()
-        {
-            return this.fShowMaxZ != this.GetMax();
-        }
+        public bool IsNormalized() => this.fShowMaxZ != GetMax();
 
-        public void ShowNormalizedByMax()
-        {
-            this.ShowMaxZ(1.0);
-        }
+        public void ShowNormalizedByMax() => ShowMaxZ(1.0);
 
-        public void ShowNormalizedBySum()
-        {
-            this.ShowMaxZ(this.GetMax() / this.GetSum());
-        }
+        public void ShowNormalizedBySum() => ShowMaxZ(GetMax() / GetSum());
 
-        public void ShowDensityUnnormalized()
-        {
-            this.ShowMaxZ(this.GetMax() / (this.dX * this.dY));
-        }
+        public void ShowDensityUnnormalized() => ShowMaxZ(GetMax() / (this.dX * this.dY));
 
-        public bool IsDensityNormalized()
-        {
-            return this.fShowMaxZ != this.GetMax() / (this.dX * this.dY);
-        }
+        public bool IsDensityNormalized() => this.fShowMaxZ != GetMax() / (this.dX * this.dY);
 
-        public void ShowDensityNormalizedByMax()
-        {
-            this.ShowMaxZ(1.0);
-        }
+        public void ShowDensityNormalizedByMax() => ShowMaxZ(1.0);
 
-        public void ShowDensityNormalizedBySum()
-        {
-            this.ShowMaxZ(this.GetMax() / (this.GetSum() * this.dX * this.dY));
-        }
+        public void ShowDensityNormalizedBySum() => ShowMaxZ(GetMax() / (GetSum() * this.dX * this.dY));
 
         public void Print()
         {
-            for (int Index1 = 0; Index1 < this.fNBinsX; ++Index1)
+            for (int i = 0; i < this.fNBinsX; ++i)
             {
-                for (int Index2 = 0; Index2 < this.fNBinsY; ++Index2)
+                for (int j = 0; j < this.fNBinsY; ++j)
                 {
-                    if (this.fBins[Index1, Index2] != 0.0)
-                        Console.WriteLine((string)(object)Index1 + (object)":" + (string)(object)Index2 + " - [" + (string)(object)this.GetBinCentreX(Index1) + " " + (string)(object)this.GetBinCentreY(Index2) + "] : " + this.fBins[Index1, Index2].ToString("F2"));
+                    if (this.fBins[i, j] != 0.0)
+                        Console.WriteLine((string)(object)i + (object)":" + (string)(object)j + " - [" + (string)(object)this.GetBinCentreX(i) + " " + (string)(object)this.GetBinCentreY(j) + "] : " + this.fBins[i, j].ToString("F2"));
                 }
             }
         }
 
-        public virtual void Draw()
-        {
-            this.Draw("");
-        }
+        public virtual void Draw() => Draw("");
 
-        public virtual void Draw(string Option)
+        public virtual void Draw(string option)
         {
             if (Chart.Pad == null)
-            {
-                Canvas canvas = new Canvas("Canvas", "Canvas");
-            }
+                new Canvas("Canvas", "Canvas");
             if (Chart.Pad.View3D == null)
-                Chart.Pad.View3D = (object)new TView();
-            Chart.Pad.Add((object)this);
-            if (Option.ToLower().IndexOf("s") >= 0)
+                Chart.Pad.View3D = new TView();
+            Chart.Pad.Add(this);
+            if (option.ToLower().IndexOf("s") >= 0)
                 return;
             if (Chart.Pad.For3D)
                 new TText(this.fName, this.fXMin, this.fYMax).Draw();
@@ -409,17 +347,17 @@ namespace SmartQuant.Charting
             Chart.Pad.SetRange(this.fXMin, this.fXMax, this.fYMin, this.fYMax);
         }
 
-        public Color[] CreatePalette(Color LowColor, Color HighColor, int NColors)
+        public Color[] CreatePalette(Color lowColor, Color highColor, int nColors)
         {
-            Color[] colorArray = new Color[NColors];
-            double num1 = (double)((int)HighColor.R - (int)LowColor.R) / (double)NColors;
-            double num2 = (double)((int)HighColor.G - (int)LowColor.G) / (double)NColors;
-            double num3 = (double)((int)HighColor.B - (int)LowColor.B) / (double)NColors;
-            double num4 = (double)LowColor.R;
-            double num5 = (double)LowColor.G;
-            double num6 = (double)LowColor.B;
-            colorArray[0] = LowColor;
-            for (int index = 1; index < NColors; ++index)
+            Color[] colorArray = new Color[nColors];
+            double num1 = (double)((int)highColor.R - (int)lowColor.R) / (double)nColors;
+            double num2 = (double)((int)highColor.G - (int)lowColor.G) / (double)nColors;
+            double num3 = (double)((int)highColor.B - (int)lowColor.B) / (double)nColors;
+            double num4 = (double)lowColor.R;
+            double num5 = (double)lowColor.G;
+            double num6 = (double)lowColor.B;
+            colorArray[0] = lowColor;
+            for (int index = 1; index < nColors; ++index)
             {
                 num4 += num1;
                 num5 += num2;
@@ -429,21 +367,21 @@ namespace SmartQuant.Charting
             return colorArray;
         }
 
-        public void SetPalette(Color LowColor, Color HighColor, int NColors)
+        public void SetPalette(Color lowColor, Color highColor, int nColors)
         {
-            this.fNColors = NColors;
-            this.fPalette = this.CreatePalette(LowColor, HighColor, NColors);
+            this.fNColors = nColors;
+            this.fPalette = this.CreatePalette(lowColor, highColor, nColors);
         }
 
-        public void SetPalette(Color[] Colors, int NColors)
+        public void SetPalette(Color[] colors, int nColors)
         {
-            this.fNColors = NColors;
-            this.fPalette = Colors;
+            this.fNColors = nColors;
+            this.fPalette = colors;
         }
 
-        public void SetPalette(EPalette Palette)
+        public void SetPalette(EPalette palette)
         {
-            switch (Palette)
+            switch (palette)
             {
                 case EPalette.Gray:
                     this.SetPalette(Color.White, Color.Black, (int)byte.MaxValue);
@@ -473,7 +411,7 @@ namespace SmartQuant.Charting
         {
             this.fBrushes = new Brush[this.fNColors];
             for (int index = 0; index < this.fNColors; ++index)
-                this.fBrushes[index] = (Brush)new SolidBrush(this.fPalette[index]);
+                this.fBrushes[index] = new SolidBrush(this.fPalette[index]);
         }
 
         public virtual void Paint(Pad Pad, double XMin, double XMax, double YMin, double YMax)
@@ -606,7 +544,7 @@ namespace SmartQuant.Charting
             }
         }
 
-        private class TDraw3DChartSmoothedLinear : Histogram2D.TDraw3DChart
+        private class TDraw3DChartSmoothedLinear : TDraw3DChart
         {
             public override double f(double x, double y)
             {
@@ -634,7 +572,7 @@ namespace SmartQuant.Charting
             }
         }
 
-        private class TDraw3DChartMulticolor : Histogram2D.TDraw3DChart
+        private class TDraw3DChartMulticolor : TDraw3DChart
         {
             private TColor[] c0;
             private double MinZ;
@@ -656,7 +594,7 @@ namespace SmartQuant.Charting
             }
         }
 
-        private class TDraw3DChartMulticolorSmoothedLinear : Histogram2D.TDraw3DChartMulticolor
+        private class TDraw3DChartMulticolorSmoothedLinear : TDraw3DChartMulticolor
         {
             public override double f(double x, double y)
             {

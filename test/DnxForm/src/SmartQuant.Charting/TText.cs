@@ -153,20 +153,20 @@ namespace SmartQuant.Charting
 
         public void Paint(Pad pad, double minX, double maxX, double minY, double maxY)
         {
-            if (this.fText == null)
+            if (Text == null)
                 return;
-            int num1 = (int)pad.Graphics.MeasureString(this.fText, this.fFont).Width;
-            double num2 = (double)pad.Graphics.MeasureString(this.fText, this.fFont).Height;
-            switch (this.fPosition)
+            var w = (int) pad.Graphics.MeasureString(Text, Font).Width;
+            var h =  pad.Graphics.MeasureString(Text, Font).Height;
+            switch (Position)
             {
                 case ETextPosition.RightBottom:
-                    pad.Graphics.DrawString(this.fText, this.fFont, new SolidBrush(this.fColor), pad.ClientX(this.fX), pad.ClientY(this.fY));
+                    pad.Graphics.DrawString(Text, Font, new SolidBrush(Color), pad.ClientX(X), pad.ClientY(Y));
                     break;
                 case ETextPosition.LeftBottom:
-                    pad.Graphics.DrawString(this.fText, this.fFont, new SolidBrush(this.fColor), pad.ClientX(this.fX) - num1, pad.ClientY(this.fY));
+                    pad.Graphics.DrawString(Text, Font, new SolidBrush(Color), pad.ClientX(X) - w, pad.ClientY(Y));
                     break;
                 case ETextPosition.CentreBottom:
-                    pad.Graphics.DrawString(this.fText, this.fFont, new SolidBrush(this.fColor), pad.ClientX(this.fX) - num1 / 2, pad.ClientY(this.fY));
+                    pad.Graphics.DrawString(Text, Font, new SolidBrush(Color), pad.ClientX(X) - w/2, pad.ClientY(Y));
                     break;
             }
         }

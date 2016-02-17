@@ -37,40 +37,32 @@ namespace SmartQuant.Charting
     {
         private Pad pad;
 
-        public ArrayList Items { get; }
+        public ArrayList Items { get; } = new ArrayList();
 
-        public bool ItemsEnabled { get; set; }
+        public bool ItemsEnabled { get; set; } = false;
 
         public string Text { get; set; }
 
-        public Font Font { get; set; }
+        public Font Font { get; set; } = new Font("Arial", 8f);
 
-        public Color Color { get; set; }
+        public Color Color { get; set; } = Color.Black;
 
-        public ETitlePosition Position { get; set; }
+        public ETitlePosition Position { get; set; } = ETitlePosition.Left;
 
-        public int X { get; set; }
+        public int X { get; set; } = 0;
 
-        public int Y { get; set; }
+        public int Y { get; set; } = 0;
 
         public int Width => (int)this.pad.Graphics.MeasureString(GetText(), Font).Width;
 
         public int Height => (int)this.pad.Graphics.MeasureString(GetText(), Font).Height;
 
-        public ETitleStrategy Strategy { get; set; }
+        public ETitleStrategy Strategy { get; set; } = ETitleStrategy.Smart;
 
         public TTitle(Pad pad, string text = "")
         {
             this.pad = pad;
             Text = Text;
-            Items = new ArrayList();
-            ItemsEnabled = false;
-            Font = new Font("Arial", 8f);
-            Color = Color.Black;
-            Position = ETitlePosition.Left;
-            Strategy = ETitleStrategy.Smart;
-            X = 0;
-            Y = 0;
         }
 
         public void Add(string text, Color color) => Items.Add(new TTitleItem(text, color));

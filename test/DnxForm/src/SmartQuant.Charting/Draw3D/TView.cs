@@ -14,27 +14,20 @@ namespace SmartQuant.Charting.Draw3D
         private double fScaleZ = 1;
         private TMat3x3 m;
         private TMat3x3 ms;
-        private TVec3 fo;
-        private TVec3 fLx;
-        private TVec3 fLy;
-        private TVec3 fLz;
-        private int fLeft;
-        private int fTop;
-        private int fH;
 
-        public int Left => this.fLeft;
+        public int Left { get; private set; }
 
-        public int Top => this.fTop;
+        public int Top { get; private set; }
 
-        public int H => this.fH;
+        public int H { get; private set; }
 
-        public TVec3 O => this.fo;
+        public TVec3 O { get; private set; }
 
-        public TVec3 Lx => this.fLx;
+        public TVec3 Lx { get; private set; }
 
-        public TVec3 Ly => this.fLy;
+        public TVec3 Ly { get; private set; }
 
-        public TVec3 Lz => this.fLz;
+        public TVec3 Lz { get; private set; }
 
         public double ScaleZ
         {
@@ -75,20 +68,20 @@ namespace SmartQuant.Charting.Draw3D
 
         public void CalculateAxes(Pad pad, int left, int top, int h)
         {
-            this.fLeft = left;
-            this.fTop = top;
-            this.fH = h;
-            this.fo = new TVec3((double)(left + h / 2), (double)(top + 3 * h / 4), 0.0);
+            this.Left = left;
+            this.Top = top;
+            this.H = h;
+            this.O = new TVec3((double)(left + h / 2), (double)(top + 3 * h / 4), 0.0);
             if (this.ScaleZ < 1.0)
-                this.fo.y -= (1.0 - this.ScaleZ) * 0.25 * (double)h;
+                this.O.y -= (1.0 - this.ScaleZ) * 0.25 * (double)h;
             double num = 0.7 * (double)h;
             double Z = 0.5 * this.ScaleZ * (double)h;
-            this.fLx = new TVec3(num, 0.0, 0.0);
-            this.fLy = new TVec3(0.0, num, 0.0);
-            this.fLz = new TVec3(0.0, 0.0, Z);
-            this.fLx = this.ms * this.Lx;
-            this.fLy = this.ms * this.Ly;
-            this.fLz = this.ms * this.Lz;
+            this.Lx = new TVec3(num, 0.0, 0.0);
+            this.Ly = new TVec3(0.0, num, 0.0);
+            this.Lz = new TVec3(0.0, 0.0, Z);
+            this.Lx = this.ms * this.Lx;
+            this.Ly = this.ms * this.Ly;
+            this.Lz = this.ms * this.Lz;
         }
 
         private static void SetAxesPropertiesFor3D(Pad pad)

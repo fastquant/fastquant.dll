@@ -1,7 +1,4 @@
-﻿// Licensed under the Apache License, Version 2.0. 
-// Copyright (c) Alex Lee. All rights reserved.
-
-using System;
+﻿using System;
 
 namespace SmartQuant.Charting.Draw3D
 {
@@ -165,27 +162,18 @@ namespace SmartQuant.Charting.Draw3D
             return this.xx.GetHashCode() ^ this.xy.GetHashCode() ^ this.xz.GetHashCode() ^ this.yx.GetHashCode() ^ this.yy.GetHashCode() ^ this.yz.GetHashCode() ^ this.zx.GetHashCode() ^ this.zy.GetHashCode() ^ this.zz.GetHashCode();
         }
 
-        public static bool operator ==(TMat3x3 b, TMat3x3 a)
-        {
-            return a.Equals(b);
-        }
+        public static bool operator ==(TMat3x3 b, TMat3x3 a) => a.Equals(b);
 
-        public static bool operator !=(TMat3x3 b, TMat3x3 a)
-        {
-            return !(b == a);
-        }
+        public static bool operator !=(TMat3x3 b, TMat3x3 a) => !(b == a);
 
-        public static TMat3x3 operator -(TMat3x3 m)
-        {
-            return new TMat3x3(-m.xx, -m.xy, -m.xz, -m.yx, -m.yy, -m.yz, -m.zx, -m.zy, -m.zz);
-        }
+        public static TMat3x3 operator -(TMat3x3 m) => new TMat3x3(-m.xx, -m.xy, -m.xz, -m.yx, -m.yy, -m.yz, -m.zx, -m.zy, -m.zz);
 
         public static TMat3x3 operator *(TMat3x3 b, TMat3x3 a)
         {
             var r = new TMat3x3();
-            for (int i = 0; i < 3; ++i)
-                for (int j = 0; j < 3; ++j)
-                    for (int k = 0; k < 3; ++k)
+            for (var i = 0; i < 3; ++i)
+                for (var j = 0; j < 3; ++j)
+                    for (var k = 0; k < 3; ++k)
                         r[i, j] += b[i, k] * a[k, j];
             return r;
         }
@@ -193,22 +181,19 @@ namespace SmartQuant.Charting.Draw3D
         public static TMat3x3 operator *(double k, TMat3x3 m)
         {
             var r = new TMat3x3();
-            for (int i = 0; i < 3; ++i)
-                for (int j = 0; j < 3; ++j)
+            for (var i = 0; i < 3; ++i)
+                for (var j = 0; j < 3; ++j)
                     r[i, j] = k * m[i, j];
             return r;
         }
 
-        public static TMat3x3 operator *(TMat3x3 m, double k)
-        {
-            return k * m;
-        }
+        public static TMat3x3 operator *(TMat3x3 m, double k) => k * m;
 
         public static TVec3 operator *(TMat3x3 m, TVec3 v)
         {
             var r = new TVec3();
-            for (int i = 0; i < 3; ++i)
-                for (int j = 0; j < 3; ++j)
+            for (var i = 0; i < 3; ++i)
+                for (var j = 0; j < 3; ++j)
                     r[i] += m[i, j] * v[j];
             return r;
         }
@@ -216,23 +201,23 @@ namespace SmartQuant.Charting.Draw3D
         public static TVec3 operator *(TVec3 v, TMat3x3 m)
         {
             var r = new TVec3();
-            for (int i = 0; i < 3; ++i)
-                for (int j = 0; j < 3; ++j)
+            for (var i = 0; i < 3; ++i)
+                for (var j = 0; j < 3; ++j)
                     r[j] += v[i] * m[i, j];
             return r;
         }
 
         public void SetZero()
         {
-            for (int i = 0; i < 3; ++i)
-                for (int j = 0; j < 3; ++j)
+            for (var i = 0; i < 3; ++i)
+                for (var j = 0; j < 3; ++j)
                     this.m[i, j] = 0;
         }
 
         public void SetNumber(double k)
         {
             SetZero();
-            for (int i = 0; i < 3; ++i)
+            for (var i = 0; i < 3; ++i)
                 this.m[i, i] = k;
         }
 
@@ -256,35 +241,17 @@ namespace SmartQuant.Charting.Draw3D
             this.m[i1, i2] = -(this.m[i2, i1] = Math.Sin(angle));
         }
 
-        public void SetRotYZ(double angle)
-        {
-            SetRot(1, 2, angle);
-        }
+        public void SetRotYZ(double angle) => SetRot(1, 2, angle);
 
-        public void SetRotZX(double angle)
-        {
-            SetRot(2, 0, angle);
-        }
+        public void SetRotZX(double angle) => SetRot(2, 0, angle);
 
-        public void SetRotXY(double angle)
-        {
-            SetRot(0, 1, angle);
-        }
+        public void SetRotXY(double angle) => SetRot(0, 1, angle);
 
-        public void SetRotX(double angle)
-        {
-            SetRotYZ(angle);
-        }
+        public void SetRotX(double angle) => SetRotYZ(angle);
 
-        public void SetRotY(double angle)
-        {
-            SetRotZX(angle);
-        }
+        public void SetRotY(double angle) => SetRotZX(angle);
 
-        public void SetRotZ(double angle)
-        {
-            SetRotXY(angle);
-        }
+        public void SetRotZ(double angle) => SetRotXY(angle);
 
         public void SetExchangeAxes(int i, int j)
         {
@@ -293,10 +260,7 @@ namespace SmartQuant.Charting.Draw3D
             this.m[i, j] = this.m[j, i] = 1;
         }
 
-        public void SetExchangeYZ()
-        {
-            SetExchangeAxes(1, 2);
-        }
+        public void SetExchangeYZ() => SetExchangeAxes(1, 2);
 
         public void SetSpecialProjection(double angle)
         {

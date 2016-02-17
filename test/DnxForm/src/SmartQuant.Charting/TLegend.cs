@@ -1,10 +1,7 @@
-// Licensed under the Apache License, Version 2.0. 
-// Copyright (c) Alex Lee. All rights reserved.
-
 using System;
-using System.Collections.Generic;
 using System.Collections;
 using System.Drawing;
+using System.Linq;
 
 namespace SmartQuant.Charting
 {
@@ -44,14 +41,9 @@ namespace SmartQuant.Charting
         {
             get
             {
-                this.width = 0;
-                foreach (TLegendItem item in Items)
-                {
-                    int num = (int)Pad.Graphics.MeasureString(item.Text, item.Font).Width;
-                    if (num > this.width)
-                        this.width = num;
-                }
-                this.width += 12;
+                this.width = Items.Count > 0
+                    ? (int) Items.Cast<TLegendItem>().Max(item => Pad.Graphics.MeasureString(item.Text, item.Font).Width) + 12
+                    : 12;
                 return this.width;
             }
             set
@@ -64,10 +56,9 @@ namespace SmartQuant.Charting
         {
             get
             {
-                this.height = 0;
-                foreach (TLegendItem item in Items)
-                    this.height += (int)Pad.Graphics.MeasureString(item.Text, item.Font).Height + 2;
-                this.height += 2;
+                this.height = Items.Count > 0
+                    ? (int)Items.Cast<TLegendItem>().Sum(item => Pad.Graphics.MeasureString(item.Text, item.Font).Height + 2) + 2
+                    : 2;
                 return this.height;
             }
             set
@@ -76,21 +67,17 @@ namespace SmartQuant.Charting
             }
         }
 
-        public bool BorderEnabled { get; set; }
+        public bool BorderEnabled { get; set; } = true;
 
-        public Color BorderColor { get; set; }
+        public Color BorderColor { get; set; } = Color.Black;
 
-        public Color BackColor { get; set; }
+        public Color BackColor { get; set; } = Color.LightYellow;
 
-        public ArrayList Items { get; private set; }
+        public ArrayList Items { get; } = new ArrayList();
 
         public TLegend(Pad pad)
         {
             Pad = pad;
-            BorderEnabled = true;
-            BorderColor = Color.Black;
-            BackColor = Color.LightYellow;
-            Items = new ArrayList();
         }
 
         public void Add(string text, Color color) => Items.Add(new TLegendItem(text, color));
@@ -104,14 +91,14 @@ namespace SmartQuant.Charting
             Pad.Graphics.FillRectangle(new SolidBrush(BackColor), X, Y, Width, Height);
             if (BorderEnabled)
                 Pad.Graphics.DrawRectangle(new Pen(BorderColor), X, Y, Width, Height);
-            int x1 = X + 5;
-            int num1 = Y + 2;
+            var x = X + 5;
+            var y = Y + 2;
             foreach (TLegendItem item in Items)
             {
-                int num2 = (int)Pad.Graphics.MeasureString(item.Text, item.Font).Height;
-                Pad.Graphics.DrawLine(new Pen(item.Color), x1, num1 + num2 / 2, x1 + 5, num1 + num2 / 2);
-                Pad.Graphics.DrawString(item.Text, item.Font, new SolidBrush(Color.Black), x1 + 5 + 2, num1);
-                num1 += 2 + num2;
+                var h = (int)Pad.Graphics.MeasureString(item.Text, item.Font).Height;
+                Pad.Graphics.DrawLine(new Pen(item.Color), x, y + h / 2, x + 5, y + h / 2);
+                Pad.Graphics.DrawString(item.Text, item.Font, new SolidBrush(Color.Black), x + 5 + 2, y);
+                y += 2 + h;
             }
         }
     }

@@ -3,9 +3,9 @@
     "emitEntryPoint": true
   },
   "dependencies": {
-    "Microsoft.CodeAnalysis.CSharp": "1.1.0-rc1-*",
+    "Microsoft.CodeAnalysis.CSharp": "1.1.1",
     "Microsoft.CodeAnalysis.CSharp.Workspaces": "1.1.1",
-    "Microsoft.CodeAnalysis.Workspaces.Dnx": "1.4.1"
+    "Microsoft.CodeAnalysis.Workspaces.Dnx": "1.4.2"
   },
   "commands": {
     "app": "Rename"

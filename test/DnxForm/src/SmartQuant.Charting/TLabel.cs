@@ -1,7 +1,4 @@
-﻿// Copyright (c) FastQuant Foundation. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
-
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Drawing;
 
@@ -16,23 +13,23 @@ namespace SmartQuant.Charting
 
         [Description("Text position of this label")]
         [Category("Text")]
-        public new ETextPosition TextPosition { get; set; }
+        public new ETextPosition TextPosition { get; set; } = ETextPosition.RightBottom;
 
         [Category("Text")]
         [Description("Text font of this label")]
-        public new Font TextFont { get; set; }
+        public new Font TextFont { get; set; } = new Font("Arial", 8f);
 
         [Category("Text")]
         [Description("Text color of this label")]
-        public new Color TextColor { get; set; }
+        public new Color TextColor { get; set; } = Color.Black;
 
         [Category("Text")]
         [Description("Text offset in pixels alone X coordinate")]
-        public int TextOffsetX { get; set; }
+        public int TextOffsetX { get; set; } = 0;
 
         [Category("Text")]
         [Description("Text offset in pixels alone Y coordinate")]
-        public int TextOffsetY { get; set; }
+        public int TextOffsetY { get; set; } = 2;
 
         public TLabel(string text, double x, double y)
             : this(text, x, y, default(Color), Color.Black)
@@ -48,11 +45,6 @@ namespace SmartQuant.Charting
             : base(x, y, markerColor)
         {
             Text = text;
-            TextFont = new Font("Arial", 8f);
-            TextPosition = ETextPosition.RightBottom;
-            TextColor = Color.Black;
-            TextOffsetX = 0;
-            TextOffsetY = 2;
             TextColor = textColor;
         }
 
@@ -62,11 +54,11 @@ namespace SmartQuant.Charting
             if (string.IsNullOrWhiteSpace(Text))
                 return;
             var size = pad.Graphics.MeasureString(Text, TextFont);
-            float w = size.Width;
-            float h = size.Height;
-            float clientX = pad.ClientX(X);
-            float clientY = pad.ClientY(Y);
-            PointF point = PointF.Empty;
+            var w = size.Width;
+            var h = size.Height;
+            var clientX = pad.ClientX(X);
+            var clientY = pad.ClientY(Y);
+            var point = PointF.Empty;
             switch (TextPosition)
             {
                 case ETextPosition.RightTop:
@@ -76,16 +68,16 @@ namespace SmartQuant.Charting
                     point = new PointF(clientX - w - TextOffsetX, clientY - h - TextOffsetY);
                     break;
                 case ETextPosition.CentreTop:
-                    point = new PointF(clientX - w / 2 - TextOffsetX, clientY - h - TextOffsetY);
+                    point = new PointF(clientX - w/2 - TextOffsetX, clientY - h - TextOffsetY);
                     break;
                 case ETextPosition.RightBottom:
-                    point = new PointF(clientX + TextOffsetX, clientY + Size / 2 + TextOffsetY);
+                    point = new PointF(clientX + TextOffsetX, clientY + Size/2 + TextOffsetY);
                     break;
                 case ETextPosition.LeftBottom:
-                    point = new PointF(clientX - w - TextOffsetX, clientY + Size / 2 + TextOffsetY);
+                    point = new PointF(clientX - w - TextOffsetX, clientY + Size/2 + TextOffsetY);
                     break;
                 case ETextPosition.CentreBottom:
-                    point = new PointF(clientX - w / 2 - TextOffsetX, clientY + Size / 2 + TextOffsetY);
+                    point = new PointF(clientX - w/2 - TextOffsetX, clientY + Size/2 + TextOffsetY);
                     break;
             }
             pad.Graphics.DrawString(Text, TextFont, new SolidBrush(TextColor), point.X, point.Y);

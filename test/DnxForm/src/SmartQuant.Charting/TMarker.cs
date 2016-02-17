@@ -426,29 +426,29 @@ namespace SmartQuant.Charting
 
         public virtual void Paint(Pad pad, double xMin, double xMax, double yMin, double yMax)
         {
-            int num1 = pad.ClientX(this.fX);
-            int y = pad.ClientY(this.fY);
+            int num1 = pad.ClientX(X);
+            int y = pad.ClientY(Y);
             float num2 = (float)this.fSize;
-            switch (this.fStyle)
+            switch (Style)
             {
                 case EMarkerStyle.Rectangle:
-                    if (this.fFilled)
+                    if (Filled)
                     {
-                        pad.Graphics.FillRectangle((Brush)new SolidBrush(this.fColor), (float)num1 - num2 / 2f, (float)y - num2 / 2f, num2, num2);
+                        pad.Graphics.FillRectangle(new SolidBrush(Color), num1 - num2 / 2f, y - num2 / 2f, num2, num2);
                         break;
                     }
                     else
                     {
                         Pen pen = new Pen(this.fColor);
-                        pad.Graphics.DrawRectangle(pen, (float)num1 - num2 / 2f, (float)y - num2 / 2f, num2, num2);
+                        pad.Graphics.DrawRectangle(pen, num1 - num2 / 2f, y - num2 / 2f, num2, num2);
                         break;
                     }
                 case EMarkerStyle.Triangle:
-                    float num3 = (float)((double)num2 / 2.0 * Math.Tan(Math.PI / 6.0));
+                    float num3 = (float)(num2 / 2.0 * Math.Tan(Math.PI / 6.0));
                     float num4 = num2 * (float)Math.Cos(Math.PI / 6.0) - num3;
-                    PointF pointF1 = new PointF((float)num1, (float)y - num4);
-                    PointF pointF2 = new PointF((float)num1 - num2 / 2f, (float)y + num3);
-                    PointF pointF3 = new PointF((float)num1 + num2 / 2f, (float)y + num3);
+                    PointF pointF1 = new PointF(num1, y - num4);
+                    PointF pointF2 = new PointF(num1 - num2 / 2f, y + num3);
+                    PointF pointF3 = new PointF(num1 + num2 / 2f, y + num3);
                     PointF[] points1 = new PointF[4]
                     {
                         pointF1,
@@ -458,7 +458,7 @@ namespace SmartQuant.Charting
                     };
                     if (this.fFilled)
                     {
-                        pad.Graphics.FillPolygon((Brush)new SolidBrush(this.fColor), points1);
+                        pad.Graphics.FillPolygon(new SolidBrush(this.fColor), points1);
                         break;
                     }
                     else
@@ -492,7 +492,7 @@ namespace SmartQuant.Charting
                         (PointF)new Point((int)((double)num1 - (double)num2 / 2.0), (int)((double)y + (double)num2)),
                         (PointF)new Point((int)((double)num1 + (double)num2 / 2.0), (int)((double)y + (double)num2))
                     };
-                    pad.Graphics.FillPolygon((Brush)new SolidBrush(this.fBuyColor), points2);
+                    pad.Graphics.FillPolygon(new SolidBrush(this.fBuyColor), points2);
                     break;
                 case EMarkerStyle.Sell:
                     Point[] points3 = new Point[3]
@@ -501,7 +501,7 @@ namespace SmartQuant.Charting
                         new Point((int)((double)num1 - (double)num2 / 2.0), (int)((double)y - (double)num2)),
                         new Point((int)((double)num1 + (double)num2 / 2.0), (int)((double)y - (double)num2))
                     };
-                    pad.Graphics.FillPolygon((Brush)new SolidBrush(this.fSellColor), points3);
+                    pad.Graphics.FillPolygon(new SolidBrush(this.fSellColor), points3);
                     break;
                 case EMarkerStyle.SellShort:
                     Point[] points4 = new Point[3]
@@ -510,7 +510,7 @@ namespace SmartQuant.Charting
                         new Point((int)((double)num1 - (double)num2 / 2.0), (int)((double)y - (double)num2)),
                         new Point((int)((double)num1 + (double)num2 / 2.0), (int)((double)y - (double)num2))
                     };
-                    pad.Graphics.FillPolygon((Brush)new SolidBrush(this.fSellShortColor), points4);
+                    pad.Graphics.FillPolygon(new SolidBrush(this.fSellShortColor), points4);
                     break;
                 case EMarkerStyle.BuyShort:
                     Point[] points5 = new Point[3]
@@ -555,13 +555,14 @@ namespace SmartQuant.Charting
 
         public virtual TDistance Distance(double x, double y)
         {
-            TDistance d = new TDistance();
-            d.X = X;
-            d.Y = Y;
-            d.dX = Math.Abs(x - X);
-            d.dY = Math.Abs(y - Y);
-            d.ToolTipText = string.Format(ToolTipFormat, X, Y);
-            return d;
+            return new TDistance
+            {
+                X = X,
+                Y = Y,
+                dX = Math.Abs(x - X),
+                dY = Math.Abs(y - Y),
+                ToolTipText = string.Format(ToolTipFormat, X, Y)
+            };
         }
 
         public void Move(double x, double y, double dX, double dY)

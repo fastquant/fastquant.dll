@@ -718,17 +718,14 @@ namespace SmartQuant.Charting
                 }
                 UpdatePads();
             }
-            foreach (Pad pad in this.fPads)
+            if (this.fPads.Cast<Pad>().Any(pad => pad.Y1 - 1 <= e.Y && e.Y <= pad.Y1 + 1))
             {
-                if (pad.Y1 - 1 <= e.Y && e.Y <= pad.Y1 + 1)
-                {
-                    #if GTK
-                    GdkWindow.Cursor = new Gdk.Cursor(Gdk.CursorType.SbVDoubleArrow);
-                    #else
-                    Cursor.Current = Cursors.HSplit;
-                    #endif
-                    return;
-                }
+                #if GTK
+                GdkWindow.Cursor = new Gdk.Cursor(Gdk.CursorType.SbVDoubleArrow);
+                #else
+                Cursor.Current = Cursors.HSplit;
+                #endif
+                return;
             }
             foreach (var pad in this.fPads.Cast<Pad>().Where(pad => PointInPad(pad, e.Location)))
                 pad.MouseMove(e);
@@ -744,14 +741,11 @@ namespace SmartQuant.Charting
 
         protected override void OnMouseDown(MouseEventArgs e)
         {
-            foreach (Pad pad in this.fPads)
+            foreach (var pad in this.fPads.Cast<Pad>().Where(pad => pad.Y1 - 1 <= e.Y && e.Y <= pad.Y1 + 1))
             {
-                if (pad.Y1 - 1 <= e.Y && e.Y <= pad.Y1 + 1)
-                {
-                    this.fPadSplit = true;
-                    this.fPadSplitIndex = this.fPads.IndexOf(pad);
-                    return;
-                }
+                this.fPadSplit = true;
+                this.fPadSplitIndex = this.fPads.IndexOf(pad);
+                return;
             }
             foreach (var pad in this.fPads.Cast<Pad>().Where(pad => PointInPad(pad, e.Location)))
                 pad.MouseDown(e);

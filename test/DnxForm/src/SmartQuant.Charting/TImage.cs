@@ -18,19 +18,17 @@ namespace SmartQuant.Charting
 
         [Description("Enable or disable tooltip appearance for this image.")]
         [Category("ToolTip")]
-        public bool ToolTipEnabled { get; set; }
+        public bool ToolTipEnabled { get; set; } = true;
 
         [Category("ToolTip")]
         [Description("Tooltip format string. {1} - X coordinate, {2} - Y coordinte.")]
-        public string ToolTipFormat { get; set; }
+        public string ToolTipFormat { get; set; } = "X = {0:F2} Y = {1:F2}";
 
         public TImage(Image image, double x, double y)
         {
             Image = image;
             X = x;
             Y = y;
-            ToolTipEnabled = true;
-            ToolTipFormat = "X = {0:F2} Y = {1:F2}";
         }
 
         public TImage(Image image, DateTime x, double y)
@@ -60,7 +58,7 @@ namespace SmartQuant.Charting
 
         public TDistance Distance(double x, double y)
         {
-            var d = new TDistance
+            return new TDistance
             {
                 X = X,
                 Y = Y,
@@ -68,7 +66,6 @@ namespace SmartQuant.Charting
                 dY = Math.Abs(y - Y),
                 ToolTipText = string.Format(ToolTipFormat, X, Y)
             };
-            return d;
         }
 
         public void Move(double x, double y, double dx, double dy)

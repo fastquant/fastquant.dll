@@ -17,6 +17,7 @@ namespace SmartQuant.Charting
 
         public virtual void Paint(object obj, Pad pad)
         {
+            // noop
         }
 
         public void Set(object obj, string name, object value)

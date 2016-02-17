@@ -72,7 +72,7 @@ namespace SmartQuant.Charting
             this.fGap = this.CalculateGap((long)min, (long)gridSize);
             if ((long)min / 864000000000L - (long)((long)min + this.fGap + gridSize) / 864000000000L < 0L && gridSize < (EGridSize)576000000000)
             {
-                min += (double)this.CalculateJumpGap((long)min, (long)gridSize);
+                min += this.CalculateJumpGap((long)min, (long)gridSize);
                 this.fGap = this.CalculateGap((long)min, (long)gridSize);
             }
             if (gridSize < (EGridSize)576000000000)
@@ -104,7 +104,7 @@ namespace SmartQuant.Charting
 
         private long GetFirstMajor(long x)
         {
-            long num = 0L;
+            long num = 0;
             if (x > 10000L)
                 num = x % 864000000000L < this.firstSessionTick || x % 864000000000L > this.lastSessionTick ? this.GetFirstMajor(x + 864000000000L -Session) : x;
             return num;

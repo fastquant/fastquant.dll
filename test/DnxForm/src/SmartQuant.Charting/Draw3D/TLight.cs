@@ -5,7 +5,7 @@ namespace SmartQuant.Charting.Draw3D
     public class TLight
     {
         public TColor Ambient { get; set; } = new TColor(Color.PaleTurquoise);
-        public TSource[] ParallelBeams { get; set; } = new TSource[] { new TSource(new TVec3(3.0, -2.0, 2.0), (TColor)Color.LightYellow) };
+        public TSource[] ParallelBeams { get; set; } = { new TSource(new TVec3(3.0, -2.0, 2.0), Color.LightYellow) };
         public TSource[] NearSources { get; set; } = new TSource[0];
 
         public TLight()
@@ -76,6 +76,7 @@ namespace SmartQuant.Charting.Draw3D
         public struct TSource
         {
             public TVec3 O { get; set; }
+
             public TColor C { get; set; }
 
             public TSource(TVec3 o, TColor c)

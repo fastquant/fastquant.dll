@@ -147,9 +147,9 @@ namespace SmartQuant.Charting
                 int num2 = 0;
                 LastValidAxisWidth = 0;
                 if (TitleEnabled)
-                    num1 = (int)((double)TitleOffset + (double)this.pad.Graphics.MeasureString(Max.ToString("F1"), TitleFont).Height);
+                    num1 = (int)(TitleOffset + (double)this.pad.Graphics.MeasureString(Max.ToString("F1"), TitleFont).Height);
                 if (LabelEnabled)
-                    num2 = LabelFormat != null ? (int)((double)LabelOffset + (double)this.pad.Graphics.MeasureString(Max.ToString(LabelFormat), LabelFont).Width) : (int)((double)LabelOffset + (double)this.pad.Graphics.MeasureString(Max.ToString("F1"), LabelFont).Width);
+                    num2 = LabelFormat != null ? (int)(LabelOffset + (double)this.pad.Graphics.MeasureString(Max.ToString(LabelFormat), LabelFont).Width) : (int)((double)LabelOffset + (double)this.pad.Graphics.MeasureString(Max.ToString("F1"), LabelFont).Width);
                 LastValidAxisWidth = num2 + num1 + 2;
                 return num2 + num1 + 2;
             }
@@ -170,9 +170,9 @@ namespace SmartQuant.Charting
                 int num1 = 0;
                 int num2 = 0;
                 if (TitleEnabled)
-                    num1 = (int)((double)TitleOffset + (double)this.pad.Graphics.MeasureString("Example", TitleFont).Height);
+                    num1 = (int)(TitleOffset + (double)this.pad.Graphics.MeasureString("Example", TitleFont).Height);
                 if (LabelEnabled)
-                    num2 = (int)((double)LabelOffset + (double)this.pad.Graphics.MeasureString("Example", LabelFont).Height);
+                    num2 = (int)(LabelOffset + (double)this.pad.Graphics.MeasureString("Example", LabelFont).Height);
                 return num2 + num1;
             }
             set
@@ -275,15 +275,9 @@ namespace SmartQuant.Charting
             this.pad.Update();
         }
 
-        public void Zoom(DateTime min, DateTime max)
-        {
-            Zoom(min.Ticks, max.Ticks);
-        }
+        public void Zoom(DateTime min, DateTime max) => Zoom(min.Ticks, max.Ticks);
 
-        public void Zoom(string min, string max)
-        {
-            Zoom(DateTime.Parse(min), DateTime.Parse(max));
-        }
+        public void Zoom(string min, string max) => Zoom(DateTime.Parse(min), DateTime.Parse(max));
 
         public void UnZoom()
         {
@@ -336,8 +330,8 @@ namespace SmartQuant.Charting
             if (!Enabled)
                 return;
             this.pad.DrawLine(new Pen(Color), X1, Y1, X2, Y2, false);
-            SolidBrush solidBrush1 = new SolidBrush(TitleColor);
-            SolidBrush solidBrush2 = new SolidBrush(LabelColor);
+            var solidBrush1 = new SolidBrush(TitleColor);
+            var solidBrush2 = new SolidBrush(LabelColor);
             Pen Pen1 = new Pen(TitleColor);
             Pen Pen2 = new Pen(GridColor);
             Pen Pen3 = new Pen(MinorGridColor);
@@ -352,7 +346,7 @@ namespace SmartQuant.Charting
             double max = Max;
             firstDateTime = new DateTime(Math.Max(0, (long)min));
             DateTime dateTime1 = new DateTime((long)max);
-            EGridSize gridSize = EGridSize.min1;
+            var gridSize = EGridSize.min1;
             this.pad.GetFirstGridDivision(ref gridSize, ref min, ref max, ref firstDateTime);
             double num1 = 5.0;
             double num2;

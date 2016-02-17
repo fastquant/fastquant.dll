@@ -543,6 +543,7 @@
       <Link>Backtest.cs</Link>
     </Compile>
     <Compile Include="Program.cs" />
+    <Compile Include="SmartQuant\Core\Message.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\SmartQuant\project.json">

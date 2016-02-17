@@ -8,7 +8,7 @@ namespace SmartQuant.Charting
     [Serializable]
     public class TPaintingBitmap
     {
-        public const PixelFormat pixel_format = PixelFormat.Format32bppRgb;
+        private const PixelFormat pixel_format = PixelFormat.Format32bppRgb;
         private int[] m;
         private int sz;
 
@@ -22,9 +22,9 @@ namespace SmartQuant.Charting
         {
         }
 
-        public TPaintingBitmap(int W, int H)
+        public TPaintingBitmap(int w, int h)
         {
-            BeginDrawing(W, H);
+            BeginDrawing(w, h);
         }
 
         public bool BeginDrawing(int w, int h)
@@ -46,13 +46,13 @@ namespace SmartQuant.Charting
             return bitmap;
         }
 
-        public int intGetPixel(int x, int y) => this.m[this.Width * y + x];
+        public int intGetPixel(int x, int y) => this.m[Width * y + x];
 
-        public Color ColorGetPixel(int x, int y) => Color.FromArgb(this.m[this.Width * y + x]);
+        public Color ColorGetPixel(int x, int y) => Color.FromArgb(this.m[Width * y + x]);
 
-        public void SetPixel(int x, int y, int c) => this.m[this.Width * y + x] = c;
+        public void SetPixel(int x, int y, int c) => this.m[Width * y + x] = c;
 
-        public void SetPixel(int x, int y, Color c) => this.m[this.Width * y + x] = c.ToArgb();
+        public void SetPixel(int x, int y, Color c) => this.m[Width * y + x] = c.ToArgb();
 
         public void Fill(int c)
         {
@@ -62,6 +62,7 @@ namespace SmartQuant.Charting
 
         public void Fill(Color c) => Fill(c.ToArgb());
 
+        // TODO: review
         public unsafe void FillRectangle(int c, int x, int y, int w, int h)
         {
             if (x + w > Width)
@@ -88,7 +89,7 @@ namespace SmartQuant.Charting
                     for (int* numPtr4 = numPtr2 + w; numPtr3 < numPtr4; ++numPtr3)
                         *numPtr3 = c;
                     ++y;
-                    numPtr2 += this.Width;
+                    numPtr2 += Width;
                 }
             }
         }

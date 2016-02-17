@@ -24,7 +24,7 @@ namespace SmartQuant.Charting
 
     public class Pie : IDrawable
     {
-        private Color[] palette;
+        private readonly Color[] palette;
 
         public string Name { get; set; }
 
@@ -34,15 +34,15 @@ namespace SmartQuant.Charting
 
         public string ToolTipFormat { get; set; }
 
-        public ArrayList Pieces { get; }
+        public ArrayList Pieces { get; } = new ArrayList();
 
-        public bool EnableContour { get; set; }
+        public bool EnableContour { get; set; } = true;
 
-        public Color ContourColor { get; set; }
+        public Color ContourColor { get; set; } = Color.Gray;
 
-        public int Gap { get; set; }
+        public int Gap { get; set; } = 0;
 
-        public string Format { get; set; }
+        public string Format { get; set; } = "F1";
 
         public Pie() : this(null, null)
         {
@@ -54,14 +54,9 @@ namespace SmartQuant.Charting
 
         public Pie(string name, string title)
         {
-            Name = Name;
+            Name = name;
             Title = title;
-            Pieces = new ArrayList();
-            EnableContour = true;
-            ContourColor = Color.Gray;
-            Gap = 0;
-            Format = "F1";
-            palette = CreateRainbowPalette();
+            this.palette = CreateRainbowPalette();
         }
 
 
@@ -74,9 +69,7 @@ namespace SmartQuant.Charting
         public virtual void Draw(string option)
         {
             if (Chart.Pad == null)
-            {
-                var canvas = new Canvas("Canvas", "Canvas");
-            }
+                new Canvas("Canvas", "Canvas");
             Chart.Pad.AxisBottom.Enabled = false;
             Chart.Pad.AxisLeft.Enabled = false;
             Chart.Pad.AxisRight.Enabled = false;
@@ -90,64 +83,65 @@ namespace SmartQuant.Charting
         private void MakeLegend()
         {
             int num1 = 0;
-            foreach (TPieItem tpieItem in Pieces)
+            foreach (TPieItem item in Pieces)
             {
-                if (tpieItem.Color == Color.Empty)
-                    tpieItem.Color = this.palette[num1 * 160 / Pieces.Count];
+                if (item.Color == Color.Empty)
+                    item.Color = this.palette[num1 * 160 / Pieces.Count];
                 ++num1;
             }
-            double num2 = Pieces.Cast<TPieItem>().Sum(tpieItem => tpieItem.Weight);
-            foreach (TPieItem tpieItem in Pieces)
+            double num2 = Pieces.Cast<TPieItem>().Sum(item => item.Weight);
+            foreach (TPieItem item in Pieces)
             {
-                double num3 = tpieItem.Weight / num2;
-                string Text = tpieItem.Text.Replace("&%", (num3 * 100.0).ToString(Format));
-                Chart.Pad.Title.Add(Text, tpieItem.Color);
-                Chart.Pad.Legend.Add(Text, tpieItem.Color);
+                double num3 = item.Weight / num2;
+                var text = item.Text.Replace("&%", (num3 * 100.0).ToString(Format));
+                Chart.Pad.Title.Add(text, item.Color);
+                Chart.Pad.Legend.Add(text, item.Color);
             }
         }
 
         public virtual void Draw() => Draw("");
 
-        private Color[] CreatePalette(Color lowColor, Color highColor, int NColors)
+        private Color[] CreatePalette(Color lowColor, Color highColor, int nColors)
         {
-            Color[] colorArray = new Color[NColors];
-            double num1 = (double)((int)highColor.R - (int)lowColor.R) / (double)NColors;
-            double num2 = (double)((int)highColor.G - (int)lowColor.G) / (double)NColors;
-            double num3 = (double)((int)highColor.B - (int)lowColor.B) / (double)NColors;
-            double num4 = (double)lowColor.R;
-            double num5 = (double)lowColor.G;
-            double num6 = (double)lowColor.B;
-            colorArray[0] = lowColor;
-            for (int index = 1; index < NColors; ++index)
+            var colors = new Color[nColors];
+            var num1 = ((double)highColor.R - lowColor.R) / nColors;
+            var num2 = ((double)highColor.G - lowColor.G) / nColors;
+            var num3 = ((double)highColor.B - lowColor.B) / nColors;
+            double r = lowColor.R;
+            double g = lowColor.G;
+            double b = lowColor.B;
+            colors[0] = lowColor;
+            for (var index = 1; index < nColors; ++index)
             {
-                num4 += num1;
-                num5 += num2;
-                num6 += num3;
-                colorArray[index] = Color.FromArgb((int)num4, (int)num5, (int)num6);
+                r += num1;
+                g += num2;
+                b += num3;
+                colors[index] = Color.FromArgb((int)r, (int)g, (int)b);
             }
-            return colorArray;
+            return colors;
         }
 
         private Color[] CreateRainbowPalette()
         {
-            Color[] colorArray = new Color[160];
+            var colors = new Color[160];
             int num = 0;
-            foreach (Color color in this.CreatePalette(Color.Purple, Color.Blue, 32))
-                colorArray[num++] = color;
-            foreach (Color color in this.CreatePalette(Color.Blue, Color.Green, 32))
-                colorArray[num++] = color;
-            foreach (Color color in this.CreatePalette(Color.Green, Color.Yellow, 32))
-                colorArray[num++] = color;
-            foreach (Color color in this.CreatePalette(Color.Yellow, Color.Orange, 32))
-                colorArray[num++] = color;
-            foreach (Color color in this.CreatePalette(Color.Orange, Color.Red, 32))
-                colorArray[num++] = color;
-            return colorArray;
+            foreach (var color in CreatePalette(Color.Purple, Color.Blue, 32))
+                colors[num++] = color;
+            foreach (var color in CreatePalette(Color.Blue, Color.Green, 32))
+                colors[num++] = color;
+            foreach (var color in CreatePalette(Color.Green, Color.Yellow, 32))
+                colors[num++] = color;
+            foreach (var color in CreatePalette(Color.Yellow, Color.Orange, 32))
+                colors[num++] = color;
+            foreach (var color in CreatePalette(Color.Orange, Color.Red, 32))
+                colors[num++] = color;
+            return colors;
         }
 
+        // TODO: rewrite it
         public virtual void Paint(Pad pad, double xMin, double xMax, double yMin, double yMax)
         {
-            var num1 = Pieces.Cast<TPieItem>().Sum(item => item.Weight);
+            var num1 = Pieces.Count > 0 ? Pieces.Cast<TPieItem>().Sum(item => item.Weight) : 0;
             int num2 = pad.ClientX(0.0);
             int num3 = pad.ClientY(100.0);
             int num4 = Math.Abs(pad.ClientX(100.0) - pad.ClientX(0.0));

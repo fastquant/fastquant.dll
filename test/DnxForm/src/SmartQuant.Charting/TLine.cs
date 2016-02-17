@@ -19,11 +19,11 @@ namespace SmartQuant.Charting
 
         public double Y2 { get; set; }
 
-        public DashStyle DashStyle { get; set; }
+        public DashStyle DashStyle { get; set; } = DashStyle.Solid;
 
-        public Color Color { get; set; }
+        public Color Color { get; set; } = Color.Black;
 
-        public int Width { get; set; }
+        public int Width { get; set; } = 1;
 
         public TLine(double x1, double y1, double x2, double y2)
         {
@@ -31,9 +31,6 @@ namespace SmartQuant.Charting
             Y1 = y1;
             X2 = x2;
             Y2 = y2;
-            Color = Color.Black;
-            DashStyle = DashStyle.Solid;
-            Width = 1;
         }
 
         public TLine(DateTime x1, double y1, DateTime x2, double y2) : this(x1.Ticks, y1, x2.Ticks, y2)
@@ -52,6 +49,6 @@ namespace SmartQuant.Charting
             pad.DrawLine(new Pen(Color) { Width = Width, DashStyle = DashStyle }, X1, Y1, X2, Y2);
         }
 
-        public TDistance Distance(double X, double Y) => null;
+        public TDistance Distance(double x, double y) => null;
     }
 }

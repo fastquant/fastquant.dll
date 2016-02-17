@@ -38,23 +38,23 @@ namespace SmartQuant.Charting
         [Description("")]
         public string ToolTipFormat { get; set; }
 
-        public ETextBoxPosition Position { get; set; }
+        public ETextBoxPosition Position { get; set; } = ETextBoxPosition.TopRight;
 
         public int X { get; set; }
 
         public int Y { get; set; }
 
-        public int Width { get; private set; }
+        public int Width { get; private set; } = -1;
 
-        public int Height { get; private set; }
+        public int Height { get; private set; } = -1;
 
-        public bool BorderEnabled { get; set; }
+        public bool BorderEnabled { get; set; } = true;
 
-        public Color BorderColor { get; set; }
+        public Color BorderColor { get; set; } = Color.Black;
 
-        public Color BackColor { get; set; }
+        public Color BackColor { get; set; } = Color.LightYellow;
 
-        public ArrayList Items { get; }
+        public ArrayList Items { get; } = new ArrayList();
 
         public TTextBox() : this(10, 10)
         {
@@ -64,13 +64,6 @@ namespace SmartQuant.Charting
         {
             X = x;
             Y = y;
-            Width = -1;
-            Height = -1;
-            Position = ETextBoxPosition.TopRight;
-            BorderEnabled = true;
-            BorderColor = Color.Black;
-            BackColor = Color.LightYellow;
-            Items = new ArrayList();
         }
 
         public void Add(string text, Color color) => Items.Add(new TTextBoxItem(text, color));
@@ -90,7 +83,6 @@ namespace SmartQuant.Charting
 
         private float GetWidth(Pad pad)
         {
-            //Width = 0;
             Width = Items.Cast<TTextBoxItem>().Max(i => (int)pad.Graphics.MeasureString(i.Text, i.Font).Width);
             Width += 12;
             return Width;
@@ -109,35 +101,35 @@ namespace SmartQuant.Charting
         {
             float height = GetHeight(pad);
             float width = GetWidth(pad);
-            float x = 0f;
-            float y = 0f;
+            float x = 0;
+            float y = 0;
             switch (Position)
             {
                 case ETextBoxPosition.TopRight:
-                    x = (float)(pad.ClientX() + pad.ClientWidth() - X) - width;
-                    y = (float)(pad.ClientY() + Y);
+                    x = pad.ClientX() + pad.ClientWidth() - X - width;
+                    y = pad.ClientY() + Y;
                     break;
                 case ETextBoxPosition.TopLeft:
-                    x = (float)(pad.ClientX() + X);
-                    y = (float)(pad.ClientY() + Y);
+                    x = pad.ClientX() + X;
+                    y = pad.ClientY() + Y;
                     break;
                 case ETextBoxPosition.BottomRight:
-                    x = (float)(pad.ClientX() + pad.ClientWidth() - X) - width;
-                    y = (float)(pad.ClientY() + pad.ClientHeight() - Y) - height;
+                    x = pad.ClientX() + pad.ClientWidth() - X - width;
+                    y = pad.ClientY() + pad.ClientHeight() - Y - height;
                     break;
                 case ETextBoxPosition.BottomLeft:
-                    x = (float)(pad.ClientX() + X);
-                    y = (float)(pad.ClientY() + pad.ClientHeight() - Y) - height;
+                    x = pad.ClientX() + X;
+                    y = pad.ClientY() + pad.ClientHeight() - Y - height;
                     break;
             }
             pad.Graphics.FillRectangle(new SolidBrush(BackColor), x, y, width, height);
             if (BorderEnabled)
                 pad.Graphics.DrawRectangle(new Pen(BorderColor), x, y, width, height);
-            foreach (TTextBoxItem ttextBoxItem in Items)
+            foreach (TTextBoxItem item in Items)
             {
-                int num = (int)pad.Graphics.MeasureString(ttextBoxItem.Text, ttextBoxItem.Font).Height;
-                pad.Graphics.DrawString(ttextBoxItem.Text, ttextBoxItem.Font, new SolidBrush(ttextBoxItem.Color), x + 5f, y);
-                y += (float)(2 + num);
+                var h = pad.Graphics.MeasureString(item.Text, item.Font).Height;
+                pad.Graphics.DrawString(item.Text, item.Font, new SolidBrush(item.Color), x + 5, y);
+                y += 2 + h;
             }
         }
 

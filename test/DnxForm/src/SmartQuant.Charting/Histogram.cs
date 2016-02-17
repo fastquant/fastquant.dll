@@ -38,7 +38,7 @@ namespace SmartQuant.Charting
             Title = title;
             this.fNBins = nBins;
             this.fBins = new double[this.fNBins];
-            this.fBinSize = Math.Abs(xMax - xMin) / (double)nBins;
+            this.fBinSize = Math.Abs(xMax - xMin) / nBins;
             this.fXMin = Math.Min(xMin, xMax);
             this.fXMax = Math.Max(xMin, xMax);
             this.fYMin = this.fYMax = 0;
@@ -98,7 +98,7 @@ namespace SmartQuant.Charting
                 if (this.fIntegral[this.fNBins - 1] == 0.0)
                 {
                     Console.WriteLine("Error in THistogram::GetIntegral, Integral = 0");
-                    return (double[])null;
+                    return null;
                 }
                 else
                 {
@@ -128,7 +128,7 @@ namespace SmartQuant.Charting
 
         public void Print()
         {
-            for (int i = 0; i < this.fNBins; ++i)
+            for (var i = 0; i < this.fNBins; ++i)
                 Console.WriteLine("{0} - [{1} {2} {3}] : {4:F2}", i, GetBinMin(i), GetBinCentre(i), GetBinMax(i), this.fBins[i]);
         }
 
