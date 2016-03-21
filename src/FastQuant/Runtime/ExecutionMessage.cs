@@ -221,6 +221,14 @@ namespace FastQuant
 
         public int StrategyId { get; internal set; }
 
+        public string ExecInst { get; internal set; } = string.Empty;
+
+        public double MinQty { get; internal set; }
+
+        public double PegDifference { get; internal set; }
+
+        public string Symbol { get; internal set; }
+
         public ExecutionCommand()
         {
         }
@@ -248,6 +256,9 @@ namespace FastQuant
             Price = order.Price;
             StopPx = order.StopPx;
             Qty = order.Qty;
+            MinQty = order.MinQty;
+            PegDifference = order.PegDifference;
+            ExecInst = order.ExecInst;
             OCA = order.OCA;
             Text = order.Text;
             Account = order.Account;

@@ -131,7 +131,7 @@ namespace SmartQuant.Controls.BarChart
                         bs = new BarSeries("", "", -1);
                         int padNumber = item.PadNumber;
                         EnsurePadExists(padNumber, item.Format);
-                        int viewerIndex = this.GetViewerIndex(groupEvent.Group, padNumber);
+                        int viewerIndex = GetViewerIndex(groupEvent.Group, padNumber);
                         Viewer viewer = this.chart.Pads[padNumber].Insert(viewerIndex, bs as BarSeries);
                         this.chart.Pads[padNumber].Legend.Add(groupEvent.Group.Name, Color.Black);
                         item.Table.Add(groupEvent.Obj.TypeId, new Tuple<Viewer, object>(viewer, bs));
@@ -145,26 +145,25 @@ namespace SmartQuant.Controls.BarChart
                     if (tuple == null)
                     {
                         fs = new FillSeries("");
-                        int padNumber = item.PadNumber;
+                        var padNumber = item.PadNumber;
                         this.EnsurePadExists(padNumber, item.Format);
-                        int viewerIndex = this.GetViewerIndex(groupEvent.Group, padNumber);
+                        var viewerIndex = GetViewerIndex(groupEvent.Group, padNumber);
                         Viewer viewer = this.chart.Pads[padNumber].Insert(viewerIndex, fs);
                         item.Table.Add(groupEvent.Obj.TypeId, new Tuple<Viewer, object>(viewer, fs));
                     }
                     else
                         fs = tuple.Item2 as FillSeries;
                     fs.Add(groupEvent.Obj as Fill);
-                    Console.WriteLine(groupEvent.Obj as Fill);
                     break;
                 case DataObjectType.TimeSeriesItem:
                     TimeSeries ts;
                     if (tuple == null)
                     {
                         ts = new TimeSeries();
-                        int padNumber = item.PadNumber;
+                        var padNumber = item.PadNumber;
                         EnsurePadExists(padNumber, item.Format);
-                        int viewerIndex = this.GetViewerIndex(groupEvent.Group, padNumber);
-                        Viewer viewer = this.chart.Pads[padNumber].Insert(viewerIndex, ts);
+                        var viewerIndex = GetViewerIndex(groupEvent.Group, padNumber);
+                        var viewer = this.chart.Pads[padNumber].Insert(viewerIndex, ts);
                         foreach (var kv in groupEvent.Group.Fields)
                             viewer.Set(ts, kv.Value.Name, kv.Value.Value);
                         if (groupEvent.Group.Fields.ContainsKey("Color"))
@@ -262,7 +261,7 @@ namespace SmartQuant.Controls.BarChart
 
         private void EnsurePadExists(int newPad, string labelFormat)
         {
-            for (int count = this.chart.Pads.Count; count <= newPad; ++count)
+            for (var count = this.chart.Pads.Count; count <= newPad; ++count)
             {
                 var pad = AddPad();
                 pad.RegisterViewer(new BarSeriesViewer());
@@ -360,9 +359,8 @@ namespace SmartQuant.Controls.BarChart
                 return;
          
             var evts = new List<GroupEvent>();
-            for (int i = 0; i < events.Length; ++i)
+            foreach (var e in events)
             {
-                var e = events[i];
                 if (e.TypeId == EventType.GroupEvent)
                 {
                     var gevent = e as GroupEvent;
@@ -380,7 +378,7 @@ namespace SmartQuant.Controls.BarChart
                 else if (e.TypeId == EventType.OnFrameworkCleared)
                     evts.Clear();
             }
-            for (int i = 0; i < evts.Count; ++i)
+            for (var i = 0; i < evts.Count; ++i)
                 ProcessEvent(evts[i], i == evts.Count - 1);
         }
 
@@ -409,7 +407,7 @@ namespace SmartQuant.Controls.BarChart
             this.firstDateTime = DateTime.MinValue;
             this.chart.Clear();
             this.chart.Divide(1, 1);
-            Pad pad = this.chart.Pads[0];
+            var pad = this.chart.Pads[0];
             pad.RegisterViewer(new BarSeriesViewer());
             pad.RegisterViewer(new TimeSeriesViewer());
             pad.RegisterViewer(new FillSeriesViewer());
@@ -445,7 +443,7 @@ namespace SmartQuant.Controls.BarChart
                 return;
             Reset(false);
             var list = this.eventsBySelectorKey[selected];
-            for (int i = 0; i < list.Count; ++i)
+            for (var i = 0; i < list.Count; ++i)
                 ProcessEvent(list[i], i == list.Count - 1);
             this.chart.UpdatePads();
         }

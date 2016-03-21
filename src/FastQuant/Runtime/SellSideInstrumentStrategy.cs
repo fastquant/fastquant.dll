@@ -15,6 +15,10 @@ namespace FastQuant
 
         public bool IsDisconnected => false;
 
+        public int DataRouteId { get; set; }
+
+        public int ExecutionRouteId { get; set; }
+
         public new ProviderStatus Status { get; set; }
 
         public bool IsInstance { get; }
@@ -37,8 +41,6 @@ namespace FastQuant
 
         [Parameter, Category("Information"), ReadOnly(true)]
         public override string Type => "SellSideStrategy";
-
-        public int RouteId { get; set; }
 
         public SellSideStrategy(Framework framework, string name) : base(framework, name)
         {

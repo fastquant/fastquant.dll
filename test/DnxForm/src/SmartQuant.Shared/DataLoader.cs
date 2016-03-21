@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SmartQuant.Shared
+﻿namespace SmartQuant.Shared
 {
     public class DataLoader
     {

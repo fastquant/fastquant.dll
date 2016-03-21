@@ -23,8 +23,11 @@ namespace FastQuant
         {
         }
 
-        public Ask(Ask ask)
-            : base(ask)
+        public Ask(Ask ask) : base(ask)
+        {
+        }
+
+        public Ask(Tick tick): base(tick)
         {
         }
 

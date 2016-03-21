@@ -7,6 +7,8 @@ namespace FastQuant
 {
     public class Subscription
     {
+        private ObjectTable fields;
+
         [Parameter]
         public string Symbol { get; set; } = string.Empty;
 
@@ -30,6 +32,20 @@ namespace FastQuant
 
         [Parameter]
         public int RouteId { get; set; } = -1;
+
+        public ObjectTable Fields => this.fields = this.fields ?? new ObjectTable();
+
+        public object this[int index]
+        {
+            get
+            {
+                return Fields[index];
+            }
+            set
+            {
+                Fields[index] = value;
+            }
+        }
 
         public Subscription()
         {
@@ -61,6 +77,17 @@ namespace FastQuant
         {
             this.subscriptions.Clear();
             this.subscriptionsByIIdAndPId.Clear();
+        }
+
+        public Subscription Get(Instrument instrument, IDataProvider provider = null) => Get(instrument.Id, provider?.Id ?? 0);
+
+        public Subscription Get(int instrumentId, int providerId)
+        {
+            if (this.subscriptionsByIIdAndPId[instrumentId] == null)
+                return null;
+            if (this.subscriptionsByIIdAndPId[instrumentId][providerId] == 0)
+                return null;
+            return this.subscriptions.FirstOrDefault(s => s.InstrumentId == instrumentId && s.ProviderId == providerId);
         }
 
         public void Add(Instrument instrument, IDataProvider provider) => Add(new Subscription(instrument, provider, -1));

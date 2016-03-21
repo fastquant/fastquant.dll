@@ -11,6 +11,17 @@ using System.Diagnostics;
 
 namespace FastQuant
 {
+    public static class ProviderFields
+    {
+        public const int PeggedOrdType = 1;
+        public const int PeggedOrdSide = 2;
+        public const int PeggedOrdOffset = 3;
+        public const int PeggedOrdDiscretion = 4;
+        public const int PeggedOrdAtOrBetter = 5;
+        public const int PeggedOrdProtect = 6;
+        public const int TrailBy = 7;
+    }
+
     public class ProviderId
     {
         public const byte DataSimulator = 1;
@@ -175,6 +186,8 @@ namespace FastQuant
         void SendMessages(string guid);
 
         void CloseConnection(string guid);
+
+        bool IsMaker { get; }
 
         bool IsStopped { get; }
 
@@ -536,7 +549,7 @@ namespace FastQuant
 
         protected internal virtual void SetProperties(ProviderPropertyList properties)
         {
-            foreach(var p in GetType().GetProperties().Where(p => p.CanRead && p.CanWrite))
+            foreach (var p in GetType().GetProperties().Where(p => p.CanRead && p.CanWrite))
             {
                 var converter = TypeDescriptor.GetConverter(p.PropertyType);
                 if (converter.CanConvertFrom(typeof(string)))
@@ -547,7 +560,7 @@ namespace FastQuant
                         p.SetValue(this, converter.ConvertFromInvariantString(value), null);
                 }
             }
-         }
+        }
 
         protected internal virtual ProviderPropertyList GetProperties()
         {

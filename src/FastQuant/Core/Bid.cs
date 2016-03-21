@@ -23,11 +23,14 @@ namespace FastQuant
         {
         }
 
-        public Bid(Bid bid)
-            : base(bid)
+        public Bid(Bid bid) : base(bid)
         {
         }
 
+        public Bid(Tick tick): base(tick)
+        {
+        }
+        
         public override string ToString() => $"{nameof(Bid)} {DateTime} {ProviderId} {InstrumentId} {Price} {Size}";
     }
 }

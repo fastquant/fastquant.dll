@@ -198,7 +198,6 @@
     </Compile>
     <Compile Include="..\DnxForm\src\SmartQuant.Controls\Orders\OrderManagerWindow.cs">
       <Link>SmartQuant.Controls\Orders\OrderManagerWindow.cs</Link>
-      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="..\DnxForm\src\SmartQuant.Controls\Portfolios\ChildrenStatistics.cs">
       <Link>SmartQuant.Controls\Portfolios\ChildrenStatistics.cs</Link>

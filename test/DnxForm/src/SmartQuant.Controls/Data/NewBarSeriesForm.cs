@@ -1,11 +1,4 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: SmartQuant.Controls.Data.NewBarSeriesForm
-// Assembly: SmartQuant.Controls, Version=1.0.5820.33995, Culture=neutral, PublicKeyToken=null
-// MVID: EFEF2D43-0E96-48AE-8F56-611B584714E6
-// Assembly location: C:\Program Files\SmartQuant Ltd\OpenQuant 2014\SmartQuant.Controls.dll
-
-using SmartQuant;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
@@ -56,8 +49,8 @@ namespace SmartQuant.Controls.Data
 
     protected override void Dispose(bool disposing)
     {
-      if (disposing && this.components != null)
-        this.components.Dispose();
+      if (disposing)
+        this.components?.Dispose();
       base.Dispose(disposing);
     }
 

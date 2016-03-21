@@ -184,6 +184,12 @@ namespace FastQuant
             e.Price = reader.ReadDouble();
             e.StopPx = reader.ReadDouble();
             e.Qty = reader.ReadDouble();
+            if (version >= 1)
+            {
+                e.MinQty = reader.ReadDouble();
+                e.PegDifference = reader.ReadDouble();
+                e.ExecInst = reader.ReadString();
+            }
             e.OCA = reader.ReadString();
             e.Text = reader.ReadString();
             if (reader.ReadBoolean())
@@ -206,6 +212,10 @@ namespace FastQuant
             writer.Write((byte)e.Type);
             writer.Write(e.DateTime.Ticks);
             writer.Write(e.TransactTime.Ticks);
+            if (this.version >= 2)
+            {
+                writer.Write(e.Symbol);
+            }
             writer.Write(e.OrderId);
             writer.Write(e.InstrumentId);
             writer.Write(e.ProviderId);
@@ -219,6 +229,12 @@ namespace FastQuant
             writer.Write(e.Price);
             writer.Write(e.StopPx);
             writer.Write(e.Qty);
+            if (this.version >= 1)
+            {
+                writer.Write(e.MinQty);
+                writer.Write(e.PegDifference);
+                writer.Write(e.ExecInst);
+            }
             writer.Write(e.OCA);
             writer.Write(e.Text);
             if (e.Account != null)

@@ -95,6 +95,9 @@ namespace FastQuant
         internal ObjectTable fields;
 
         internal double double_6;
+        private double pegDifference;
+        private double minQty;
+        private string execInst;
 
         public int Id { get; internal set; } = -1;
 
@@ -231,7 +234,6 @@ namespace FastQuant
             }
         }
 
-
         [ReadOnly(true)]
         public OrderSide Side
         {
@@ -300,6 +302,47 @@ namespace FastQuant
             }
         }
 
+        [ReadOnly(true)]
+        public string ExecInst
+        {
+            get
+            {
+                return this.execInst;
+            }
+            set
+            {
+                EnsureNotSent();
+                this.execInst = value;
+            }
+        }
+
+        [ReadOnly(true)]
+        public double MinQty
+        {
+            get
+            {
+                return this.minQty;
+            }
+            set
+            {
+                EnsureNotSent();
+                this.minQty = value;
+            }
+        }
+
+        [ReadOnly(true)]
+        public double PegDifference
+        {
+            get
+            {
+                return this.pegDifference;
+            }
+            set
+            {
+                EnsureNotSent();
+                this.pegDifference = value;
+            }
+        }
 
         [ReadOnly(true)]
         public byte RouteId
@@ -442,12 +485,18 @@ namespace FastQuant
             AvgPx = order.AvgPx;
             Qty = order.Qty;
             CumQty = order.CumQty;
+            MinQty = order.MinQty;
+            PegDifference = order.pegDifference;
+            ExecInst = order.execInst;
             Text = order.Text;
             Account = order.Account;
             ClientID = order.ClientID;
+            Commands = order.Commands;
+            Reports = order.Reports;
+            Messages = order.Messages;
         }
 
-        public Order(IExecutionProvider provider, Instrument instrument, OrderType type, OrderSide side, double qty, double price = 0, double stopPx = 0, TimeInForce timeInForce = TimeInForce.Day, string text = "")
+    public Order(IExecutionProvider provider, Instrument instrument, OrderType type, OrderSide side, double qty, double price = 0, double stopPx = 0, TimeInForce timeInForce = TimeInForce.Day, string text = "")
             : this()
         {
             Provider = provider;

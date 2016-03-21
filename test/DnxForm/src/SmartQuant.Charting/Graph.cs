@@ -435,14 +435,14 @@ namespace SmartQuant.Charting
         {
             if (Style == EGraphStyle.Line && LineEnabled)
             {
-                var Pen = new Pen(LineColor) {DashStyle = LineDashStyle};
+                var pen = new Pen(LineColor) {DashStyle = LineDashStyle};
                 double X1 = 0.0;
                 double Y1 = 0.0;
                 bool flag = true;
                 foreach (TMarker tmarker in Points)
                 {
                     if (!flag)
-                        pad.DrawLine(Pen, X1, Y1, tmarker.X, tmarker.Y);
+                        pad.DrawLine(pen, X1, Y1, tmarker.X, tmarker.Y);
                     else
                         flag = false;
                     X1 = tmarker.X;

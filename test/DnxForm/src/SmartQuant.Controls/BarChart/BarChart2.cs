@@ -149,9 +149,8 @@ namespace SmartQuant.Controls.BarChart
             if (evnts == null)
                 return;
             var list1 = new List<GroupEvent>();
-            for (int i = 0; i < evnts.Length; ++i)
+            foreach (Event e in evnts)
             {
-                Event e = evnts[i];
                 if (e.TypeId == EventType.GroupEvent)
                 {
                     GroupEvent groupEvent = e as GroupEvent;
@@ -197,8 +196,8 @@ namespace SmartQuant.Controls.BarChart
             this.chart.Reset();
             for (int i = 0; i < list.Count; ++i)
             {
-                var item = this.table[list[i]];
-                foreach (int key in item.Table.Keys)
+                var item = this.table[i];
+                foreach (var key in item.Table.Keys)
                 {
                     EnsurePadExists(item.PadNumber, item.Format);
                     int padNumber = this.chart.VolumePadVisible || item.PadNumber <= 1 ? item.PadNumber : item.PadNumber + 1;

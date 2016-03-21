@@ -147,9 +147,9 @@ namespace SmartQuant.Charting
                 int num2 = 0;
                 LastValidAxisWidth = 0;
                 if (TitleEnabled)
-                    num1 = (int)(TitleOffset + (double)this.pad.Graphics.MeasureString(Max.ToString("F1"), TitleFont).Height);
+                    num1 = (int)(TitleOffset + this.pad.Graphics.MeasureString(Max.ToString("F1"), TitleFont).Height);
                 if (LabelEnabled)
-                    num2 = LabelFormat != null ? (int)(LabelOffset + (double)this.pad.Graphics.MeasureString(Max.ToString(LabelFormat), LabelFont).Width) : (int)((double)LabelOffset + (double)this.pad.Graphics.MeasureString(Max.ToString("F1"), LabelFont).Width);
+                    num2 = LabelFormat != null ? (int)(LabelOffset + this.pad.Graphics.MeasureString(Max.ToString(LabelFormat), LabelFont).Width) : (int)(LabelOffset + this.pad.Graphics.MeasureString(Max.ToString("F1"), LabelFont).Width);
                 LastValidAxisWidth = num2 + num1 + 2;
                 return num2 + num1 + 2;
             }
@@ -185,13 +185,11 @@ namespace SmartQuant.Charting
 
         public string Title { get; set; }
 
-        public Axis(Pad pad)
-            : this(pad, EAxisPosition.None)
+        public Axis(Pad pad) : this(pad, EAxisPosition.None)
         {
         }
 
-        public Axis(Pad pad, EAxisPosition position)
-            : this(pad, 0, 0, 0, 0, position)
+        public Axis(Pad pad, EAxisPosition position) : this(pad, 0, 0, 0, 0, position)
         {
         }
 
