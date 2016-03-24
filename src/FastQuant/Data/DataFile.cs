@@ -80,7 +80,7 @@ namespace FastQuant
             {
                 checked
                 {
-                    this.objects[(int)((IntPtr)i)] = this.objects[(int)((IntPtr)(unchecked(i + 1)))];
+                    this.objects[(int)(IntPtr)i] = this.objects[(int)((IntPtr)(unchecked(i + 1)))];
                 }
             }
             this.count--;

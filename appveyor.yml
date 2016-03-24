@@ -1,0 +1,17 @@
+init:
+  - git config --global core.autocrlf true
+test: off
+matrix:
+  fast_finish: true
+build_script:
+  - ps: .\build.ps1
+artifacts:
+  - path: artifacts/package/*.zip
+deploy:
+  - provider: GitHub
+    tag: $(APPVEYOR_REPO_TAG_NAME)
+    auth_token:
+      secure: YW4vAIFrVIdyKBNxyVGWGKHP2UejoZcTcD0cf7KYEgZefUWY2XFHjetDW4Q0cICx
+    artifact: /.*\.zip/
+    on:
+      appveyor_repo_tag: true
