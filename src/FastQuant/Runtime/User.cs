@@ -30,6 +30,8 @@ namespace FastQuant
         {
         }
 
+        public override string ToString() => $"{Name} - {Value}";
+
         [XmlElement("Name")]
         public string Name { get; set; }
 

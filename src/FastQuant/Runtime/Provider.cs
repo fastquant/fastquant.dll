@@ -57,6 +57,7 @@ namespace FastQuant
         public const byte QUIKFIX = 31;
         public const byte OSLFIX = 32;
         public const byte Nordnet = 33;
+        public const byte OkCoin = 34;
         public const byte Integral = 35;
         public const byte QuantBase = 36;
         public const byte QuantRouter = 38;

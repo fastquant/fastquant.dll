@@ -70,26 +70,56 @@ namespace FastQuant
             }
         }
 
-        public Level2Snapshot GetLevel2Snapshot()
+        public Level2Snapshot GetLevel2Snapshot(List<byte> providers = null)
         {
+            Level2Snapshot result;
             lock (this.lck)
             {
                 if (!this.bool_0)
-                    this.method_3();
-
-                var bids = new List<Bid>();
-                var asks = new List<Ask>();
-                foreach (var tick in this.bids)
-                    if (tick is Bid)
-                        bids.Add(tick as Bid);
-
-                foreach (var tick in this.asks)
-                    if (tick is Ask)
-                        asks.Add(tick as Ask);
-
-                return new Level2Snapshot(this.dateTime_0, 0, this.instrumentId, bids.ToArray(), asks.ToArray());
+                {
+                    this.method_7(providers);
+                }
+                List<Bid> list = new List<Bid>();
+                List<Ask> list2 = new List<Ask>();
+                foreach (Tick current in this.bids)
+                {
+                    if (current is Bid)
+                    {
+                        list.Add(current as Bid);
+                    }
+                }
+                foreach (Tick current2 in this.asks)
+                {
+                    if (current2 is Ask)
+                    {
+                        list2.Add(current2 as Ask);
+                    }
+                }
+                result = new Level2Snapshot(this.dateTime_0, 0, this.instrumentId, list.ToArray(), list2.ToArray());
             }
+            return result;
         }
+
+        //public Level2Snapshot GetLevel2Snapshot()
+        //{
+        //    lock (this.lck)
+        //    {
+        //        if (!this.bool_0)
+        //            this.method_3();
+
+        //        var bids = new List<Bid>();
+        //        var asks = new List<Ask>();
+        //        foreach (var tick in this.bids)
+        //            if (tick is Bid)
+        //                bids.Add(tick as Bid);
+
+        //        foreach (var tick in this.asks)
+        //            if (tick is Ask)
+        //                asks.Add(tick as Ask);
+
+        //        return new Level2Snapshot(this.dateTime_0, 0, this.instrumentId, bids.ToArray(), asks.ToArray());
+        //    }
+        //}
 
         public Quote GetQuote(int level)
         {
@@ -308,6 +338,90 @@ namespace FastQuant
                     return new List<Tick>(this.bids);
                 }
             }
+        }
+
+        private void method_7(List<byte> providers = null)
+        {
+            SortedList<double, Tick> sortedList = new SortedList<double, Tick>(new PriceComparer(PriceSortOrder.Descending));
+            SortedList<double, Tick> sortedList2 = new SortedList<double, Tick>(new PriceComparer(PriceSortOrder.Ascending));
+            List<Tuple<DateTime, List<Tick>, List<Tick>>> list;
+            if (providers == null)
+            {
+                list = new List<Tuple<DateTime, List<Tick>, List<Tick>>>(this.GonEpGhAb.Values);
+            }
+            else
+            {
+                list = new List<Tuple<DateTime, List<Tick>, List<Tick>>>();
+                foreach (byte current in providers)
+                {
+                    if (this.GonEpGhAb.ContainsKey((int)current))
+                    {
+                        list.Add(this.GonEpGhAb[(int)current]);
+                    }
+                }
+            }
+            this.dateTime_0 = default(DateTime);
+            foreach (Tuple<DateTime, List<Tick>, List<Tick>> current2 in list)
+            {
+                if (current2.Item1 > this.dateTime_0)
+                {
+                    this.dateTime_0 = current2.Item1;
+                }
+            }
+            List<Tuple<DateTime, List<Tick>, List<Tick>>> list2 = new List<Tuple<DateTime, List<Tick>, List<Tick>>>();
+            foreach (Tuple<DateTime, List<Tick>, List<Tick>> current3 in list)
+            {
+                if (current3.Item1 + this.Timeout >= this.dateTime_0)
+                {
+                    list2.Add(current3);
+                }
+            }
+            foreach (Tuple<DateTime, List<Tick>, List<Tick>> current4 in list2)
+            {
+                foreach (Tick current5 in current4.Item2)
+                {
+                    if (!sortedList.ContainsKey(current5.Price))
+                    {
+                        Bid bid = new Bid(current5);
+                        if (this.Mode == OrderBookAggr.AggregationMode.TotalValue)
+                        {
+                            bid.ProviderId = 0;
+                        }
+                        sortedList.Add(current5.Price, bid);
+                    }
+                    else if (this.Mode == OrderBookAggr.AggregationMode.TotalValue)
+                    {
+                        sortedList[current5.Price].Size += current5.Size;
+                    }
+                    else if (this.Mode == OrderBookAggr.AggregationMode.MaxValue && current5.Size > sortedList[current5.Price].Size)
+                    {
+                        sortedList[current5.Price] = new Bid(current5);
+                    }
+                }
+                foreach (Tick current6 in current4.Item3)
+                {
+                    if (!sortedList2.ContainsKey(current6.Price))
+                    {
+                        Ask ask = new Ask(current6);
+                        if (this.Mode == OrderBookAggr.AggregationMode.TotalValue)
+                        {
+                            ask.ProviderId = 0;
+                        }
+                        sortedList2.Add(current6.Price, ask);
+                    }
+                    else if (this.Mode == OrderBookAggr.AggregationMode.TotalValue)
+                    {
+                        sortedList2[current6.Price].Size += current6.Size;
+                    }
+                    else if (this.Mode == OrderBookAggr.AggregationMode.MaxValue && current6.Size > sortedList2[current6.Price].Size)
+                    {
+                        sortedList2[current6.Price] = new Ask(current6);
+                    }
+                }
+            }
+            this.bids = new List<Tick>(sortedList.Values);
+            this.asks = new List<Tick>(sortedList2.Values);
+            this.bool_0 = true;
         }
     }
 }

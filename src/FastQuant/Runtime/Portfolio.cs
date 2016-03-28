@@ -195,6 +195,8 @@ namespace FastQuant
             return position != null && position.Side == PositionSide.Short && position.Qty == qty;
         }
 
+        public override string ToString() => Name;
+
         internal void OnExecutionReport(ExecutionReport report, bool queued = true)
         {
             switch (report.ExecType)
