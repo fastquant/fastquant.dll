@@ -7,8 +7,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.travis.yml = .travis.yml
 		appveyor.yml = appveyor.yml
+		build.ps1 = build.ps1
+		build.sh = build.sh
 		global.json = global.json
+		LICENSE = LICENSE
 		Nuget.Config = Nuget.Config
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4557E8C2-3EDA-47A0-BA33-D7ADBE163192}"

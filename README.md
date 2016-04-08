@@ -1,4 +1,6 @@
 # fastquant.dll
+[![License](https://img.shields.io/badge/license-Apache_2-blue.svg)](https://github.com/fastquant/fastquant.dll/blob/master/LICENSE)
+
 a reimplementation of smartquant.dll found in 0pen9uant 2014+
 
 ## Build Status
