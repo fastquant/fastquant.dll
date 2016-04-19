@@ -61,40 +61,40 @@ namespace FastQuant.Optimization
 
     public class OptimizationParameterSet : IEnumerable<OptimizationParameter>
     {
-        private List<OptimizationParameter> parameters = new List<OptimizationParameter>();
+        private readonly List<OptimizationParameter> _parameters = new List<OptimizationParameter>();
 
-        public int Count => this.parameters.Count;
+        public int Count => _parameters.Count;
 
         public Global Global { get; set; } = new Global();
 
         public double Objective { get; set; }
 
-        public OptimizationParameter this[int index] => this.parameters[index];
+        public OptimizationParameter this[int index] => _parameters[index];
 
-        public void Add(OptimizationParameter parameter) => this.parameters.Add(parameter);
+        public void Add(OptimizationParameter parameter) => _parameters.Add(parameter);
 
         public void Add(string name, object value) => Add(new OptimizationParameter(name, value));
 
-        public IEnumerator<OptimizationParameter> GetEnumerator() => this.parameters.GetEnumerator();
+        public IEnumerator<OptimizationParameter> GetEnumerator() => _parameters.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() => this.parameters.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => _parameters.GetEnumerator();
 
-        public override string ToString() => string.Join(" ", this.parameters.Select(p => $"{p.Name} = {p.Value}"));
+        public override string ToString() => string.Join(" ", _parameters.Select(p => $"{p.Name} = {p.Value}"));
     }
 
     public class OptimizationUniverse : IEnumerable<OptimizationParameterSet>
     {
-        private readonly List<OptimizationParameterSet> sets = new List<OptimizationParameterSet>();
+        private readonly List<OptimizationParameterSet> _sets = new List<OptimizationParameterSet>();
 
-        public int Count => this.sets.Count;
+        public int Count => _sets.Count;
 
-        public OptimizationParameterSet this[int index] => this.sets[index];
+        public OptimizationParameterSet this[int index] => _sets[index];
 
-        public void Add(OptimizationParameterSet parameter) => this.sets.Add(parameter);
+        public void Add(OptimizationParameterSet parameter) => _sets.Add(parameter);
 
-        public void Clear() => this.sets.Clear();
+        public void Clear() => _sets.Clear();
 
-        public IEnumerator<OptimizationParameterSet> GetEnumerator() => this.sets.GetEnumerator();
+        public IEnumerator<OptimizationParameterSet> GetEnumerator() => _sets.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
@@ -103,56 +103,27 @@ namespace FastQuant.Optimization
     {
         public OptimizationParameterSet GetParameters(Strategy strategy)
         {
-            OptimizationParameterSet optimizationParameterSet = new OptimizationParameterSet();
-            PropertyInfo[] properties =
-                strategy.GetType()
-                    .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty |
-                                   BindingFlags.SetProperty);
-            for (int i = 0; i < properties.Length; i++)
+            var parameters = new OptimizationParameterSet();
+            var properties = strategy.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty | BindingFlags.SetProperty);
+
+            foreach (var parameter in properties.SelectMany(property => property.GetCustomAttributes(false).OfType<OptimizationParameterAttribute>().Select(attribute
+                => new OptimizationParameter(property.Name, attribute.LowerBound, attribute.UpperBound, attribute.Step))))
             {
-                PropertyInfo propertyInfo = properties[i];
-                object[] customAttributes = propertyInfo.GetCustomAttributes(false);
-                for (int j = 0; j < customAttributes.Length; j++)
-                {
-                    Attribute attribute = (Attribute) customAttributes[j];
-                    if (attribute is OptimizationParameterAttribute)
-                    {
-                        OptimizationParameterAttribute optimizationParameterAttribute =
-                            (OptimizationParameterAttribute) attribute;
-                        OptimizationParameter parameter = new OptimizationParameter(propertyInfo.Name,
-                            optimizationParameterAttribute.LowerBound, optimizationParameterAttribute.UpperBound,
-                            optimizationParameterAttribute.Step);
-                        optimizationParameterSet.Add(parameter);
-                    }
-                }
+                parameters.Add(parameter);
             }
-            return optimizationParameterSet;
+            return parameters;
         }
 
         public void SetParameters(Strategy strategy, OptimizationParameterSet parameters)
         {
-            int num = 0;
-            PropertyInfo[] properties =
-                strategy.GetType()
-                    .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty |
-                                   BindingFlags.SetProperty);
-            for (int i = 0; i < properties.Length; i++)
+            var num = 0;
+            var properties = strategy.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty | BindingFlags.SetProperty);
+            foreach (var property in properties.SelectMany(property => property.GetCustomAttributes(false).OfType<OptimizationParameterAttribute>(), (property, attribute) => property))
             {
-                PropertyInfo propertyInfo = properties[i];
-                object[] customAttributes = propertyInfo.GetCustomAttributes(false);
-                for (int j = 0; j < customAttributes.Length; j++)
-                {
-                    Attribute attribute = (Attribute) customAttributes[j];
-                    if (attribute is OptimizationParameterAttribute)
-                    {
-                        if (propertyInfo.Name != parameters[num].Name)
-                        {
-                            throw new Exception("Can not set parameter. Wrong parameter order.");
-                        }
-                        propertyInfo.SetValue(strategy, (double) parameters[num].Value);
-                        num++;
-                    }
-                }
+                if (property.Name != parameters[num].Name)
+                    throw new Exception("Can not set parameter. Wrong parameter order.");
+                property.SetValue(strategy, parameters[num].Value);
+                num++;
             }
         }
     }

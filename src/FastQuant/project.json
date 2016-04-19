@@ -1,25 +1,32 @@
 {
-  "compilationOptions": {},
+  "compilationOptions": { },
   "dependencies": {
-    "Newtonsoft.Json": "8.0.2",
+    "Newtonsoft.Json": "8.0.3",
     "xunit": "2.1.0-*",
-    "xunit.runner.dnx": "2.1.0-*"
+    "xunit.runner.console": "2.1.0"
   },
   "frameworks": {
-    "dnx451": {
+    "net451": {
       "frameworkAssemblies": {
         "System.Drawing": "4.0.0.0",
         "System.Xml": "4.0.0.0"
       }
     },
-    "dnxcore50": {
+    "netstandard1.5": {
       "dependencies": {
-        "netcoreshim": "",
-        "NETStandard.Library": "1.0.0-rc2-*",
-        "System.Xml.XmlSerializer": "4.0.11-rc2-*",
+        "netcoreshim": "*",
+        "NETStandard.Library": "1.5.0-rc2-*",
+        "System.ComponentModel.TypeConverter": "4.0.1-rc2-*",
+        "System.Threading.Thread": "4.0.0-rc2-*",
         "System.Threading.Tasks.Parallel": "4.0.1-rc2-*",
-        "System.ComponentModel.TypeConverter": "4.0.1-rc2-*"
-      }
+        "System.Xml.XmlSerializer": "4.0.11-rc2-*",
+        "System.Reflection.Extensions": "4.0.1-rc2-*",
+        "System.Reflection.TypeExtensions": "4.1.0-rc2-*"
+      },
+      "imports": [
+        "dnxcore50",
+        "portable-net45+win8"
+      ]
     }
   },
   "commands": {

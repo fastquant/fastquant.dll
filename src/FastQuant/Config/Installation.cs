@@ -18,10 +18,10 @@ namespace FastQuant
 
         private static string GetApplicationDataPath()
         {
-#if DNXCORE50
-            return Path.Combine(Environment.GetEnvironmentVariable("HOME") ?? Environment.GetEnvironmentVariable("USERPROFILE"), "AppData", "Roaming");
-#else
+#if NET451            
             return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+#else
+            return Path.Combine(Environment.GetEnvironmentVariable("HOME") ?? Environment.GetEnvironmentVariable("USERPROFILE"), "AppData", "Roaming");
 #endif
         }
     }

@@ -87,10 +87,10 @@ namespace FastQuant
             finally
             {
                 Console.WriteLine(DateTime.Now + " Event Dispatcher Server Client closing connection... ");
-#if DNXCORE50
-                this.tcpClient_0.Dispose();
-#else
+#if NET451
                 this.tcpClient_0.Close();
+#else
+                this.tcpClient_0.Dispose();
 #endif
             }
         }

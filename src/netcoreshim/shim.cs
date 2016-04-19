@@ -22,24 +22,13 @@ namespace System.Drawing
 {
     public struct Color
     {
-        static public Color Red
-        {
-            get { return FromArgb(0); }
-        }
+        public static Color Red => FromArgb(0);
 
-        static public Color Green
-        {
-            get { return FromArgb(0); }
-        }
-        static public Color Blue
-        {
-            get { return FromArgb(0); }
-        }
+        public static Color Green => FromArgb(0);
 
-        static public Color Yellow
-        {
-            get { return FromArgb(0); }
-        }
+        public static Color Blue => FromArgb(0);
+
+        public static Color Yellow => FromArgb(0);
 
         public int ToArgb()
         {
