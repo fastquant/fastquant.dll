@@ -200,3 +200,5 @@ FakesAssemblies/
 project.lock.json
 artifacts/
 /tools/nuget.exe
+.idea/
+*.sln.iml
