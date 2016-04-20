@@ -128,13 +128,8 @@ namespace FastQuant.Optimization
         }
     }
 
-    //public class SimulatedAnnealingOptimizer : Optimizer
-    //{
-    //    static SimulatedAnnealingOptimizer()
-    //    {
-    //        LicenseManager.Validate(typeof (SimulatedAnnealingOptimizer));
-    //    }
-
+    public class SimulatedAnnealingOptimizer : Optimizer
+    {
     //    public SimulatedAnnealingOptimizer()
     //    {
     //        Class59.tAHXU0wz2AVX3();
@@ -202,16 +197,16 @@ namespace FastQuant.Optimization
 
     //    private OptimizationParameterSet optimizationParameterSet_0;
 
-    //  //  private SimulatedAnnealing simulatedAnnealing_0;
+    //      private SimulatedAnnealing simulatedAnnealing_0;
 
     //    private Strategy strategy_0;
-    //}
+    }
 
     public class MulticoreOptimizer
     {
-        private Stopwatch stopwatch = new Stopwatch();
+        private readonly Stopwatch _stopwatch = new Stopwatch();
 
-        public long Elapsed => this.stopwatch.ElapsedMilliseconds;
+        public long Elapsed => _stopwatch.ElapsedMilliseconds;
 
         public long EventCount { get; private set; }
 
@@ -225,9 +220,9 @@ namespace FastQuant.Optimization
             }
 
             EventCount = 0;
-            this.stopwatch.Start();
+            _stopwatch.Start();
             throw new NotImplementedException();
-            this.stopwatch.Stop();
+            _stopwatch.Stop();
             var max = universe.OrderBy(u => u.Objective).Last();
             Console.WriteLine($"Best Objective {max}  Objective = {max.Objective}");
             Console.WriteLine("Optimization done");
