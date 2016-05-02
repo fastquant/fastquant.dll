@@ -94,5 +94,10 @@ namespace FastQuant
         {
             Close();
         }
+
+        public virtual void Refresh()
+        {
+            // noop
+        }
     }
 }

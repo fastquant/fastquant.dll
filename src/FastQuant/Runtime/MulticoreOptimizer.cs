@@ -99,12 +99,14 @@ namespace FastQuant.Optimization
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 
+    public class OptimizationPortfolio { }
+
     public class Optimizer
     {
-        public OptimizationParameterSet GetParameters(Strategy strategy)
+        public OptimizationParameterSet GetParameters(object obj)
         {
             var parameters = new OptimizationParameterSet();
-            var properties = strategy.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty | BindingFlags.SetProperty);
+            var properties = obj.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty | BindingFlags.SetProperty);
 
             foreach (var parameter in properties.SelectMany(property => property.GetCustomAttributes(false).OfType<OptimizationParameterAttribute>().Select(attribute
                 => new OptimizationParameter(property.Name, attribute.LowerBound, attribute.UpperBound, attribute.Step))))
@@ -114,15 +116,15 @@ namespace FastQuant.Optimization
             return parameters;
         }
 
-        public void SetParameters(Strategy strategy, OptimizationParameterSet parameters)
+        public void SetParameters(object obj, OptimizationParameterSet parameters)
         {
             var num = 0;
-            var properties = strategy.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty | BindingFlags.SetProperty);
+            var properties = obj.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty | BindingFlags.SetProperty);
             foreach (var property in properties.SelectMany(property => property.GetCustomAttributes(false).OfType<OptimizationParameterAttribute>(), (property, attribute) => property))
             {
                 if (property.Name != parameters[num].Name)
                     throw new Exception("Can not set parameter. Wrong parameter order.");
-                property.SetValue(strategy, parameters[num].Value);
+                property.SetValue(obj, parameters[num].Value);
                 num++;
             }
         }

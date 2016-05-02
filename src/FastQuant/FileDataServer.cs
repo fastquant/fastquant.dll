@@ -44,6 +44,8 @@ namespace FastQuant
 
         public override void Flush() => this.dataFile.Flush();
 
+        public override void Refresh() =>this.dataFile.Refresh();
+
         public override DataSeries GetDataSeries(string name) => (DataSeries)this.dataFile.Get(name);
 
         public override DataSeries GetDataSeries(Instrument instrument, byte type, BarType barType = BarType.Time, long barSize = 60)

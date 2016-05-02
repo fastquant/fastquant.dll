@@ -301,20 +301,24 @@ namespace FastQuant
             this.type = typeof(Level2Snapshot);
         }
 
+        public override byte GetVersion(object obj) => ((Level2Snapshot)obj).ExchangeDateTime.Ticks != 0 ? (byte)1 : (byte)0;
+
         public override object Read(BinaryReader reader, byte version)
         {
-            var l2s = new Level2Snapshot();
-            l2s.DateTime = new DateTime(reader.ReadInt64());
-            l2s.ProviderId = reader.ReadByte();
-            l2s.InstrumentId = reader.ReadInt32();
+            var l2s = new Level2Snapshot
+            {
+                DateTime = new DateTime(reader.ReadInt64()),
+                ProviderId = reader.ReadByte(),
+                InstrumentId = reader.ReadInt32()
+            };
             int count;
             count = reader.ReadInt32();
             l2s.Bids = new Bid[count];
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
                 l2s.Bids[i] = (Bid)this.streamerManager.Deserialize(reader);
             count = reader.ReadInt32();
             l2s.Asks = new Ask[count];
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
                 l2s.Asks[i] = (Ask)this.streamerManager.Deserialize(reader);
             return l2s;
         }
@@ -325,12 +329,14 @@ namespace FastQuant
             writer.Write(l2s.DateTime.Ticks);
             writer.Write(l2s.ProviderId);
             writer.Write(l2s.InstrumentId);
+            if (GetVersion(l2s) == 1)
+                writer.Write(l2s.ExchangeDateTime.Ticks);
             writer.Write(l2s.Bids.Length);
-            for (int i = 0; i < l2s.Bids.Length; i++)
-                this.streamerManager.Serialize(writer, l2s.Bids[i]);
+            foreach (var bid in l2s.Bids)
+                this.streamerManager.Serialize(writer, bid);
             writer.Write(l2s.Asks.Length);
-            for (int i = 0; i < l2s.Asks.Length; i++)
-                this.streamerManager.Serialize(writer, l2s.Asks[i]);
+            foreach (Ask ask in l2s.Asks)
+                this.streamerManager.Serialize(writer, ask);
         }
     }
 

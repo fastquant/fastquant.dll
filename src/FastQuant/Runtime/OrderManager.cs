@@ -87,6 +87,20 @@ namespace FastQuant
                 order.ClOrderId = $"{this.framework.Clock.DateTime} {order.Id}";
         }
 
+        public void Register(ExecutionCommand command)
+        {
+            if (command.Id != -1)
+            {
+                Console.WriteLine($"OrderManager::Register Error Order is already registered : id = {command.Id}");
+                return;
+            }
+            lock (this.obj)
+                command.Id = this.counter++;
+            if (this.framework.Mode == FrameworkMode.Realtime && string.IsNullOrEmpty(command.ClOrderId))
+                command.ClOrderId = this.framework.Clock.DateTime + " " + command.OrderId;
+        }
+
+
         public void Delete(string name)
         {
             if (Server != null)

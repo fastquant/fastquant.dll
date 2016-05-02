@@ -112,6 +112,8 @@ namespace FastQuant
             }
         }
 
+        public Position this[Instrument instrument] => GetPosition(instrument);
+
         public Portfolio(string name)
         {
             Name = name;
@@ -194,8 +196,6 @@ namespace FastQuant
             var position = PositionsByInstrumentId[instrument.Id];
             return position != null && position.Side == PositionSide.Short && position.Qty == qty;
         }
-
-        public override string ToString() => Name;
 
         internal void OnExecutionReport(ExecutionReport report, bool queued = true)
         {

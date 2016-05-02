@@ -59,10 +59,14 @@ namespace FastQuant
         public const byte Nordnet = 33;
         public const byte OkCoin = 34;
         public const byte Integral = 35;
+        public const byte MoexFAST = 36;
         public const byte QuantBase = 36;
         public const byte QuantRouter = 38;
         public const byte IQFeed = 39;
         public const byte QuantRouter2014 = 40;
+        public const byte QuantBase2014 = 41;
+        public const byte QuantRouter2014Multi = 42;
+        
         public const byte MNI = 45;
         public const byte MatchingEngine = 99;
 
@@ -304,6 +308,8 @@ namespace FastQuant
         protected EventQueue historicalQueue;
         protected EventQueue instrumentQueue;
 
+        protected readonly object sync = new object();
+
         [Category("Information")]
         public byte Id
         {
@@ -399,8 +405,9 @@ namespace FastQuant
 
         public virtual void Connect()
         {
-            Status = ProviderStatus.Connecting;
-            Status = ProviderStatus.Connected;
+            lock (this.sync)
+                if (Enabled || Status == ProviderStatus.Disconnected)
+                    OnConnect();
         }
 
         public virtual bool Connect(int timeout)
@@ -421,8 +428,9 @@ namespace FastQuant
 
         public virtual void Disconnect()
         {
-            Status = ProviderStatus.Disconnecting;
-            Status = ProviderStatus.Disconnected;
+            lock (this.sync)
+                if (Status != ProviderStatus.Disconnected)
+                    OnDisconnect();
         }
 
         public void Dispose()
@@ -568,6 +576,12 @@ namespace FastQuant
             throw new NotImplementedException();
         }
 
+        protected virtual void OnConnect()
+        {
+            Status = ProviderStatus.Connecting;
+            Status = ProviderStatus.Connected;
+        }
+
         protected virtual void OnConnected()
         {
             if ((this is IDataProvider || this is IFundamentalProvider) && this.dataQueue == null)
@@ -584,6 +598,12 @@ namespace FastQuant
                 this.executionQueue.Name = $"{this.name}  execution queue";
                 this.framework.EventBus.ExecutionPipe.Add(this.executionQueue);
             }
+        }
+
+        protected virtual void OnDisconnect()
+        {
+            Status = ProviderStatus.Disconnecting;
+            Status = ProviderStatus.Disconnected;
         }
 
         protected virtual void OnDisconnected()

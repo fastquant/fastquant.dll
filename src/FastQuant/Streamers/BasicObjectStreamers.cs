@@ -58,6 +58,46 @@ namespace FastQuant
         }
     }
 
+
+    public class VectorStreamer : ObjectStreamer
+    {
+        public VectorStreamer()
+        {
+            this.typeId = DataObjectType.Vector;
+           // this.type = typeof(Vector);
+        }
+
+        public override object Read(BinaryReader reader, byte version)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Write(BinaryWriter writer, object obj)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class MatrixStreamer : ObjectStreamer
+    {
+        public MatrixStreamer()
+        {
+            this.typeId = DataObjectType.Matrix;
+            //this.type = typeof(Matrix);
+        }
+
+        public override object Read(BinaryReader reader, byte version)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Write(BinaryWriter writer, object obj)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+
     public class TimeSeriesItemStreamer : ObjectStreamer
     {
         public TimeSeriesItemStreamer()

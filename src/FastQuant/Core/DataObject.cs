@@ -92,8 +92,10 @@ namespace FastQuant
         public const byte Double = 158;
         public const byte Int16 = 159;
         public const byte Array = 160;
-        public const byte OnException = 161;
-        public const byte AccountReport = 162;
+        public const byte Vector = 161;
+        public const byte Matrix = 161;
+        public const byte OnException = 163;
+        public const byte AccountReport = 164;
         public const byte OnConnect = 201;
         public const byte OnDisconnect = 202;
         public const byte OnSubscribe = 203;

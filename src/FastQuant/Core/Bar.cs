@@ -55,7 +55,7 @@ namespace FastQuant
 
     public class Bar : DataObject
     {
-        private IdArray<double> fields;
+        private ObjectTable fields;
 
         private static readonly Dictionary<string, byte> mapping = new Dictionary<string, byte>()
         {
@@ -112,15 +112,7 @@ namespace FastQuant
 
         public long OpenInt { get; set; }
 
-        public long N { get; set; }
-
         public long Size { get; set; }
-
-        public double Mean { get; set; }
-
-        public double Variance { get; set; }
-
-        public double StdDev => Math.Sqrt(Variance);
 
         public double Range => High - Low;
 
@@ -132,20 +124,21 @@ namespace FastQuant
 
         public double Average => (Open + High + Low + Close)/4;
 
-        public double this[byte index]
+        public ObjectTable Fields => this.fields ?? (this.fields = new ObjectTable());
+
+        public object this[int index]
         {
             get
             {
-                return this.fields[index];
+                return Fields[index];
             }
             set
             {
-                this.fields = this.fields ?? new IdArray<double>(16);
-                this.fields[index] = value;
+                Fields[index] = value;
             }
         }
 
-        public double this[string name]
+        public object this[string name]
         {
             get
             {
@@ -197,12 +190,5 @@ namespace FastQuant
         {
             return $"{nameof(Bar)} [{OpenDateTime} - {CloseDateTime}] Instrument={InstrumentId} Type={Type} Size={Size} Open={Open} High={High} Low={Low} Close={Close} Volume={Volume}";
         }
-
-        #region Extra
-
-        [NotOriginal]
-        internal IdArray<double> Fields => this.fields;
-        
-        #endregion
     }
 }
