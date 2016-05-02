@@ -65,6 +65,8 @@ namespace FastQuant
             // noop
         }
 
+        public virtual double Objective() => 0;
+
         public void RunWithLogger(string solutionName)
         {
             throw new NotImplementedException("Will never implement this!");
