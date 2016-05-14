@@ -503,6 +503,8 @@ namespace FastQuant
 
         public void Save(Tick tick, SaveMode option = SaveMode.Add) => Save(tick.InstrumentId, tick, option);
 
+        public void Save(Quote quote, SaveMode option = SaveMode.Add) => Save(quote.Ask.InstrumentId, quote, option);
+
         public void Save(Bar bar, SaveMode option = SaveMode.Add) => Save(bar.InstrumentId, bar, option);
 
         public void Save(Level2 level2, SaveMode option = SaveMode.Add) => Save(level2.InstrumentId, level2, option);

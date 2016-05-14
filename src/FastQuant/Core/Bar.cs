@@ -6,6 +6,17 @@ using System.Collections.Generic;
 
 namespace FastQuant
 {
+    public class BarSize
+    {
+        public const long Second = 1;
+        public const long Minute = 60;
+        public const long Hour = Minute * 60;
+        public const long Day = Hour * 24;
+        public const long Week = Day * 7;
+        public const long Month = Day * 30;
+        public const long Year = Day * 365;
+    }
+
     public enum BarData
     {
         Close,
@@ -116,13 +127,13 @@ namespace FastQuant
 
         public double Range => High - Low;
 
-        public double Median => (High + Low)/2;
+        public double Median => (High + Low) / 2;
 
-        public double Typical => (High + Low + Close)/3;
+        public double Typical => (High + Low + Close) / 3;
 
-        public double Weighted => (High + Low + 2*Close)/4;
+        public double Weighted => (High + Low + 2 * Close) / 4;
 
-        public double Average => (Open + High + Low + Close)/4;
+        public double Average => (Open + High + Low + Close) / 4;
 
         public ObjectTable Fields => this.fields ?? (this.fields = new ObjectTable());
 

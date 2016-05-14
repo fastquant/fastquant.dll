@@ -65,6 +65,18 @@ namespace FastQuant
             }
         }
 
+        public BarSeries Compress(InputType inputType, BarType barType, long barSize)
+        {
+            if (this.Count == 0)
+            {
+                return new BarSeries("", "", -1, -1);
+            }
+            Quote quote = this[0];
+            BarCompressor compressor = BarCompressor.GetCompressor(quote.ask_0.instrumentId, barType, 1L, barSize, default(TimeSpan), default(TimeSpan));
+            return compressor.Compress(new QuoteDataEnumerator(this, inputType));
+        }
+
+
         private int GetIndex_me(DateTime dateTime, IndexOption option)
         {
             var i = this.quotes.BinarySearch(new Quote { DateTime = dateTime }, new DataObjectComparer());
