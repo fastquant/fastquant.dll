@@ -97,28 +97,28 @@ namespace FastQuant
         [XmlElement("Password")]
         public string Password { get; set; }
 
-        [XmlArray("Items"), XmlArrayItem("Item")]
-        public BindingList<UserItem> Items
-        {
-            get
-            {
-                return this.items;
-            }
-            set
-            {
-                if (this.items != null)
-                    this.items.ListChanged -= this.method_0;
-                if (value != null)
-                    value.ListChanged += this.method_0;
-                this.items = value;
-            }
-        }
+        //[XmlArray("Items"), XmlArrayItem("Item")]
+        //public BindingList<UserItem> Items
+        //{
+        //    get
+        //    {
+        //        return this.items;
+        //    }
+        //    set
+        //    {
+        //        if (this.items != null)
+        //            this.items.ListChanged -= this.method_0;
+        //        if (value != null)
+        //            value.ListChanged += this.method_0;
+        //        this.items = value;
+        //    }
+        //}
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         public void Add(string name, string value)
         {
-            this.items.Add(new UserItem(name, value));
+            //this.items.Add(new UserItem(name, value));
         }
 
         public void AddDefaultItems()
@@ -145,65 +145,65 @@ namespace FastQuant
             Add("Allow HistoricalData", "true");
         }
 
-        public bool Contains(string name) => this.items.Any(current => current.Name == name);
+        //public bool Contains(string name) => this.items.Any(current => current.Name == name);
 
-        public bool GetBoolValue(string name)
-        {
-            return this.items.Where(current => current.Name == name).Select(current => bool.Parse(current.Value)).FirstOrDefault();
-        }
+        //public bool GetBoolValue(string name)
+        //{
+        //    return this.items.Where(current => current.Name == name).Select(current => bool.Parse(current.Value)).FirstOrDefault();
+        //}
 
-        public double GetDoubleValue(string name)
-        {
-            return this.items.Where(current => current.Name == name).Select(current => double.Parse(current.Value)).FirstOrDefault();
-        }
+        //public double GetDoubleValue(string name)
+        //{
+        //    return this.items.Where(current => current.Name == name).Select(current => double.Parse(current.Value)).FirstOrDefault();
+        //}
 
-        public int GetIntValue(string name)
-        {
-            return this.items.Where(current => current.Name == name).Select(current => int.Parse(current.Value)).FirstOrDefault();
-        }
+        //public int GetIntValue(string name)
+        //{
+        //    return this.items.Where(current => current.Name == name).Select(current => int.Parse(current.Value)).FirstOrDefault();
+        //}
 
-        public List<UserItem> GetItems(string name) => this.items.Where(current => current.Name == name).ToList();
+        //public List<UserItem> GetItems(string name) => this.items.Where(current => current.Name == name).ToList();
 
-        public string GetStringValue(string name)
-        {
-            return this.items.Where(current => current.Name == name).Select(current => current.Value).FirstOrDefault();
-        }
+        //public string GetStringValue(string name)
+        //{
+        //    return this.items.Where(current => current.Name == name).Select(current => current.Value).FirstOrDefault();
+        //}
 
 
         public AccountData ToAccountData(DateTime time, byte providerId, byte route)
         {
             var accountData = new AccountData(time, AccountDataType.AccountValue, Name, providerId, route);
             accountData.Fields.Add("UserName", this.Name);
-            foreach (var current in this.items)
-            {
-                if (!string.IsNullOrWhiteSpace(current.Value))
-                {
-                    var userItems = GetItems(current.Value);
-                    if (userItems.Count == 1)
-                    {
-                        accountData.Fields.Add(current.Name, current.Value);
-                    }
-                    else if (accountData.Fields[current.Name] == null)
-                    {
-                        var array = new object[userItems.Count];
-                        for (var i = 0; i < userItems.Count; i++)
-                            array[i] = userItems[i].Value;
-                        accountData.Fields.Add(current.Name, array);
-                    }
-                }
-            }
+            //foreach (var current in this.items)
+            //{
+            //    if (!string.IsNullOrWhiteSpace(current.Value))
+            //    {
+            //        var userItems = GetItems(current.Value);
+            //        if (userItems.Count == 1)
+            //        {
+            //            accountData.Fields.Add(current.Name, current.Value);
+            //        }
+            //        else if (accountData.Fields[current.Name] == null)
+            //        {
+            //            var array = new object[userItems.Count];
+            //            for (var i = 0; i < userItems.Count; i++)
+            //                array[i] = userItems[i].Value;
+            //            accountData.Fields.Add(current.Name, array);
+            //        }
+            //    }
+            //}
             return accountData;
         }
 
 
-        private BindingList<UserItem> items;
+        //private BindingList<UserItem> items;
 
-        private void method_0(object sender, ListChangedEventArgs e)
-        {
-            if (e.ListChangedType != ListChangedType.ItemChanged)
-                return;
-            OnPropertyChanged();
-        }
+        //private void method_0(object sender, ListChangedEventArgs e)
+        //{
+        //    if (e.ListChangedType != ListChangedType.ItemChanged)
+        //        return;
+        //    OnPropertyChanged();
+        //}
 
         protected virtual void OnPropertyChanged(string propertyName = null)
         {

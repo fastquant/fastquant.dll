@@ -126,11 +126,32 @@ namespace FastQuant
             bar.Status = (BarStatus)reader.ReadByte();
             if (version >= 1)
                 bar.Type = (BarType)reader.ReadByte();
-            int size = reader.ReadInt32();
+            if (version >= 2)
+            {
+                bar.ProviderId = reader.ReadInt32();
+            }
+            if (version <= 2)
+            {
+                int num = reader.ReadInt32();
+                if (num != 0)
+                {
+                    //bar.Fields = new ObjectTable();
+                    for (var i = 0; i < num; i++)
+                    {
+                        bar.Fields[i] = reader.ReadDouble();
+                    }
+                }
+            }
+            if (version >= 3 && reader.ReadBoolean())
+            {
+                var fields = (ObjectTable)this.streamerManager.Deserialize(reader);
+                for (int i = 0; i < fields.Size; i++)
+                {
+                    bar.Fields[i] = fields[i];
+                }
+                //    bar.Fields = (ObjectTable)this.streamerManager.Deserialize(reader);
 
-            for (int i = 0; i < size; ++i)
-                bar[(byte)i] = reader.ReadDouble();
-
+            }
             return bar;
         }
 
@@ -148,15 +169,35 @@ namespace FastQuant
             writer.Write(bar.Volume);
             writer.Write(bar.OpenInt);
             writer.Write((byte)bar.Status);
-            writer.Write((byte)bar.Type);
-            if (bar.Fields != null)
+            if (this.version >= 1)
             {
-                writer.Write(bar.Fields.Size);
-                for (int i = 0; i < bar.Fields.Size; ++i)
-                    writer.Write(bar[(byte)i]);
+                writer.Write((byte)bar.Type);
             }
-            else
-                writer.Write(0);
+            if (this.version >= 2)
+            {
+                writer.Write(bar.ProviderId);
+            }
+            if (this.version <= 2)
+            {
+                if (bar.Fields != null)
+                {
+                    writer.Write(bar.Fields.Size);
+                    for (var i = 0; i < bar.Fields.Size; ++i)
+                        writer.Write((double)bar.Fields[i]);
+                }
+                else
+                    writer.Write(0);
+            }
+            if (this.version >= 3)
+            {
+                if (bar.Fields != null)
+                {
+                    writer.Write(true);
+                    this.streamerManager.Serialize(writer, bar.Fields);
+                    return;
+                }
+                writer.Write(false);
+            }
         }
     }
 

@@ -137,6 +137,8 @@ namespace FastQuant
 
         public ObjectTable Fields => this.fields ?? (this.fields = new ObjectTable());
 
+        internal long N { get; set; }
+
         public object this[int index]
         {
             get

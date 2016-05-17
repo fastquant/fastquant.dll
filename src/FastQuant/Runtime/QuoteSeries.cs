@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using FastQuant.Data.Compression;
 
 namespace FastQuant
 {
@@ -69,10 +70,10 @@ namespace FastQuant
         {
             if (this.Count == 0)
             {
-                return new BarSeries("", "", -1, -1);
+                return new BarSeries();
             }
-            Quote quote = this[0];
-            BarCompressor compressor = BarCompressor.GetCompressor(quote.ask_0.instrumentId, barType, 1L, barSize, default(TimeSpan), default(TimeSpan));
+            var quote = this[0];
+            var compressor = BarCompressor.GetCompressor(quote.Ask.InstrumentId, barType, 1, barSize);
             return compressor.Compress(new QuoteDataEnumerator(this, inputType));
         }
 
