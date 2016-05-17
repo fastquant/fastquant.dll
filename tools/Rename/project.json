@@ -1,5 +1,5 @@
 {
-  "compilationOptions": {
+  "buildOptionsO": {
     "emitEntryPoint": true
   },
   "dependencies": {
