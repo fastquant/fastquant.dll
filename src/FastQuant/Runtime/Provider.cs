@@ -78,6 +78,7 @@ namespace FastQuant
         public const byte MNI = 52;
         public const byte OkCoin = 53;
         public const byte IQFeed = 54;
+        public const byte Quandl = 55;
         public const byte MatchingEngine = 99;
 
         private static readonly Dictionary<string, byte> _mapping = new Dictionary<string, byte>();

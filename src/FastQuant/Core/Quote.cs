@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace FastQuant
 {
@@ -51,11 +52,6 @@ namespace FastQuant
             InstrumentId = instrumentId;
         }
 
-        public static void AddField(string name, byte index)
-        {
-            mapping.Add(name, index);
-        }
-
         public override string ToString() => string.Join(";", Enumerable.Range(0, Fields.Size).Select(i => $"{i}={this[(byte)i]}"));
 
         public object this[byte index]
@@ -84,7 +80,48 @@ namespace FastQuant
 
         public override byte TypeId => DataObjectType.Fundamental;
 
-        static readonly Dictionary<string, byte> mapping = new Dictionary<string, byte>()
+        public static void AddField(string name, byte index)
+        {
+            if (mapping.ContainsKey(name))
+            {
+                Console.WriteLine($"{nameof(Fundamental)}::{nameof(AddField)} with Name = {name} is already exist");
+                return;
+            }
+            if (mapping.ContainsValue(index))
+            {
+                Console.WriteLine($"{nameof(Fundamental)}::{nameof(AddField)} with Index = {index} is already exist");
+                return;
+            }
+            mapping.Add(name, index);
+        }
+
+        public static bool Contains(string name) => mapping.ContainsKey(name);
+
+        public static byte GetIndex(string name) => mapping[name];
+
+        public static void Print() => Console.WriteLine(string.Join(Environment.NewLine, mapping.Keys.Select(k => $"{k}-{mapping[k]}")));
+
+        [UglyNaming]
+        public void Print_Temporary()
+        {
+            var sb = new StringBuilder();
+            sb.Append($"Fundamental, Time: {DateTime}{Environment.NewLine}");
+            sb.Append($"InstrumentId: {InstrumentId}{Environment.NewLine}");
+            sb.Append($"ProviderId: {ProviderId}{Environment.NewLine}");
+
+            foreach (var k in mapping.Keys)
+            {
+                if (this[k] != null)
+                {
+                    sb.Append($"{k}={this[k]}{Environment.NewLine}");
+                }
+            }
+            Console.Write(sb.ToString());
+        }
+
+        public static void RemoveField(string name) => mapping.Remove(name);
+
+        private static readonly Dictionary<string, byte> mapping = new Dictionary<string, byte>()
         {
             ["CashFlow"] = 1,
             ["PE"] = 2,
