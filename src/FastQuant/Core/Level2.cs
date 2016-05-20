@@ -76,6 +76,8 @@ namespace FastQuant
 
         public Ask[] Asks { get; internal set; }
 
+        public DateTime ExchangeDateTime { get; set; }
+
         public Level2Snapshot(DateTime dateTime, byte providerId, int instrumentId, Bid[] bids, Ask[] asks)
             : base(dateTime)
         {
@@ -85,6 +87,11 @@ namespace FastQuant
             Asks = asks;
         }
 
+        public Level2Snapshot(DateTime dateTime, DateTime exchangeDateTime, byte providerId, int instrumentId, Bid[] bids, Ask[] asks) : this(dateTime, providerId, instrumentId, bids, asks)
+        {
+            ExchangeDateTime = exchangeDateTime;
+        }
+
         public Level2Snapshot()
         {
         }
@@ -92,6 +99,7 @@ namespace FastQuant
         public Level2Snapshot(Level2Snapshot snapshot)
             : this(snapshot.dateTime, snapshot.ProviderId, snapshot.InstrumentId, snapshot.Bids, snapshot.Asks)
         {
+            ExchangeDateTime = snapshot.ExchangeDateTime;
         }
     }
 }

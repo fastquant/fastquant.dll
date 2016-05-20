@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 namespace FastQuant
@@ -345,6 +346,30 @@ namespace FastQuant
 
         public TickSeries GetHistoricalAsks(IHistoricalDataProvider provider, Instrument instrument, DateTime dateTime1, DateTime dateTime2) => GetHistoricalTicks(provider, TickType.Ask, instrument, dateTime1, dateTime2);
 
+        public List<Fundamental> GetHistoricalFundamentals(IHistoricalDataProvider provider, Instrument instrument, DateTime dateTime1, DateTime dateTime2)
+        {
+            if (provider.IsDisconnected)
+            {
+                provider.Connect();
+            }
+            var @class = new DataNotifier();
+            var guid = Guid.NewGuid().ToString();
+            lock (this.dictionary_0)
+            {
+                this.dictionary_0.Add(guid, @class);
+            }
+            provider.Send(new HistoricalDataRequest(instrument, dateTime1, dateTime2, DataObjectType.Fundamental)
+            {
+                RequestId = guid
+            });
+            @class.ReadyEvent.WaitOne();
+            lock (this.dictionary_0)
+            {
+                this.dictionary_0.Remove(guid);
+            }
+            return @class.Data.SelectMany(current => current.Objects).Cast<Fundamental>().ToList();
+        }
+
         public TickSeries GetHistoricalTrades(string symbol) => GetHistoricalTrades(symbol, DateTime.MinValue, DateTime.MaxValue);
 
         public TickSeries GetHistoricalTrades(Instrument instrument) => GetHistoricalTicks(TickType.Trade, instrument, DateTime.MinValue, DateTime.MaxValue);
@@ -502,6 +527,8 @@ namespace FastQuant
         }
 
         public void Save(Tick tick, SaveMode option = SaveMode.Add) => Save(tick.InstrumentId, tick, option);
+
+        public void Save(Quote quote, SaveMode option = SaveMode.Add) => Save(quote.Ask.InstrumentId, quote, option);
 
         public void Save(Bar bar, SaveMode option = SaveMode.Add) => Save(bar.InstrumentId, bar, option);
 

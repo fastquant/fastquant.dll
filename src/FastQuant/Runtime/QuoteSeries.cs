@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using FastQuant.Data.Compression;
 
 namespace FastQuant
 {
@@ -64,6 +65,18 @@ namespace FastQuant
                     throw new ArgumentException("Unsupported search option");
             }
         }
+
+        public BarSeries Compress(InputType inputType, BarType barType, long barSize)
+        {
+            if (this.Count == 0)
+            {
+                return new BarSeries();
+            }
+            var quote = this[0];
+            var compressor = BarCompressor.GetCompressor(quote.Ask.InstrumentId, barType, 1, barSize);
+            return compressor.Compress(new QuoteDataEnumerator(this, inputType));
+        }
+
 
         private int GetIndex_me(DateTime dateTime, IndexOption option)
         {

@@ -7,9 +7,12 @@ namespace FastQuant
         private Instrument instrument;
         private ObjectTable fields;
         private Order order;
-        private int orderId;
 
         public int Id { get; internal set; } = -1;
+
+        public int InstrumentId { get; internal set; } = -1;
+
+        public int OrderId { get; set; } = -1;
 
         public int ClientId { get; set; } = -1;
 
@@ -28,23 +31,9 @@ namespace FastQuant
             }
         }
 
-        public int OrderId
-        {
-            get
-            {
-                return this.orderId;
-            }
-            set
-            {
-                this.orderId = value;
-            }
-        }
-
         public string ClOrderId { get; set; } = string.Empty;
 
         public string ProviderOrderId { get; set; } = string.Empty;
-
-        public int InstrumentId { get; internal set; }
 
         public byte CurrencyId { get; set; }
 
@@ -85,6 +74,25 @@ namespace FastQuant
                 Fields[index] = value;
             }
         }
+
+        public ExecutionMessage()
+        {
+        }
+
+        public ExecutionMessage(ExecutionMessage executionMessage) : base(executionMessage)
+        {
+            Id = executionMessage.Id;
+            this.order = executionMessage.Order;
+            OrderId = executionMessage.OrderId;
+            ClOrderId = executionMessage.ClOrderId;
+            ProviderOrderId = executionMessage.ProviderOrderId;
+            this.instrument = executionMessage.Instrument;
+            InstrumentId = executionMessage.InstrumentId;
+            ClientId = executionMessage.ClientId;
+            IsLoaded = executionMessage.IsLoaded;
+            CurrencyId = executionMessage.CurrencyId;
+            Fields = new ObjectTable(executionMessage.Fields);
+        }
     }
 
     public class AccountReport : ExecutionMessage
@@ -98,6 +106,18 @@ namespace FastQuant
         public int PortfolioId { get; internal set; }
 
         public string Text { get; internal set; }
+
+        public AccountReport()
+        {
+        }
+
+        public AccountReport(AccountReport accountReport) : base(accountReport)
+        {
+            PortfolioId = accountReport.PortfolioId;
+            CurrencyId = accountReport.CurrencyId;
+            Amount = accountReport.Amount;
+            Text = accountReport.Text;
+        }
     }
 
     public class ExecutionReport : ExecutionMessage

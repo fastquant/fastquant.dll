@@ -43,6 +43,8 @@ namespace FastQuant
         public EventPipe ServicePipe { get; }
         public EventPipe HistoricalPipe { get; }
 
+        public bool ShowWarnings { get; set; } = true;
+
         internal ReminderOrder ReminderOrder { get; set; }
 
         public EventBus(Framework framework)
@@ -121,7 +123,8 @@ namespace FastQuant
                             {
                                 if (e.TypeId != EventType.OnSimulatorProgress)
                                 {
-                                    Console.WriteLine($"EventBus::Dequeue Skipping: {e} {e.dateTime} <> {this.framework.Clock.DateTime}");
+                                    if (ShowWarnings)
+                                        Console.WriteLine($"EventBus::Dequeue Skipping: {e} {e.dateTime} <> {this.framework.Clock.DateTime}");
                                     continue;
                                 }
                             }

@@ -3,7 +3,12 @@
 namespace FastQuant
 {
     [AttributeUsage(AttributeTargets.All)]
-    public class NotOriginalAttribute: Attribute
+    internal class NotOriginalAttribute: Attribute
+    {
+    }
+
+    [AttributeUsage(AttributeTargets.All)]
+    internal class UglyNamingAttribute : Attribute
     {
     }
 }

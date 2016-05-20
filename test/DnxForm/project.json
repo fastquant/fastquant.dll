@@ -1,21 +1,16 @@
 {
-  "compilationOptions": {
+  "buildOptions": {
     "allowUnsafe": true,
     "emitEntryPoint": true
   },
-  "commands": {
-    "app": "DnxForm"
-  },
+
   "frameworks": {
-    "dnx451": {
+    "net451": {
       "frameworkAssemblies": {
         "System.Windows.Forms": "4.0.0.0",
         "System.Drawing": "4.0.0.0"
       },
       "dependencies": { "FQSQ": "1.0.0-*" }
     }
-  },
-  "dependencies": {
-    "JetBrains.dotMemoryUnit": "2.1.20150828.125449"
   }
 }

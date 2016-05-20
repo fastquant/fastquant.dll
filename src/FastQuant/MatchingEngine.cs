@@ -59,6 +59,16 @@ namespace FastQuant
             Status = ProviderStatus.Disconnected;
         }
 
+        protected override void OnConnect()
+        {
+            Status = ProviderStatus.Connected;
+        }
+
+        protected override void OnDisconnect()
+        {
+            Status = ProviderStatus.Disconnected;
+        }
+
         public void OnBid(Bid bid)
         {
             var orders = this.ordersByInstrumentId[bid.InstrumentId];

@@ -86,17 +86,11 @@ namespace FastQuant
                     case BarData.Average:
                         return this[index].Average;
                     case BarData.Volume:
-                        return (double)this[index].Volume;
+                        return this[index].Volume;
                     case BarData.OpenInt:
-                        return (double)this[index].OpenInt;
+                        return this[index].OpenInt;
                     case BarData.Range:
                         return this[index].Range;
-                    case BarData.Mean:
-                        return this[index].Mean;
-                    case BarData.Variance:
-                        return this[index].Variance;
-                    case BarData.StdDev:
-                        return this[index].StdDev;
                     default:
                         throw new ArgumentException($"Unknown BarData value {barData}");
                 }

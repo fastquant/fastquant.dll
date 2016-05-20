@@ -26,6 +26,8 @@ namespace SmartQuant.Charting
 
         public Pad Pad => Chart.Pad;
 
+        public PadList Pads => Chart.Pads;
+
 #if GTK
         public new string Title
 #else

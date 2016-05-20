@@ -58,6 +58,46 @@ namespace FastQuant
         }
     }
 
+
+    public class VectorStreamer : ObjectStreamer
+    {
+        public VectorStreamer()
+        {
+            this.typeId = DataObjectType.Vector;
+           // this.type = typeof(Vector);
+        }
+
+        public override object Read(BinaryReader reader, byte version)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Write(BinaryWriter writer, object obj)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class MatrixStreamer : ObjectStreamer
+    {
+        public MatrixStreamer()
+        {
+            this.typeId = DataObjectType.Matrix;
+            //this.type = typeof(Matrix);
+        }
+
+        public override object Read(BinaryReader reader, byte version)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Write(BinaryWriter writer, object obj)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+
     public class TimeSeriesItemStreamer : ObjectStreamer
     {
         public TimeSeriesItemStreamer()
@@ -623,36 +663,38 @@ namespace FastQuant
 
         public override object Read(BinaryReader reader, byte version)
         {
-            var user = new User();
-            user.Id = reader.ReadInt32();
-            user.Name = reader.ReadString();
-            user.Password = reader.ReadString();
+            var user = new User
+            {
+                Id = reader.ReadInt32(),
+                Name = reader.ReadString(),
+                Password = reader.ReadString()
+            };
             int count = reader.ReadInt32();
             for (int i = 0; i < count; i++)
             {
                 UserItem userItem = new UserItem();
                 userItem.Name = reader.ReadString();
                 userItem.Value = reader.ReadString();
-                user.Items.Add(userItem);
+                //user.Items.Add(userItem);
             }
             return user;
         }
 
         public override void Write(BinaryWriter writer, object obj)
         {
-            User user = (User)obj;
+            var user = (User)obj;
             writer.Write(user.Id);
             writer.Write(user.Name);
             writer.Write(user.Password);
-            writer.Write(user.Items.Count);
-            if (user.Items.Count > 0)
-            {
-                foreach (var item in user.Items)
-                {
-                    writer.Write(item.Name);
-                    writer.Write(item.Value);
-                }
-            }
+            //writer.Write(user.Items.Count);
+            //if (user.Items.Count > 0)
+            //{
+            //    foreach (var item in user.Items)
+            //    {
+            //        writer.Write(item.Name);
+            //        writer.Write(item.Value);
+            //    }
+            //}
         }
     }
 

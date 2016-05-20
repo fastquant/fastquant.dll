@@ -57,30 +57,45 @@ namespace FastQuant
         public const byte QUIKFIX = 31;
         public const byte OSLFIX = 32;
         public const byte Nordnet = 33;
-        public const byte OkCoin = 34;
+        public const byte MoexFAST = 34;
         public const byte Integral = 35;
         public const byte QuantBase = 36;
+        public const byte Plaza2 = 37;
         public const byte QuantRouter = 38;
-        public const byte IQFeed = 39;
-        public const byte QuantRouter2014 = 40;
-        public const byte MNI = 45;
+        public const byte Lightspeed = 39;
+        public const byte DBFIX = 40;
+        public const byte MSFIX = 41;
+        public const byte XTAPI = 42;
+        public const byte SaxoFIX = 43;
+        public const byte Kibot = 44;
+        public const byte CQGFIX = 45;
+        public const byte TradAir = 46;
+        public const byte QuantRouter2014 = 47;
+        public const byte QuantBase2014 = 48;
+        public const byte QuantRouter2014Multi = 49;
+        public const byte TcpServer = 50;
+        public const byte FixServer = 51;
+        public const byte MNI = 52;
+        public const byte OkCoin = 53;
+        public const byte IQFeed = 54;
+        public const byte Quandl = 55;
         public const byte MatchingEngine = 99;
 
-        private static Dictionary<string, byte> mapping = new Dictionary<string, byte>();
+        private static readonly Dictionary<string, byte> _mapping = new Dictionary<string, byte>();
 
         static ProviderId()
         {
             var fields = typeof(ProviderId).GetFields(BindingFlags.Static | BindingFlags.Public).Where(f => f.FieldType == typeof(byte)).ToList();
-            fields.ForEach(f => mapping.Add(f.Name, (byte)f.GetValue(null)));
+            fields.ForEach(f => _mapping.Add(f.Name, (byte)f.GetValue(null)));
         }
 
-        public static void Add(string name, byte id) => mapping.Add(name, id);
+        public static void Add(string name, byte id) => _mapping.Add(name, id);
 
-        public static void Remove(string name) => mapping.Remove(name);
+        public static void Remove(string name) => _mapping.Remove(name);
 
         public static byte Get(string name)
         {
-            byte id; mapping.TryGetValue(name, out id);
+            byte id; _mapping.TryGetValue(name, out id);
             return id;
         }
     }
@@ -304,6 +319,8 @@ namespace FastQuant
         protected EventQueue historicalQueue;
         protected EventQueue instrumentQueue;
 
+        protected readonly object sync = new object();
+
         [Category("Information")]
         public byte Id
         {
@@ -399,8 +416,9 @@ namespace FastQuant
 
         public virtual void Connect()
         {
-            Status = ProviderStatus.Connecting;
-            Status = ProviderStatus.Connected;
+            lock (this.sync)
+                if (Enabled || Status == ProviderStatus.Disconnected)
+                    OnConnect();
         }
 
         public virtual bool Connect(int timeout)
@@ -421,8 +439,9 @@ namespace FastQuant
 
         public virtual void Disconnect()
         {
-            Status = ProviderStatus.Disconnecting;
-            Status = ProviderStatus.Disconnected;
+            lock (this.sync)
+                if (Status != ProviderStatus.Disconnected)
+                    OnDisconnect();
         }
 
         public void Dispose()
@@ -568,6 +587,12 @@ namespace FastQuant
             throw new NotImplementedException();
         }
 
+        protected virtual void OnConnect()
+        {
+            Status = ProviderStatus.Connecting;
+            Status = ProviderStatus.Connected;
+        }
+
         protected virtual void OnConnected()
         {
             if ((this is IDataProvider || this is IFundamentalProvider) && this.dataQueue == null)
@@ -584,6 +609,12 @@ namespace FastQuant
                 this.executionQueue.Name = $"{this.name}  execution queue";
                 this.framework.EventBus.ExecutionPipe.Add(this.executionQueue);
             }
+        }
+
+        protected virtual void OnDisconnect()
+        {
+            Status = ProviderStatus.Disconnecting;
+            Status = ProviderStatus.Disconnected;
         }
 
         protected virtual void OnDisconnected()

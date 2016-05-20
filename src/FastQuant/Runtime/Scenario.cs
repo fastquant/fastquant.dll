@@ -8,9 +8,9 @@ namespace FastQuant
 {
     public class Scenario
     {
-        protected string name;
-        protected Framework framework;
-        protected Strategy strategy;
+        protected internal string name;
+        protected internal Framework framework;
+        protected internal Strategy strategy;
 
         public string Name
         {
@@ -53,7 +53,7 @@ namespace FastQuant
         public StatisticsManager StatisticsManager => this.framework.StatisticsManager;
 
         public StrategyManager StrategyManager => this.framework.StrategyManager;
-        
+
         public Scenario(Framework framework)
         {
             this.framework = framework;
@@ -65,9 +65,11 @@ namespace FastQuant
             // noop
         }
 
+        public virtual double Objective() => 0;
+
         public void RunWithLogger(string solutionName)
         {
-            throw new NotImplementedException("Will never implement this!");   
+            throw new NotImplementedException("Will never implement this!");
         }
 
         public void StartBacktest() => StartStrategy(StrategyMode.Backtest);
@@ -94,6 +96,25 @@ namespace FastQuant
             Console.WriteLine($"{DateTime.Now} Scenario::StartStrategy Done");
         }
     }
+
+    public class PerformanceScenario : Scenario
+    {
+        public PerformanceScenario(Framework framework) : base(framework)
+        {
+        }
+
+        public override void Run()
+        {
+            var provider = new PerformanceProvider(this.framework);
+            this.strategy = new PerformanceStrategy(this.framework)
+            {
+                DataProvider = provider,
+                ExecutionProvider = provider
+            };
+            StartStrategy(StrategyMode.Live);
+        }
+    }
+
 
     public class ScenarioManager
     {

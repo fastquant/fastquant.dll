@@ -126,11 +126,32 @@ namespace FastQuant
             bar.Status = (BarStatus)reader.ReadByte();
             if (version >= 1)
                 bar.Type = (BarType)reader.ReadByte();
-            int size = reader.ReadInt32();
+            if (version >= 2)
+            {
+                bar.ProviderId = reader.ReadInt32();
+            }
+            if (version <= 2)
+            {
+                int num = reader.ReadInt32();
+                if (num != 0)
+                {
+                    //bar.Fields = new ObjectTable();
+                    for (var i = 0; i < num; i++)
+                    {
+                        bar.Fields[i] = reader.ReadDouble();
+                    }
+                }
+            }
+            if (version >= 3 && reader.ReadBoolean())
+            {
+                var fields = (ObjectTable)this.streamerManager.Deserialize(reader);
+                for (int i = 0; i < fields.Size; i++)
+                {
+                    bar.Fields[i] = fields[i];
+                }
+                //    bar.Fields = (ObjectTable)this.streamerManager.Deserialize(reader);
 
-            for (int i = 0; i < size; ++i)
-                bar[(byte)i] = reader.ReadDouble();
-
+            }
             return bar;
         }
 
@@ -148,15 +169,35 @@ namespace FastQuant
             writer.Write(bar.Volume);
             writer.Write(bar.OpenInt);
             writer.Write((byte)bar.Status);
-            writer.Write((byte)bar.Type);
-            if (bar.Fields != null)
+            if (this.version >= 1)
             {
-                writer.Write(bar.Fields.Size);
-                for (int i = 0; i < bar.Fields.Size; ++i)
-                    writer.Write(bar[(byte)i]);
+                writer.Write((byte)bar.Type);
             }
-            else
-                writer.Write(0);
+            if (this.version >= 2)
+            {
+                writer.Write(bar.ProviderId);
+            }
+            if (this.version <= 2)
+            {
+                if (bar.Fields != null)
+                {
+                    writer.Write(bar.Fields.Size);
+                    for (var i = 0; i < bar.Fields.Size; ++i)
+                        writer.Write((double)bar.Fields[i]);
+                }
+                else
+                    writer.Write(0);
+            }
+            if (this.version >= 3)
+            {
+                if (bar.Fields != null)
+                {
+                    writer.Write(true);
+                    this.streamerManager.Serialize(writer, bar.Fields);
+                    return;
+                }
+                writer.Write(false);
+            }
         }
     }
 
@@ -301,20 +342,24 @@ namespace FastQuant
             this.type = typeof(Level2Snapshot);
         }
 
+        public override byte GetVersion(object obj) => ((Level2Snapshot)obj).ExchangeDateTime.Ticks != 0 ? (byte)1 : (byte)0;
+
         public override object Read(BinaryReader reader, byte version)
         {
-            var l2s = new Level2Snapshot();
-            l2s.DateTime = new DateTime(reader.ReadInt64());
-            l2s.ProviderId = reader.ReadByte();
-            l2s.InstrumentId = reader.ReadInt32();
+            var l2s = new Level2Snapshot
+            {
+                DateTime = new DateTime(reader.ReadInt64()),
+                ProviderId = reader.ReadByte(),
+                InstrumentId = reader.ReadInt32()
+            };
             int count;
             count = reader.ReadInt32();
             l2s.Bids = new Bid[count];
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
                 l2s.Bids[i] = (Bid)this.streamerManager.Deserialize(reader);
             count = reader.ReadInt32();
             l2s.Asks = new Ask[count];
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
                 l2s.Asks[i] = (Ask)this.streamerManager.Deserialize(reader);
             return l2s;
         }
@@ -325,12 +370,14 @@ namespace FastQuant
             writer.Write(l2s.DateTime.Ticks);
             writer.Write(l2s.ProviderId);
             writer.Write(l2s.InstrumentId);
+            if (GetVersion(l2s) == 1)
+                writer.Write(l2s.ExchangeDateTime.Ticks);
             writer.Write(l2s.Bids.Length);
-            for (int i = 0; i < l2s.Bids.Length; i++)
-                this.streamerManager.Serialize(writer, l2s.Bids[i]);
+            foreach (var bid in l2s.Bids)
+                this.streamerManager.Serialize(writer, bid);
             writer.Write(l2s.Asks.Length);
-            for (int i = 0; i < l2s.Asks.Length; i++)
-                this.streamerManager.Serialize(writer, l2s.Asks[i]);
+            foreach (Ask ask in l2s.Asks)
+                this.streamerManager.Serialize(writer, ask);
         }
     }
 

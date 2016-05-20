@@ -6,27 +6,29 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.FindSymbols;
 using Microsoft.CodeAnalysis.MSBuild;
 using Microsoft.CodeAnalysis.Rename;
-
+using Microsoft.DotNet.ProjectModel.Workspaces;
+    
 namespace SmartRenamer
 {
     public static class Program
     {
-        private static string PrjPath = Path.Combine("..", "..", "src", "SmartQuant.MsBuild", "SmartQuant.MsBuild.csproj");
+        private static string projectPath = Path.Combine("..", "..", "src", "FastQuant");
+        private static string NewAssemblyName = "SmartQuant";
         private static string OutputPath = Path.Combine("..", "..", "output");
 
         public static void Main(string[] args)
         {
-            var ws = MSBuildWorkspace.Create();
-            var proj = ws.OpenProjectAsync(PrjPath).Result;
-            var solution = proj.Solution;
+            var solution = new ProjectJsonWorkspace(projectPath).CurrentSolution;
             solution = RenameNamespace("FastQuant", "SmartQuant", solution);
             solution = RenameClass("Message", "Message_", solution);
             solution = RenameClass("Command", "Command_", solution);
             solution = RenameClass("Response", "Response_", solution);
+            var pids = solution.Projects.Where(p => p.Name.StartsWith("FastQuant")).Select(p => p.Id);
+            foreach (var id in pids)
+                solution = solution.WithProjectAssemblyName(id, NewAssemblyName);
             foreach (var p in solution.Projects)
                 GenerateDll(p);
-
-            Console.WriteLine("Done");
+            Console.WriteLine("Succeed!");
         }
 
         private static Solution RenameNamespace(string oldName, string newName, Solution solution)
@@ -35,18 +37,16 @@ namespace SmartRenamer
             var sym =
                 SymbolFinder.FindDeclarationsAsync(proj, oldName, false)
                     .Result.First(s => s.Kind == SymbolKind.Namespace);
-            var sln = Renamer.RenameSymbolAsync(proj.Solution, sym, newName, null).Result;
-            return sln;
+            return Renamer.RenameSymbolAsync(proj.Solution, sym, newName, null).Result;
         }
 
         private static Solution RenameClass(string fromClsName, string toClsName, Solution solution)
         {
-            var proj = solution.Projects.First(p => p.Name.StartsWith("SmartQuant"));
+            var proj = solution.Projects.First();
             var sym = SymbolFinder.FindDeclarationsAsync(proj, fromClsName, false)
                     .Result.First(s => s.Kind == SymbolKind.NamedType);
             var options = solution.Workspace.Options;
-            var sln = Renamer.RenameSymbolAsync(solution, sym, toClsName, options).Result;
-            return sln;
+            return Renamer.RenameSymbolAsync(solution, sym, toClsName, options).Result;
         }
 
         private static void GenerateDll(Project p)

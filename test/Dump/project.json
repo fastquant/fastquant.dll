@@ -1,15 +1,12 @@
 {
-  "compilationOptions": {
+  "buildOptionsO": {
     "emitEntryPoint": true
   },
   "dependencies": {
     "SmartQuant": ""
   },
-  "commands": {
-    "app": "Dump"
-  },
   "frameworks": {
-    "dnx451": { },
+    "net451": { },
     "dnxcore50": { }
   }
 }

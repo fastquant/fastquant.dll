@@ -1,20 +1,16 @@
 {
-  "compilationOptions": {
-    "emitEntryPoint": true
+  "buildOptions": {
+    "emitEntryPoint": true,
+    "debugType": "portable"
   },
   "dependencies": {
-    "FastQuant": ""
+    "FastQuant": "*"
   },
-  "commands": {
-    "app": "BollingerBands"
-  },
+
   "frameworks": {
-    "dnx451": { },
-    "dnxcore50": {
-      "dependencies": {
-        "netcoreshim": "",
-        "NETStandard.Library": "1.0.0-rc2-*"
-      }
+    "net451": { },
+    "netcoreapp1.0": {
+      "imports": "dnxcore50"
     }
   }
 }
