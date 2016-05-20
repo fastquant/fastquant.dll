@@ -5,8 +5,6 @@ using System;
 using System.IO;
 using System.Xml.Serialization;
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace FastQuant
 {
@@ -47,8 +45,10 @@ namespace FastQuant
 
         public override string ToString() => TypeName;
     }
+}
 
-
+namespace FastQuant
+{
 #if SMARTQUANT_COMPAT
     [XmlRoot("Configuration")]
     public class Configuration
@@ -84,6 +84,8 @@ namespace FastQuant
         public int OrderFilePort;
         [XmlElement("OrderFileName")]
         public string OrderFileName;
+        [XmlElement("PortfolioFileName")]
+        public string PortfolioFileName;
         [XmlElement("DefaultCurrency")]
         public string DefaultCurrency;
         [XmlElement("DefaultExchange")]
@@ -171,6 +173,8 @@ namespace FastQuant
         }
     }
 #else
+    using Newtonsoft.Json.Linq;
+
     public class Configuration
     {
         private static JObject configData;

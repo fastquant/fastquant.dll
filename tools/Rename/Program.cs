@@ -3,10 +3,11 @@ using System.IO;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.FindSymbols;
 using Microsoft.CodeAnalysis.Rename;
 using Microsoft.DotNet.ProjectModel.Workspaces;
-    
+
 namespace SmartRenamer
 {
     public static class Program
@@ -50,6 +51,9 @@ namespace SmartRenamer
 
         private static void GenerateDll(Project p)
         {
+            var defines = p.ParseOptions.PreprocessorSymbolNames.ToList();
+            defines.Add("SMARTQUANT_COMPAT");
+            p = p.WithParseOptions(new CSharpParseOptions(preprocessorSymbols: defines.ToArray()));
             var c = p.GetCompilationAsync().Result;
             var fileName = Path.Combine(OutputPath, p.Name, p.AssemblyName + ".dll");
             Directory.CreateDirectory(Path.GetDirectoryName(fileName));
