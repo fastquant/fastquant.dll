@@ -1,16 +1,13 @@
 {
-  "buildOptionsO": {
+  "buildOptions": {
     "emitEntryPoint": true
   },
   "dependencies": {
-    "Microsoft.CodeAnalysis.CSharp": "2.0.0-beta1",
-    "Microsoft.CodeAnalysis.CSharp.Workspaces": "2.0.0-beta1",
-    "Microsoft.CodeAnalysis.Workspaces.Dnx": "1.9.0"
+    "Microsoft.DotNet.ProjectModel.Workspaces": "1.0.0-preview1-*"
   },
 
   "frameworks": {
     "net451": {
-      "imports": "dnx451",
       "frameworkAssemblies": {
         "System.Runtime": "4.0.10.0",
         "System.Threading.Tasks": "4.0.0.0",
