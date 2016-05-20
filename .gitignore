@@ -196,9 +196,10 @@ FakesAssemblies/
 # Visual Studio 6 workspace options file
 *.opt
 
-# DNX
+# Dotnet CLI
 project.lock.json
 artifacts/
 /tools/nuget.exe
 .idea/
 *.sln.iml
+.vs/

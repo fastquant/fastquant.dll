@@ -1,4 +1,6 @@
 {
+  "name": "SmartQuantLite",
+  "description": "A homemade SmartQuant.dll repacked from the FastQuant project.",
   "version": "1.0.0-*",
   "frameworks": {
     "net451": {
@@ -7,7 +9,16 @@
         "System.Xml": "4.0.0.0"
       },
       "bin": {
-        "assembly": "../../output/SmartQuant.MsBuild/SmartQuant.dll"
+        "assembly": "../../output/FastQuant+.NETFramework,Version=v4.5.1/SmartQuant.dll"
+      }
+    }
+  },
+  "packOptions": {
+    "files": {
+      "mappings": {
+        "runtimes/win-x64/native/": "../../src/FastQuant/runtimes/win-x64/native/",
+        "runtimes/win-x86/native/": "../../src/FastQuant/runtimes/win-x86/native/",
+		"lib/net451/": "../../output/FastQuant+.NETFramework,Version=v4.5.1/SmartQuant.dll"
       }
     }
   }

@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.FindSymbols;
-using Microsoft.CodeAnalysis.MSBuild;
 using Microsoft.CodeAnalysis.Rename;
 using Microsoft.DotNet.ProjectModel.Workspaces;
     

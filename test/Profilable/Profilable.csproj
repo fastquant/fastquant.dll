@@ -717,12 +717,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="..\..\src\FastQuant\project.json">
-      <Link>FastQuant\project.json</Link>
-    </None>
-    <None Include="..\..\src\FastQuant\project.lock.json">
-      <Link>FastQuant\project.lock.json</Link>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">

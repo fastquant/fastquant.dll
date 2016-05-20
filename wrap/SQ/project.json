@@ -1,5 +1,9 @@
 {
-  "version": "1.0.0-*",
+  "name": "SmartQuant",
+  "version": "1.0.5981",
+  "description": "SmartQuant.dll extracted from OpenQuant 2014, get a valid license to use it",
+  "authors": [ "OpenQuant 2014" ],
+  "owners": [ "OpenQuant 2014" ],
   "frameworks": {
     "net451": {
       "frameworkAssemblies": {
@@ -7,7 +11,16 @@
         "System.Xml": "4.0.0.0"
       },
       "bin": {
-        "assembly": "../../tools/libs/SQ.dll"
+        "assembly": "lib/SmartQuant.dll"
+      }
+    }
+  },
+  "packOptions": {
+    "files": {
+      "mappings": {
+        "runtimes/win-x64/native/": "runtimes/win-x64/native/",
+        "runtimes/win-x86/native/": "runtimes/win-x86/native/",
+		"lib/net451/": "lib/"
       }
     }
   }
