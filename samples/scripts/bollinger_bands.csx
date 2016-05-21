@@ -1,4 +1,9 @@
 #r "SmartQuant"
+#r "System.Drawing"
+
+using SmartQuant;
+using SmartQuant.Indicators;
+using System.Drawing;
 
 public class MyStrategy : InstrumentStrategy
 {
@@ -187,4 +192,3 @@ public class Backtest : Scenario
 }
 
 new Backtest(Framework.Current).Run();
-Console.ReadKey();
