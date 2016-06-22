@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace FastQuant
@@ -154,7 +155,7 @@ namespace FastQuant
 
         public bool ConnectOnSubscribe { get; } = true;
 
-        private Dictionary<int, Dictionary<Instrument, int>> submap = new Dictionary<int, Dictionary<Instrument, int>>();
+        private readonly Dictionary<int, Dictionary<Instrument, int>> _submap = new Dictionary<int, Dictionary<Instrument, int>>();
 
         public SubscriptionManager(Framework framework)
         {
@@ -163,12 +164,12 @@ namespace FastQuant
 
         public void Clear()
         {
-            this.submap.Clear();
+            _submap.Clear();
         }
 
         public bool IsSubscribed(IDataProvider provider, Instrument instrument)
         {
-            return this.submap.ContainsKey(provider.Id) && this.submap[provider.Id].ContainsKey(instrument) && this.submap[provider.Id][instrument] > 0;
+            return _submap.ContainsKey(provider.Id) && _submap[provider.Id].ContainsKey(instrument) && this._submap[provider.Id][instrument] > 0;
         }
 
         public void Subscribe(int providerId, Instrument instrument)
@@ -202,11 +203,11 @@ namespace FastQuant
             if (ConnectOnSubscribe && provider.Status != ProviderStatus.Connected)
                 provider.Connect();
 
-            Dictionary<Instrument, int> dictionary = null;
-            if (!this.submap.TryGetValue(provider.Id, out dictionary))
+            Dictionary<Instrument, int> dictionary;
+            if (!this._submap.TryGetValue(provider.Id, out dictionary))
             {
                 dictionary = new Dictionary<Instrument, int>();
-                this.submap[provider.Id] = dictionary;
+                this._submap[provider.Id] = dictionary;
             }
             int count = 0;
             bool needSubcribe = false;
@@ -235,14 +236,14 @@ namespace FastQuant
             for (int i = 0; i < instruments.Count; i++)
             {
                 var instrument = instruments.GetByIndex(i);
-                if (!this.submap.ContainsKey(provider.Id))
-                    this.submap[provider.Id] = new Dictionary<Instrument, int>();
-                if (!this.submap[provider.Id].ContainsKey(instrument) || this.submap[provider.Id][instrument] == 0)
+                if (!this._submap.ContainsKey(provider.Id))
+                    this._submap[provider.Id] = new Dictionary<Instrument, int>();
+                if (!this._submap[provider.Id].ContainsKey(instrument) || this._submap[provider.Id][instrument] == 0)
                 {
-                    this.submap[provider.Id][instrument] = 0;
+                    this._submap[provider.Id][instrument] = 0;
                     newInstruments.Add(instrument);
                 }
-                this.submap[provider.Id][instrument] += 1;
+                this._submap[provider.Id][instrument] += 1;
             }
             if (newInstruments.Count > 0)
                 provider.Subscribe(newInstruments);
@@ -268,15 +269,15 @@ namespace FastQuant
 
         public void Unsubscribe(IDataProvider provider, Instrument instrument)
         {
-            if (!this.submap.ContainsKey(provider.Id))
+            if (!this._submap.ContainsKey(provider.Id))
                 return;
-            if (this.submap[provider.Id][instrument] == 0)
+            if (this._submap[provider.Id][instrument] == 0)
             {
                 Console.WriteLine($"SubscriptionManager::Unsubscribe Error. Instrument has no subscriptions {instrument.Symbol} on data provider {provider.Name}");
                 return;
             }
-            this.submap[provider.Id][instrument] -= 1;
-            if (this.submap[provider.Id][instrument] == 0)
+            this._submap[provider.Id][instrument] -= 1;
+            if (this._submap[provider.Id][instrument] == 0)
                 provider.Unsubscribe(instrument);
         }
 
@@ -286,10 +287,10 @@ namespace FastQuant
             for (int i = 0; i < instruments.Count; i++)
             {
                 var instrument = instruments.GetByIndex(i);
-                if (this.submap.ContainsKey(provider.Id) && this.submap[provider.Id][instrument] != 0)
+                if (this._submap.ContainsKey(provider.Id) && this._submap[provider.Id][instrument] != 0)
                 {
-                    this.submap[provider.Id][instrument] -= 1;
-                    if (this.submap[provider.Id][instrument] == 0)
+                    this._submap[provider.Id][instrument] -= 1;
+                    if (this._submap[provider.Id][instrument] == 0)
                         list.Add(instrument);
                 }
                 else
@@ -300,9 +301,9 @@ namespace FastQuant
 
         internal void OnProviderConnected(IDataProvider dataProvider)
         {
-            if (this.submap.ContainsKey(dataProvider.Id))
+            if (this._submap.ContainsKey(dataProvider.Id))
             {
-                foreach (var i in this.submap[dataProvider.Id].Keys.Where(k => this.submap[dataProvider.Id][k] != 0))
+                foreach (var i in this._submap[dataProvider.Id].Keys.Where(k => this._submap[dataProvider.Id][k] != 0))
                 {
                     Console.WriteLine($"SubscriptionManager::OnProviderConnected {dataProvider.Name} resubscribing {i.Symbol}");
                     dataProvider.Subscribe(i);
@@ -313,6 +314,15 @@ namespace FastQuant
         internal void OnProviderDisconnected(IDataProvider provider)
         {
             // noop
+        }
+
+        [InferredNaming]
+        internal void Load(BinaryReader reader)
+        { }
+
+        [InferredNaming]
+        internal void Save(BinaryWriter writer)
+        {
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 
@@ -291,7 +292,6 @@ namespace FastQuant
             return ts;
         }
 
-
         public TickSeries GetHistoricalBids(string symbol) => GetHistoricalBids(symbol, DateTime.MinValue, DateTime.MaxValue);
 
         public TickSeries GetHistoricalBids(Instrument instrument) => GetHistoricalTicks(TickType.Bid, instrument, DateTime.MinValue, DateTime.MaxValue);
@@ -388,6 +388,7 @@ namespace FastQuant
             }
             return GetHistoricalTrades(p, instrument, dateTime1, dateTime2);
         }
+
         public TickSeries GetHistoricalTrades(string provider, string symbol, DateTime dateTime1, DateTime dateTime2)
         {
             var p = this.framework.ProviderManager.GetHistoricalDataProvider(provider);
@@ -411,10 +412,12 @@ namespace FastQuant
         {
             return this.GetHistoricalBars(symbol, DateTime.MinValue, DateTime.MaxValue, barType, barSize);
         }
+
         public BarSeries GetHistoricalBars(Instrument instrument, BarType barType, long barSize)
         {
             return this.GetHistoricalBars(instrument, DateTime.MinValue, DateTime.MaxValue, barType, barSize);
         }
+
         public BarSeries GetHistoricalBars(string symbol, DateTime dateTime1, DateTime dateTime2, BarType barType, long barSize)
         {
             var i = this.framework.InstrumentManager[symbol];
@@ -678,5 +681,14 @@ namespace FastQuant
         }
 
         #endregion
+
+        [InferredNaming]
+        internal void Load(BinaryReader reader)
+        { }
+
+        [InferredNaming]
+        internal void Save(BinaryWriter writer)
+        {
+        }
     }
 }

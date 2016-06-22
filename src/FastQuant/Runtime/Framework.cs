@@ -7,6 +7,9 @@ using System.IO;
 using System.Net.Sockets;
 using System.Threading;
 using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Xml.Serialization;
 
 namespace FastQuant
 {
@@ -58,7 +61,7 @@ namespace FastQuant
             this.stream = this.tcpClient.GetStream();
             this.reader = new BinaryReader(this.stream);
             this.writer = new BinaryWriter(this.stream);
-            this.thread = new Thread(Run) {IsBackground = true};
+            this.thread = new Thread(Run) { IsBackground = true };
             this.thread.Start();
         }
 
@@ -84,13 +87,14 @@ namespace FastQuant
         private static Framework instance;
         private FrameworkMode mode;
         private bool disposed;
+        private string configFile;
 
         private DataServer dataServer;
         private OrderServer orderServer;
         private InstrumentServer instrumentServer;
         private PortfolioServer portfolioServer;
 
-        public string Name { get; }
+        public string Name { get; private set; }
 
         public bool IsExternalDataQueue { get; set; }
 
@@ -249,19 +253,19 @@ namespace FastQuant
 
         public EventBus EventBus { get; }
 
-        public Framework(string name = "", FrameworkMode mode = FrameworkMode.Simulation, bool createServers = true) : this(name, mode, createServers, externalBus: null, instrumentServer: null, dataServer: null)
+        public Framework(string name = "", FrameworkMode mode = FrameworkMode.Simulation, bool createServers = true, string fileServerPath = "FileServer.exe") : this(name, mode, createServers, externalBus: null, instrumentServer: null, dataServer: null, fileServerPath: String.Empty)
         {
         }
 
-        public Framework(string name, InstrumentServer instrumentServer, DataServer dataServer) : this(name, FrameworkMode.Simulation, createServers: false, externalBus: null, instrumentServer: instrumentServer, dataServer: dataServer)
+        public Framework(string name, InstrumentServer instrumentServer, DataServer dataServer) : this(name, FrameworkMode.Simulation, createServers: false, externalBus: null, instrumentServer: instrumentServer, dataServer: dataServer, fileServerPath: String.Empty)
         {
         }
 
-        public Framework(string name, EventBus externalBus, InstrumentServer instrumentServer, DataServer dataServer = null) : this(name, FrameworkMode.Simulation, createServers: false, externalBus: externalBus, instrumentServer: instrumentServer, dataServer: dataServer)
+        public Framework(string name, EventBus externalBus, InstrumentServer instrumentServer, DataServer dataServer = null) : this(name, FrameworkMode.Simulation, createServers: false, externalBus: externalBus, instrumentServer: instrumentServer, dataServer: dataServer, fileServerPath: String.Empty)
         {
         }
 
-        private Framework(string name, FrameworkMode mode, bool createServers, EventBus externalBus, InstrumentServer instrumentServer, DataServer dataServer)
+        private Framework(string name, FrameworkMode mode, bool createServers, EventBus externalBus, InstrumentServer instrumentServer, DataServer dataServer, string fileServerPath)
         {
             Name = name;
             this.mode = mode;
@@ -269,13 +273,12 @@ namespace FastQuant
 
             // Setup events compoents setup
             EventBus = new EventBus(this);
-            OutputManager = new OutputManager(this);
-            Clock = new Clock(this, ClockType.Local);
+            OutputManager = new OutputManager(this, Configuration.IsOutputLogEnabled ? Configuration.OutputLogFileName : null);
+            Clock = new Clock(this, ClockType.Local, false);
             EventBus.LocalClockEventQueue = Clock.ReminderQueue;
-            ExchangeClock = new Clock(this, ClockType.Exchange);
+            ExchangeClock = new Clock(this, ClockType.Exchange, false);
             EventBus.ExchangeClockEventQueue = ExchangeClock.ReminderQueue;
-            if (externalBus != null)
-                externalBus.Attach(EventBus);
+            externalBus?.Attach(EventBus);
             EventServer = new EventServer(this, EventBus);
             EventManager = new EventManager(this, EventBus);
 
@@ -335,7 +338,7 @@ namespace FastQuant
             }
             else
             {
-                Console.WriteLine($"Framework::Dispose Framework is not disposable{Name}");
+                Console.WriteLine($"Framework::Dispose Framework is not disposable {Name}");
             }
         }
 
@@ -345,7 +348,7 @@ namespace FastQuant
             {
                 if (dispoing)
                 {
-                    //   this.method_3();
+                    SaveConfiguration();
                     if (this.bool_1) InstrumentServer?.Dispose();
                     if (this.bool_2) DataServer?.Dispose();
                     if (this.bool_3) OrderServer?.Dispose();
@@ -390,31 +393,84 @@ namespace FastQuant
 
         public void Load(BinaryReader reader)
         {
-            throw new NotImplementedException();
+            Name = reader.ReadString();
+            DataManager.Load(reader);
+            SubscriptionManager.Load(reader);
+            PortfolioManager.Load(reader);
         }
 
         public void Save(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            writer.Write(Name);
+            DataManager.Save(writer);
+            SubscriptionManager.Save(writer);
+            PortfolioManager.Save(writer);
         }
 
         private void LoadConfiguration()
         {
-            //var text = File.ReadAllText(Path.Combine(Installation.ConfigDir.FullName, "configuration.xml"));
+            string content = null;
+            try
+            {
+                var entryAssembly = Assembly.GetEntryAssembly();
+                var customAttribute = entryAssembly.GetCustomAttribute<AssemblyProductAttribute>();
+                var customAttribute2 = entryAssembly.GetCustomAttribute<AssemblyCompanyAttribute>();
+                var text = customAttribute == null ? entryAssembly.GetName().Name : customAttribute.Product;
+                var text2 = customAttribute2 == null ? entryAssembly.GetName().Name : customAttribute2.Company;
+                var path = Path.Combine(InstallationUtils.GetApplicationDataPath(), text2, text, "framework", "configuration.xml");
+                this.configFile = File.Exists(path) ? path : Path.Combine(Installation.ConfigDir.FullName, "configuration.xml");
+                content = File.ReadAllText(this.configFile);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+            if (content != null)
+            {
+                using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(content)))
+                {
+                    var serializer = new XmlSerializer(typeof(Configuration));
+                    Configuration = (Configuration)serializer.Deserialize(stream);
+                    if (string.IsNullOrEmpty(Configuration.InstrumentFileName))
+                        Configuration.SetDefaultInstrumentConfiguration();
+                    if (string.IsNullOrEmpty(Configuration.DataFileName))
+                        Configuration.SetDefaultDataConfiguration();
+                    if (string.IsNullOrEmpty(Configuration.OrderFileName))
+                        Configuration.SetDefaultOrderConfiguration();
+                    if (string.IsNullOrEmpty(Configuration.PortfolioFileName))
+                        Configuration.SetDefaultPortfolioConfiguration();
+                    if (Configuration.Streamers.Count == 0)
+                        Configuration.AddDefaultStreamers();
+                    if (Configuration.Providers.Count == 0)
+                        Configuration.AddDefaultProviders();
+                    return;
+                }
+            }
             Configuration = Configuration.DefaultConfiguaration();
         }
 
         private void SaveConfiguration()
         {
-            throw new NotImplementedException();
+            try
+            {
+                var serializer = new XmlSerializer(typeof(Configuration));
+                this.configFile = this.configFile ?? Path.Combine(Installation.ConfigDir.FullName, "configuration.xml");
+                using (var fs = File.OpenWrite(this.configFile))
+                using (var writer = new StreamWriter(fs))
+                    serializer.Serialize(writer, Configuration);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error during SaveConfiguration: {e}");
+            }
         }
     }
 
     public class FrameworkServer : IDisposable
     {
-        private Dictionary<string, string> dictionary = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _dictionary = new Dictionary<string, string>();
 
-        private string connectionString;
+        private string _connectionString;
 
         public Framework Framework { get; internal set; }
 
@@ -422,12 +478,12 @@ namespace FastQuant
         {
             get
             {
-                return this.connectionString;
+                return this._connectionString;
             }
             set
             {
-                this.connectionString = value;
-                this.Update();
+                this._connectionString = value;
+                Update();
             }
         }
 
@@ -463,7 +519,7 @@ namespace FastQuant
         protected string GetStringValue(string key, string defaultValue)
         {
             string result;
-            return this.dictionary.TryGetValue(key.ToUpper(), out result) ? result : defaultValue;
+            return this._dictionary.TryGetValue(key.ToUpper(), out result) ? result : defaultValue;
         }
 
         public virtual void Open()
@@ -473,14 +529,14 @@ namespace FastQuant
 
         private void Update()
         {
-            this.dictionary.Clear();
-            if (this.connectionString != null)
+            this._dictionary.Clear();
+            if (this._connectionString != null)
             {
-                foreach(var text in this.connectionString.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
+                foreach (var text in this._connectionString.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    string[] comps = text.Split(new char[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
+                    var comps = text.Split(new[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
                     if (comps.Length == 2)
-                        this.dictionary[comps[0].Trim().ToUpper()] = comps[1].Trim();
+                        this._dictionary[comps[0].Trim().ToUpper()] = comps[1].Trim();
                 }
             }
         }

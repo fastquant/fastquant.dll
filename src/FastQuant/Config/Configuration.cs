@@ -51,12 +51,18 @@ namespace FastQuant
 {
 #if SMARTQUANT_COMPAT
     [XmlRoot("Configuration")]
-    public class Configuration
+    public partial class Configuration
     {
         public const string FILENAME_DATA = "data.quant";
         public const string FILENAME_INSTRUMENTS = "instruments.quant";
         public const string FILENAME_ORDERS = "orders.quant";
         public const string FILENAME_PORTFOLIOS = "portfolios.quant";
+
+        [XmlElement("IsOutputLogEnabled")]
+        public bool IsOutputLogEnabled;
+
+        [XmlElement("OutputLogFileName")]
+        public string OutputLogFileName;
 
         [XmlElement("IsInstrumentFileLocal")]
         public bool IsInstrumentFileLocal;
@@ -119,27 +125,27 @@ namespace FastQuant
         public string DefaultDataSimulator { get; set; }
         public string DefaultExecutionSimulator { get; set; }
 
-        public void AddDefaultStreamers()
-        {
-            var types = new string[] {};
-            foreach (var name in types)
-            {
-                Type t = Type.GetType(name);
-                if (t != null)
-                    Streamers.Add(new StreamerPlugin(t.FullName));
-            }
-        }
+        //public void AddDefaultStreamers()
+        //{
+        //    var types = new string[] {};
+        //    foreach (var name in types)
+        //    {
+        //        Type t = Type.GetType(name);
+        //        if (t != null)
+        //            Streamers.Add(new StreamerPlugin(t.FullName));
+        //    }
+        //}
 
-        public void AddDefaultProviders()
-        {
-            //var types = new Dictionary<string, bool>();
-            //foreach (var pair in types)
-            //{
-            //    Type t = Type.GetType(pair.Key);
-            //    if (t != null)
-            //        Providers.Add(new ProviderPlugin(t.FullName, pair.Value));
-            //}
-        }
+        //public void AddDefaultProviders()
+        //{
+        //    //var types = new Dictionary<string, bool>();
+        //    //foreach (var pair in types)
+        //    //{
+        //    //    Type t = Type.GetType(pair.Key);
+        //    //    if (t != null)
+        //    //        Providers.Add(new ProviderPlugin(t.FullName, pair.Value));
+        //    //}
+        //}
 
         public static Configuration DefaultConfiguaration()
         {
@@ -175,7 +181,7 @@ namespace FastQuant
 #else
     using Newtonsoft.Json.Linq;
 
-    public class Configuration
+    public partial class Configuration
     {
         private static JObject configData;
 
@@ -185,20 +191,72 @@ namespace FastQuant
             configData = JObject.Parse(json);
         }
 
-        public string DefaultDataProvider => Get("DefaultDataProvider");
-        public string DefaultExecutionProvider => Get("DefaultExecutionProvider");
-        public string DataFileName => Get("DataFileName");
-        public string InstrumentFileName => Get("InstrumentFileName");
-        public string OrderFileName => Get("OrderFileName");
-        public string PortfolioFileName => Get("PortfolioFileName");
+        public string DefaultDataProvider => GetString("DefaultDataProvider");
+        public string DefaultExecutionProvider => GetString("DefaultExecutionProvider");
+        public string DataFileName => GetString("DataFileName");
+        public string InstrumentFileName => GetString("InstrumentFileName");
+        public string OrderFileName => GetString("OrderFileName");
+        public string PortfolioFileName => GetString("PortfolioFileName");
+        public bool IsOutputLogEnabled => GetBool("IsOutputLogEnabled");
+        public string OutputLogFileName => GetString("OutputLogFileName");
 
-        private static string Get(string key) => (string)configData[key];
+        private static string GetString(string key) => (string)configData[key];
+        private static bool GetBool(string key) => (bool)configData[key];
+        private static int GetInteger(string key) => (int)configData[key];
+        private static double GetDouble(string key) => (double)configData[key];
 
         public static Configuration DefaultConfiguaration()
         {
-            var c = new Configuration();
-            return c;
+            return new Configuration();
         }
+
+        public List<ProviderPlugin> Providers = new List<ProviderPlugin>();
+
+        public List<StreamerPlugin> Streamers = new List<StreamerPlugin>();
     }
 #endif
+    public partial class Configuration
+    {
+        public void SetDefaultDataConfiguration()
+        {
+            //this.IsDataFileLocal = false;
+            //this.DataFileHost = "127.0.0.1";
+            //this.DataFilePort = 1000;
+            //this.DataFileName = Installation.DataDir.FullName + "\\data.quant";
+        }
+
+        public void SetDefaultInstrumentConfiguration()
+        {
+            //this.IsInstrumentFileLocal = false;
+            //this.InstrumentFileHost = "127.0.0.1";
+            //this.InstrumentFilePort = 1000;
+            //this.InstrumentFileName = Installation.DataDir.FullName + "\\instruments.quant";
+        }
+
+        public void SetDefaultOrderConfiguration()
+        {
+            //this.IsOrderFileLocal = false;
+            //this.OrderFileHost = "127.0.0.1";
+            //this.OrderFilePort = 1000;
+            //this.OrderFileName = Installation.DataDir.FullName + "\\orders.quant";
+            //this.OrderServer = "FileOrderServer";
+            //this.OrderConnectionString = "Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=" + Installation.DataDir.FullName + "\\orders.mdb;";
+        }
+
+        public void SetDefaultPortfolioConfiguration()
+        {
+            //this.IsPortfolioFileLocal = false;
+            //this.PortfolioFileHost = "127.0.0.1";
+            //this.PortfolioFilePort = 1000;
+            //this.PortfolioFileName = Installation.DataDir.FullName + "\\portfolios.quant";
+        }
+
+        public void AddDefaultProviders()
+        {
+        }
+
+        public void AddDefaultStreamers()
+        {
+        }
+    }
 }

@@ -1,5 +1,9 @@
 {
-  "buildOptions": { },
+  "buildOptions": {
+    "define": [
+      "SMARTQUANT_COMPAT"
+    ]
+  },
   "dependencies": {
     "Newtonsoft.Json": "8.0.3"
   },
@@ -26,8 +30,8 @@
   "packOptions": {
     "files": {
       "mappings": {
-        "runtimes/win-x64/native/": "runtimes/win-x64/native/",
-        "runtimes/win-x86/native/": "runtimes/win-x86/native/",
+        "runtimes/win7-x64/native/": "runtimes/win7-x64/native/",
+        "runtimes/win7-x86/native/": "runtimes/win7-x86/native/",
         "runtimes/linux-x64/native/": "runtimes/linux-x64/native/",
         "runtimes/osx-x64/native/": "runtimes/osx-x64/native/"
       }

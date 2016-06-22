@@ -11,4 +11,9 @@ namespace FastQuant
     internal class UglyNamingAttribute : Attribute
     {
     }
+
+    [AttributeUsage(AttributeTargets.All)]
+    internal class InferredNamingAttribute : Attribute
+    {
+    }
 }

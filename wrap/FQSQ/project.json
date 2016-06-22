@@ -16,9 +16,9 @@
   "packOptions": {
     "files": {
       "mappings": {
-        "runtimes/win-x64/native/": "../../src/FastQuant/runtimes/win-x64/native/",
-        "runtimes/win-x86/native/": "../../src/FastQuant/runtimes/win-x86/native/",
-		"lib/net451/": "../../output/FastQuant+.NETFramework,Version=v4.5.1/SmartQuant.dll"
+        "runtimes/win7-x64/native/": "../../src/FastQuant/runtimes/win7-x64/native/",
+        "runtimes/win7-x86/native/": "../../src/FastQuant/runtimes/win7-x86/native/",
+        "lib/net451/": "../../output/FastQuant+.NETFramework,Version=v4.5.1/SmartQuant.dll"
       }
     }
   }

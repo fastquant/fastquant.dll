@@ -19,9 +19,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{62243352-748F-474A-9FFE-A3065CBFB56A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{D4C04A70-7D16-43EA-8681-E56515C97FC1}"
-	ProjectSection(SolutionItems) = preProject
-		bollinger_bands.csx = bollinger_bands.csx
-	EndProjectSection
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "BollingerBands", "samples\BollingerBands\BollingerBands.xproj", "{61A8A290-A309-4DA8-A255-5D5BE1DBA325}"
 EndProject
@@ -66,6 +63,11 @@ EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "FastQuant.Tests", "test\FastQuant.Tests\FastQuant.Tests.xproj", "{C552F31B-BFC4-488F-BA06-0ACC2399842C}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "FastQuant.Tests.Shared", "test\FastQuant.Tests.Shared\FastQuant.Tests.Shared.xproj", "{41B61B1E-5586-4366-8CF5-24F0FE413D84}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{761C209A-E062-4386-B048-10265F606342}"
+	ProjectSection(SolutionItems) = preProject
+		samples\scripts\bollinger_bands.csx = samples\scripts\bollinger_bands.csx
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -181,5 +183,6 @@ Global
 		{265628A7-D230-4006-A1F6-BFF8C1B6C96D} = {4557E8C2-3EDA-47A0-BA33-D7ADBE163192}
 		{C552F31B-BFC4-488F-BA06-0ACC2399842C} = {B5999BD6-099D-437A-B1B7-BB269E4D469E}
 		{41B61B1E-5586-4366-8CF5-24F0FE413D84} = {B5999BD6-099D-437A-B1B7-BB269E4D469E}
+		{761C209A-E062-4386-B048-10265F606342} = {D4C04A70-7D16-43EA-8681-E56515C97FC1}
 	EndGlobalSection
 EndGlobal

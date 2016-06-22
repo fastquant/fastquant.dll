@@ -18,8 +18,8 @@
   "packOptions": {
     "files": {
       "mappings": {
-        "runtimes/win-x64/native/": "runtimes/win-x64/native/",
-        "runtimes/win-x86/native/": "runtimes/win-x86/native/",
+        "runtimes/win7-x64/native/": "runtimes/win7-x64/native/",
+        "runtimes/win7-x86/native/": "runtimes/win7-x86/native/",
 		"lib/net451/": "lib/"
       }
     }

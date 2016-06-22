@@ -101,6 +101,12 @@ namespace FastQuant
             strategy.OnStrategyStart();
         }
 
+        public Strategy GetStrategy(Instrument instrument)
+        {
+            var linkedList = this.childrenByInstrument[instrument.Id];
+            return linkedList?.Count > 0 ? linkedList.First.Data : null;
+        }
+
         internal override void EmitStrategyStart()
         {
             Status = StrategyStatus.Running;

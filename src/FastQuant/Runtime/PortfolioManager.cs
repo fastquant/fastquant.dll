@@ -134,10 +134,11 @@ namespace FastQuant
             report.Order.Portfolio.OnExecutionReport(report, true);
         }
 
-        internal void Read(BinaryReader reader)
+        [InferredNaming]
+        internal void Load(BinaryReader reader)
         {
-            int count = reader.ReadInt32();
-            for (int i = 0; i < count; i++)
+            var count = reader.ReadInt32();
+            for (var i = 0; i < count; i++)
             {
                 var portfolio = (Portfolio)this.framework.StreamerManager.Deserialize(reader);
                 // TODO: more strict visibility
@@ -146,7 +147,8 @@ namespace FastQuant
             }
         }
 
-        internal void Write(BinaryWriter writer)
+        [InferredNaming]
+        internal void Save(BinaryWriter writer)
         {
             writer.Write(Portfolios.Count);
             foreach (var p in Portfolios)
