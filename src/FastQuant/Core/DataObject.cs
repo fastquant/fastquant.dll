@@ -80,6 +80,11 @@ namespace FastQuant
         public const byte OnStrategyAdded = 144;
         public const byte OnPropertyChanged = 145;
         public const byte User = 146;
+
+        public const byte OnOptimizationStart = 147;
+        public const byte OnOptimizationStop = 148;
+        public const byte OnOptimizationProgress = 149;
+
         public const byte String = 150;
         public const byte Int64 = 151;
         public const byte Int32 = 152;

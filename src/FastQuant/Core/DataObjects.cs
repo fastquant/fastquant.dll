@@ -2,6 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using FastQuant.Optimization;
+using static FastQuant.DataObjectType;
 
 namespace FastQuant
 {
@@ -59,7 +61,7 @@ namespace FastQuant
 
     public class TextInfo : DataObject
     {
-        public override byte TypeId => DataObjectType.Text;
+        public override byte TypeId => Text;
 
         public string Content { get; set; }
 
@@ -112,5 +114,48 @@ namespace FastQuant
         public override byte TypeId => DataObjectType.StrategyStatus;
     }
 
+    public class OnOptimizationStart : DataObject
+    {
+        public OnOptimizationStart()
+        {
+        }
 
+        public OnOptimizationStart(DateTime dateTime) : base(dateTime)
+        {
+        }
+
+        public override string ToString() => nameof(OnOptimizationStart);
+
+        public override byte TypeId => DataObjectType.OnOptimizationStart;
+    }
+
+    public class OnOptimizationStop : DataObject
+    {
+        public OnOptimizationStop()
+        {
+        }
+
+        public OnOptimizationStop(DateTime dateTime) : base(dateTime)
+        {
+        }
+
+        public override string ToString()=> nameof(OnOptimizationStop);
+
+        public override byte TypeId=> DataObjectType.OnOptimizationStop;
+    }
+
+
+    public class OnOptimizationProgress : DataObject
+    {
+        public OnOptimizationProgress(OptimizationProgress optimizationProgress)
+        {
+            OptimizationProgress = optimizationProgress;
+        }
+
+        public override string ToString() => nameof(OnOptimizationProgress);
+
+        public OptimizationProgress OptimizationProgress { get; }
+
+        public override byte TypeId => DataObjectType.OnOptimizationProgress;
+    }
 }

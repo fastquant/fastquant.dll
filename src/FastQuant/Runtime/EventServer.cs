@@ -1,6 +1,8 @@
 ﻿// Copyright (c) FastQuant Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using FastQuant.Optimization;
+
 namespace FastQuant
 {
     public class EventServer
@@ -239,6 +241,21 @@ namespace FastQuant
                 this.queue.Enqueue(e);
             else
                 OnEvent(e);
+        }
+
+        internal void OnOptimizationProgress(OptimizationProgress progress)
+        {
+            OnEvent(new OnOptimizationProgress(progress));
+        }
+
+        internal void OnOptimizationStart()
+        {
+            OnEvent(new OnOptimizationStart());
+        }
+
+        internal void OnOptimizationStop()
+        {
+            OnEvent(new OnOptimizationStop());
         }
     }
 }

@@ -5,7 +5,7 @@
     ]
   },
   "dependencies": {
-    "Newtonsoft.Json": "8.0.3"
+    "Newtonsoft.Json": "9.0.1"
   },
   "frameworks": {
     "net451": {
@@ -15,12 +15,13 @@
       }
     },
     "netcoreapp1.0": {
-      "imports": "dnxcore50",
       "dependencies": {
         "netcoreshim": "*",
-        "NETStandard.Library": "1.5.0-rc2-*",
-        "System.Xml.XmlSerializer": "4.0.11-rc2-*",
-        "System.ComponentModel.TypeConverter": "4.0.1-rc2-*"
+        "System.Threading.Thread": "4.0.0",
+        "System.Xml.XmlSerializer": "4.0.11",
+        "System.Threading.Tasks.Parallel": "4.0.1",
+        "System.ComponentModel.TypeConverter": "4.1.0",
+        "System.Reflection.TypeExtensions": "4.1.0"
       }
     }
   },
